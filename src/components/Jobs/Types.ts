@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
 import {
     ResponseType,
+    RouterV5Props,
     SelectPickerOptionType,
     ServerError,
     SortingOrder,
@@ -90,11 +89,10 @@ export interface ExpandedRowProps {
     close: (e: any) => void
 }
 
-export interface JobListPayload
-    extends Pick<
-        AppListPayloadType,
-        'appNameSearch' | 'appStatuses' | 'environments' | 'teams' | 'offset' | 'size' | 'sortOrder'
-    > {
+export interface JobListPayload extends Pick<
+    AppListPayloadType,
+    'appNameSearch' | 'appStatuses' | 'environments' | 'teams' | 'offset' | 'size' | 'sortOrder'
+> {
     sortBy: JobsListSortableKeys
 }
 
@@ -105,29 +103,27 @@ export interface JobsMasterFilters {
 }
 
 export interface JobListFilterConfig
-    extends JobListUrlFiltersType,
-        Pick<JobListPayload, 'offset' | 'sortBy' | 'sortOrder'> {
+    extends JobListUrlFiltersType, Pick<JobListPayload, 'offset' | 'sortBy' | 'sortOrder'> {
     searchKey: string
     pageSize: number
 }
 
-export interface JobListProps
-    extends Pick<
-        UseUrlFiltersReturnType<JobsListSortableKeys>,
-        'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting' | 'handleSearch' | 'updateSearchParams'
-    > {
+export interface JobListProps extends Pick<
+    UseUrlFiltersReturnType<JobsListSortableKeys>,
+    'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting' | 'handleSearch' | 'updateSearchParams'
+> {
     masterFilters: JobsMasterFilters
     filterConfig: JobListFilterConfig
     filtersLoading: boolean
     jobListCount: number
-    openJobCreateModel: (event) => void
     setJobCount: React.Dispatch<React.SetStateAction<number>>
     getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => string
 }
 
 export interface JobListViewProps
-    extends JobListState,
-        RouteComponentProps<{}>,
+    extends
+        JobListState,
+        RouterV5Props<{}>,
         Pick<
             UseUrlFiltersReturnType<JobsListSortableKeys>,
             'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting'
@@ -136,7 +132,6 @@ export interface JobListViewProps
     closeExpandedRow: (id: number | null) => void
     handleEditJob: (jobId: number) => void
     jobListCount: number
-    openJobCreateModel: (e) => void
     toggleExpandAllRow: () => void
 }
 
@@ -198,16 +193,15 @@ export enum JobListStatusDTO {
     FAILED = 'Failed',
 }
 
-export interface JobListFilterProps
-    extends Pick<
-        JobListProps,
-        | 'filtersLoading'
-        | 'jobListCount'
-        | 'masterFilters'
-        | 'handleSearch'
-        | 'filterConfig'
-        | 'updateSearchParams'
-        | 'getLabelFromValue'
-    > {
+export interface JobListFilterProps extends Pick<
+    JobListProps,
+    | 'filtersLoading'
+    | 'jobListCount'
+    | 'masterFilters'
+    | 'handleSearch'
+    | 'filterConfig'
+    | 'updateSearchParams'
+    | 'getLabelFromValue'
+> {
     payload: JobListPayload
 }

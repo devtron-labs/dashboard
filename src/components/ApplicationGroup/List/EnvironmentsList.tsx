@@ -28,6 +28,7 @@ import {
     getApplicationManagementBreadcrumb,
     ImageType,
     PageHeader,
+    ROUTER_URLS,
     SearchBar,
     SelectPickerOptionType,
     useAsync,
@@ -207,6 +208,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const { pathname } = useLocation()
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.APP_GROUP_LIST,
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
@@ -219,7 +221,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
         [pathname],
     )
 
-    const renderBreadCrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadCrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.APP_GROUP_LIST} />
 
     return (
         <div className="flexbox-col h-100 dc__overflow-auto">

@@ -15,13 +15,14 @@
  */
 
 import ReactGA from 'react-ga4'
-import { Link, useRouteMatch } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
     DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
+    ROUTER_URLS,
     TabGroup,
     TabProps,
     useBreadcrumb,
@@ -33,16 +34,16 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import { ChartHeaderComponentType } from './appHeader.type'
 
 const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {
-    const match = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
                 apps: {
                     component: (
-                    <Link to={URLS.HELM_APP_LIST} className="dc__devtron-breadcrumb__item">
+                    <Link to={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM} className="dc__devtron-breadcrumb__item">
                         <div className="cb-5">Helm Apps</div>
                     </Link>
                 )},
@@ -52,14 +53,14 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 },
                 dc: null,
                 env: null,
-                ':appId(\\d+)': null,
-                ':envId(\\d+)': null,
+                ':appId': null,
+                ':envId': null,
             },
         },
         [appDetails.appName],
     )
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART} />
 
     const renderHelmDetailsTabs = () => {
         const tabs: TabProps[] = [
@@ -68,7 +69,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 label: 'Overview',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    to: URLS.APP_OVERVIEW,
                     onClick: () => {
                         ReactGA.event({
                             category: 'App',
@@ -82,7 +83,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 label: 'App Details',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    to: URLS.APP_DETAILS,
                     onClick: () => {
                         ReactGA.event({
                             category: 'App',
@@ -101,7 +102,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                     tabType: 'navLink',
                     icon: Settings,
                     props: {
-                        to: `${match.url}/${URLS.APP_VALUES}`,
+                        to: URLS.APP_VALUES,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'App',
@@ -116,7 +117,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                     label: 'Deployment history',
                     tabType: 'navLink',
                     props: {
-                        to: `${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`,
+                        to: URLS.APP_DEPLOYMNENT_HISTORY,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'App',

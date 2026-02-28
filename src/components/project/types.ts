@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
-export interface ProjectListProps extends RouteComponentProps<{}> {
+export interface ProjectListProps {
     isSuperAdmin: boolean
 }
 export interface ProjectListState {

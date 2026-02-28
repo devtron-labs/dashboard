@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     API_STATUS_CODES,
@@ -37,7 +37,7 @@ import {
 } from './utils'
 
 const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }: CommandBarBackdropProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     const [searchText, setSearchText] = useState('')
@@ -213,7 +213,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
             return
         }
 
-        history.push(item.href)
+        navigate(item.href)
         handleClose()
 
         await pushItemToRecent(item)

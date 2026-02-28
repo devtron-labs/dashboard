@@ -3,11 +3,10 @@ import { generatePath } from 'react-router-dom'
 import {
     Icon,
     ImageWithFallback,
-    InfrastructureManagementAppListType,
     NavigationItemID,
+    ROUTER_URLS,
     SERVER_MODE,
     URL_FILTER_KEYS,
-    URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
@@ -22,7 +21,6 @@ import {
     HELM_APP_LIST_COMMAND_GROUP_ID,
     NAV_SUB_ITEMS_ICON_MAPPING,
     RECENT_NAVIGATION_ITEM_ID_PREFIX,
-    UPGRADE_DIALOG_LOCAL_STORAGE_KEY,
 } from './constants'
 import { CommandBarActionIdType, CommandBarBackdropProps, CommandBarGroupType, CommandBarItemType } from './types'
 
@@ -46,7 +44,7 @@ const getAppManagementNavItemsBreakdown = (serverMode: SERVER_MODE): CommandBarG
                   title: 'Devtron Applications',
                   icon: 'ic-devtron-app',
                   iconColor: 'none',
-                  href: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
+                  href: ROUTER_URLS.DEVTRON_APP_LIST,
                   keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
@@ -59,9 +57,7 @@ const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarG
         title: 'Helm Applications',
         icon: 'ic-helm-app',
         iconColor: 'none',
-        href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
-            appType: InfrastructureManagementAppListType.HELM,
-        }),
+        href: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM,
         keywords: [],
     },
     ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && isSuperAdmin
@@ -71,9 +67,7 @@ const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarG
                   title: 'ArgoCD Applications',
                   icon: 'ic-argocd-app',
                   iconColor: 'none',
-                  href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
-                      appType: InfrastructureManagementAppListType.ARGO_CD,
-                  }),
+                  href: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.ARGO_CD,
                   keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
@@ -85,9 +79,7 @@ const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarG
                   title: 'FluxCD Applications',
                   icon: 'ic-fluxcd-app',
                   iconColor: 'none',
-                  href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
-                      appType: InfrastructureManagementAppListType.FLUX_CD,
-                  }),
+                  href: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.FLUX_CD,
                   keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
@@ -165,7 +157,7 @@ export const parseAppListToNavItems = (
                 title: app.name,
                 icon: 'ic-devtron-app',
                 iconColor: 'none',
-                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
+                href: generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.OVERVIEW, { appId: String(app.id) }),
                 keywords: [],
             })),
         },
@@ -198,7 +190,7 @@ export const parseChartListToNavItems = (
                         fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
                     />
                 ),
-                href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
+                href: `${ROUTER_URLS.CHART_STORE}${URLS.CHART}/${chart.id}`,
                 keywords: [],
             })),
         },
@@ -253,7 +245,10 @@ export const parseHelmAppListToNavItems = (
                         fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
                     />
                 ),
-                href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
+                href: generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART, {
+                    appId: helmApp.appId,
+                    envId: String(helmApp.environmentDetail?.environmentId),
+                }),
                 keywords: [],
             })),
         },
@@ -305,7 +300,7 @@ const getTopFiveAppListGroup = (
     return parsedAppList[0]
         ? topFiveGroupParser(parsedAppList[0], {
               id: 'search-app-list-view',
-              href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
+              href: `${ROUTER_URLS.DEVTRON_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
           })
         : parsedAppList
 }
@@ -323,7 +318,7 @@ const getTopFiveHelmAppListGroup = (
     return parsedHelmAppList[0]
         ? topFiveGroupParser(parsedHelmAppList[0], {
               id: 'search-helm-app-list-view',
-              href: `${generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.HELM })}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
+              href: `${ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
           })
         : parsedHelmAppList
 }
@@ -341,7 +336,7 @@ const getTopFiveClusterListGroup = (
     return parsedClusterList[0]
         ? topFiveGroupParser(parsedClusterList[0], {
               id: 'search-cluster-list-view',
-              href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(
+              href: `${ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(
                   searchText,
               )}`,
           })
@@ -361,7 +356,7 @@ const getTopFiveChartListGroup = (
     return parsedChartList[0]
         ? topFiveGroupParser(parsedChartList[0], {
               id: 'search-chart-list-view',
-              href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}?${ChartStoreQueryParams.AppStoreName}=${encodeURIComponent(
+              href: `${ROUTER_URLS.CHART_STORE}?${ChartStoreQueryParams.AppStoreName}=${encodeURIComponent(
                   searchText,
               )}`,
           })
@@ -389,13 +384,4 @@ export const getAdditionalNavGroups = (
         ...getTopFiveChartListGroup(chartList, searchText),
         ...getTopFiveClusterListGroup(clusterList, searchText),
     ]
-}
-
-export const getShowUpgradeDialogFromLocalStorage = () => {
-    const hasClosedUpgradeDialog = localStorage.getItem(UPGRADE_DIALOG_LOCAL_STORAGE_KEY)
-    return hasClosedUpgradeDialog !== 'true'
-}
-
-export const hideUpgradeDialogInLocalStorage = () => {
-    localStorage.setItem(UPGRADE_DIALOG_LOCAL_STORAGE_KEY, 'true')
 }

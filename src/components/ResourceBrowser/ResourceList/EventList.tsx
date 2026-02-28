@@ -15,6 +15,7 @@
  */
 
 /* eslint-disable react/no-danger */
+import { ReactNode } from 'react'
 import DOMPurify from 'dompurify'
 
 import { getAIAnalyticsEvents, highlightSearchText, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
@@ -83,7 +84,7 @@ export const EventList = ({ listRef, filteredData, handleResourceClick, searchTe
                                 }}
                             />
                         </div>
-                        <Tooltip content={eventData.namespace}>
+                        <Tooltip content={eventData.namespace as string}>
                             <div className="dc__ellipsis-right dc__highlight-text">
                                 <span
                                     dangerouslySetInnerHTML={{
@@ -99,7 +100,7 @@ export const EventList = ({ listRef, filteredData, handleResourceClick, searchTe
                             </div>
                         </Tooltip>
                         <div className="flexbox dc__align-start">
-                            <Tooltip content={eventData[EVENT_LIST.dataKeys.involvedObject]}>
+                            <Tooltip content={eventData[EVENT_LIST.dataKeys.involvedObject] as string}>
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles dc__ellipsis-right"
@@ -124,7 +125,7 @@ export const EventList = ({ listRef, filteredData, handleResourceClick, searchTe
                                 </button>
                             </Tooltip>
                         </div>
-                        <Tooltip content={eventData.source}>
+                        <Tooltip content={eventData.source as string}>
                             <div className="dc__ellipsis-right dc__highlight-text">
                                 <span
                                     dangerouslySetInnerHTML={{
@@ -139,7 +140,7 @@ export const EventList = ({ listRef, filteredData, handleResourceClick, searchTe
                                 />
                             </div>
                         </Tooltip>
-                        <div>{eventData.count}</div>
+                        <div>{eventData.count as ReactNode}</div>
                         <div className="dc__highlight-text">
                             <span
                                 dangerouslySetInnerHTML={{
@@ -153,7 +154,7 @@ export const EventList = ({ listRef, filteredData, handleResourceClick, searchTe
                                 }}
                             />
                         </div>
-                        <div>{eventData[EVENT_LIST.dataKeys.lastSeen]}</div>
+                        <div>{eventData[EVENT_LIST.dataKeys.lastSeen] as ReactNode}</div>
                         {ExplainWithAIButton && eventData.type === 'Warning' ? (
                             <ExplainWithAIButton
                                 intelligenceConfig={{

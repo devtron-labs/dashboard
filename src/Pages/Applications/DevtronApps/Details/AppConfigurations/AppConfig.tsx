@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     AppConfigProps,
@@ -26,10 +26,11 @@ import {
     Progressing,
     ResourceIdToResourceApprovalPolicyConfigMapType,
     ResourceKindType,
+    ROUTER_URLS,
     showError,
     ToastManager,
     ToastVariantType,
-    URLS as CommonUrls,
+    URLS as CommonURLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -65,9 +66,9 @@ const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToReso
 const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: AppConfigProps) => {
     // HOOKS
     const { appId } = useParams<{ appId: string }>()
-    const match = useRouteMatch()
+
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     // STATES
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
@@ -94,8 +95,19 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
         },
     })
 
+    const getCurrentPathPattern = () => {
+        if (isTemplateView) {
+            return `${ROUTER_URLS.APP_TEMPLATE_DETAIL}/${CommonURLS.APP_CONFIG}`
+        }
+        if (resourceKind === ResourceKindType.job) {
+            return ROUTER_URLS.JOB_DETAIL.CONFIGURATIONS
+        }
+        return ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS
+    }
+
     // GLOBAL CONSTANTS
     const isJob = resourceKind === ResourceKindType.job
+    const matchUrl = generatePath(getCurrentPathPattern(), { appId })
 
     /**
      * Fetches environment configurations and protections for a given application.
@@ -320,15 +332,16 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
                 environmentList: updatedEnvs,
                 envIdToEnvApprovalConfigurationMap,
             })
-            if (location.pathname === match.url) {
-                history.replace(redirectUrl)
+
+            if (location.pathname === matchUrl) {
+                navigate(redirectUrl, { replace: true })
             }
         }
     }, [appConfigData])
 
     // METHODS
     const reloadAppConfig = () => {
-        history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`)
+        navigate(generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId }))
         setState((prevState) => ({ ...prevState, view: ViewType.LOADING }))
         setReload(!reload)
     }
@@ -353,19 +366,19 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
                         variant: ToastVariantType.success,
                         description: 'Job Deleted!',
                     })
-                    history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}`)
+                    navigate(ROUTER_URLS.JOBS_LIST)
                 } else if (isTemplateView) {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
                         description: 'Template Deleted!',
                     })
-                    history.push(CommonUrls.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP)
+                    navigate(ROUTER_URLS.APP_TEMPLATES)
                 } else {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
                         description: 'Application Deleted!',
                     })
-                    history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}`)
+                    navigate(ROUTER_URLS.DEVTRON_APP_LIST)
                 }
             }
         } catch (error) {
@@ -390,7 +403,7 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
                     redirectionUrl: redirectUrl,
                 }))
                 if (redirection) {
-                    history.push(redirectUrl)
+                    navigate(redirectUrl)
                 }
             })
             .catch((errors) => {
@@ -423,7 +436,7 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
 
     const redirectToWorkflowEditor = () => {
         onClickCloseCannotDeleteModal()
-        history.push(getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob, isTemplateView))
+        navigate(getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob, isTemplateView))
     }
 
     const getDeleteComponentName = (): DeleteComponentsName => {
@@ -485,7 +498,7 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
             return 'app-compose-for-env-compare'
         }
 
-        return location.pathname.includes(`/${URLS.APP_DOCKER_CONFIG}`) ||
+        return location.pathname.includes(URLS.APP_DOCKER_CONFIG) ||
             (typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1')
             ? 'dc__position-rel'
             : ''
@@ -537,10 +550,10 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
                     <div
                         className={`app-compose__nav collapsible-sidebar ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
                     >
-                        <AppNavigation />
+                        <AppNavigation routePath={getCurrentPathPattern()} />
                     </div>
                     <div className="flexbox-col app-compose__main">
-                        <AppComposeRouter />
+                        <AppComposeRouter routePath={getCurrentPathPattern()} />
                     </div>
                 </div>
                 {renderDeleteDialog()}

@@ -48,11 +48,10 @@ interface TLSConnectionHandleChangeParamsType {
     payload?: string
 }
 
-export interface TLSConnectionFormProps
-    extends Pick<
-        TLSConnectionDTO,
-        'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
-    > {
+export interface TLSConnectionFormProps extends Pick<
+    TLSConnectionDTO,
+    'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
+> {
     caData: InputFieldState<TLSConfigDTO['caData']>
     tlsCertData: InputFieldState<TLSConfigDTO['tlsCertData']>
     tlsKeyData: InputFieldState<TLSConfigDTO['tlsKeyData']>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
+import { Component, PropsWithChildren } from 'react'
 import * as Sentry from '@sentry/browser'
 import { DISCORD_LINK, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import bugFixing from '../../assets/img/bug-fixing.webp'
@@ -27,7 +27,7 @@ interface errorBoundaryState {
 
 interface ErrorBoundaryProps {}
 
-export default class ErrorBoundary extends Component<ErrorBoundaryProps, errorBoundaryState> {
+export default class ErrorBoundary extends Component<PropsWithChildren<ErrorBoundaryProps>, errorBoundaryState> {
     constructor(props) {
         super(props)
         this.state = { eventId: null, hasError: false, isChunkLoadError: false }

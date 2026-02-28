@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -24,6 +24,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     CustomInput,
+    ROUTER_URLS,
     showError,
     Textarea,
     ToastManager,
@@ -35,7 +36,6 @@ import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interact
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 
 import { deepEqual } from '../../../../../components/common'
-import { URLS } from '../../../../../config'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import {
@@ -69,7 +69,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const [submitting, setSubmitting] = useState(false)
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
 
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     async function populateDataFromAPI(data: PermissionGroup) {
         const { name: _name, description: _description } = data
@@ -85,7 +85,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }, [_permissionGroup])
 
     const _redirectToPermissionGroupList = () => {
-        push(URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS)
+        navigate(ROUTER_URLS.GLOBAL_CONFIG_AUTH.GROUPS)
     }
 
     const toggleDeleteConfirmationModal = () => {
@@ -158,7 +158,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         <div className="flexbox-col dc__align-start dc__align-self-stretch flex-grow-1 dc__gap-24 pb-16">
             <div className="flex dc__content-space dc__gap-8 px-20 pt-16 w-100">
                 <div className="flex dc__content-start dc__gap-4 fs-16 lh-32 fw-4 dc__ellipsis-right">
-                    <Link className="anchor" to={URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS}>
+                    <Link className="anchor" to={ROUTER_URLS.GLOBAL_CONFIG_AUTH.GROUPS}>
                         Permission Groups
                     </Link>
                     <span className="cn-5">/</span>
@@ -219,7 +219,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         text="Cancel"
                         component={ButtonComponentType.link}
                         linkProps={{
-                            to: URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS,
+                            to: ROUTER_URLS.GLOBAL_CONFIG_AUTH.GROUPS,
                         }}
                         variant={ButtonVariantType.secondary}
                         size={ComponentSizeType.medium}

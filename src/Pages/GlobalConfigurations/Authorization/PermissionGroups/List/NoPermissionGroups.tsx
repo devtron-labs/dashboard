@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { Button, ButtonComponentType, ComponentSizeType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonComponentType,
+    ComponentSizeType,
+    GenericEmptyState,
+    ROUTER_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import nullStateImage from '@Images/empty-list.png'
 
 import { ReactComponent as AddIcon } from '../../../../../assets/icons/ic-add.svg'
-import { URLS } from '../../../../../config'
 import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 
 const renderAddGroupButton = () => (
@@ -28,7 +33,7 @@ const renderAddGroupButton = () => (
         startIcon={<AddIcon />}
         component={ButtonComponentType.link}
         linkProps={{
-            to: `${URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS}/add`,
+            to: `${ROUTER_URLS.GLOBAL_CONFIG_AUTH.GROUPS}/add`,
         }}
         size={ComponentSizeType.medium}
         dataTestId="add-permission-group-link"

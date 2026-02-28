@@ -44,7 +44,7 @@ export class Workflow extends Component<WorkflowProps> {
     goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
-                this.props.appId?.toString() ?? this.props.match.params.appId,
+                this.props.appId?.toString() ?? this.props.params.appId,
                 this.props.id,
                 true,
                 node.downstreams[0].split('-')[1],
@@ -59,7 +59,7 @@ export class Workflow extends Component<WorkflowProps> {
                     'noreferrer',
                 )
             } else {
-                this.props.history.push(ciPipelineURL)
+                this.props.navigate(ciPipelineURL)
             }
         }
     }
@@ -71,7 +71,7 @@ export class Workflow extends Component<WorkflowProps> {
             nodeType,
             fromAppGroup: this.props.fromAppGrouping,
         })
-        this.props.history.push({ search })
+        this.props.navigate({ search })
     }
 
     onClickRollbackMaterial = (cdNodeId: number) => {
@@ -80,7 +80,7 @@ export class Workflow extends Component<WorkflowProps> {
             cdNodeId,
             fromAppGroup: this.props.fromAppGrouping,
         })
-        this.props.history.push({ search })
+        this.props.navigate({ search })
     }
 
     onClickApprovalNode = (cdNodeId: number) => {
@@ -89,7 +89,7 @@ export class Workflow extends Component<WorkflowProps> {
             cdNodeId,
             fromAppGroup: this.props.fromAppGrouping,
         })
-        this.props.history.push({ search })
+        this.props.navigate({ search })
     }
 
     renderNodes() {
@@ -191,9 +191,9 @@ export class Workflow extends Component<WorkflowProps> {
                     isLinkedCI={node.isLinkedCI}
                     linkedCount={node.linkedCount}
                     inputMaterialsNew={[]}
-                    history={this.props.history}
+                    params={this.props.params}
                     location={this.props.location}
-                    match={this.props.match}
+                    navigate={this.props.navigate}
                     fromAppGrouping={this.props.fromAppGrouping}
                     isCITriggerBlocked={node.isTriggerBlocked}
                 />
@@ -244,9 +244,9 @@ export class Workflow extends Component<WorkflowProps> {
                 description={node.description}
                 linkedCount={node.linkedCount}
                 inputMaterialsNew={[]}
-                history={this.props.history}
+                params={this.props.params}
                 location={this.props.location}
-                match={this.props.match}
+                navigate={this.props.navigate}
                 branch={node.branch}
                 fromAppGrouping={this.props.fromAppGrouping}
                 isJobView={this.props.isJobView}
@@ -280,9 +280,9 @@ export class Workflow extends Component<WorkflowProps> {
                 colourCode={node.colourCode}
                 rollbackMaterialList={node.rollbackMaterialList}
                 deploymentStrategy={node.deploymentStrategy}
-                history={this.props.history}
+                params={this.props.params}
                 location={this.props.location}
-                match={this.props.match}
+                navigate={this.props.navigate}
                 parentPipelineId={node.parentPipelineId}
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
@@ -320,9 +320,9 @@ export class Workflow extends Component<WorkflowProps> {
                 title={node.title}
                 colourCode={node.colourCode}
                 rollbackMaterialList={node.rollbackMaterialList}
-                history={this.props.history}
+                params={this.props.params}
                 location={this.props.location}
-                match={this.props.match}
+                navigate={this.props.navigate}
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
                 isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}

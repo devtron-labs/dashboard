@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { generatePath, Route, useHistory, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -32,8 +32,6 @@ const AddClusterButton = ({
     clusterCount: number
     handleReloadClusterList: () => void
 }) => {
-    const { path } = useRouteMatch()
-    const { push } = useHistory()
     const { serverMode, licenseData } = useMainContext()
 
     const [hasClickedConnectCluster, setHasClickedConnectCluster] = useState(false)
@@ -62,10 +60,6 @@ const AddClusterButton = ({
         }
     }
 
-    const handleCloseCreateClusterModal = () => {
-        push(path)
-    }
-
     const buttonProps = {
         dataTestId: 'add-cluster-button',
         text: 'Add Cluster',
@@ -90,7 +84,7 @@ const AddClusterButton = ({
                                               label: 'Use Server URL & Token',
                                               description: 'Connect cluster using Server URL and Bearer token',
                                               startIcon: { name: 'ic-link' },
-                                              to: generatePath(`${path}/${CREATE_CLUSTER_PATH}`, {
+                                              to: generatePath(CREATE_CLUSTER_PATH, {
                                                   type: CreateClusterTypeEnum.CONNECT_USING_SERVER_URL,
                                               }),
                                               componentType: 'link',
@@ -100,7 +94,7 @@ const AddClusterButton = ({
                                               label: 'Use kubeconfig',
                                               description: 'Effortlessly connect your clusters using kubeconfig',
                                               startIcon: { name: 'ic-file-code' },
-                                              to: generatePath(`${path}/${CREATE_CLUSTER_PATH}`, {
+                                              to: generatePath(CREATE_CLUSTER_PATH, {
                                                   type: CreateClusterTypeEnum.CONNECT_USING_KUBECONFIG,
                                               }),
                                               componentType: 'link',
@@ -122,7 +116,7 @@ const AddClusterButton = ({
                                               description: 'Create and connect new Kubernetes cluster',
                                               startIcon: { name: 'ic-new' },
                                               componentType: 'link',
-                                              to: generatePath(`${path}/${CREATE_CLUSTER_PATH}`, {
+                                              to: generatePath(CREATE_CLUSTER_PATH, {
                                                   type: CreateClusterTypeEnum.CREATE_CLUSTER,
                                               }),
                                           },
@@ -136,7 +130,7 @@ const AddClusterButton = ({
                                                             'Manage deployments to a disconnected Kubernetes cluster',
                                                         startIcon: { name: 'ic-cluster-isolated' },
                                                         componentType: 'link',
-                                                        to: generatePath(`${path}/${CREATE_CLUSTER_PATH}`, {
+                                                        to: generatePath(CREATE_CLUSTER_PATH, {
                                                             type: CreateClusterTypeEnum.ADD_ISOLATED_CLUSTER,
                                                         }),
                                                     } as ActionMenuItemType<ConnectClusterOptions>,
@@ -147,12 +141,12 @@ const AddClusterButton = ({
                         buttonProps={buttonProps}
                         onOpen={handleOpenActionMenu}
                     />
-                    <Route path={`${path}/${CREATE_CLUSTER_PATH}`} exact>
-                        <CreateCluster
-                            handleReloadClusterList={handleReloadClusterList}
-                            handleRedirectOnModalClose={handleCloseCreateClusterModal}
+                    <Routes>
+                        <Route
+                            path={CREATE_CLUSTER_PATH}
+                            element={<CreateCluster handleReloadClusterList={handleReloadClusterList} />}
                         />
-                    </Route>
+                    </Routes>
                 </>
             ) : (
                 <Button {...buttonProps} onClick={handleOpenUpgradeDialog} />

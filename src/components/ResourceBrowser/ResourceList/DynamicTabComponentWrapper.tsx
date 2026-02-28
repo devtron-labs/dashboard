@@ -15,12 +15,12 @@
  */
 
 import { cloneElement, ReactElement, useEffect } from 'react'
-import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import {
     logExceptionToSentry,
     noop,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,9 +35,9 @@ export const DynamicTabComponentWrapper = ({
     addTab,
     getTabById,
     children,
+    path,
 }: DynamicTabComponentWrapperProps) => {
     const { pathname, search } = useLocation()
-    const { path } = useRouteMatch()
     const params = useParams<Record<string, string>>()
     const searchParams = new URLSearchParams(search)
 
@@ -61,7 +61,7 @@ export const DynamicTabComponentWrapper = ({
                         kind,
                         type: 'dynamic',
                         url: `${pathname}${search}`,
-                        ...(path === RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE
+                        ...(path === ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.CLUSTER_UPGRADE
                             ? {
                                   dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`,
                                   tippyConfig: getUpgradeCompatibilityTippyConfig({

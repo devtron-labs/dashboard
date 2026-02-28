@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     DeleteConfirmationModal,
@@ -36,7 +36,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     removeTabByIdentifier,
     handleClearBulkSelection,
 }) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const [forceDelete, setForceDelete] = useState(false)
 
     const handleDelete = async (): Promise<void> => {
@@ -59,7 +59,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
             removeTabByIdentifier(
                 `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
             )
-                .then((url) => url && push(url))
+                .then((url) => url && navigate(url))
                 .catch(noop)
         }
     }

@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { get, showError, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { NodeDetailTab, TerminalParamsType } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
@@ -50,7 +50,7 @@ const TerminalComponent = ({
     showTerminal,
 }: TerminalComponentProps) => {
     const params = useParams<TerminalParamsType>()
-    const { url } = useRouteMatch()
+    const { pathname } = useLocation()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
@@ -81,7 +81,7 @@ const TerminalComponent = ({
                       appName: appDetails.appName,
                       templateType: appDetails.fluxTemplateType ?? null,
                   })
-        const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
+
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
@@ -125,13 +125,13 @@ const TerminalComponent = ({
     }
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.TERMINAL, url)
+        selectedTab(NodeDetailTab.TERMINAL, pathname)
         handleAbort()
     }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
         if (showTerminal) {
-            selectedTab(NodeDetailTab.TERMINAL, `${url}/terminal`)
+            selectedTab(NodeDetailTab.TERMINAL, `${pathname}/terminal`)
         }
     }, [showTerminal])
 

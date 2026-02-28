@@ -26,6 +26,7 @@ import {
     getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
     DOCUMENTATION,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
@@ -134,8 +135,11 @@ export default function ChartValues() {
     )
 }
 
+const pagePathPattern = `${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`
+
 const Header = ({ appStoreApplicationName, name }) => {
     const { breadcrumbs } = useBreadcrumb(
+        pagePathPattern,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
@@ -166,7 +170,7 @@ const Header = ({ appStoreApplicationName, name }) => {
     const renderChartValueBreadcrumbs = () => {
         return (
             <div className="flex left">
-                <BreadCrumb breadcrumbs={updatedBreadcrumbs} sep="/" />
+                <BreadCrumb breadcrumbs={updatedBreadcrumbs} sep="/" path={pagePathPattern} />
             </div>
         )
     }

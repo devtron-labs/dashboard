@@ -25,8 +25,6 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-
 import { useAppContext } from '../../common'
 import { EnvApp, EnvAppList, EnvironmentLinkProps, EnvironmentsListViewType } from '../AppGroup.types'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
@@ -50,7 +48,7 @@ const EnvironmentLink = ({
     return (
         <NavLink
             data-testid={`${namespace}-click-on-env`}
-            to={`${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${environmentId}`}
+            to={`../${environmentId}`}
             data-noapp={!appCount}
             onClick={handleOnLinkRedirection}
         >

@@ -7,9 +7,8 @@ import {
     ComponentSizeType,
     getComponentSpecificThemeClass,
     Icon,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { URLS } from '@Config/routes'
 
 export const UserPermissionsTooltipContent = ({ onClose }: { onClose: () => void }) => (
     <div className="flexbox-col dc__gap-12 p-16 bcn-8 br-8">
@@ -41,7 +40,7 @@ export const UserPermissionsTooltipContent = ({ onClose }: { onClose: () => void
                 text="Take me there"
                 fullWidth
                 linkProps={{
-                    to: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
+                    to: ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS,
                 }}
             />
         </div>

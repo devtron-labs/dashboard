@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
 import {
     DynamicDataTableRowType,
     GenericEmptyStateType,
@@ -29,8 +27,6 @@ import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDat
 import { HostURLConfig } from '@Services/service.types'
 
 import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
-
-export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
 
 export interface NotifierState {
     code: number

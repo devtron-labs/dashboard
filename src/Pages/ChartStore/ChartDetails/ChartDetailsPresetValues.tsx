@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { generatePath, useRouteMatch } from 'react-router-dom'
+import { generatePath, useParams } from 'react-router-dom'
 
 import {
     APIResponseHandler,
@@ -27,6 +27,7 @@ import {
     FiltersTypeEnum,
     Icon,
     PaginationEnum,
+    ROUTER_URLS,
     Table,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -66,10 +67,7 @@ export const ChartDetailsPresetValues = () => {
     const [deletePresetValue, setDeletePresetValue] = useState<ChartValuesTemplateDTO | null>(null)
 
     // HOOKS
-    const {
-        path,
-        params: { chartId },
-    } = useRouteMatch<ChartDetailsRouteParams>()
+    const { chartId } = useParams<ChartDetailsRouteParams>()
 
     // ASYNC CALLS
     const [
@@ -131,7 +129,9 @@ export const ChartDetailsPresetValues = () => {
                                 'Create reusable Helm config templates for different scenarios. Set them up once and let your team deploy with confidence.',
                             imgName: 'img-code',
                             isButtonAvailable: true,
-                            renderButton: renderEmptyStateButton(generatePath(path, { chartId })),
+                            renderButton: renderEmptyStateButton(
+                                generatePath(`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId`, { chartId }),
+                            ),
                         },
                         noRowsForFilterConfig: {
                             title: 'No results',

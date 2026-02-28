@@ -15,7 +15,7 @@
  */
 
 import { ChangeEvent, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import {
     API_STATUS_CODES,
@@ -25,6 +25,7 @@ import {
     Icon,
     InfoBlock,
     noop,
+    ROUTER_URLS,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -62,7 +63,7 @@ export const CDStepperContent = ({
     const [gitopsConflictLoading, setGitopsConflictLoading] = useState(false)
 
     // HOOKS
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     // CONSTANTS
     const { environments, selectedEnvironment, deploymentAppType } = ciCdPipeline.cd
@@ -108,7 +109,9 @@ export const CDStepperContent = ({
             await getGitOpsRepoConfig(+appId)
 
             setGitopsConflictLoading(false)
-            push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+            navigate(
+                `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })}/${URLS.APP_GITOPS_CONFIG}`,
+            )
         } catch (err) {
             setGitopsConflictLoading(false)
             if (err.code === API_STATUS_CODES.CONFLICT) {

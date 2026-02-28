@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { generatePath, useHistory, useParams } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
 import {
     EditableTextArea,
@@ -26,8 +26,8 @@ import {
     InfoIconTippy,
     InstallationClusterConfigType,
     noop,
-    RESOURCE_BROWSER_ROUTES,
     ResourceKindType,
+    ROUTER_URLS,
     showError,
     StatusComponent,
     StatusType,
@@ -61,6 +61,8 @@ const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'funct
 const ClusterAddOns = importComponentFromFELibrary('ClusterAddOns', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
 const getInstallationClusterConfig = importComponentFromFELibrary('getInstallationClusterConfig', null, 'function')
+
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 /* TODO: move into utils */
 const metricsApiTippyContent = () => (
@@ -115,7 +117,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
 
     const { isSuperAdmin } = useMainContext()
 
-    const history = useHistory()
+    const navigate = useNavigate()
     const [clusterConfig, setClusterConfig] = useState<InstallationClusterConfigType | null>(null)
 
     const requestAbortControllerRef = useRef(new AbortController())
@@ -211,7 +213,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
             kind: 'node',
             group: K8S_EMPTY_GROUP,
         })}?${queryParam}=${encodeURIComponent(filterText)}`
-        history.push(newUrl)
+        navigate(newUrl)
     }
 
     const renderClusterError = (): JSX.Element => {
@@ -338,7 +340,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
             [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion,
         })
 
-        history.push(URL)
+        navigate(URL)
     }
 
     const creationPrefix = clusterConfig ? 'Created' : 'Added'

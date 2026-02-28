@@ -33,8 +33,9 @@ import {
     InfoBlock,
     ButtonVariantType,
     MODES,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import yamlJsParser from 'yaml'
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
@@ -59,7 +60,6 @@ import { BuildCDProps } from './types'
 import { MigrateToDevtron } from './MigrateToDevtron'
 import TriggerTypeRadio from './TriggerTypeRadio'
 import { DEPLOYMENT_APP_TYPE_LABEL } from './MigrateToDevtron/constants'
-import { MigrateToDevtronProps } from './MigrateToDevtron/types'
 import { CDPipelineDeploymentAppType, SourceMaterialsSelector } from '@Pages/App/Configurations'
 
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -103,7 +103,7 @@ export default function BuildCD({
     } = useContext(pipelineContext)
 
     const validationRules = new ValidationRules()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [gitopsConflictLoading, setGitopsConflictLoading] = useState(false)
     let { cdPipelineId } = useParams<{
@@ -259,7 +259,7 @@ export default function BuildCD({
         setGitopsConflictLoading(true)
         getGitOpsRepoConfig(+appId)
             .then(() => {
-                history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+                navigate(`${(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })}/${URLS.APP_GITOPS_CONFIG}`)
             })
             .catch((err) => {
                 if (err.code === 409) {

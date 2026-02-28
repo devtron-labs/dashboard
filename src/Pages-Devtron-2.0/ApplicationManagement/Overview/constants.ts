@@ -1,6 +1,5 @@
-import { getUrlWithSearchParams, MetricsInfoCardProps, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { getUrlWithSearchParams, MetricsInfoCardProps, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import { TIME_WINDOW } from '@PagesDevtron2.0/Shared/types'
 
 import { GlanceMetricKeys, WorkflowOverviewMetricKeys } from './types'
@@ -12,19 +11,19 @@ export const GLANCE_METRICS_CARDS_CONFIG: Record<
     [GlanceMetricKeys.PROJECTS]: {
         iconName: 'ic-bg-project',
         metricTitle: 'Projects',
-        redirectionLink: COMMON_URLS.GLOBAL_CONFIG_PROJECTS,
+        redirectionLink: ROUTER_URLS.GLOBAL_CONFIG_PROJECTS,
         tooltipContent: 'Number of projects',
     },
     [GlanceMetricKeys.YOUR_APPLICATIONS]: {
         iconName: 'ic-devtron-app',
         metricTitle: 'Devtron Applications',
-        redirectionLink: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
+        redirectionLink: ROUTER_URLS.DEVTRON_APP_LIST,
         tooltipContent: 'Micro-services deployed using Kubernetes-native CI/CD with Devtron.',
     },
     [GlanceMetricKeys.ENVIRONMENTS]: {
         iconName: 'ic-bg-environment',
         metricTitle: 'Environments',
-        redirectionLink: getUrlWithSearchParams(URLS.GLOBAL_CONFIG_CLUSTER, {
+        redirectionLink: getUrlWithSearchParams(ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV, {
             selectedTab: 'environments',
         }),
         tooltipContent: 'Environments created on Devtron',

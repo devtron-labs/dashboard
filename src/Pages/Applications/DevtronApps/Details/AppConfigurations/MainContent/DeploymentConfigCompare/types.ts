@@ -16,7 +16,7 @@
 
 import { getAppEnvDeploymentConfig, TemplateListDTO } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AppEnvDeploymentConfigQueryParamsType } from '../../AppConfig.types'
+import { AppEnvDeploymentConfigQueryParamsType, DeploymentConfigCompareProps } from '../../AppConfig.types'
 import { getManifestData } from './service.utils'
 
 type ManifestComparisonDataType = {
@@ -40,4 +40,10 @@ export interface SetIdentifierIdBasedOnConfigurationProps {
     identifierId: AppEnvDeploymentConfigQueryParamsType['identifierId']
     isManifestView: boolean
     previousDeployments: TemplateListDTO[]
+}
+
+export type DeploymentConfigCompareWrapperProps = Omit<DeploymentConfigCompareProps, 'getNavItemHref' | 'goBackURL'> & {
+    routePath: string
+    baseGoBackURL: string
+    appendEnvOverridePath?: boolean
 }

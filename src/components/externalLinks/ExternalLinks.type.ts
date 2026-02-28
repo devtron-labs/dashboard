@@ -227,8 +227,7 @@ export interface AddLinkButtonProps {
 }
 
 export interface ExternalLinkListProps
-    extends Pick<ExternalLinksProps, 'isAppConfigView'>,
-        Pick<AddExternalLinkType, 'monitoringTools'> {
+    extends Pick<ExternalLinksProps, 'isAppConfigView'>, Pick<AddExternalLinkType, 'monitoringTools'> {
     filteredExternalLinks: ExternalLink[]
     setSelectedLink: React.Dispatch<React.SetStateAction<ExternalLink>>
     setShowDeleteDialog: React.Dispatch<React.SetStateAction<boolean>>

@@ -14,38 +14,44 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
-import { URLS } from '../../config'
-import EnvironmentsList from './List/EnvironmentsList'
+import { useMemo, useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+
+import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AppContext } from '../common'
+import EnvironmentsList from './List/EnvironmentsList'
 import { AppGroupAdminType } from './AppGroup.types'
 import AppGroupDetailsRoute from './AppGroupDetailsRoute'
 
-export default function AppGroupRoute({ isSuperAdmin }: AppGroupAdminType) {
-    const { path } = useRouteMatch()
+const APP_GROUP_ROUTES = BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP
+
+const AppGroupRoute = ({ isSuperAdmin }: AppGroupAdminType) => {
     const [environmentId, setEnvironmentId] = useState(null)
     const [currentEnvironmentName, setCurrentEnvironmentName] = useState<string>('')
 
+    const contextValue = useMemo(
+        () => ({
+            environmentId,
+            setEnvironmentId,
+            currentEnvironmentName,
+            setCurrentEnvironmentName,
+        }),
+        [environmentId, currentEnvironmentName],
+    )
+
     return (
-        <AppContext.Provider
-            value={{ environmentId, setEnvironmentId, currentEnvironmentName, setCurrentEnvironmentName }}
-        >
-            <Switch>
-                <Route path={`${path}/${URLS.APP_LIST}`}>
-                    <EnvironmentsList isSuperAdmin={isSuperAdmin} />
-                </Route>
+        <AppContext.Provider value={contextValue}>
+            <Routes>
+                <Route path={APP_GROUP_ROUTES.LIST} element={<EnvironmentsList isSuperAdmin={isSuperAdmin} />} />
                 <Route
-                    path={`${path}/:envId`}
-                    render={({ match }) => (
-                        <AppGroupDetailsRoute
-                            isSuperAdmin={isSuperAdmin}
-                            key={`environment-${match.params.envId}-route`}
-                        />
-                    )}
+                    path={`${APP_GROUP_ROUTES.DETAIL.ROOT}/*`}
+                    element={<AppGroupDetailsRoute isSuperAdmin={isSuperAdmin} />}
                 />
-                <Redirect to={`${path}/${URLS.APP_LIST}`} />
-            </Switch>
+                <Route path="*" element={<Navigate to={APP_GROUP_ROUTES.LIST} />} />
+            </Routes>
         </AppContext.Provider>
     )
 }
+
+export default AppGroupRoute

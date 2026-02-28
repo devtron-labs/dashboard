@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { generatePath } from 'react-router-dom'
 
@@ -26,16 +26,16 @@ export function getCDPipelineURL(
     cdPipelineId: string = null,
     shouldComputeCompleteURL: boolean = false,
 ) {
-    const prefix = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
     const suffix = `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
         cdPipelineId ? `/${cdPipelineId}` : ''
     }`
 
-    if (shouldComputeCompleteURL) {
-        return `${prefix}${suffix}`
+    if (!shouldComputeCompleteURL) {
+        return suffix
     }
 
-    return suffix
+    const prefix = `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })}/${URLS.APP_WORKFLOW_CONFIG}/`
+    return `${prefix}${suffix}`
 }
 
 export function getCIPipelineURL(
@@ -51,10 +51,12 @@ export function getCIPipelineURL(
     if (addPrefix) {
         prefixURL = `${
             isTemplateView
-                ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
+                ? generatePath(ROUTER_URLS.APP_TEMPLATE_DETAIL, {
                       appId,
                   })
-                : `${isJobView ? CommonURLS.AUTOMATION_AND_ENABLEMENT_JOB : CommonURLS.APPLICATION_MANAGEMENT_APP}/${appId}`
+                : generatePath(isJobView ? ROUTER_URLS.JOB_DETAIL.ROOT : ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT, {
+                      appId,
+                  })
         }/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
@@ -74,7 +76,7 @@ export function getLinkedCIPipelineURL(
 ) {
     const suffix = `${workflowId}/linked-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
     if (addPrefix) {
-        return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit/workflow/${suffix}`
+        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId: String(appId) })}/workflow/${suffix}`
     }
 
     return suffix

@@ -4,11 +4,13 @@ import {
     DOCUMENTATION,
     getApplicationManagementBreadcrumb,
     PageHeader,
+    ROUTER_URLS,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const OverviewPageHeader = () => {
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.APPLICATION_MANAGEMENT_OVERVIEW,
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
@@ -20,7 +22,9 @@ const OverviewPageHeader = () => {
         [],
     )
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => (
+        <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.APPLICATION_MANAGEMENT_OVERVIEW} />
+    )
 
     return <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.APP_MANAGEMENT} />
 }

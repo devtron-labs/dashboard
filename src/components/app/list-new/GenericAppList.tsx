@@ -31,9 +31,9 @@ import {
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
     InfrastructureManagementAppListType,
-    URLS as CommonURLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { getArgoInstalledExternalApps } from './AppListService'
 import { LazyImage } from '../../common'
@@ -231,9 +231,18 @@ const GenericAppList = ({
 
     const buildAppDetailUrl = (app: GenericAppType): string => {
         if (isArgoCDAppList) {
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
+            return generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_ARGO_APP, {
+                clusterId: app.clusterId,
+                appName: app.appName,
+                namespace: app.namespace,
+            })
         }
-        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
+        return generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_FLUX_APP, {
+            clusterId: app.clusterId,
+            appName: app.appName,
+            namespace: app.namespace,
+            templateType: app.fluxAppDeploymentType,
+        })
     }
 
     function renderAppListHeader() {
@@ -375,7 +384,7 @@ const GenericAppList = ({
 
     function askToConnectAClusterForNoResult() {
         const handleButton = () => (
-            <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
+            <Link to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}>
                 <button type="button" className="cta flex">
                     {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
                 </button>

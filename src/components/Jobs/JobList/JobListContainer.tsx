@@ -15,11 +15,9 @@
  */
 
 import { Reducer, useEffect, useMemo, useReducer, useRef } from 'react'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate } from 'react-router-dom'
 
-import { FilterChips, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-
-import { URLS } from '@Config/routes'
+import { FilterChips, ROUTER_URLS, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 
 import { JobListViewType } from '../Constants'
 import { getJobs } from '../Service'
@@ -45,16 +43,14 @@ const JobListContainer = ({
     handleSearch,
     jobListCount,
     filtersLoading,
-    openJobCreateModel,
     setJobCount,
     updateSearchParams,
     getLabelFromValue,
     changePage,
     changePageSize,
 }: JobListProps) => {
-    const match = useRouteMatch()
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const { searchKey, sortBy, sortOrder, offset, pageSize, status, environment, project } = filterConfig
 
@@ -171,7 +167,7 @@ const JobListContainer = ({
     }
 
     const handleEditJob = (jobId: number): void => {
-        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${jobId}/edit`)
+        navigate(generatePath(ROUTER_URLS.JOB_DETAIL.CONFIGURATIONS, { appId: String(jobId) }))
     }
 
     return (
@@ -199,9 +195,9 @@ const JobListContainer = ({
             )}
             <JobListView
                 {...state}
-                match={match}
                 location={location}
-                history={history}
+                navigate={navigate}
+                params={{}}
                 expandRow={expandRow}
                 closeExpandedRow={closeExpandedRow}
                 handleSorting={handleSorting}
@@ -210,7 +206,6 @@ const JobListContainer = ({
                 changePage={changePage}
                 changePageSize={changePageSize}
                 jobListCount={jobListCount}
-                openJobCreateModel={openJobCreateModel}
                 toggleExpandAllRow={toggleExpandAllRow}
             />
         </>

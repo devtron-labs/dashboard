@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import moment from 'moment'
-import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, Link, useNavigate, useLocation, useParams } from 'react-router-dom'
 import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
@@ -29,13 +29,13 @@ import {
     EditableTextArea,
     ToastManager,
     ToastVariantType,
-    URLS as CommonUrls,
     AppStatus,
     StatusType,
     SegmentedControl,
     Button,
     ComponentSizeType,
     SegmentType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -68,7 +68,7 @@ type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
     const searchParams = new URLSearchParams(location.search)
     const activeTab = searchParams.get(TAB_SEARCH_KEY) as AvailableTabs
     const isUpdateDependencyModalOpen =
@@ -101,7 +101,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         const _searchParams = new URLSearchParams({
             [TAB_SEARCH_KEY]: selectedTab,
         })
-        history.replace({ search: _searchParams.toString() })
+        navigate({ search: _searchParams.toString() }, { replace: true })
     }
 
     const toggleUpdateDependencyModal = () => {
@@ -110,7 +110,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         } else {
             searchParams.set(MODAL_STATE.key, MODAL_STATE.value)
         }
-        history.replace({ search: searchParams.toString() })
+        navigate({ search: searchParams.toString() }, { replace: true })
     }
 
     const handleEditDependencyClick = () => {
@@ -126,7 +126,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         // add a default tab if not set
         if (!activeTab || !Object.values(OVERVIEW_TABS).includes(activeTab)) {
             searchParams.set(TAB_SEARCH_KEY, OVERVIEW_TABS.ABOUT)
-            history.replace({ search: searchParams.toString() })
+            navigate({ search: searchParams.toString() }, { replace: true })
         }
     }, [searchParams])
 
@@ -295,7 +295,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                 <span>{chartUsed.appStoreChartName}/</span>
                                 <Link
                                     className="dc__ellipsis-right"
-                                    to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}
+                                    to={`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/${chartUsed.appStoreChartId}`}
                                 >
                                     {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
                                 </Link>
@@ -345,8 +345,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created from template</div>
                             <Link
-                                to={generatePath(CommonUrls.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
-                                    appId: templateConfig.id,
+                                to={generatePath(ROUTER_URLS.APP_TEMPLATE_DETAIL, {
+                                    appId: String(templateConfig.id),
                                 })}
                                 className="flexbox dc__gap-8 dc__w-fit-content"
                                 target="_blank"
@@ -422,7 +422,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <div key={jobPipeline.ciPipelineID} className="flex dc__content-start pr-16 pl-16">
                         <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
-                                to={`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${appId}/ci-details/${jobPipeline.ciPipelineID}/`}
+                                to={`${generatePath(ROUTER_URLS.JOB_DETAIL.CI_DETAILS, { appId })}/${jobPipeline.ciPipelineID}`}
                                 className="fs-13 dc__ellipsis-right"
                             >
                                 {jobPipeline.ciPipelineName}

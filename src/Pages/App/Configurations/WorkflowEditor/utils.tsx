@@ -21,10 +21,9 @@ import {
     DeploymentAppTypes,
     MaterialType,
     PipelineFormType,
+    ROUTER_URLS,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { URLS } from '@Config/routes'
 
 const gitOpsRepoNotConfiguredWithOptionsHidden =
     'Deployment via GitOps requires a repository to save deployment manifests. Please configure and try again.'
@@ -137,7 +136,7 @@ export const getCIPipelineBranchSelectorFooterConfig = (
             value: (
                 <span>
                     Select git host for this git account to view all supported options.&nbsp;
-                    <Link className="anchor" to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS}>
+                    <Link className="anchor" to={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GIT_ACCOUNTS}>
                         Select git host
                     </Link>
                 </span>

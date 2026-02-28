@@ -45,8 +45,7 @@ export interface UploadButtonProps {
 }
 
 export interface DeploymentChartsListHeaderProps
-    extends UploadButtonProps,
-        Pick<UseUrlFiltersReturnType<never>, 'handleSearch' | 'searchKey'> {}
+    extends UploadButtonProps, Pick<UseUrlFiltersReturnType<never>, 'handleSearch' | 'searchKey'> {}
 
 export interface DownloadChartButtonProps extends Pick<DeploymentChartType, 'name' | 'versions'> {}
 

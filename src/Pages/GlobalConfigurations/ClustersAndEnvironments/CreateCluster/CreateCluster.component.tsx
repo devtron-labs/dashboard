@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
-import { generatePath, Prompt, Redirect, useHistory, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { generatePath, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import {
     Button,
@@ -27,12 +27,12 @@ import {
     Drawer,
     Icon,
     ModalSidebarPanel,
+    ROUTER_URLS,
     stopPropagation,
     VirtualClusterSidebar,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
 import ClusterForm from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterForm/ClusterForm'
 import EnterpriseTrialDialog from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/EnterpriseTrialDialog'
 
@@ -69,21 +69,31 @@ const VirtualClusterForm = importComponentFromFELibrary(
     'function',
 )
 
-const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: CreateClusterProps) => {
+const CreateCluster = ({ handleReloadClusterList }: CreateClusterProps) => {
     const { type } = useParams<CreateClusterParams>()
-    const { push } = useHistory()
+    const navigate = useNavigate()
+
+    const handleClose = () => {
+        navigate('..')
+    }
+
+    useEffect(() => {
+        if (!type || !Object.values(CreateClusterTypeEnum).includes(type)) {
+            handleClose()
+        }
+    }, [])
 
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
 
     const handleRedirectToClusterList = () => {
-        push(URLS.GLOBAL_CONFIG_CLUSTER)
+        navigate('./')
         handleReloadClusterList()
     }
 
-    const handleModalClose = handleRedirectOnModalClose ?? handleRedirectToClusterList
+    const handleModalClose = handleClose ?? handleRedirectToClusterList
 
     const handleRedirectToClusterInstallationStatus = (installationId: string) => {
-        push(generatePath(URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER, { installationId }))
+        navigate(generatePath(ROUTER_URLS.RESOURCE_BROWSER.INSTALLATION_CLUSTER, { installationId }))
     }
 
     const renderContent = () => {
@@ -132,7 +142,7 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                     />
                 )
             default:
-                return <Redirect to={URLS.GLOBAL_CONFIG_CLUSTER} />
+                return <Navigate to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV} />
         }
     }
 
@@ -163,8 +173,6 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                 </header>
 
                 {renderContent()}
-
-                <Prompt when={apiCallInProgress} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
             </div>
         </Drawer>
     )

@@ -15,7 +15,7 @@
  */
 
 import { SyntheticEvent, useMemo, useState } from 'react'
-import { generatePath, useHistory, useLocation } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -28,6 +28,7 @@ import {
     ERROR_STATUS_CODE,
     GenericSectionErrorState,
     Icon,
+    ROUTER_URLS,
     SortableTableHeaderCell,
     SortingOrder,
     stringComparatorBySortOrder,
@@ -78,7 +79,7 @@ const ClustersEnvironmentsList = ({
         !isVirtualCluster && showUnmappedEnvs,
     )
 
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { search } = useLocation()
 
     const mappedNamespacesMap = useMemo(
@@ -145,10 +146,10 @@ const ClustersEnvironmentsList = ({
         if (namespace) {
             localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify({ namespace }))
         }
-        push({
-            pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId`, {
-                clusterId,
-            }),
+        navigate({
+            pathname: `${generatePath(`${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}${URLS.CREATE_ENVIRONMENT}/:clusterId`, {
+                clusterId: String(clusterId),
+            })}`,
             search,
         })
     }

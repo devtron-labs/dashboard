@@ -16,12 +16,11 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { generatePath, Prompt, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
     API_STATUS_CODES,
-    checkIfPathIsMatching,
     CM_SECRET_STATE,
     CMSecretComponentType,
     CMSecretPayloadType,
@@ -49,6 +48,7 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
     useAsync,
     useForm,
     UseFormErrorHandler,
@@ -127,11 +127,11 @@ export const ConfigMapSecretContainer = ({
     reloadEnvironments,
     isExceptionUser,
     isTemplateView,
+    routePath,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
-    const location = useLocation()
-    const history = useHistory()
-    const { path, params } = useRouteMatch<{ appId: string; envId: string; name: string }>()
+    const navigate = useNavigate()
+    const params = useParams<{ appId: string; envId: string; name: string }>()
     const { appId, envId, name } = params
 
     // SEARCH PARAMS
@@ -231,7 +231,7 @@ export const ConfigMapSecretContainer = ({
     const shouldPrompt = !isCreateState && formState.isDirty
 
     // PROMPT FOR UNSAVED CHANGES
-    usePrompt({ shouldPrompt })
+    usePrompt({ shouldPrompt, message: UNSAVED_CHANGES_PROMPT_MESSAGE })
 
     useEffect(() => {
         abortControllerRef.current = new AbortController()
@@ -543,13 +543,14 @@ export const ConfigMapSecretContainer = ({
     }, [isLoading, cmSecretStateLabel, draftData])
 
     const redirectURLToValidPage = () => {
-        history.replace(
-            generatePath(path, {
+        navigate(
+            generatePath(routePath, {
                 ...params,
                 appId,
                 envId,
                 name: envConfigData.length ? envConfigData[envConfigData.length - 1].name : null,
             }),
+            { replace: true },
         )
     }
 
@@ -579,11 +580,11 @@ export const ConfigMapSecretContainer = ({
         // RESET STATES
         resetToInitialState()
 
-        fetchEnvConfig(+envId || -1)
-
-        if (isCreateState) {
-            history.push(generatePath(path, { ...params, appId, envId, name: configName }))
-        }
+        fetchEnvConfig(+envId || -1, () => {
+            if (isCreateState) {
+                navigate(generatePath(routePath, { ...params, appId, envId, name: configName }))
+            }
+        })
     }
 
     const handleActionWithFormValidation =
@@ -654,7 +655,7 @@ export const ConfigMapSecretContainer = ({
     const handleViewInheritedConfig = () => {
         if (isJob) {
             // Redirecting to the base config URL, since inherited tab is hidden
-            history.push(baseConfigurationURL)
+            navigate(baseConfigurationURL)
         } else {
             handleTabChange(ConfigHeaderTabType.INHERITED)
         }
@@ -1040,6 +1041,7 @@ export const ConfigMapSecretContainer = ({
                 parentName={parentName}
                 shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                 handleNoPublishedStateRedirectClick={handleNoPublishedStateRedirectClick}
+                routePath={routePath}
             />
         ) : (
             <ConfigMapSecretForm
@@ -1111,6 +1113,7 @@ export const ConfigMapSecretContainer = ({
                         updateCMSecret={updateCMSecret}
                         formData={resolvedFormData ?? formData}
                         isFormDirty={formState.isDirty}
+                        routePath={routePath}
                     />
                 )
             default:
@@ -1138,7 +1141,13 @@ export const ConfigMapSecretContainer = ({
 
     const renderContent = () => {
         if (isEmptyState) {
-            return <ConfigMapSecretNullState nullStateType="NO_CM_CS" componentType={componentType} />
+            return (
+                <ConfigMapSecretNullState
+                    nullStateType="NO_CM_CS"
+                    componentType={componentType}
+                    routePath={routePath}
+                />
+            )
         }
 
         if (isLoading) {
@@ -1246,62 +1255,59 @@ export const ConfigMapSecretContainer = ({
     }
 
     return (
-        <>
-            <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
-            <div className="configmap-secret-container flexbox w-100 dc__content-space h-100">
-                <div className="p-8 flexbox flex-grow-1 mw-none">
-                    <div
-                        className={`br-4 dc__overflow-hidden h-100 bg__primary flex-grow-1 ${isExpressEditView ? 'border__primary-warning' : 'border__primary'}`}
-                    >
-                        {renderContent()}
-                    </div>
+        <div className="configmap-secret-container flexbox w-100 dc__content-space h-100">
+            <div className="p-8 flexbox flex-grow-1 mw-none">
+                <div
+                    className={`br-4 dc__overflow-hidden h-100 bg__primary flex-grow-1 ${isExpressEditView ? 'border__primary-warning' : 'border__primary'}`}
+                >
+                    {renderContent()}
                 </div>
-                {renderDeleteModal()}
-                {SaveChangesModal && showDraftSaveModal && (
-                    <SaveChangesModal
-                        appId={+appId}
-                        envId={envId ? +envId : -1}
-                        envName={envName}
-                        resourceType={componentType}
-                        resourceName={draftPayload.configData[0].name}
-                        prepareDataToSave={() => draftPayload}
-                        handleClose={handleSaveChangesModalClose}
-                        latestDraft={draftData}
-                        reload={reloadSaveChangesModal}
-                        showAsModal
-                        isCreate={isCreateState}
-                        showExpressCreate={isExceptionUser && isCreateState}
-                        expressCreateConfig={{
-                            isLoading: isSubmitting,
-                            onClick: expressEditSubmitHandler,
-                        }}
-                    />
-                )}
-                {ExpressEditConfirmationModal && showExpressEditConfirmationModal && (
-                    <ExpressEditConfirmationModal
-                        handleClose={closeExpressEditPublishConfirmationModal}
-                        handleSave={expressEditSubmitHandler}
-                        isLoading={isSubmitting}
-                    />
-                )}
-                {DraftComments && showComments && draftData && (
-                    <DraftComments
-                        draftId={draftData.draftId}
-                        draftVersionId={draftData.draftVersionId}
-                        toggleDraftComments={toggleDraftComments}
-                        handleUpdateAreCommentsPresent={setAreCommentsPresent}
-                    />
-                )}
-                {window._env_.ENABLE_SCOPED_VARIABLES && (
-                    <FloatingVariablesSuggestions
-                        appId={appId}
-                        envId={envId}
-                        clusterId={clusterId}
-                        isTemplateView={isTemplateView}
-                        boundaryGap={CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP}
-                    />
-                )}
             </div>
-        </>
+            {renderDeleteModal()}
+            {SaveChangesModal && showDraftSaveModal && (
+                <SaveChangesModal
+                    appId={+appId}
+                    envId={envId ? +envId : -1}
+                    envName={envName}
+                    resourceType={componentType}
+                    resourceName={draftPayload.configData[0].name}
+                    prepareDataToSave={() => draftPayload}
+                    handleClose={handleSaveChangesModalClose}
+                    latestDraft={draftData}
+                    reload={reloadSaveChangesModal}
+                    showAsModal
+                    isCreate={isCreateState}
+                    showExpressCreate={isExceptionUser && isCreateState}
+                    expressCreateConfig={{
+                        isLoading: isSubmitting,
+                        onClick: expressEditSubmitHandler,
+                    }}
+                />
+            )}
+            {ExpressEditConfirmationModal && showExpressEditConfirmationModal && (
+                <ExpressEditConfirmationModal
+                    handleClose={closeExpressEditPublishConfirmationModal}
+                    handleSave={expressEditSubmitHandler}
+                    isLoading={isSubmitting}
+                />
+            )}
+            {DraftComments && showComments && draftData && (
+                <DraftComments
+                    draftId={draftData.draftId}
+                    draftVersionId={draftData.draftVersionId}
+                    toggleDraftComments={toggleDraftComments}
+                    handleUpdateAreCommentsPresent={setAreCommentsPresent}
+                />
+            )}
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <FloatingVariablesSuggestions
+                    appId={appId}
+                    envId={envId}
+                    clusterId={clusterId}
+                    isTemplateView={isTemplateView}
+                    boundaryGap={CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP}
+                />
+            )}
+        </div>
     )
 }

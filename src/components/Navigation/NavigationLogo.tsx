@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 
-import { getRandomColor, Icon, SERVER_MODE, URLS, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { getRandomColor, Icon, ROUTER_URLS, SERVER_MODE, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import TextLogo from '@Icons/ic-nav-devtron.svg'
 
@@ -38,8 +38,8 @@ export const NavigationLogo = () => {
             className="flex"
             to={
                 serverMode === SERVER_MODE.EA_ONLY
-                    ? URLS.INFRASTRUCTURE_MANAGEMENT_APP
-                    : URLS.APPLICATION_MANAGEMENT_APP
+                    ? ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM
+                    : ROUTER_URLS.DEVTRON_APP_LIST
             }
         >
             {logoContent}

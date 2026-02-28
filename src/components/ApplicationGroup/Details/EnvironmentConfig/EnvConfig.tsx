@@ -15,15 +15,15 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     BASE_CONFIGURATION_ENV_ID,
-    EnvResourceType,
     GenericEmptyState,
     noop,
     Progressing,
     ResourceIdToResourceApprovalPolicyConfigMapType,
+    ROUTER_URLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -32,7 +32,7 @@ import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { URLS } from '@Config/routes'
 import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
 import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
+import { DeploymentConfigCompareWrapper } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOverride'
 
@@ -45,10 +45,9 @@ const getApprovalPolicyConfigForEnv: (envId: number) => Promise<ResourceIdToReso
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
-    const { path, params } = useRouteMatch<{ envId: string; appId: string }>()
-    const { appId, envId } = params
+    const { appId, envId } = useParams<{ envId: string; appId: string }>()
     const { pathname } = useLocation()
-    const { replace } = useHistory()
+    const navigate = useNavigate()
 
     // ASYNC CALLS
     const [loading, initDataResults] = useAsync(
@@ -131,7 +130,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     useEffect(() => {
         // If the app is unavailable in the current environment, redirect to the app selection page
         if (isAppNotPresentInEnv) {
-            replace(generatePath(path, { ...params, appId: null }))
+            navigate(generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS, { envId }), { replace: true })
         }
     }, [isAppNotPresentInEnv])
 
@@ -144,70 +143,65 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     }
 
     return (
-        <Switch>
-            <Route
-                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-            >
-                {({ match, location }) => {
-                    const basePath = generatePath(path, match.params)
-                    // Used in cm/cs
-                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
-                    const goBackURL =
-                        match.params.resourceType === EnvResourceType.Manifest ||
-                        match.params.resourceType === EnvResourceType.PipelineStrategy
-                            ? basePath
-                            : `${basePath}/${match.params.resourceType}${resourceNamePath}`
-
-                    return (
-                        <DeploymentConfigCompare
+        <Routes>
+            {appId && (
+                <Route
+                    path={`${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                    element={
+                        <DeploymentConfigCompareWrapper
                             type="appGroup"
                             envName={envName}
                             environments={envAppList}
-                            goBackURL={goBackURL}
-                            getNavItemHref={(resourceType, resourceName) =>
-                                `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                            }
+                            routePath={`${ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}/:appId/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                            baseGoBackURL={generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS, { envId })}
                             appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                         />
-                    )
-                }}
-            </Route>
-            <Route>
-                <div className="env-compose deploy-config-collapsible-layout flex-grow-1">
-                    <div
-                        className={`env-compose__nav collapsible-sidebar ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
-                    >
-                        <ApplicationRoute
-                            key={appId}
-                            envAppList={envAppList}
-                            envConfig={envConfig}
-                            fetchEnvConfig={fetchEnvConfig}
-                            appIdToAppApprovalConfigMap={appIdToAppApprovalConfigMap}
-                        />
-                    </div>
-                    {appId ? (
-                        <div className="env-compose__main">
-                            <EnvironmentOverride
-                                appList={envAppList}
-                                environments={[]}
-                                reloadEnvironments={noop}
-                                envName={envName}
+                    }
+                />
+            )}
+            <Route
+                index
+                path="/*"
+                element={
+                    <div className="env-compose deploy-config-collapsible-layout flex-grow-1">
+                        <div
+                            className={`env-compose__nav collapsible-sidebar ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
+                        >
+                            <ApplicationRoute
+                                key={appId}
+                                envAppList={envAppList}
                                 envConfig={envConfig}
                                 fetchEnvConfig={fetchEnvConfig}
-                                onErrorRedirectURL={generatePath(path, { envId })}
-                                appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
-                                isTemplateView={false}
+                                appIdToAppApprovalConfigMap={appIdToAppApprovalConfigMap}
                             />
                         </div>
-                    ) : (
-                        <GenericEmptyState
-                            title="Select an application to view & edit its configurations"
-                            subTitle="You can view and edit configurations for all applications deployed on this environment"
-                        />
-                    )}
-                </div>
-            </Route>
-        </Switch>
+                        {appId ? (
+                            <div className="env-compose__main">
+                                <EnvironmentOverride
+                                    appList={envAppList}
+                                    environments={[]}
+                                    reloadEnvironments={noop}
+                                    envName={envName}
+                                    envConfig={envConfig}
+                                    fetchEnvConfig={fetchEnvConfig}
+                                    onErrorRedirectURL={generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS, {
+                                        envId,
+                                    })}
+                                    appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                                    isTemplateView={false}
+                                    routePath={`${ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}/:appId`}
+                                />
+                            </div>
+                        ) : (
+                            <GenericEmptyState
+                                title="Select an application to view & edit its configurations"
+                                subTitle="You can view and edit configurations for all applications deployed on this environment"
+                            />
+                        )}
+                    </div>
+                }
+            />
+        </Routes>
     )
 }
 

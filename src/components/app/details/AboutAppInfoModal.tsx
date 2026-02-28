@@ -15,23 +15,25 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    VisibleModal,
-    SelectPicker,
-    ToastManager,
-    ToastVariantType,
     ComponentSizeType,
     InfoBlock,
     OptionType,
+    Progressing,
+    SelectPicker,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { AboutAppInfoModalProps } from '../types'
 import { editApp } from '../service'
+import { AboutAppInfoModalProps } from '../types'
 import { projectChangeMessage } from './utils'
 
-export default function AboutAppInfoModal({
+const AboutAppInfoModal = ({
     isLoading,
     appId,
     onClose,
@@ -40,7 +42,7 @@ export default function AboutAppInfoModal({
     fetchingProjects,
     projectsList,
     appType,
-}: AboutAppInfoModalProps) {
+}: AboutAppInfoModalProps) => {
     const [projectsOptions, setProjectsOption] = useState<OptionType<number, string>[]>([])
     const [selectedProject, setSelectedProject] = useState<OptionType<number, string>>()
     const [submitting, setSubmitting] = useState(false)
@@ -59,41 +61,37 @@ export default function AboutAppInfoModal({
         }
     }, [appMetaInfo, fetchingProjects, projectsList])
 
-    const renderAboutModalInfoHeader = (): JSX.Element => {
-        return (
-            <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
-                <h2 className="fs-16 cn-9 fw-6 m-0">Change project</h2>
-                <Close className="icon-dim-20 cursor" onClick={onClose} />
-            </div>
-        )
-    }
+    const renderAboutModalInfoHeader = (): JSX.Element => (
+        <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
+            <h2 className="fs-16 cn-9 fw-6 m-0">Change project</h2>
+            <Close className="icon-dim-20 cursor" onClick={onClose} />
+        </div>
+    )
 
     const handleProjectSelection = (selected: OptionType<number, string>): void => {
         setSelectedProject(selected)
     }
 
-    const renderProjectSelect = (): JSX.Element => {
-        return (
-            <SelectPicker
-                label="Project"
-                required
-                inputId="overview-project-menu-list"
-                name="overview-project-menu-list"
-                classNamePrefix="overview-project-menu-list"
-                options={projectsOptions}
-                value={selectedProject}
-                onChange={handleProjectSelection}
-                size={ComponentSizeType.large}
-            />
-        )
-    }
+    const renderProjectSelect = (): JSX.Element => (
+        <SelectPicker
+            label="Project"
+            required
+            inputId="overview-project-menu-list"
+            name="overview-project-menu-list"
+            classNamePrefix="overview-project-menu-list"
+            options={projectsOptions}
+            value={selectedProject}
+            onChange={handleProjectSelection}
+            size={ComponentSizeType.large}
+        />
+    )
 
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
         setSubmitting(true)
 
         const payload = {
-            id: parseInt(appId),
+            id: +appId,
             teamId: selectedProject.value,
             labels: appMetaInfo.labels,
             description: appMetaInfo.description,
@@ -109,7 +107,7 @@ export default function AboutAppInfoModal({
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
         } catch (err) {
-            if (err['code'] === 403 && appMetaInfo.projectName !== selectedProject.label) {
+            if (err.code === 403 && appMetaInfo.projectName !== selectedProject.label) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: `You don't have the required access to the target project ${selectedProject.label}`,
@@ -123,40 +121,40 @@ export default function AboutAppInfoModal({
         }
     }
 
-    const renderAboutModalInfo = (): JSX.Element => {
-        return (
-            <>
-                <div className="cn-7 p-20">
-                    {renderProjectSelect()}
-                    {selectedProject &&
-                        appMetaInfo &&
-                        selectedProject.label !== appMetaInfo.projectName &&
-                        !isJobOverview && <InfoBlock variant="warning" description={projectChangeMessage()} />}
-                </div>
-                <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
-                    <button
-                        className="cta cancel flex h-36 mr-12"
-                        type="button"
-                        disabled={submitting}
-                        onClick={onClose}
-                        tabIndex={6}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="cta flex h-36"
-                        type="submit"
-                        disabled={submitting}
-                        onClick={handleSaveAction}
-                        tabIndex={5}
-                        data-testid="overview-project-save-button"
-                    >
-                        {submitting ? <Progressing /> : 'Save'}
-                    </button>
-                </div>
-            </>
-        )
-    }
+    const renderAboutModalInfo = (): JSX.Element => (
+        <>
+            <div className="cn-7 p-20">
+                {renderProjectSelect()}
+                {selectedProject &&
+                    appMetaInfo &&
+                    selectedProject.label !== appMetaInfo.projectName &&
+                    !isJobOverview && <InfoBlock variant="warning" description={projectChangeMessage()} />}
+            </div>
+            <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
+                <button
+                    className="cta cancel flex h-36 mr-12"
+                    type="button"
+                    disabled={submitting}
+                    onClick={onClose}
+                    // eslint-disable-next-line jsx-a11y/tabindex-no-positive
+                    tabIndex={6}
+                >
+                    Cancel
+                </button>
+                <button
+                    className="cta flex h-36"
+                    type="submit"
+                    disabled={submitting}
+                    onClick={handleSaveAction}
+                    // eslint-disable-next-line jsx-a11y/tabindex-no-positive
+                    tabIndex={5}
+                    data-testid="overview-project-save-button"
+                >
+                    {submitting ? <Progressing /> : 'Save'}
+                </button>
+            </div>
+        </>
+    )
 
     return (
         <VisibleModal className="app-status__material-modal">
@@ -173,3 +171,5 @@ export default function AboutAppInfoModal({
         </VisibleModal>
     )
 }
+
+export default AboutAppInfoModal

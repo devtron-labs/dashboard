@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { Link, useRouteMatch } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 
@@ -64,7 +64,6 @@ const UserPermissionRow = ({
     showCheckbox,
     userGroups,
 }: UserPermissionRowProps) => {
-    const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const { handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
@@ -137,7 +136,7 @@ const UserPermissionRow = ({
                     </span>
                 ) : (
                     <span className="dc__ellipsis-right">
-                        <Link className="anchor dc__ellipsis-right" to={`${path}/${id}`}>
+                        <Link className="anchor dc__ellipsis-right" to={`${id}`}>
                             {emailId}
                         </Link>
                     </span>
@@ -185,7 +184,7 @@ const UserPermissionRow = ({
                             showAriaLabelInTippy={false}
                             dataTestId={`user-permission__edit-button-${index}`}
                             linkProps={{
-                                to: `${path}/${id}`,
+                                to: `${id}`,
                             }}
                             isOpacityHoverChild
                             size={ComponentSizeType.xs}

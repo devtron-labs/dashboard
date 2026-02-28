@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ChartCheckListProps } from './checklist.type'
-import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../config'
+import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export class ChartCheckList extends Component<ChartCheckListProps, {}> {
     render() {
@@ -32,7 +31,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                 <div className="fs-13">
                     {!this.props.chartChecklist.project && (
                         <NavLink
-                            to={COMMON_URLS.GLOBAL_CONFIG_PROJECTS}
+                            to={ROUTER_URLS.GLOBAL_CONFIG_PROJECTS}
                             className="dc__no-decor  mt-8 flex left"
                             style={{ color: project ? `var(--N500)` : `var(--B500)` }}
                         >
@@ -41,7 +40,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                     )}
                     {!this.props.chartChecklist.environment && (
                         <NavLink
-                            to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}
+                            to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}
                             className="dc__no-decor mt-8 pb-8 flex left"
                             style={{ color: environment ? `var(--N500)` : `var(--B500)` }}
                         >

@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryString } from 'query-string'
 
 import { FilterChips, GroupedFilterSelectPicker, SearchBar, useAsync } from '@devtron-labs/devtron-fe-common-lib'
@@ -45,7 +45,7 @@ const NodeListSearchFilter = ({
     // HOOKS
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const { search } = useLocation()
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     // CONSTANTS
     const isNodeSearchFilterApplied =
@@ -92,7 +92,9 @@ const NodeListSearchFilter = ({
         const queryObject = parseQueryString(search)
         const finalQueryString = stringifyQueryString(callback(queryObject))
 
-        push(`?${finalQueryString}`)
+        navigate({
+            search: finalQueryString,
+        })
     }
 
     const handleSearchFilterChange =

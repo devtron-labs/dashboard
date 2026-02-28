@@ -33,8 +33,9 @@ import {
     getTriggerHistory,
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
+import { useParams, generatePath, useNavigate } from 'react-router-dom'
 import { useAppContext } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
@@ -91,8 +92,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         [pagination, appId, envId],
         !!appId && !!pipelineId,
     )
-    const { path } = useRouteMatch()
-    const { replace } = useHistory()
+    const navigate = useNavigate()
     const { currentEnvironmentName } = useAppContext()
     useInterval(pollHistory, 30000)
 
@@ -101,12 +101,13 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             const selectedPipelineExist = result[0]['value'].result.some((pipeline) => pipeline.id === +pipelineId)
             result[0]['value'].result.sort((a, b) => sortCallback('appName', a, b))
             if (!selectedPipelineExist) {
-                replace(
-                    generatePath(path, {
+                navigate(
+                    generatePath(`${ROUTER_URLS.APP_GROUP_DETAILS.CD_DETAILS}/:appId/:pipelineId`, {
                         envId,
                         appId: result[0]['value'].result[0].appId,
                         pipelineId: result[0]['value'].result[0].id,
                     }),
+                    { replace: true },
                 )
             }
             setPipelineList(result[0]['value'].result)
@@ -134,13 +135,14 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         const triggerIdToSet = getUpdatedTriggerId(cdWorkflows[0].id, queryParam, cdWorkflows)
 
         if (!triggerId && appId && pipelineId) {
-            replace(
-                generatePath(path, {
+            navigate(
+                generatePath(`${ROUTER_URLS.APP_GROUP_DETAILS.CD_DETAILS}/:appId/:pipelineId/:triggerId`, {
                     appId,
                     envId,
                     pipelineId,
-                    triggerId: triggerIdToSet,
+                    triggerId: String(triggerIdToSet),
                 }),
+                { replace: true },
             )
         }
 
@@ -202,13 +204,14 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
         }
         setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
-        replace(
-            generatePath(path, {
+        navigate(
+            generatePath(`${ROUTER_URLS.APP_GROUP_DETAILS.CD_DETAILS}/:appId/:pipelineId/:triggerId`, {
                 appId,
                 envId,
                 pipelineId,
-                triggerId: deploymentHistoryResult.result?.cdWorkflows?.[0]?.id,
+                triggerId: String(deploymentHistoryResult.result?.cdWorkflows?.[0]?.id),
             }),
+            { replace: true },
         )
     }
 
@@ -238,11 +241,8 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
             return (
-                <Route
-                    path={`${path
-                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                        .replace(':appId(\\d+)?', ':appId(\\d+)')}`}
-                >
+                appId &&
+                pipelineId && (
                     <TriggerOutput
                         fullScreenView={fullScreenView}
                         deploymentHistoryResult={deploymentHistoryResult ?? null}
@@ -266,8 +266,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         scrollToTop={scrollToTop}
                         scrollToBottom={scrollToBottom}
                         appName={selectedApp?.appName}
+                        pathPattern={`${ROUTER_URLS.APP_GROUP_DETAILS.CD_DETAILS}/:appId/:pipelineId/:triggerId?`}
                     />
-                </Route>
+                )
             )
         }
         if (!appId) {
@@ -299,6 +300,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         fetchIdData={fetchTriggerIdData}
                         handleViewAllHistory={handleViewAllHistory}
                         renderRunSource={renderRunSource}
+                        path={`${ROUTER_URLS.APP_GROUP_DETAILS.CD_DETAILS}/:appId?/:pipelineId?/:triggerId?`}
                     />
                 </div>
             )}

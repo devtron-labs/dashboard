@@ -24,11 +24,10 @@ interface TLSConfigInputType {
     tlsKeyData: InputFieldState<TLSConfigDTO['tlsKeyData']>
 }
 
-export interface TLSInputType
-    extends Pick<
-        TLSConnectionDTO,
-        'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
-    > {
+export interface TLSInputType extends Pick<
+    TLSConnectionDTO,
+    'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
+> {
     tlsConfig: TLSConfigInputType
     isCADataClearedAfterInitialConfig: boolean
     isTLSCertDataClearedAfterInitialConfig: boolean

@@ -15,7 +15,7 @@
  */
 
 import React, { Component, ReactElement } from 'react'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import {
     Button,
     ButtonStyleType,
@@ -32,6 +32,7 @@ import {
     ToastManager,
     ToastVariantType,
     WorkflowNodeType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { CDNodeProps, CDNodeState } from '../types'
@@ -42,7 +43,6 @@ import {
     TOAST_INFO,
     VIEW_DELETION_STATUS,
 } from '../../../config/constantMessaging'
-import { URLS } from '../../../config'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
 import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'
@@ -232,12 +232,14 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     getAppDetailsURL(): string {
-        const url = `${URLS.APP_DETAILS}/${this.props.environmentId}`
-        return `${this.props.match.url.replace('edit/workflow', url)}`
+        return generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+            appId: this.props.appId,
+            envId: String(this.props.environmentId),
+        })
     }
 
     redirectToAppDetails = () => {
-        this.props.history.push(this.getAppDetailsURL())
+        this.props.navigate(this.getAppDetailsURL())
     }
 
     renderConfirmationModal = (): JSX.Element => {

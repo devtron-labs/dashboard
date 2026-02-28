@@ -30,9 +30,6 @@ import 'xterm/css/xterm.css'
 import './nodeDetailTab.scss'
 
 interface logViewerInterface {
-    rootClassName?: string
-    style?: object
-    indexHidden?: boolean
     highlightString?: string
     subject: Subject<string>
     reset?: boolean

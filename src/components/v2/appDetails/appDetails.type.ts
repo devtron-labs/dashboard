@@ -344,8 +344,10 @@ export type NodeDetailPropsType = LogSearchTermType &
         isExternalApp?: boolean
     }
 
-export interface LogsComponentProps
-    extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'> {
+export interface LogsComponentProps extends Omit<
+    NodeDetailPropsType,
+    'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'
+> {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string
@@ -466,8 +468,7 @@ export interface NodeTreeDetailTabProps {
 }
 
 export interface NodeComponentProps
-    extends Pick<UseTabsReturnType, 'addTab'>,
-        Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
+    extends Pick<UseTabsReturnType, 'addTab'>, Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
@@ -476,8 +477,7 @@ export interface NodeComponentProps
 }
 
 export interface K8ResourceComponentProps
-    extends Pick<NodeComponentProps, 'addTab'>,
-        Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
+    extends Pick<NodeComponentProps, 'addTab'>, Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
     clickedNodes: Map<string, string>
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
     externalLinks: ExternalLink[]
@@ -489,8 +489,10 @@ export interface K8ResourceComponentProps
     handleUpdateK8sResourceTabUrl: (props: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
-export interface AppDetailsComponentType
-    extends Pick<NodeTreeDetailTabProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
+export interface AppDetailsComponentType extends Pick<
+    NodeTreeDetailTabProps,
+    'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'
+> {
     externalLinks?: ExternalLink[]
     monitoringTools?: OptionTypeWithIcon[]
     isExternalApp: boolean
@@ -505,7 +507,9 @@ export interface NodeDeleteComponentType extends Pick<UseTabsReturnType, 'tabs' 
     isDeploymentBlocked: boolean
 }
 
-export interface NodeDetailComponentWrapperProps
-    extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId' | 'updateTabUrl'> {
+export interface NodeDetailComponentWrapperProps extends Pick<
+    UseTabsReturnType,
+    'addTab' | 'markTabActiveById' | 'getTabId' | 'updateTabUrl'
+> {
     nodeDetailComponentProps: Omit<NodeDetailPropsType, 'updateTabUrl'>
 }

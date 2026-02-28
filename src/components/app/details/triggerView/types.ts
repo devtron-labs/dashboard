@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
 import {
     AppConfigProps,
     ArtifactPromotionMetadata,
@@ -33,6 +31,7 @@ import {
     Material,
     PipelineType,
     PolicyKindType,
+    RouterV5Props,
     RuntimePluginVariables,
     TaskErrorObj,
     WorkflowType,
@@ -93,7 +92,7 @@ export interface MaterialInfo {
     type?: string
 }
 
-export interface CIMaterialRouterProps {
+export type CIMaterialRouterProps = {
     appId: string
     envId: string
     ciNodeId: string
@@ -123,7 +122,8 @@ interface InputMaterials {
 }
 
 export interface TriggerCDNodeProps
-    extends RouteComponentProps<{ appId: string; envId: string }>,
+    extends
+        RouterV5Props<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
         Pick<WorkflowProps, 'reloadTriggerView'> {
     x: number
@@ -165,7 +165,8 @@ export interface TriggerCDNodeState {
 }
 
 export interface TriggerPrePostCDNodeProps
-    extends RouteComponentProps<{ appId: string; envId: string }>,
+    extends
+        RouterV5Props<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
         Pick<TriggerCDNodeProps, 'reloadTriggerView' | 'onClickCDMaterial'> {
     x: number
@@ -201,8 +202,7 @@ export interface TriggerEdgeType {
 }
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; envId: string }>,
-        Pick<WorkflowType, 'artifactPromotionMetadata'> {
+    extends RouterV5Props<{ appId: string; envId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number

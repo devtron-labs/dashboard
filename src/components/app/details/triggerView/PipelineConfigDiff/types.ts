@@ -54,8 +54,10 @@ export type PipelineConfigDiffProps = Pick<
     urlFilters: UseUrlFiltersReturnType<string, PipelineConfigDiffQueryParamsType>
 }
 
-export interface PipelineConfigDiffStatusTileProps
-    extends Pick<PipelineConfigDiffProps, 'isLoading' | 'radioSelectConfig'> {
+export interface PipelineConfigDiffStatusTileProps extends Pick<
+    PipelineConfigDiffProps,
+    'isLoading' | 'radioSelectConfig'
+> {
     hasDiff?: boolean
     noLastDeploymentConfig?: boolean
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -73,8 +75,10 @@ export enum PipelineConfigDiffQueryParams {
     MODE = 'mode',
 }
 
-export interface GetPipelineDeploymentConfigSelectorConfigParams
-    extends Pick<UsePipelineDeploymentConfigProps, 'deploymentStrategy' | 'pipelineStrategyOptions'> {
+export interface GetPipelineDeploymentConfigSelectorConfigParams extends Pick<
+    UsePipelineDeploymentConfigProps,
+    'deploymentStrategy' | 'pipelineStrategyOptions'
+> {
     isLastDeployedConfigAvailable: boolean
     isRollbackTriggerSelected: boolean
     isConfigAvailable: (configType: DeploymentWithConfigType) => boolean

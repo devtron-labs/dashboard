@@ -32,10 +32,10 @@ import {
     ImageChipCell,
     RegistryType,
     AppEnvironment,
-    URLS as CommonURLS,
     StatusType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory } from 'react-router-dom'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as ArrowLineDown } from '@Icons/ic-arrow-line-down.svg'
@@ -61,7 +61,7 @@ export const EnvironmentList = ({
     appId: AppMetaInfo['appId']
     filteredEnvIds?: AppOverviewProps['filteredEnvIds']
 }) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
@@ -109,7 +109,7 @@ export const EnvironmentList = ({
         <button
             className="flex cta dc__gap-4"
             onClick={() => {
-                history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}`)
+                navigate(generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId: String(appId) }))
             }}
         >
             Continue App Configuration <IconForward className="icon-dim-12" />
@@ -117,7 +117,7 @@ export const EnvironmentList = ({
     )
 
     const getDeploymentHistoryLink = (environment: AppEnvironment) =>
-        `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_CD_DETAILS}/${environment.environmentId}/${environment.pipelineId}/${
+        `${ROUTER_URLS.DEVTRON_APP}/${appId}/${URLS.APP_CD_DETAILS}/${environment.environmentId}/${environment.pipelineId}/${
             environment.latestCdWorkflowRunnerId ?? ''
         }`
 
@@ -213,7 +213,10 @@ export const EnvironmentList = ({
                                                     />
                                                 )}
                                                 <Link
-                                                    to={`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/details/${_env.environmentId}/`}
+                                                    to={generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+                                                        appId: String(appId),
+                                                        envId: String(_env.environmentId),
+                                                    })}
                                                     className="anchor fs-13 dc__ellipsis-right"
                                                 >
                                                     {_env.environmentName}

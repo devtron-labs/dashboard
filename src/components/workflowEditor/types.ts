@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
 import {
     AddPipelineType,
     AppConfigProps,
@@ -28,6 +26,7 @@ import {
     OptionType,
     PipelineFormType,
     PluginDataStoreType,
+    RouterV5Props,
     SelectedNode,
     StepType,
     TaskErrorObj,
@@ -88,7 +87,8 @@ export interface WorkflowEditState {
 }
 
 export interface WorkflowEditProps
-    extends RouteComponentProps<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }>,
+    extends
+        RouterV5Props<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
     configStatus: number
     isCDPipeline: boolean
@@ -102,25 +102,18 @@ export interface WorkflowEditProps
     reloadAppConfig?: () => void
 }
 
-export interface AddWorkflowState {
-    id: number
-    name: string
-    showError: boolean
-}
 export interface EmptyWorkflowState {
     name: string
     loading: boolean
     showError: boolean
 }
 
-export interface AddWorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId: string }>,
-        Pick<AppConfigProps, 'isTemplateView'> {
+export interface AddWorkflowProps extends Pick<AppConfigProps, 'isTemplateView'> {
     name: string
     onClose: () => void
     getWorkflows: () => void
 }
-export interface EmptyWorkflowProps extends RouteComponentProps<{ appId: string; workflowId: string }> {
+export interface EmptyWorkflowProps {
     name: string
     onClose: () => void
     getWorkflows: () => void
@@ -151,7 +144,8 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     reload: () => void
 }
 export interface CDNodeProps
-    extends RouteComponentProps,
+    extends
+        RouterV5Props<{}>,
         Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
         Pick<CommonNodeAttr, 'showPluginWarning'>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
@@ -172,7 +166,6 @@ export interface CDNodeProps
     hideWebhookTippy?: () => void
     deploymentAppDeleteRequest: boolean
     deploymentAppCreated?: boolean
-    match: RouteComponentProps['match']
     description: string
     isVirtualEnvironment?: boolean
     addNewPipelineBlocked?: boolean
@@ -354,7 +347,8 @@ export interface ToggleCDSelectButtonProps extends Required<Pick<AppConfigProps,
 }
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
+    extends
+        RouterV5Props<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
     nodes: CommonNodeAttr[]
     id: number

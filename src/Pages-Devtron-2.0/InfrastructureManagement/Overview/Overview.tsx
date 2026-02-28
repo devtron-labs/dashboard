@@ -6,11 +6,10 @@ import {
     GenericEmptyState,
     Icon,
     InfoBlock,
-    URLS as COMMON_URLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
 
 import InfrastructureManagementAtAGlance from './AtAGlance'
 import { ClusterAndNodes } from './ClusterAndNodes'
@@ -40,9 +39,7 @@ const Overview = () => {
             endIcon={noConnectedClusters ? null : <Icon name="ic-arrow-right" color={null} />}
             component={ButtonComponentType.link}
             linkProps={{
-                to: noConnectedClusters
-                    ? URLS.GLOBAL_CONFIG_CLUSTER
-                    : COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
+                to: noConnectedClusters ? ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV : ROUTER_URLS.RESOURCE_BROWSER.ROOT,
             }}
         />
     )

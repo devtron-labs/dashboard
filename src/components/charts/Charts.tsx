@@ -14,54 +14,46 @@
  * limitations under the License.
  */
 
+import { PropsWithChildren } from 'react'
+
+import { TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+
 import DiscoverCharts from './list/DiscoverCharts'
+
 import './list/list.scss'
 import '../app/details/appDetails/appDetails.scss'
 import './charts.scss'
-import { TabGroup } from '@devtron-labs/devtron-fe-common-lib'
-import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom'
 
-export default function Charts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
-    const { path } = useRouteMatch()
+const Charts = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => <DiscoverCharts isSuperAdmin={isSuperAdmin} />
 
-    return (
-        <Switch>
-            <Route path={`${path}/discover`} render={() => <DiscoverCharts isSuperAdmin={isSuperAdmin} />} />
-            <Redirect to={`${path}/discover`} />
-        </Switch>
-    )
-}
+export default Charts
 
-export const GenericChartsHeader = ({ children = null }) => {
-    return <div className="dc__page-header dc__page-header__tabs">{children}</div>
-}
+export const GenericChartsHeader = ({ children = null }: PropsWithChildren<{}>) => (
+    <div className="dc__page-header dc__page-header__tabs">{children}</div>
+)
 
-export const ChartDetailNavigator = () => {
-    return (
-        <TabGroup
-            tabs={[
-                {
-                    id: 'discover-tab',
-                    label: 'Discover',
-                    tabType: 'navLink',
-                    props: {
-                        to: 'discover',
-                        replace: true,
-                    },
+export const ChartDetailNavigator = () => (
+    <TabGroup
+        tabs={[
+            {
+                id: 'discover-tab',
+                label: 'Discover',
+                tabType: 'navLink',
+                props: {
+                    to: 'discover',
+                    replace: true,
                 },
-            ]}
-        />
-    )
-}
+            },
+        ]}
+    />
+)
 
-export const HeaderTitle = ({ children = null }) => {
-    return <h1 className="dc__page-header__title flex left">{children}</h1>
-}
+export const HeaderTitle = ({ children = null }: PropsWithChildren<{}>) => (
+    <h1 className="dc__page-header__title flex left">{children}</h1>
+)
 
-export const HeaderSubtitle = ({ children = null }) => {
-    return <div className="subtitle">{children}</div>
-}
+export const HeaderSubtitle = ({ children = null }: PropsWithChildren<{}>) => <div className="subtitle">{children}</div>
 
-export const HeaderButtonGroup = ({ children = null }) => {
-    return <div className="dc__page-header__cta-container flex right">{children}</div>
-}
+export const HeaderButtonGroup = ({ children = null }: PropsWithChildren<{}>) => (
+    <div className="dc__page-header__cta-container flex right">{children}</div>
+)

@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     activateLicense,
@@ -35,8 +35,8 @@ import {
     LICENSE_KEY_QUERY_PARAM,
     LicensingErrorCodes,
     LoginBanner,
+    ROUTER_URLS,
     showError,
-    URLS,
     useAsync,
     useSearchString,
     useTheme,
@@ -45,7 +45,7 @@ import {
 import { getDevtronLicenseInfo } from './service'
 
 const ActivateLicense = () => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const { searchParams } = useSearchString()
     const { appTheme } = useTheme()
 
@@ -55,7 +55,7 @@ const ActivateLicense = () => {
     const [isActivatingLicense, setIsActivatingLicense] = useState<boolean>(false)
 
     const redirectToLogin = () => {
-        history.replace(URLS.LOGIN_SSO)
+        navigate(ROUTER_URLS.LOGIN.SSO, { replace: true })
     }
 
     const handleActivateLicense = async () => {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
-import { URLS, useStateFilters } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, useEffect } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { BASE_ROUTES, useStateFilters } from '@devtron-labs/devtron-fe-common-lib'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import SavedVariablesContent from './SavedVariablesContent'
@@ -26,8 +26,8 @@ import { FileReaderStatus } from '../common/hooks/types'
 import { parseIntoYAMLString } from './utils'
 import { SavedVariablesViewProps, VariableType } from './types'
 
-const ScopedVariablesEnvironmentDetailsRouter = importComponentFromFELibrary(
-    'ScopedVariablesEnvironmentDetailsRouter',
+const ScopedVariablesEnvironmentDetailsForm = importComponentFromFELibrary(
+    'ScopedVariablesEnvironmentDetailsForm',
     null,
     'function',
 )
@@ -109,26 +109,34 @@ export default function SavedVariablesView({
                 overflowY: 'hidden',
             }}
         >
-            <Switch>
-                <Route path={`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}/:currentView?`} exact>
-                    <SavedVariablesContent
-                        searchKey={searchKey}
-                        onSearch={handleSearch}
-                        readFile={readFile}
-                        handleActivateEditView={handleActivateEditView}
-                        scopedVariablesYAML={scopedVariablesYAML}
-                        variablesList={variablesList}
-                        handleClearFilters={clearFilters}
-                    />
-                </Route>
+            <Routes>
+                <Route
+                    path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.SCOPED_VARIABLES.CURRENT_VIEW}
+                    element={
+                        <SavedVariablesContent
+                            searchKey={searchKey}
+                            onSearch={handleSearch}
+                            readFile={readFile}
+                            handleActivateEditView={handleActivateEditView}
+                            scopedVariablesYAML={scopedVariablesYAML}
+                            variablesList={variablesList}
+                            handleClearFilters={clearFilters}
+                        />
+                    }
+                />
 
-                {ScopedVariablesEnvironmentDetailsRouter &&
+                {ScopedVariablesEnvironmentDetailsForm &&
                     window._env_.FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE && (
-                        <ScopedVariablesEnvironmentDetailsRouter reloadScopedVariables={reloadScopedVariables} />
+                        <Route
+                            path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.SCOPED_VARIABLES.ENVIRONMENT_DETAILS}
+                            element={
+                                <ScopedVariablesEnvironmentDetailsForm reloadScopedVariables={reloadScopedVariables} />
+                            }
+                        />
                     )}
 
-                <Redirect to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES} />
-            </Switch>
+                <Route path="*" element={<Navigate to="" />} />
+            </Routes>
         </div>
     ) : (
         <div className="flex column h-100 dc__content-space">

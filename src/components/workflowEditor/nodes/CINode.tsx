@@ -36,7 +36,7 @@ export class CINode extends Component<CINodeProps> {
         // stopPropagation to stop redirection to ci-details
         e.stopPropagation()
         e.preventDefault()
-        this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
+        this.props.navigate(`${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
     }
 
     onClickAddNode = (event: any) => {

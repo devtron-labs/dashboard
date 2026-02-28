@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -33,6 +33,7 @@ import {
     Icon,
     MODAL_TYPE,
     Progressing,
+    ROUTER_URLS,
     showError,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -48,11 +49,7 @@ import {
     ManageAppsResponse,
     StatusDrawer,
 } from '@Components/ApplicationGroup/AppGroup.types'
-import {
-    getAppRedirectLink,
-    getDeploymentHistoryLink,
-    parseAppListData,
-} from '@Components/ApplicationGroup/AppGroup.utils'
+import { parseAppListData } from '@Components/ApplicationGroup/AppGroup.utils'
 import { GROUP_LIST_HEADER } from '@Components/ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '@Components/common'
 import { Moment12HourFormat } from '@Config/constants'
@@ -84,8 +81,6 @@ const getManageTrafficMenuButtonConfig = importComponentFromFELibrary(
     null,
     'function',
 )
-
-const ENV_OVERVIEW_PATH = `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/:envId/${URLS.APP_OVERVIEW}`
 
 const EnvironmentOverview = ({
     appGroupListData,
@@ -121,11 +116,8 @@ const EnvironmentOverview = ({
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
 
     // HOOKS
-    const {
-        path,
-        params: { envId },
-    } = useRouteMatch<{ envId: string }>()
-    const history = useHistory()
+    const { envId } = useParams<{ envId: string }>()
+    const navigate = useNavigate()
     const location = useLocation()
     const { searchParams } = useSearchString()
 
@@ -270,7 +262,7 @@ const EnvironmentOverview = ({
             ...searchParams,
             modal: URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD,
         }
-        history.push({ search: new URLSearchParams(newParams).toString() })
+        navigate({ search: new URLSearchParams(newParams).toString() })
     }
 
     const closeCommitInfoModal = () => {
@@ -296,14 +288,15 @@ const EnvironmentOverview = ({
 
     const handleBulkSelectionWidgetClose = () => setSelectedAppDetailsList([])
 
-    const getManageTrafficPath = () => generatePath(`${ENV_OVERVIEW_PATH}/${URLS.MANAGE_TRAFFIC}`, { envId })
+    const getManageTrafficPath = () =>
+        generatePath(`${ROUTER_URLS.APP_GROUP_DETAILS.OVERVIEW}/${URLS.MANAGE_TRAFFIC}`, { envId })
 
     const handleOpenManageTrafficDrawer = () => {
-        history.push(getManageTrafficPath())
+        navigate(getManageTrafficPath())
     }
 
     const handleCloseManageTrafficDrawer = () => {
-        history.push(generatePath(ENV_OVERVIEW_PATH, { envId }))
+        navigate(generatePath(ROUTER_URLS.APP_GROUP_DETAILS.OVERVIEW, { envId }))
     }
 
     // CONFIGS
@@ -362,8 +355,11 @@ const EnvironmentOverview = ({
             isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
             onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
             onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
-            deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId, envId),
-            redirectLink: getAppRedirectLink(appInfo.appId, +envId),
+            deployedAtLink: `${generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CD_DETAILS, { envId })}/${appInfo.appId}/${appInfo.pipelineId}`,
+            redirectLink: generatePath(ROUTER_URLS.APP_GROUP_DETAILS.APP_DETAILS, {
+                appId: String(appInfo.appId),
+                envId,
+            }),
         }),
     )
 
@@ -443,19 +439,22 @@ const EnvironmentOverview = ({
 
     return environmentOverviewTableRows.length > 0 ? (
         <>
-            <Switch>
-                {BulkManageTrafficDrawer && (
-                    <Route path={`${path}/${URLS.MANAGE_TRAFFIC}`}>
-                        <BulkManageTrafficDrawer
-                            envId={+envId}
-                            envName={appListData.environment}
-                            appInfoList={appListData?.appInfoList}
-                            initialSelectedAppList={selectedAppDetailsList}
-                            onClose={handleCloseManageTrafficDrawer}
-                        />
-                    </Route>
-                )}
-            </Switch>
+            {BulkManageTrafficDrawer && (
+                <Routes>
+                    <Route
+                        path={URLS.MANAGE_TRAFFIC}
+                        element={
+                            <BulkManageTrafficDrawer
+                                envId={+envId}
+                                envName={appListData.environment}
+                                appInfoList={appListData?.appInfoList}
+                                initialSelectedAppList={selectedAppDetailsList}
+                                onClose={handleCloseManageTrafficDrawer}
+                            />
+                        }
+                    />
+                </Routes>
+            )}
             <div
                 ref={parentRef}
                 className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bg__primary p-20 dc__position-rel"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { Button, ButtonVariantType, ComponentSizeType, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -25,7 +25,7 @@ import { AddConfigurationButtonProps } from './types'
 
 export const AddConfigurationButton = ({ activeTab }: AddConfigurationButtonProps) => {
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const handleAddClick = () => {
         const newParams = {
@@ -33,7 +33,7 @@ export const AddConfigurationButton = ({ activeTab }: AddConfigurationButtonProp
             modal: activeTab,
             configId: '0',
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

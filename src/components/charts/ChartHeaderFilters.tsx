@@ -15,12 +15,11 @@
  */
 
 import { CHECKBOX_VALUE, Checkbox, SearchBar, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
 import { QueryParams } from './constants'
 import { ChartSourceAccordion } from './ChartSourceAccordion'
-import { URLS } from '../../config'
 import { CHART_KEYS } from './constants'
 import { ChartHeaderFilterProps } from './charts.types'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -39,10 +38,8 @@ const ChartHeaderFilter = ({
     setChartCategoryIds,
     chartStoreRef,
 }: ChartHeaderFilterProps) => {
-    const match = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const { url } = match
 
     const handleSelection = (event): void => {
         const chartRepoList = selectedChartRepo.filter((e) => e.value != event.value)
@@ -93,7 +90,9 @@ const ChartHeaderFilter = ({
                 if (chartCategoryIdsCsv) {
                     qsr = `${qsr}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
                 }
-                history.push(`${url}?${qsr}`)
+                navigate({
+                    search: qsr,
+                })
             } else {
                 let qs = `${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
                 if (paramsRegistryIds) {
@@ -108,7 +107,9 @@ const ChartHeaderFilter = ({
                 if (chartCategoryIdsCsv) {
                     qs = `${qs}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
                 }
-                history.push(`${url}?${qs}`)
+                navigate({
+                    search: qs,
+                })
             }
         }
 
@@ -127,7 +128,9 @@ const ChartHeaderFilter = ({
             if (deprecate) {
                 qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             }
-            history.push(`${url}?${qs}`)
+            navigate({
+                search: qs,
+            })
         }
 
         if (key === CHART_KEYS.DEPRECATED) {
@@ -144,7 +147,9 @@ const ChartHeaderFilter = ({
             if (chartCategoryIdsCsv) {
                 qs = `${qs}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
             }
-            history.push(`${url}?${qs}`)
+            navigate({
+                search: qs,
+            })
         }
 
         if (key === CHART_KEYS.SEARCH) {
@@ -161,7 +166,9 @@ const ChartHeaderFilter = ({
             if (chartCategoryIdsCsv) {
                 qs = `${qs}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
             }
-            history.push(`${url}?${qs}`)
+            navigate({
+                search: qs,
+            })
         }
     }
 

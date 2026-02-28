@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
+import { generatePath, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -38,7 +38,7 @@ import {
     ToastManager,
     ToastVariantType,
     VisibleModal,
-    URLS as CommonURLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as SuccessIcon } from '@Icons/appstatus/healthy.svg'
@@ -256,8 +256,7 @@ export const NavItem = ({
         <NavLink
             to={`${route.href}`}
             key={route.href}
-            className={`stack-manager__navlink ${route.className}`}
-            activeClassName="active-route"
+            className={({ isActive }) => `stack-manager__navlink ${route.className} ${isActive ? 'active-route' : ''}`}
             {...(route.name === 'About Devtron' && { onClick: () => handleTabChange(0) })}
         >
             <div className="flex left">
@@ -308,12 +307,12 @@ export const StackPageHeader = ({
     selectedModule,
     handleBreadcrumbClick,
 }: StackManagerPageHeaderType): JSX.Element => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const handleRedirectToModule = (detailsMode) => {
         const url =
-            detailsMode === 'discover' ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES
-        history.push(url)
+            detailsMode === 'discover' ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES
+        navigate(url)
     }
 
     const renderBreadcrumbs = (headerTitleName, detailsMode) => (
@@ -599,7 +598,10 @@ const InstallationStatus = ({
                     >
                         {isUpgradeView && !canViewLogs && (
                             <NavLink
-                                to={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}`}
+                                to={`${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
+                                    appId: `1|devtroncd|${appName}`,
+                                    appName,
+                                })}/${URLS.APP_DETAILS}`}
                                 target="_blank"
                             >
                                 View details
@@ -607,7 +609,10 @@ const InstallationStatus = ({
                         )}
                         {((isUpgradeView && canViewLogs) || (!isUpgradeView && isCICDModule)) && logPodName && (
                             <NavLink
-                                to={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
+                                to={`${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
+                                    appId: `1|devtroncd|${appName}`,
+                                    appName
+                                })}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
                                 target="_blank"
                             >
                                 View logs
@@ -643,7 +648,7 @@ const ModuleUpdateNote = (): JSX.Element => (
     <div className="module-details__update-note br-4 cn-9 fs-13 mb-16">
         <div className="fs-4 mb-8">Integrations are updated along with Devtron updates.</div>
         <div className="fs-6">
-            <NavLink to={URLS.STACK_MANAGER_ABOUT} className="fw-6">
+            <NavLink to={ROUTER_URLS.STACK_MANAGER.ABOUT} className="fw-6">
                 Check for Devtron updates
             </NavLink>
         </div>
@@ -693,8 +698,8 @@ export const InstallationWrapper = ({
     successState,
     setSuccessState,
 }: InstallationWrapperType): JSX.Element => {
-    const history: RouteComponentProps['history'] = useHistory()
-    const location: RouteComponentProps['location'] = useLocation()
+    const location = useLocation()
+    const navigate = useNavigate()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
     const otherInstallationInProgress = modulesList?.some(
         (module) => module.installationStatus === ModuleStatus.INSTALLING && module.name !== moduleName,
@@ -743,7 +748,7 @@ export const InstallationWrapper = ({
                 isUpgradeView,
                 upgradeVersion,
                 updateActionTrigger,
-                history,
+                navigate,
                 location,
                 serverInfo.currentVersion,
                 moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
@@ -967,8 +972,6 @@ export const ModuleDetailsView = ({
     fromDiscoverModules,
     isActionTriggered,
     handleActionTrigger,
-    history,
-    location,
     setShowResourceStatusModal,
     isSuperAdmin,
     setSelectedModule,
@@ -983,11 +986,14 @@ export const ModuleDetailsView = ({
     toggled,
     setToggled,
 }: ModuleDetailsViewType): JSX.Element | null => {
+    const location = useLocation()
+    const navigate = useNavigate()
+
     useEffect(() => {
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
             setDetailsMode('')
-            history.push(
-                fromDiscoverModules ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES,
+            navigate(
+                fromDiscoverModules ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES,
             )
         }
     }, [])
@@ -1045,9 +1051,9 @@ export const ModuleDetailsView = ({
 }
 
 export const NoIntegrationsInstalledView = (): JSX.Element => {
-    const history: RouteComponentProps['history'] = useHistory()
+    const navigate = useNavigate()
     const redirectToDiscoverModules = () => {
-        history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)
+        navigate(ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES)
     }
 
     const renderDiscoverIntegrationsButton = () => (
@@ -1084,10 +1090,8 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
                 <div>
                     <h2 className="fs-13 fw-6 lh-20 mb-4 mt-0">{configNoteDetail.title}</h2>
                     <NavLink
-                        exact
                         to={configNoteDetail.link}
-                        activeClassName="active"
-                        className="mt-8 dc__no-decor fs-13 fw-6"
+                        className={({ isActive }) => `mt-8 dc__no-decor fs-13 fw-6 ${isActive ? 'active' : ''}`}
                     >
                         {configNoteDetail.linkText}
                     </NavLink>
@@ -1106,10 +1110,8 @@ const UpgradeNote = (): JSX.Element => (
             <div>
                 <p className="fs-13 fw-4 mb-0 lh-20">{DEVTRON_UPGRADE_MESSAGE}</p>
                 <NavLink
-                    exact
-                    to={URLS.STACK_MANAGER_ABOUT}
-                    activeClassName="active"
-                    className="mt-8 dc__no-decor fs-13 fw-6"
+                    to={ROUTER_URLS.STACK_MANAGER.ABOUT}
+                    className={({ isActive }) => `mt-8 dc__no-decor fs-13 fw-6 ${isActive ? 'active' : ''}`}
                 >
                     Check for Devtron updates
                 </NavLink>
@@ -1151,17 +1153,17 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
 )
 
 const DependentModuleList = ({ modulesList }: { modulesList: ModuleDetails[] }): JSX.Element => {
-    const history: RouteComponentProps['history'] = useHistory()
-    const location: RouteComponentProps['location'] = useLocation()
+    const navigate = useNavigate()
+    const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
 
     const handleModuleCardClick = (moduleDetails: ModuleDetails) => {
         queryParams.set('id', moduleDetails.name)
-        history.push(
+        navigate(
             `${
                 moduleDetails.installationStatus !== ModuleStatus.INSTALLED
-                    ? URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS
-                    : URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS
+                    ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS
+                    : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES_DETAILS
             }?${queryParams.toString()}`,
         )
     }

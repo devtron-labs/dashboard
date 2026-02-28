@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
     DeleteConfirmationModal,
@@ -43,7 +43,7 @@ import { ConfigurationTabState } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 
 export const ConfigurationTab = () => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const { searchParams } = useSearchString()
     const queryString = new URLSearchParams(location.search)
@@ -92,7 +92,7 @@ export const ConfigurationTab = () => {
             modal: modal ?? ConfigurationsTabTypes.SES,
         }
 
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }, [])

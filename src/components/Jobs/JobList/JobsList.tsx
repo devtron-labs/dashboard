@@ -15,12 +15,14 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
+    BASE_ROUTES,
     DevtronProgressing,
     ErrorScreenManager,
     HeaderWithCreateButton,
+    ROUTER_URLS,
     ServerErrors,
     showError,
     useUrlFilters,
@@ -28,7 +30,6 @@ import {
 
 import { CreateAppModal } from '@Pages/App/CreateAppModal'
 
-import { URLS } from '../../../config'
 import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import { getJobsInitFilters } from '../Service'
 import {
@@ -44,8 +45,7 @@ import JobListContainer from './JobListContainer'
 import '../../app/list/list.scss'
 
 const JobsList = () => {
-    const { path } = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const [dataStateType, setDataStateType] = useState(JobListViewType.LOADING)
     const [filtersLoading, setFiltersLoading] = useState<boolean>(false)
@@ -128,20 +128,20 @@ const JobsList = () => {
         }
     }
 
-    const openJobCreateModel = () => {
-        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
-    }
-
     const closeJobCreateModal = () => {
-        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}`)
+        navigate({
+            pathname: ROUTER_URLS.JOBS_LIST,
+            search: location.search,
+        })
     }
 
     const renderCreateJobRouter = () => (
-        <Switch>
-            <Route path={`${path}/${URLS.CREATE_JOB}`}>
-                <CreateAppModal isJobView handleClose={closeJobCreateModal} />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route
+                path={BASE_ROUTES.AUTOMATION_AND_ENABLEMENT.JOBS.LIST.CREATE_JOB}
+                element={<CreateAppModal isJobView handleClose={closeJobCreateModal} />}
+            />
+        </Routes>
     )
 
     if (dataStateType === JobListViewType.ERROR) {
@@ -165,7 +165,6 @@ const JobsList = () => {
                         jobListCount={jobCount}
                         filtersLoading={filtersLoading}
                         setJobCount={setJobCount}
-                        openJobCreateModel={openJobCreateModel}
                         handleSearch={handleSearch}
                         updateSearchParams={updateSearchParams}
                         getLabelFromValue={getLabelFromValue}

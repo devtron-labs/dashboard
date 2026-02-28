@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ErrorScreenNotAuthorized, Progressing, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import SavedVariablesView from './SavedVariables'
 import UploadScopedVariables from './UploadScopedVariables'

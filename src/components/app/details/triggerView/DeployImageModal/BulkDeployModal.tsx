@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, SyntheticEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { Prompt } from 'react-router-dom'
 
 import {
     AnimatedDeployButton,
@@ -8,7 +7,6 @@ import {
     ButtonStyleType,
     CDMaterialResponseType,
     CDMaterialServiceEnum,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DeploymentNodeType,
     DeploymentStrategyTypeWithDefault,
     Drawer,
@@ -730,42 +728,36 @@ const BulkDeployModal = ({
     }
 
     return (
-        <>
-            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-                <div
-                    className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
-                    onClick={stopPropagation}
-                >
-                    <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                        <DeployImageHeader
-                            handleClose={handleClose}
-                            envName={envName}
-                            stageType={stageType}
-                            isRollbackTrigger={false}
-                            isVirtualEnvironment={isVirtualEnvironment}
-                            handleNavigateToMaterialListView={
-                                showStrategyFeasibilityPage ? handleNavigateToListView : null
-                            }
-                            title={showStrategyFeasibilityPage ? 'Deployment feasibility for' : ''}
-                        />
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            <div
+                className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
+                onClick={stopPropagation}
+            >
+                <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                    <DeployImageHeader
+                        handleClose={handleClose}
+                        envName={envName}
+                        stageType={stageType}
+                        isRollbackTrigger={false}
+                        isVirtualEnvironment={isVirtualEnvironment}
+                        handleNavigateToMaterialListView={showStrategyFeasibilityPage ? handleNavigateToListView : null}
+                        title={showStrategyFeasibilityPage ? 'Deployment feasibility for' : ''}
+                    />
 
-                        <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
-                    </div>
-
-                    {isLoadingAppInfoMap || showStrategyFeasibilityPage ? null : renderFooter()}
+                    <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
                 </div>
 
-                {showResistanceBox && (
-                    <BulkDeployResistanceTippy
-                        actionHandler={onClickStartDeploy}
-                        handleOnClose={hideResistanceBox}
-                        modalType={MODAL_TYPE.DEPLOY}
-                    />
-                )}
-            </Drawer>
+                {isLoadingAppInfoMap || showStrategyFeasibilityPage ? null : renderFooter()}
+            </div>
 
-            <Prompt when={isDeploymentLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-        </>
+            {showResistanceBox && (
+                <BulkDeployResistanceTippy
+                    actionHandler={onClickStartDeploy}
+                    handleOnClose={hideResistanceBox}
+                    modalType={MODAL_TYPE.DEPLOY}
+                />
+            )}
+        </Drawer>
     )
 }
 

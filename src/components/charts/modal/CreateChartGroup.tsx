@@ -143,7 +143,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         description: 'Successfully created.',
                     })
                     const url = getChartGroupEditURL(response.result.id)
-                    this.props.history.push(url)
+                    this.props.navigate(url)
                 }
             })
             .catch((error) => {

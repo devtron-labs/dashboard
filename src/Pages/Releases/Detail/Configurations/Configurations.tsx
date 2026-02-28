@@ -15,23 +15,24 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes, useParams } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
     CMSecretComponentType,
     DeploymentHistoryBaseParamsType,
-    EnvResourceType,
     GenericEmptyState,
     getIsApprovalPolicyConfigured,
     Progressing,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { URLS } from '@Config/routes'
-import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
+import { DeploymentTemplate } from '@Pages/Applications'
 import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DeploymentConfigCompareWrapper } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
@@ -52,10 +53,11 @@ const renderNullState = () => (
     </div>
 )
 
-export const Configurations = () => {
+export const ReleaseConfigurations = () => {
     // HOOKS
-    const { path, params } = useRouteMatch<Pick<DeploymentHistoryBaseParamsType, 'appId' | 'envId'>>()
-    const { appId, envId } = params
+    const { appId, envId, releaseTrack, releaseVersion } = useParams<
+        Pick<DeploymentHistoryBaseParamsType, 'appId' | 'envId'> & { releaseTrack: string; releaseVersion: string }
+    >()
 
     // CONTEXTS
     const {
@@ -109,128 +111,142 @@ export const Configurations = () => {
 
     // RENDERERS
     const renderConfigSideNav = () => (
-        <Switch>
-            <Route key={appId} path={`${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}>
-                <EnvConfigurationsNav
-                    envConfig={envConfig}
-                    environments={environments}
-                    fetchEnvConfig={fetchEnvConfig}
-                    goBackURL={null}
-                    compareWithURL={path}
-                    showDeploymentTemplate
-                    showComparison
-                    hideEnvSelector
-                    appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-                    isTemplateView={false}
-                />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route
+                key={appId}
+                path={`${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?/*`}
+                element={
+                    <EnvConfigurationsNav
+                        envConfig={envConfig}
+                        environments={environments}
+                        fetchEnvConfig={fetchEnvConfig}
+                        goBackURL={null}
+                        compareWithURL={ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS}
+                        showDeploymentTemplate
+                        showComparison
+                        hideEnvSelector
+                        appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                        isTemplateView={false}
+                        path={`${ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}
+                    />
+                }
+            />
+        </Routes>
     )
 
     const renderConfig = () => (
-        <Switch>
-            <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                <div key={`${appId}-${envId}-${URLS.APP_DEPLOYMENT_CONFIG}`} className="dc__overflow-auto">
-                    <DeploymentTemplate
-                        fetchEnvConfig={fetchEnvConfig}
-                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                            approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate],
-                        )}
-                        reloadEnvironments={reloadEnvironments}
-                        environmentName={selectedEnv.name}
-                        clusterId={null}
-                        isExceptionUser={
-                            approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
-                        }
-                        isTemplateView={false}
-                    />
-                </div>
-            </Route>
-            <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                <div key={`${appId}-${envId}-${URLS.APP_CM_CONFIG}`} className="dc__overflow-auto">
-                    <ConfigMapSecretWrapper
-                        appName={selectedApp.label}
-                        envName={selectedEnv.name}
-                        envConfig={envConfig}
-                        fetchEnvConfig={fetchEnvConfig}
-                        onErrorRedirectURL=""
-                        reloadEnvironments={reloadEnvironments}
-                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
-                        )}
-                        clusterId={null}
-                        isExceptionUser={approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
-                        isTemplateView={false}
-                    />
-                </div>
-            </Route>
-            <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                <div key={`${appId}-${envId}-${URLS.APP_CS_CONFIG}`} className="dc__overflow-auto">
-                    <ConfigMapSecretWrapper
-                        componentType={CMSecretComponentType.Secret}
-                        appName={selectedApp.label}
-                        envName={selectedEnv.name}
-                        envConfig={envConfig}
-                        fetchEnvConfig={fetchEnvConfig}
-                        onErrorRedirectURL=""
-                        reloadEnvironments={reloadEnvironments}
-                        isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
-                        )}
-                        clusterId={null}
-                        isExceptionUser={
-                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
-                        }
-                        isTemplateView={false}
-                    />
-                </div>
-            </Route>
-        </Switch>
+        <Routes>
+            <Route
+                path={URLS.APP_DEPLOYMENT_CONFIG}
+                element={
+                    <div key={`${appId}-${envId}-${URLS.APP_DEPLOYMENT_CONFIG}`} className="dc__overflow-auto">
+                        <DeploymentTemplate
+                            fetchEnvConfig={fetchEnvConfig}
+                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                                approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate],
+                            )}
+                            reloadEnvironments={reloadEnvironments}
+                            environmentName={selectedEnv.name}
+                            clusterId={null}
+                            isExceptionUser={
+                                approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
+                            }
+                            isTemplateView={false}
+                        />
+                    </div>
+                }
+            />
+            <Route
+                path={`${URLS.APP_CM_CONFIG}/:name?`}
+                element={
+                    <div key={`${appId}-${envId}-${URLS.APP_CM_CONFIG}`} className="dc__overflow-auto">
+                        <ConfigMapSecretWrapper
+                            appName={selectedApp.label}
+                            envName={selectedEnv.name}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL=""
+                            reloadEnvironments={reloadEnvironments}
+                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                                approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
+                            )}
+                            clusterId={null}
+                            isExceptionUser={
+                                approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap].isExceptionUser
+                            }
+                            isTemplateView={false}
+                            routePath={`${ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS}/${URLS.APP_CM_CONFIG}/:name?`}
+                        />
+                    </div>
+                }
+            />
+            <Route
+                path={`${URLS.APP_CS_CONFIG}/:name?`}
+                element={
+                    <div key={`${appId}-${envId}-${URLS.APP_CS_CONFIG}`} className="dc__overflow-auto">
+                        <ConfigMapSecretWrapper
+                            componentType={CMSecretComponentType.Secret}
+                            appName={selectedApp.label}
+                            envName={selectedEnv.name}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL=""
+                            reloadEnvironments={reloadEnvironments}
+                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                                approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
+                            )}
+                            clusterId={null}
+                            isExceptionUser={
+                                approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
+                            }
+                            isTemplateView={false}
+                            routePath={`${ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS}/${URLS.APP_CS_CONFIG}/:name?`}
+                        />
+                    </div>
+                }
+            />
+        </Routes>
     )
 
     return (
-        <Switch>
+        <Routes>
             <Route
-                key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-            >
-                {({ match, location }) => {
-                    const basePath = generatePath(path, match.params)
-                    // Used in cm/cs
-                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
-
-                    const goBackURL =
-                        match.params.resourceType === EnvResourceType.Manifest ||
-                        match.params.resourceType === EnvResourceType.PipelineStrategy
-                            ? basePath
-                            : `${basePath}/${match.params.resourceType}${resourceNamePath}`
-
-                    return showConfig ? (
-                        <DeploymentConfigCompare
+                key={URLS.APP_ENV_CONFIG_COMPARE}
+                path={`${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                element={
+                    showConfig ? (
+                        <DeploymentConfigCompareWrapper
                             type="app"
                             appName={selectedApp.label}
                             environments={environments}
-                            goBackURL={goBackURL}
+                            routePath={`${ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                            baseGoBackURL={generatePath(ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS, {
+                                appId,
+                                envId,
+                                releaseTrack,
+                                releaseVersion,
+                            })}
                             overwriteNavHeading={`Comparing ${selectedApp.label}`}
-                            getNavItemHref={(resourceType, resourceName) =>
-                                `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                            }
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                         />
                     ) : (
                         <Progressing fullHeight pageLoader />
                     )
-                }}
-            </Route>
-            <Route>
-                <div className="deploy-config-collapsible-layout dc__grid release-config-layout h-100 dc__overflow-hidden">
-                    <div className="collapsible-sidebar flexbox-col min-h-100 bg__primary dc__border-right">
-                        <ConfigurationsAppEnvSelector />
-                        {showConfig ? renderConfigSideNav() : null}
+                }
+            />
+            <Route
+                index
+                path="/*"
+                element={
+                    <div className="deploy-config-collapsible-layout dc__grid release-config-layout h-100 dc__overflow-hidden">
+                        <div className="collapsible-sidebar flexbox-col min-h-100 bg__primary dc__border-right">
+                            <ConfigurationsAppEnvSelector />
+                            {showConfig ? renderConfigSideNav() : null}
+                        </div>
+                        {showConfig ? renderConfig() : renderNullState()}
                     </div>
-                    {showConfig ? renderConfig() : renderNullState()}
-                </div>
-            </Route>
-        </Switch>
+                }
+            />
+        </Routes>
     )
 }

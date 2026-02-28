@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,7 +29,7 @@ import { ConfigurationTableProps } from './types'
 export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { webhookConfigurationList } = state
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onClickWebhookConfigEdit = (id: number) => () => {
         const newParams = {
@@ -37,7 +37,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
             configId: id.toString(),
             modal: ConfigurationsTabTypes.WEBHOOK,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

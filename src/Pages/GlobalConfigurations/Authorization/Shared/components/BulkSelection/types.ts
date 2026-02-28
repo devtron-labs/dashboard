@@ -68,7 +68,8 @@ export interface BulkSelectionClearConfirmationModalProps {
 }
 
 export interface BulkDeleteModalProps
-    extends Pick<BulkSelectionModalProps, 'refetchList' | 'urlFilters' | 'entityType'>,
+    extends
+        Pick<BulkSelectionModalProps, 'refetchList' | 'urlFilters' | 'entityType'>,
         Pick<BulkSelectionActionWidgetProps, 'selectedIdentifiersCount'> {
     onClose: () => void
 }

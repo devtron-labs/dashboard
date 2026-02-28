@@ -16,7 +16,7 @@
 
 import { Reducer, SyntheticEvent, useEffect, useMemo, useReducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
-import { Prompt, useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
 
 import {
@@ -28,7 +28,6 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    checkIfPathIsMatching,
     CompareFromApprovalOptionsValuesType,
     ComponentSizeType,
     ConfigHeaderTabType,
@@ -58,6 +57,7 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
     useAsync,
     useMainContext,
     useOneTimePrompt,
@@ -172,7 +172,6 @@ const DeploymentTemplate = ({
 }: DeploymentTemplateProps) => {
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
-    const location = useLocation()
     const { isSuperAdmin } = useMainContext()
 
     const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
@@ -341,6 +340,7 @@ const DeploymentTemplate = ({
 
     usePrompt({
         shouldPrompt: areChangesPresent,
+        message: UNSAVED_CHANGES_PROMPT_MESSAGE,
     })
 
     const handleUnResolveScopedVariables = () => {
@@ -2272,22 +2272,18 @@ const DeploymentTemplate = ({
     }
 
     return (
-        <>
-            <div className="h-100 bg__tertiary flexbox">
-                {renderDeploymentTemplate()}
+        <div className="h-100 bg__tertiary flexbox">
+            {renderDeploymentTemplate()}
 
-                {DraftComments && showDraftComments && (
-                    <DraftComments
-                        draftId={draftTemplateData?.latestDraft?.draftId}
-                        draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
-                        toggleDraftComments={handleToggleDraftComments}
-                        handleUpdateAreCommentsPresent={handleUpdateAreCommentsPresent}
-                    />
-                )}
-            </div>
-
-            <Prompt when={areChangesPresent} message={checkIfPathIsMatching(location.pathname)} />
-        </>
+            {DraftComments && showDraftComments && (
+                <DraftComments
+                    draftId={draftTemplateData?.latestDraft?.draftId}
+                    draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                    toggleDraftComments={handleToggleDraftComments}
+                    handleUpdateAreCommentsPresent={handleUpdateAreCommentsPresent}
+                />
+            )}
+        </div>
     )
 }
 
