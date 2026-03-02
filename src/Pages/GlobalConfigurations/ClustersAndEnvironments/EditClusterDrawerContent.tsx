@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { APIResponseHandler, noop, useQuery } from '@devtron-labs/devtron-fe-common-lib'
+import { APIResponseHandler, noop, ROUTER_URLS, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
 
 import ClusterForm from './ClusterForm/ClusterForm'
 import { getEditClusterDrawerMetadata } from './cluster.service'
@@ -70,7 +69,7 @@ const EditClusterDrawerContent = ({
             error={metadataError}
             errorScreenManagerProps={{
                 code: metadataError?.code,
-                redirectURL: URLS.GLOBAL_CONFIG_CLUSTER,
+                redirectURL: ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV,
                 reload: reloadMetadata,
             }}
         >

@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import {
@@ -34,6 +34,7 @@ import {
     Icon,
     noop,
     Pagination,
+    ROUTER_URLS,
     SearchBar,
     SecurityModal,
     SegmentedControl,
@@ -42,7 +43,6 @@ import {
     Severity,
     SEVERITY_LABEL_MAP,
     SortableTableHeaderCell,
-    URLS,
     useAsync,
     useUrlFilters,
     ZERO_TIME_STRING,
@@ -70,7 +70,7 @@ import { getGroupFilterItems, getSeverityWithCount, parseSearchParams } from './
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
 const SecurityScansTab = () => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const urlFilters = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
         parseSearchParams,
         initialSortKey: SecurityListSortableKeys.APP_NAME,
@@ -213,7 +213,9 @@ const SecurityScansTab = () => {
     }
 
     const redirectToAppEnv = (appId: number, envId: number) => {
-        push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/details/${envId}`)
+        navigate(
+            generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, { appId: String(appId), envId: String(envId) }),
+        )
     }
 
     const isScanListEmpty = !isLoading && !securityScansResult?.result.securityScans.length

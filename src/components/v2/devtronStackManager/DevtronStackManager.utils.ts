@@ -15,8 +15,7 @@
  */
 
 import React from 'react'
-import { RouteComponentProps } from 'react-router-dom'
-import { AppType, InstallationType, ModuleStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, InstallationType, ModuleStatus, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -32,6 +31,7 @@ import {
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
 import { AppDetails } from '../appDetails/appDetails.type'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreIntegrations',
@@ -45,28 +45,28 @@ export const MORE_MODULE_DETAILS: ModuleDetails = {
 export const ModulesSection: StackManagerNavLinkType[] = [
     {
         name: 'Discover',
-        href: URLS.STACK_MANAGER_DISCOVER_MODULES,
+        href: ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES,
         icon: DiscoverIcon,
         className: 'discover-modules__nav-link',
     },
     {
         name: 'Installed',
-        href: URLS.STACK_MANAGER_INSTALLED_MODULES,
+        href: ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES,
         icon: InstalledIcon,
         className: 'installed-modules__nav-link',
     },
 ]
 export const AboutSection: StackManagerNavLinkType = {
     name: 'About Devtron',
-    href: URLS.STACK_MANAGER_ABOUT,
+    href: ROUTER_URLS.STACK_MANAGER.ABOUT,
     icon: DevtronIcon,
     className: 'about-devtron__nav-link',
 }
 
-const actionTriggered = (history: RouteComponentProps['history'], location: RouteComponentProps['location']) => {
+const actionTriggered = (navigate: ReturnType<typeof useNavigate>, location: ReturnType<typeof useLocation>) => {
     const queryParams = new URLSearchParams(location.search)
     queryParams.set('actionTriggered', 'true')
-    history.push(`${location.pathname}?${queryParams.toString()}`)
+    navigate(`${location.pathname}?${queryParams.toString()}`)
 }
 
 export const handleAction = async (
@@ -74,8 +74,8 @@ export const handleAction = async (
     isUpgradeView: boolean,
     upgradeVersion: string,
     updateActionTrigger: (isActionTriggered: boolean) => void,
-    history: RouteComponentProps['history'],
-    location: RouteComponentProps['location'],
+    navigate: ReturnType<typeof useNavigate>,
+    location: ReturnType<typeof useLocation>,
     currentVersion: string,
     moduleType?: string,
 ) => {
@@ -91,7 +91,7 @@ export const handleAction = async (
             : await executeModuleAction(moduleName, actionRequest)
 
         if (result?.success) {
-            actionTriggered(history, location)
+            actionTriggered(navigate, location)
         }
     } catch (e) {
         handleError(e, isUpgradeView)
@@ -166,7 +166,7 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
     [ModuleNameMap.ARGO_CD]: {
         title: 'GitOps is not configured',
         linkText: 'Configure GitOps',
-        link: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS,
+        link: ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GITOPS,
     },
 }
 

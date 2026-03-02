@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { Prompt, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
@@ -28,7 +28,6 @@ import {
     CHECKBOX_VALUE,
     CommonNodeAttr,
     ComponentSizeType,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DeploymentNodeType,
     ErrorScreenManager,
     Progressing,
@@ -40,6 +39,7 @@ import {
     usePrompt,
     WorkflowNodeType,
     WorkflowType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
@@ -52,11 +52,11 @@ import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { URLS, ViewType } from '../../../../config'
+import { ViewType } from '../../../../config'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
-import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import { triggerBranchChange } from '../../../app/service'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
@@ -93,10 +93,8 @@ const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal'
 let inprogressStatusTimer
 const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) => {
     const { envId } = useParams<{ envId: string }>()
+    const navigate = useNavigate()
     const location = useLocation()
-    const history = useHistory()
-    const match = useRouteMatch<CIMaterialRouterProps>()
-    const { url } = useRouteMatch()
 
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [isBranchChangeLoading, setIsBranchChangeLoading] = useState(false)
@@ -407,7 +405,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
-        history.push({
+        navigate({
             search: '',
         })
         getWorkflowStatusData(workflows)
@@ -417,7 +415,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         setShowBulkCDModal(false)
         setResponseList([])
 
-        history.push({
+        navigate({
             search: '',
         })
     }
@@ -562,7 +560,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     pipelineId={node?.id}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
-                    history={history}
                 />
             )
         }
@@ -677,7 +674,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     )
 
     const revertToPreviousURL = () => {
-        history.push(match.url)
+        navigate(generatePath(ROUTER_URLS.APP_GROUP_DETAILS.TRIGGER, { envId }))
     }
 
     const getWebhookDetails = () => getExternalCIConfig(selectedWebhookNode.appId, selectedWebhookNode.id, false)
@@ -691,7 +688,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const openCIMaterialModal = (ciNodeId: string) => {
-        history.push(`${match.url}${URLS.BUILD}/${ciNodeId}`)
+        navigate(`build/${ciNodeId}`)
     }
 
     const renderWebhookAddImageModal = () => {
@@ -725,16 +722,16 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     isSelected={workflow.isSelected ?? false}
                     handleSelectionChange={handleSelectionChange}
                     fromAppGrouping
-                    history={history}
                     location={location}
-                    match={match}
                     index={index}
                     handleWebhookAddImageClick={handleWebhookAddImageClick(workflow.appId)}
                     openCIMaterialModal={openCIMaterialModal}
                     reloadTriggerView={reloadTriggerView}
+                    navigate={navigate}
+                    params={{ envId }}
                 />
             ))}
-            <LinkedCIDetail workflows={filteredWorkflows} handleClose={revertToPreviousURL} />
+            <LinkedCIDetail workflows={filteredWorkflows} />
             {renderWebhookAddImageModal()}
         </>
     )
@@ -754,23 +751,24 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     </Checkbox>
                 </div>
 
-                <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-
                 {renderWorkflow()}
 
-                <Switch>
-                    <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
-                        <BuildImageModal
-                            handleClose={revertToPreviousURL}
-                            isJobView={false}
-                            filteredCIPipelineMap={filteredCIPipelines}
-                            workflows={workflows}
-                            reloadWorkflows={getWorkflowsData}
-                            reloadWorkflowStatus={getWorkflowStatusData}
-                            environmentLists={[]}
-                        />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route
+                        path="build/:ciNodeId"
+                        element={
+                            <BuildImageModal
+                                handleClose={revertToPreviousURL}
+                                isJobView={false}
+                                filteredCIPipelineMap={filteredCIPipelines}
+                                workflows={workflows}
+                                reloadWorkflows={getWorkflowsData}
+                                reloadWorkflowStatus={getWorkflowStatusData}
+                                environmentLists={[]}
+                            />
+                        }
+                    />
+                </Routes>
                 <CDMaterial
                     workflows={filteredWorkflows}
                     handleClose={revertToPreviousURL}

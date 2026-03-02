@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserTracing } from '@sentry/tracing'
@@ -154,7 +154,7 @@ if (!window || !window._env_) {
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: true,
         HIDE_NETWORK_STATUS_INTERFACE: true,
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
-        FEATURE_IMAGE_PROMOTION_ENABLE: false,
+        FEATURE_IMAGE_PROMOTION_ENABLE: true,
         FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS: false,
         FEATURE_CONFIG_DRIFT_ENABLE: true,
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
@@ -184,19 +184,33 @@ if (!window || !window._env_) {
     }
 }
 
+const router = createBrowserRouter(
+    [
+        {
+            path: '/*',
+            element: (
+                <>
+                    <UseRegisterShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </UseRegisterShortcutProvider>
+                    <ToastManagerContainer />
+                </>
+            ),
+        },
+    ],
+    {
+        basename: window.__BASE_URL__,
+    },
+)
+
 createRoot(root).render(
     <React.StrictMode>
         {window.top === window.self ? (
             <QueryClientProvider>
                 <ThemeProvider>
-                    <BrowserRouter basename={window.__BASE_URL__}>
-                        <UseRegisterShortcutProvider>
-                            <UserEmailProvider>
-                                <App />
-                            </UserEmailProvider>
-                        </UseRegisterShortcutProvider>
-                        <ToastManagerContainer />
-                    </BrowserRouter>
+                    <RouterProvider router={router} />
                 </ThemeProvider>
             </QueryClientProvider>
         ) : null}

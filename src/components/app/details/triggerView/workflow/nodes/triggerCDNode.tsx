@@ -16,16 +16,16 @@
 
 import { Component } from 'react'
 import Tippy from '@tippyjs/react'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import {
     DEPLOYMENT_STATUS,
     DeploymentAppTypes,
     DeploymentNodeType,
     getDeploymentStatusFromStatus,
     Icon,
+    ROUTER_URLS,
     statusColor,
     statusIcon,
-    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
@@ -55,19 +55,21 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                 this.props.appId,
                 this.props.environmentId,
                 this.props.id,
-                this.props.match.params.envId === this.props.environmentId.toString(),
+                this.props.params.envId === this.props.environmentId.toString(),
                 this.props.status,
                 DeploymentNodeType.CD,
             )
         }
 
-        const baseURL = `${this.props.match.url.split('/').slice(0, -1).join('/')}`
         // If deployment is failed then it will redirect to history page
-        if (this.props.status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED) {
-            return `${baseURL}/${URLS.CD_DETAILS}/${this.props.environmentId}/${this.props.id}?type=${DeploymentNodeType.CD}`
+        if (this.props.status?.toLowerCase() !== DEPLOYMENT_STATUS.PROGRESSING) {
+            return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS, { appId: this.props.params.appId })}/${this.props.environmentId}/${this.props.id}?type=${DeploymentNodeType.CD}`
         }
 
-        return `${baseURL}/${URLS.APP_DETAILS}/${this.props.environmentId}`
+        return generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+            appId: this.props.params.appId,
+            envId: this.props.environmentId,
+        })
     }
 
     componentDidUpdate(prevProps: Readonly<TriggerCDNodeProps>): void {

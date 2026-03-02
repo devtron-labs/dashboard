@@ -16,7 +16,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import Select from 'react-select'
 import Tippy from '@tippyjs/react'
 
@@ -54,7 +54,7 @@ import { AppDetailsTabs } from '../../../appDetails.store'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import IndexStore from '../../../index.store'
 import { downloadLogs, getLogsURL } from '../nodeDetail.api'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { NodeDetailTab, ParamsType } from '../nodeDetail.type'
 import {
     flatContainers,
     getFirstOrNull,
@@ -91,7 +91,6 @@ const LogsComponent = ({
         unit: 'minutes',
     })
     const location = useLocation()
-    const { url } = useRouteMatch()
     const params = useParams<{
         actionName: string
         podName: string
@@ -101,7 +100,6 @@ const LogsComponent = ({
         namespace: string
         kind?: string
     }>()
-    params.nodeType = params.kind ?? params.nodeType
     const key = useKeyDown()
     const { isDownloading, handleDownload } = useDownload()
     const [logsPaused, setLogsPaused] = useState(false)
@@ -115,7 +113,13 @@ const LogsComponent = ({
     const appDetails = IndexStore.getAppDetails()
     const isLogAnalyzer = !params.podName && !params.name
     const [logState, setLogState] = useState(() =>
-        getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+        getInitialPodContainerSelection(
+            isLogAnalyzer,
+            params as ParamsType,
+            location,
+            isResourceBrowserView,
+            selectedResource,
+        ),
     )
     const [prevContainer, setPrevContainer] = useState(false)
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
@@ -204,7 +208,7 @@ const LogsComponent = ({
 
     const podContainerOptions = getPodContainerOptions(
         isLogAnalyzer,
-        params,
+        params as ParamsType,
         location,
         logState,
         isResourceBrowserView,
@@ -431,10 +435,16 @@ const LogsComponent = ({
 
     useEffect(() => {
         if (selectedTab) {
-            selectedTab(NodeDetailTab.LOGS, url)
+            selectedTab(NodeDetailTab.LOGS, location.pathname)
         }
         setLogState(
-            getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+            getInitialPodContainerSelection(
+                isLogAnalyzer,
+                params as ParamsType,
+                location,
+                isResourceBrowserView,
+                selectedResource,
+            ),
         )
 
         if (logSearchTerms) {
@@ -815,7 +825,6 @@ const LogsComponent = ({
                                     <LogViewerComponent
                                         subject={subject}
                                         highlightString={highlightString}
-                                        rootClassName="event-logs__logs"
                                         reset={logsCleared}
                                     />
                                 </div>

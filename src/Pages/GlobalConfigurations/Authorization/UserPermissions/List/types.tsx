@@ -55,8 +55,10 @@ export interface UserPermissionListHeaderProps {
     handleStatusFilterChange: (status: UserStatus[]) => void
 }
 
-export interface UserPermissionContainerProps
-    extends Pick<BulkSelectionActionWidgetProps, 'setBulkSelectionModalConfig'> {
+export interface UserPermissionContainerProps extends Pick<
+    BulkSelectionActionWidgetProps,
+    'setBulkSelectionModalConfig'
+> {
     showStatus: boolean
     error: ServerError
     getUserDataForExport: UserPermissionListHeaderProps['getDataToExport']
@@ -70,11 +72,10 @@ export interface UserPermissionContainerProps
     bulkSelectionModalConfig: BulkSelectionModalConfig
 }
 
-export interface UserPermissionTableProps
-    extends Pick<
-        UserPermissionContainerProps,
-        'showStatus' | 'urlFilters' | 'users' | 'totalCount' | 'refetchUserPermissionList'
-    > {
+export interface UserPermissionTableProps extends Pick<
+    UserPermissionContainerProps,
+    'showStatus' | 'urlFilters' | 'users' | 'totalCount' | 'refetchUserPermissionList'
+> {
     isLoading: boolean
     showPagination: boolean
     isActionsDisabled: boolean

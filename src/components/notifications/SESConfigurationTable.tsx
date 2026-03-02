@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -30,7 +30,7 @@ import './notifications.scss'
 
 const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onClickSESConfigEdit = (id: number) => () => {
         const newParams = {
@@ -38,7 +38,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
             configId: id.toString(),
             modal: ConfigurationsTabTypes.SES,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

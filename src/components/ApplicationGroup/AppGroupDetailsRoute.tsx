@@ -14,39 +14,39 @@
  * limitations under the License.
  */
 
-import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
+import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { MultiValue } from 'react-select'
+
 import {
-    Switch,
-    Route,
-    Redirect,
-    useParams,
-    useRouteMatch,
-    useHistory,
-    generatePath,
-    useLocation,
-} from 'react-router-dom'
-import {
-    Progressing,
+    BASE_ROUTES,
     BreadCrumb,
-    useBreadcrumb,
-    stopPropagation,
-    showError,
+    DeleteConfirmationModal,
+    DOCUMENTATION,
     GenericEmptyState,
-    useAsync,
+    getApplicationManagementBreadcrumb,
+    OptionType,
     PageHeader,
+    Progressing,
+    showError,
+    stopPropagation,
     TabGroup,
     TabProps,
     ToastManager,
     ToastVariantType,
-    URLS as CommonURLS,
-    DeleteConfirmationModal,
+    useAsync,
+    useBreadcrumb,
     useMainContext,
-    OptionType,
-    getApplicationManagementBreadcrumb,
-    DOCUMENTATION
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactGA from 'react-ga4'
-import { MultiValue } from 'react-select'
+
+import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
+import AppDetail from '@Components/app/details/appDetails/AppDetails'
+
+import EmptyFolder from '../../assets/img/empty-folder.webp'
+import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
+import { EditDescRequest } from '../app/types'
 import {
     ErrorBoundary,
     getAndSetAppGroupFilters,
@@ -54,21 +54,18 @@ import {
     sortOptionsByLabel,
     useAppContext,
 } from '../common'
-import { URLS } from '../../config'
-import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
+import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
+import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
 import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
-import { EnvSelector } from './EnvSelector'
-import EmptyFolder from '../../assets/img/empty-folder.webp'
-import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
-import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
+import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import {
+    appGroupPermission,
     deleteEnvGroup,
+    editDescription,
     getAppGroupList,
     getEnvAppList,
     getEnvGroupList,
-    appGroupPermission,
-    editDescription,
 } from './AppGroup.service'
 import {
     AppGroupAdminType,
@@ -81,14 +78,12 @@ import {
     FilterParentType,
     GroupOptionType,
 } from './AppGroup.types'
-import { EditDescRequest } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
-import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
-import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
-import '../app/details/app.scss'
-import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
+import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import CreateAppGroup from './CreateAppGroup'
-import AppDetail from '@Components/app/details/appDetails/AppDetails'
+import { EnvSelector } from './EnvSelector'
+
+import '../app/details/app.scss'
 
 export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -100,8 +95,7 @@ export function useAppGroupAppFilterContext() {
     return context
 }
 
-export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
-    const { path } = useRouteMatch()
+function AppGroupDetails({ isSuperAdmin }: AppGroupAdminType) {
     const { setIntelligenceConfig } = useMainContext()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState<string>('')
@@ -245,12 +239,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setDescription(result.description)
         const _appListOptions = result.apps?.length
             ? result.apps
-                  .map((app): OptionType => {
-                      return {
+                  .map(
+                      (app): OptionType => ({
                           value: `${app.appId}`,
                           label: app.appName,
-                      }
-                  })
+                      }),
+                  )
                   .sort(sortOptionsByLabel)
             : []
 
@@ -262,13 +256,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         return _appListOptions
     }
 
-    const handleToast = (action: string) => {
-        return ToastManager.showToast({
+    const handleToast = (action: string) =>
+        ToastManager.showToast({
             variant: ToastVariantType.notAuthorized,
             title: `Cannot ${action} filter`,
             description: `You can ${action} a filter with only those applications for which you have admin/manager permission.`,
         })
-    }
 
     async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean): Promise<void> {
         try {
@@ -281,12 +274,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             }
         } catch (err) {
             const _map = new Map<string, boolean>()
-            if (err['code'] === 403) {
+            if (err.code === 403) {
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
-                err['errors'].map((errors) => {
-                    arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
-                    errors['userMessage']['unauthorizedApps'].forEach((element) => {
+                err.errors.map((errors) => {
+                    arrUnauthorized.push([...errors.userMessage.unauthorizedApps])
+                    errors.userMessage.unauthorizedApps.forEach((element) => {
                         if (!_map.get(element)) {
                             _map.set(element, true)
                         }
@@ -388,15 +381,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setShowDeleteGroup(false)
     }
 
-    const renderEmpty = () => {
-        return (
-            <GenericEmptyState
-                image={EmptyFolder}
-                title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
-                subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}
-            />
-        )
-    }
+    const renderEmpty = () => (
+        <GenericEmptyState
+            image={EmptyFolder}
+            title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
+            subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}
+        />
+    )
 
     const filteredAppListData = useMemo(() => {
         const _appListData = { ...appGroupListData }
@@ -427,41 +418,43 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         return (
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
-                    <Switch>
-                        <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <EnvironmentOverview
-                                filteredAppIds={_filteredAppsIds}
-                                appGroupListData={filteredAppListData}
-                                isVirtualEnv={isVirtualEnv}
-                                getAppListData={getAppListData}
-                                handleSaveDescription={handleSaveDescription}
-                                description={description}
-                            />
-                        </Route>
-                        <Route path={`${path}${URLS.DETAILS}/:appId(\\d+)?`}>
-                            <AppDetail
-                                detailsType="app-group"
-                                filteredResourceIds={_filteredAppsIds}
-                                resourceList={appListOptions}
-                                setSelectedResourceList={setSelectedAppList}
-                            />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                            <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <EnvCIDetails filteredAppIds={_filteredAppsIds} />
-                        </Route>
+                    <Routes>
                         <Route
-                            path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
-                        >
-                            <EnvCDDetails filteredAppIds={_filteredAppsIds} />
-                        </Route>
-                        <Route path={`${path}/${CommonURLS.APP_CONFIG}/:appId(\\d+)?`}>
-                            <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
-                        </Route>
-                        <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
-                    </Switch>
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.OVERVIEW}/*`}
+                            element={
+                                <EnvironmentOverview
+                                    filteredAppIds={_filteredAppsIds}
+                                    appGroupListData={filteredAppListData}
+                                    isVirtualEnv={isVirtualEnv}
+                                    getAppListData={getAppListData}
+                                    handleSaveDescription={handleSaveDescription}
+                                    description={description}
+                                />
+                            }
+                        />
+                        <Route
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.APP_DETAILS}/:appId?/*`}
+                            element={<AppDetail detailsType="app-group" filteredResourceIds={_filteredAppsIds} resourceList={appListOptions}
+                                setSelectedResourceList={setSelectedAppList}  />}
+                        />
+                        <Route
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.TRIGGER}/*`}
+                            element={<EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />}
+                        />
+                        <Route
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.CI_DETAILS}/:pipelineId?/:buildId?/*`}
+                            element={<EnvCIDetails filteredAppIds={_filteredAppsIds} />}
+                        />
+                        <Route
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.CD_DETAILS}/:appId?/:pipelineId?/:triggerId?/*`}
+                            element={<EnvCDDetails filteredAppIds={_filteredAppsIds} />}
+                        />
+                        <Route
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.CONFIGURATIONS}/:appId?/*`}
+                            element={<EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />}
+                        />
+                        <Route path="*" element={<Navigate to={BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.OVERVIEW} />} />
+                    </Routes>
                 </Suspense>
             </ErrorBoundary>
         )
@@ -506,6 +499,14 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     )
 }
 
+const AppGroupDetailsRoute = ({ isSuperAdmin }: AppGroupAdminType) => {
+    const params = useParams<{ envId: string }>()
+
+    return <AppGroupDetails isSuperAdmin={isSuperAdmin} key={`app-group-details-${params.envId}`} />
+}
+
+export default AppGroupDetailsRoute
+
 const EnvHeader = ({
     envName,
     setEnvName,
@@ -522,8 +523,7 @@ const EnvHeader = ({
     isSuperAdmin,
 }: EnvHeaderType) => {
     const { envId } = useParams<{ envId: string }>()
-    const match = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const currentPathname = useRef('')
     const { setCurrentEnvironmentName } = useAppContext()
@@ -574,9 +574,10 @@ const EnvHeader = ({
             if (+envId !== value) {
                 setEnvName(label)
                 setShowEmpty(!appCount)
-                const tab = currentPathname.current.replace(match.url, '').split('/')[1]
-                const newUrl = generatePath(match.path, { envId: value })
-                history.push(`${newUrl}/${tab}`)
+                const currentUrl = generatePath(ROUTER_URLS.APP_GROUP_DETAILS.ROOT, { envId })
+                const tab = currentPathname.current.replace(currentUrl, '').split('/')[1]
+                const newUrl = generatePath(ROUTER_URLS.APP_GROUP_DETAILS.ROOT, { envId: value })
+                navigate(`${newUrl}/${tab}`)
                 ReactGA.event({
                     category: 'Env Selector',
                     action: 'Env Selection Changed',
@@ -588,6 +589,7 @@ const EnvHeader = ({
     )
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.APP_GROUP_DETAILS.ROOT,
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
@@ -635,7 +637,7 @@ const EnvHeader = ({
                 label: 'Overview',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    to: BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.OVERVIEW,
                     onClick: (event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action),
                 },
             },
@@ -644,7 +646,7 @@ const EnvHeader = ({
                 label: 'App Details',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}${URLS.DETAILS}`,
+                    to: BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.APP_DETAILS,
                     onClick: (event) =>
                         handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.EnvDetailsClicked.action),
                 },
@@ -654,7 +656,7 @@ const EnvHeader = ({
                 label: 'Build & Deploy',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_TRIGGER}`,
+                    to: BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.TRIGGER,
                     onClick: (event) =>
                         handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action),
                     'data-testid': 'group-build-deploy',
@@ -665,7 +667,7 @@ const EnvHeader = ({
                 label: 'Build history',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_CI_DETAILS}`,
+                    to: BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.CI_DETAILS,
                     onClick: handleEventRegistration,
                     'data-testid': 'app-group-build-history',
                 },
@@ -675,7 +677,7 @@ const EnvHeader = ({
                 label: 'Deployment history',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_CD_DETAILS}`,
+                    to: BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.CD_DETAILS,
                     onClick: handleEventRegistration,
                 },
             },
@@ -685,7 +687,7 @@ const EnvHeader = ({
                 tabType: 'navLink',
                 icon: ICSlidersVertical,
                 props: {
-                    to: `${match.url}/${CommonURLS.APP_CONFIG}`,
+                    to: BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.CONFIGURATIONS,
                     onClick: (event) =>
                         handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action),
                     'data-testid': 'group-configuration',
@@ -696,17 +698,15 @@ const EnvHeader = ({
         return <TabGroup tabs={tabs} hideTopPadding />
     }
 
-    const renderBreadcrumbs = () => {
-        return (
-            <>
-                <BreadCrumb breadcrumbs={breadcrumbs} />
-                <div className="dc__border-right ml-8 mr-8 h-16" />
-                <AppGroupAppFilterContext.Provider value={contextValue}>
-                    {!showEmpty && <AppGroupAppFilter />}
-                </AppGroupAppFilterContext.Provider>
-            </>
-        )
-    }
+    const renderBreadcrumbs = () => (
+        <>
+            <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.APP_GROUP_DETAILS.ROOT} />
+            <div className="dc__border-right ml-8 mr-8 h-16" />
+            <AppGroupAppFilterContext.Provider value={contextValue}>
+                {!showEmpty && <AppGroupAppFilter />}
+            </AppGroupAppFilterContext.Provider>
+        </>
+    )
 
     return (
         <PageHeader

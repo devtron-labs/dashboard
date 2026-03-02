@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     AppStatusModal,
@@ -70,7 +70,7 @@ const AppDetailsComponent = ({
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -142,9 +142,12 @@ const AppDetailsComponent = ({
     }
 
     const handleCloseDeploymentStatusModal = () => {
-        history.replace({
-            search: '',
-        })
+        navigate(
+            {
+                search: '',
+            },
+            { replace: true },
+        )
     }
 
     const updateDeploymentStatusDetailsBreakdownData = (

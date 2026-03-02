@@ -55,8 +55,10 @@ export interface GetWorkflowGraphVisualizerNodesProps {
     handleNodeUpdateAction: (props: HandleNodeUpdateActionProps) => void
 }
 
-export interface ConvertWorkflowNodesToGraphVisualizerNodesProps
-    extends Pick<GetWorkflowGraphVisualizerNodesProps, 'handleNodeUpdateAction'> {
+export interface ConvertWorkflowNodesToGraphVisualizerNodesProps extends Pick<
+    GetWorkflowGraphVisualizerNodesProps,
+    'handleNodeUpdateAction'
+> {
     workflowNodes: CommonNodeAttr[]
     workflowId: string
     environmentListOptions: ReturnType<typeof createClusterEnvGroup<EnvironmentListMinType>>

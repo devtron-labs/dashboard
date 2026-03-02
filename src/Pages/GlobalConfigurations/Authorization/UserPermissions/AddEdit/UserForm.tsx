@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -24,6 +24,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     OptionType,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerProps,
     ServerErrors,
@@ -38,7 +39,7 @@ import {
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
 import { deepEqual, importComponentFromFELibrary, validateEmail } from '../../../../../components/common'
-import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../config'
+import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING } from '../../../../../config'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
@@ -93,10 +94,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const [submitting, setSubmitting] = useState(false)
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
 
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     const _redirectToUserPermissionList = () => {
-        push(URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION)
+        navigate(ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS)
     }
 
     const toggleDeleteConfirmationModal = () => {
@@ -270,7 +271,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         <div className="flexbox-col dc__align-start dc__align-self-stretch flex-grow-1 dc__gap-24 pb-16">
             <div className="flex px-20 pt-16 dc__content-space dc__gap-8 w-100">
                 <div className="flex dc__content-start dc__gap-4 fs-16 lh-32 fw-4 dc__ellipsis-right">
-                    <Link className="anchor" to={URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}>
+                    <Link className="anchor" to={ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS}>
                         User Permissions
                     </Link>
                     <span className="cn-5">/</span>
@@ -370,7 +371,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         text="Cancel"
                         component={ButtonComponentType.link}
                         linkProps={{
-                            to: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
+                            to: ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS,
                         }}
                         variant={ButtonVariantType.secondary}
                         size={ComponentSizeType.medium}

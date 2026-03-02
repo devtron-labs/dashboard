@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export const getShouldHidePageHeaderAndSidebar = (pathname: string) =>
-    !!new RegExp(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL.replace(':appId', '')).test(pathname)
+    !!new RegExp(ROUTER_URLS.APP_TEMPLATE_DETAIL.replace(':appId', '')).test(pathname)

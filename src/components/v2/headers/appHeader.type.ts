@@ -23,4 +23,5 @@ export interface EAHeaderComponentType {
     redirectURL: string
     showAppDetailsOnly?: boolean
     breadCrumbConfig?: Record<string, null | string | JSX.Element>
+    breadcrumbPathPattern: string
 }

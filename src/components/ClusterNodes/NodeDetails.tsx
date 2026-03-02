@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo, ReactNode } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
     Progressing,
@@ -41,13 +41,13 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
-    RESOURCE_BROWSER_ROUTES,
     getUrlWithSearchParams,
     ResourceBrowserActionMenuEnum,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
     usePrompt,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, useHistory, generatePath, Prompt } from 'react-router-dom'
+import { useParams, useLocation, generatePath, useNavigate, Routes, Route, Navigate } from 'react-router-dom'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
@@ -68,27 +68,26 @@ import {
     UpdateNodeRequestBody,
 } from './types'
 import { OrderBy } from '../app/list/types'
-import { MODES, URLS } from '../../config'
+import { MODES } from '../../config'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
-import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '@Components/ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { importComponentFromFELibrary } from '@Components/common'
 import { unauthorizedInfoText } from '@Components/ResourceBrowser/ResourceList/utils'
 
 const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
     const { clusterId, name } = useParams<{ clusterId: string; nodeType: string; name: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
-    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
     const [modifiedManifest, setModifiedManifest] = useState('')
@@ -110,12 +109,11 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     const [isEdit, setIsEdit] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
-    const queryParams = new URLSearchParams(location.search)
-    const { push, replace } = useHistory()
+    const navigate = useNavigate()
 
     const hasUnsavedChanges = (nodeDetail?.manifest ? YAMLStringify(nodeDetail.manifest) : '') !== modifiedManifest
 
-    usePrompt({ shouldPrompt: hasUnsavedChanges })
+    usePrompt({ shouldPrompt: hasUnsavedChanges, message: UNSAVED_CHANGES_PROMPT_MESSAGE })
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -273,20 +271,6 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         },
     ]
 
-    useEffect(() => {
-        const tab = queryParams.get('tab')
-        const tabIndex = NODE_TABS_INFO.findIndex((tabDetails) => tabDetails.id === tab)
-
-        if (tabIndex !== -1) {
-            setSelectedTabIndex(tabIndex)
-        } else {
-            replace({
-                pathname: location.pathname,
-                search: `?tab=${getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)}`,
-            })
-        }
-    }, [location.search])
-
     const selectedResource = useMemo((): { gvk: GVKType; namespaced: boolean } => {
         // Using - as a prefix since the group is empty for pods
         const resourceGroupData = lowercaseKindToResourceGroupMap[`-${Nodes.Pod.toLowerCase()}`]
@@ -300,25 +284,24 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
         if (name !== AUTO_SELECT.value) {
             const selectedTab = NODE_TABS_INFO[_tabIndex]?.id || ''
-            const _searchParam = `?tab=${selectedTab}`
-
             updateTabUrl({
-                url: `${location.pathname}${_searchParam}`,
+                url: generatePath(`${RESOURCE_BROWSER_ROUTES.NODE_DETAIL}/${selectedTab}`, { clusterId, name }),
             })
         }
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const tabs = NODE_TABS_INFO.map(({ renderComponent, ...tabDetails }, index) => ({
-            ...tabDetails,
+        const tabs: TabProps[] = NODE_TABS_INFO.map(({ icon, label, id }, index) => ({
+            id,
+            label,
+            icon,
             tabType: 'navLink',
             props: {
-                to: `?tab=${tabDetails.id}`,
+                to: id,
                 onClick: changeNodeTab,
-                isActive: (_, { search }) => search === `?tab=${tabDetails.id}`,
                 ['data-tab-index']: index,
             },
-        })) as TabProps[]
+        }))
 
         return (
             <div className="px-20 dc__border-bottom flex dc__gap-16">
@@ -682,7 +665,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     const openDebugTerminal = () => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeDetail.name)
-        push(
+        navigate(
             getUrlWithSearchParams(
                 generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
                     clusterId,
@@ -725,7 +708,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
 
     const handleResourceClick = (e) => {
         const { name, tab = ResourceBrowserActionMenuEnum.manifest, namespace } = e.currentTarget.dataset
-        push(
+        navigate(
             getUrlWithSearchParams(
                 generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
                     clusterId,
@@ -830,9 +813,10 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     }
 
     const renderTabControls = () => {
-        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
+        const nodeDetailPath = generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })
+        const selectedTabId = location.pathname.replace(nodeDetailPath, '').split('/')[1]
 
-        if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
+        if (selectedTabId === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
             if (!isEdit) {
                 return (
                     <div className="flexbox dc__align-items-center dc__gap-12">
@@ -1010,14 +994,14 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     }
 
     const renderTabContent = (): JSX.Element => {
-        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
-        const renderNode = selectedTab?.renderComponent
-
-        if (renderNode) {
-            return renderNode()
-        }
-
-        return null
+        return (
+            <Routes>
+                {NODE_TABS_INFO.map(({ id, renderComponent: Component }) => (
+                    <Route key={id} path={id} element={<Component />} />
+                ))}
+                <Route path="*" element={<Navigate to={NODE_TABS_INFO[0].id} />} />
+            </Routes>
+        )
     }
 
     const showCordonNodeModal = (): void => {
@@ -1079,7 +1063,6 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                 <Progressing pageLoader size={32} />
             ) : (
                 <>
-                    <Prompt when={hasUnsavedChanges} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
                     {renderNodeDetailsTabs()}
                     {renderTabContent()}
                     {showCordonNodeDialog && (

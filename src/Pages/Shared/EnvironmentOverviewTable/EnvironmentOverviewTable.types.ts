@@ -57,7 +57,8 @@ export interface EnvironmentOverviewTableProps {
 }
 
 export interface EnvironmentOverviewBulkSelectionWidgetProps
-    extends PropsWithChildren<{
+    extends
+        PropsWithChildren<{
             count: number
             onClose: () => void
             parentRef: MutableRefObject<HTMLDivElement>

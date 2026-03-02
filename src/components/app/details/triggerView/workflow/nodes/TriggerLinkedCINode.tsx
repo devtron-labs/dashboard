@@ -15,15 +15,15 @@
  */
 
 import { Component } from 'react'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
+import { getWorkflowNodeStatusTitle, RouterV5Props, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import link from '@Icons/ic-link.svg'
 import { ReactComponent as ICLinkedCINode } from '@Icons/ic-node-build-linked.svg'
 import { TriggerStatus } from '../../../../config'
 import { DEFAULT_STATUS, URLS } from '../../../../../../config'
 
-export interface CINodeProps extends RouteComponentProps<{}> {
+export interface CINodeProps extends RouterV5Props<{ appId: string }> {
     x: number
     y: number
     width: number
@@ -47,14 +47,16 @@ export interface CINodeProps extends RouteComponentProps<{}> {
 
 export class TriggerLinkedCINode extends Component<CINodeProps> {
     getCIDetailsURL(): string {
-        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CI_DETAILS)}/${this.props.id}`
+        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS, {
+            appId: this.props.params.appId,
+        })}/${this.props.id}`
     }
 
     redirectToCIDetails() {
         if (this.props.fromAppGrouping) {
             return
         }
-        this.props.history.push(this.getCIDetailsURL())
+        this.props.navigate(this.getCIDetailsURL())
     }
 
     renderStatus() {

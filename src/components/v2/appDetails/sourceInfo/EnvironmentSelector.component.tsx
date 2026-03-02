@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
-import Select from 'react-select'
+import { useState } from 'react'
 import {
     showError,
-    PopupMenu,
-    multiSelectStyles,
     ServerErrors,
     DeploymentAppTypes,
     ToastManager,
@@ -31,25 +28,22 @@ import {
     ComponentSizeType,
     Icon,
     ActionMenuProps,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
-import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import IndexStore from '../index.store'
-import { AppEnvironment } from './environment.type'
 import { useSharedState } from '../../utils/useSharedState'
 import { AppType } from '../appDetails.type'
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
 import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
-import { ReactComponent as Dots } from '@Icons/ic-more-vertical.svg'
-import { DELETE_ACTION, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE } from '../../../../config/constantMessaging'
-import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { getEnvironmentName } from './utils'
@@ -71,10 +65,8 @@ const EnvironmentSelectorComponent = ({
     isVirtualEnvironment?: boolean
 }) => {
     const params = useParams<{ appId: string; envId?: string }>()
-    const { url } = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const [showWorkloadsModal, setShowWorkloadsModal] = useState(false)
-    const [environments, setEnvironments] = useState<Array<AppEnvironment>>()
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
@@ -88,29 +80,6 @@ const EnvironmentSelectorComponent = ({
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
     const isExternalArgo = appDetails.appType === AppType.EXTERNAL_ARGO_APP
     const isExternalFlux = appDetails.appType === AppType.EXTERNAL_FLUX_APP
-
-    useEffect(() => {
-        if (appDetails.appType === AppType.DEVTRON_APP) {
-            getAppOtherEnvironmentMin(params.appId, false)
-                .then((response) => {
-                    setEnvironments(response.result || [])
-                })
-                .catch(() => {
-                    showError('Error in fetching environments')
-                    setEnvironments([])
-                })
-        }
-    }, [params.appId])
-
-    useEffect(() => {
-        if (!params.envId && appDetails.environmentId && !isExternalApp) {
-            handleEnvironmentChange(appDetails.environmentId)
-        }
-    }, [appDetails.environmentId])
-
-    const handleEnvironmentChange = (envId: number) => {
-        history.push(`${url}/${envId}`)
-    }
 
     const closeUrlInfo = (): void => {
         showUrlInfo(false)
@@ -182,7 +151,7 @@ const EnvironmentSelectorComponent = ({
     }
 
     const redirectToHelmList = () => {
-        history.push(URLS.HELM_APP_LIST)
+        navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM)
     }
 
     const handleForceDelete = async () => {
@@ -250,47 +219,7 @@ const EnvironmentSelectorComponent = ({
 
                     <div className="fw-6 fs-14 cb-5">
                         <div style={{ minWidth: '200px' }}>
-                            {environments && environments.length > 0 && (
-                                <Select
-                                    placeholder="Select Environment"
-                                    options={
-                                        Array.isArray(environments)
-                                            ? environments.map((environment) => ({
-                                                  label: environment.environmentName,
-                                                  value: environment.environmentId,
-                                              }))
-                                            : []
-                                    }
-                                    value={
-                                        appDetails.environmentId
-                                            ? { value: +appDetails.environmentId, label: appDetails.environmentName }
-                                            : null
-                                    }
-                                    onChange={(selected) => {
-                                        handleEnvironmentChange(selected.value)
-                                    }}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-                                        control: (base, state) => ({
-                                            ...base,
-                                            border: '0px',
-                                            backgroundColor: 'transparent',
-                                            minHeight: '24px !important',
-                                        }),
-                                        singleValue: (base) => ({ ...base, fontWeight: 600, color: 'var(--B500)' }),
-                                        indicatorsContainer: (provided, state) => ({
-                                            ...provided,
-                                            height: '24px',
-                                        }),
-                                    }}
-                                    className="bw-1 eb-2 br-4 bg__primary"
-                                    components={{
-                                        IndicatorSeparator: null,
-                                    }}
-                                />
-                            )}
-                            {(!environments || environments.length === 0) && appDetails && (
+                            {appDetails && (
                                 <div
                                     className="bw-1 eb-2 br-4 bg__primary pl-12 pr-12 pt-4 pb-4"
                                     style={{ minWidth: '200px' }}

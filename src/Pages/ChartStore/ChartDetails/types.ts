@@ -39,7 +39,7 @@ export interface ChartDetailsSearchParams {
     tab: ChartDetailsSegment
 }
 
-export interface ChartDetailsRouteParams {
+export type ChartDetailsRouteParams = {
     chartId: string
 }
 
@@ -50,7 +50,8 @@ interface CommonChartDetailsProps {
 }
 
 export interface ChartDetailsReadmeProps
-    extends Pick<CommonChartDetailsProps, 'isLoading' | 'selectedChartVersion'>,
+    extends
+        Pick<CommonChartDetailsProps, 'isLoading' | 'selectedChartVersion'>,
         Pick<ChartDetailsDTO, 'chartName' | 'readme'> {
     error?: ServerErrors
     reload?: () => void
@@ -60,8 +61,10 @@ export interface ChartDetailsReadmeProps
 
 export interface ChartDetailsAboutProps extends Pick<CommonChartDetailsProps, 'isLoading' | 'chartDetails'> {}
 
-export interface ChartDetailsDeployProps
-    extends Pick<CommonChartDetailsProps, 'selectedChartVersion' | 'chartDetails'> {
+export interface ChartDetailsDeployProps extends Pick<
+    CommonChartDetailsProps,
+    'selectedChartVersion' | 'chartDetails'
+> {
     chartVersions: {
         id: number
         version: string

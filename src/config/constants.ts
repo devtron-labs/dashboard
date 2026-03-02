@@ -18,7 +18,6 @@ import {
     SelectPickerOptionType,
     ToastManager,
     ROUTES as COMMON_ROUTES,
-    EnvResourceType,
     RegistryCredentialsType,
     DOCUMENTATION,
     SegmentType,
@@ -58,7 +57,6 @@ export const Routes = {
     V2_CD_CONFIG: 'app/v2/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
-    WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_TRIGGER_STATUS: 'app/vsm',
 
@@ -130,9 +128,6 @@ export const Routes = {
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
-    USER_PERMISSIONS: 'users',
-    PERMISSION_GROUPS: 'groups',
-    SSO_LOGIN_SERVICES: 'login-service',
     API_TOKEN: 'api-token',
     API_TOKEN_WEBHOOK: 'api-token/webhook',
 
@@ -836,4 +831,4 @@ export const EDITOR_VIEW = {
 
 export const DEVTRON_IFRAME_PRIMARY: string = 'devtronIframePrimary'
 
-export const DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE = `:resourceType(${Object.values(EnvResourceType).join('|')})`
+export const DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE = ':resourceType'

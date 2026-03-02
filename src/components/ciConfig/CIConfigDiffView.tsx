@@ -27,11 +27,11 @@ import {
     WorkflowType,
     ToastVariantType,
     ToastManager,
-    URLS as CommonURLS,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
@@ -56,14 +56,9 @@ export default function CIConfigDiffView({
     gitMaterials,
     isTemplateView,
 }: CIConfigDiffViewProps) {
-    const history = useHistory()
     const location = useLocation()
-    const match = useRouteMatch<{
-        appId: string
-    }>()
-    const { appId } = useParams<{
-        appId: string
-    }>()
+    const navigate = useNavigate()
+    const { appId } = useParams<{ appId: string }>()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [deleteInProgress, setDeleteInProgress] = useState(false)
     const [selectedWFId, setSelectedWFId] = useState(0)
@@ -147,14 +142,10 @@ export default function CIConfigDiffView({
         }
 
         if (ciNode.isLinkedCI) {
-            return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
-                appId,
-                workflowId,
-                ciNode.id,
-            )}`
+            return getLinkedCIPipelineURL(appId, workflowId, ciNode.id, true)
         }
 
-        return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
+        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
             URLS.APP_CI_CONFIG
         }/${wfCIMap.get(workflowId)}/build`
     }
@@ -299,9 +290,9 @@ export default function CIConfigDiffView({
                     height={getWorkflowHeight(_wf)}
                     width="100%"
                     nodes={_wf.nodes}
-                    history={history}
+                    params={{ appId }}
                     location={location}
-                    match={match}
+                    navigate={navigate}
                     handleCDSelect={noop}
                     handleCISelect={noop}
                     openEditWorkflow={noop}
@@ -323,7 +314,6 @@ export default function CIConfigDiffView({
             </div>
         ))
     }
-
 
     return (
         <Drawer parentClassName="dc__overflow-hidden" position="right" width="87%" minWidth="1024px" maxWidth="1246px">

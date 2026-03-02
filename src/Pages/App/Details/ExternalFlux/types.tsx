@@ -16,7 +16,7 @@
 
 import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ExternalFluxAppDetailParams {
+export type ExternalFluxAppDetailParams = {
     clusterId: string
     appName: string
     namespace: string
@@ -29,7 +29,8 @@ export enum EXTERNAL_FLUX_APP_STATUS {
 }
 
 export interface GetExternalFluxCDAppDetailsParamsType
-    extends Pick<ExternalFluxAppDetailParams, 'clusterId' | 'namespace' | 'appName'>,
+    extends
+        Pick<ExternalFluxAppDetailParams, 'clusterId' | 'namespace' | 'appName'>,
         Pick<APIOptions, 'abortControllerRef'> {
     isKustomization: boolean
 }

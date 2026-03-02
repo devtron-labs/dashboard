@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { ButtonComponentType, ButtonProps, ButtonVariantType, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ButtonComponentType,
+    ButtonProps,
+    ButtonVariantType,
+    InfoBlock,
+    ROUTER_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
-import { URLS } from '@Config/routes'
 
 export const getConfigureGitOpsCredentialsButtonProps = ({
     size,
@@ -31,7 +36,7 @@ export const getConfigureGitOpsCredentialsButtonProps = ({
     endIcon: <ICArrowRight />,
     component: ButtonComponentType.link,
     linkProps: {
-        to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS,
+        to: ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GITOPS,
     },
 })
 

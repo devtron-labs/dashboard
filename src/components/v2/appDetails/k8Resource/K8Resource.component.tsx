@@ -15,12 +15,13 @@
  */
 
 import { useEffect, useMemo } from 'react'
-import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ALL_RESOURCE_KIND_FILTER,
     getPodsRootParentNameAndStatus,
     Node,
+    ROUTER_URLS,
     StatusFilterButtonComponent,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -54,9 +55,9 @@ export const K8ResourceComponent = ({
     tabs,
     handleUpdateK8sResourceTabUrl,
 }: K8ResourceComponentProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const { path } = useRouteMatch()
+    const path = location.pathname
     const { nodeType: currentNode, ...restParams } = useParams<{ nodeType: string }>()
     const currentFilter = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
@@ -83,7 +84,7 @@ export const K8ResourceComponent = ({
             return
         }
         if (!currentFilteredNodes.length) {
-            history.push({ pathname: location.pathname, search: '' })
+            navigate({ pathname: location.pathname, search: '' })
         }
     }, [nodes])
 
@@ -110,7 +111,7 @@ export const K8ResourceComponent = ({
         IndexStore.updateFilterType(selectedFilter.toUpperCase())
         if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
             searchParams.delete('filterType')
-            history.push({ search: `${searchParams}` })
+            navigate({ search: `${searchParams}` })
             return
         }
 
@@ -120,12 +121,12 @@ export const K8ResourceComponent = ({
 
         if (!selectedNodeExists) {
             const newNode = nextFilterNodes?.[0]
-            history.push({
+            navigate({
                 pathname: getRedirectPathname(newNode, selectedFilter),
                 search: `${searchParams}`,
             })
         } else {
-            history.push({ search: `${searchParams}` })
+            navigate({ search: `${searchParams}` })
         }
     }
 
@@ -174,7 +175,11 @@ export const K8ResourceComponent = ({
 }
 
 export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMessage: string }) => {
-    const { url: routeMatchUrl } = useRouteMatch()
+    const params = useParams()
+    const routeMatchUrl = generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+        appId: params.appId,
+        envId: params.envId,
+    })
     const {
         tabs,
         initTabs,
@@ -183,7 +188,6 @@ export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMes
         stopTabByIdentifier,
         // NOTE: fallback to 0th index since that is the k8s_resource tab
     } = useTabs(routeMatchUrl, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
-
     const location = useLocation()
 
     useEffect(() => {

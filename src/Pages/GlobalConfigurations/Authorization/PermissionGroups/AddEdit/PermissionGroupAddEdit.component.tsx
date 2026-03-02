@@ -22,11 +22,12 @@ import {
     GenericEmptyState,
     Progressing,
     Reload,
+    ROUTER_URLS,
     TOAST_ACCESS_DENIED,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { API_STATUS_CODES, URLS } from '../../../../../config'
+import { API_STATUS_CODES } from '../../../../../config'
 import { getPermissionGroupById } from '../../authorization.service'
 import { PermissionConfigurationFormProvider } from '../../Shared/components/PermissionConfigurationForm'
 import PermissionGroupForm from './PermissionGroupForm'
@@ -49,7 +50,7 @@ const PermissionGroupAddEdit = () => {
     if (error) {
         if (error.code === API_STATUS_CODES.NOT_FOUND) {
             const renderNullStateButton = () => (
-                <Link to={URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS} className="cta flex h-32 anchor">
+                <Link to={ROUTER_URLS.GLOBAL_CONFIG_AUTH.GROUPS} className="cta flex h-32 anchor">
                     Go to Permission Groups
                 </Link>
             )
@@ -81,4 +82,9 @@ const PermissionGroupAddEdit = () => {
     )
 }
 
-export default PermissionGroupAddEdit
+const PermissionGroupAddEditWithKey = () => {
+    const { groupId } = useParams<{ groupId: string }>()
+    return <PermissionGroupAddEdit key={`permission-group-add-edit-${groupId}`} />
+}
+
+export default PermissionGroupAddEditWithKey

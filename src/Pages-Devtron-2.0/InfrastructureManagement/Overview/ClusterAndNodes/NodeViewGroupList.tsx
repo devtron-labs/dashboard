@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { generatePath, Link, useHistory } from 'react-router-dom'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
 
 import {
     ExportToCsv,
@@ -8,7 +8,7 @@ import {
     Icon,
     noop,
     PaginationEnum,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     SearchBar,
     SelectPicker,
     SelectPickerOptionType,
@@ -66,7 +66,10 @@ const NodeNameCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRow
             <Tooltip content={nodeName}>
                 <Link
                     className="dc__truncate"
-                    to={generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name: nodeName })}
+                    to={generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.NODE_DETAIL, {
+                        clusterId: String(clusterId),
+                        name: nodeName,
+                    })}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -236,7 +239,7 @@ const NodeViewGroupListWrapper = ({
 }
 
 const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewGroupType }) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = async (
         {
             searchKey,
@@ -279,7 +282,7 @@ const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewG
     }
 
     const clearFilters = () => {
-        push({ search: '' })
+        navigate({ search: '' })
     }
 
     return (

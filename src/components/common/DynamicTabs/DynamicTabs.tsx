@@ -15,7 +15,7 @@
  */
 
 import React, { cloneElement, MouseEventHandler, RefCallback, useMemo, useRef } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
 
@@ -68,7 +68,7 @@ const DynamicTabs = ({
     iconsConfig = {},
     backgroundColorToken,
 }: DynamicTabsProps) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     const dynamicTabsContainerRef = useRef<HTMLDivElement>(null)
 
@@ -86,7 +86,7 @@ const DynamicTabs = ({
         markTabActiveById(tab.id)
             .then((isFound) => {
                 if (isFound) {
-                    push(tab.url)
+                    navigate(tab.url)
                     return
                 }
 
@@ -132,14 +132,14 @@ const DynamicTabs = ({
     const handleTabCloseAction: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation()
         removeTabByIdentifier(event.currentTarget.dataset.id)
-            .then((url) => url && push(url))
+            .then((url) => url && navigate(url))
             .catch(noop)
     }
 
     const handleTabStopAction = (e) => {
         e.stopPropagation()
         stopTabByIdentifier(e.currentTarget.dataset.id)
-            .then((url) => url && push(url))
+            .then((url) => url && navigate(url))
             .catch(noop)
     }
 

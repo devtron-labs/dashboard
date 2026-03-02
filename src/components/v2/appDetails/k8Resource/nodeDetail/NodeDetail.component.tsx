@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 
 import {
     Button,
@@ -117,7 +117,6 @@ const NodeDetailComponent = ({
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const { path, url } = useRouteMatch()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showManifestCompareView, setShowManifestCompareView] = useState(false)
     const [manifestCodeEditorMode, setManifestCodeEditorMode] = useState<ManifestCodeEditorMode>(null)
@@ -170,7 +169,7 @@ const NodeDetailComponent = ({
         (currentResource as unknown as Node)?.health?.status === 'Missing'
 
     const [containers, setContainers] = useState<Options[]>(
-        (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
+        (isResourceBrowserView ? (selectedResource?.containers ?? []) : getContainersData(podMetaData)) as Options[],
     )
     const [startTerminal, setStartTerminal] = useState<boolean>(false)
 
@@ -522,7 +521,7 @@ const NodeDetailComponent = ({
         label: capitalizeFirstLetter(tab),
         tabType: 'navLink',
         props: {
-            to: `${url}/${tab.toLowerCase()}${location.search}`,
+            to: `./${tab.toLowerCase()}${location.search}`,
             'data-testid': `${tab.toLowerCase()}-nav-link`,
         },
     }))
@@ -591,74 +590,87 @@ const NodeDetailComponent = ({
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI msg="" icon={MsgUIType.LOADING} size={24} />
             ) : (
-                <Switch>
-                    <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
-                        <ManifestComponent
-                            key={getComponentKeyFromParams()}
-                            selectedTab={handleSelectedTab}
-                            isDeleted={isDeleted}
-                            toggleManagedFields={toggleManagedFields}
-                            hideManagedFields={hideManagedFields}
-                            selectedResource={selectedResource}
-                            manifestViewRef={manifestViewRef}
-                            getComponentKey={getComponentKeyFromParams}
-                            showManifestCompareView={showManifestCompareView}
-                            setShowManifestCompareView={setShowManifestCompareView}
-                            manifestCodeEditorMode={manifestCodeEditorMode}
-                            setManifestCodeEditorMode={setManifestCodeEditorMode}
-                            handleSwitchToYAMLMode={handleSwitchToYAMLMode}
-                            manifestFormConfigurationType={manifestFormConfigurationType}
-                            handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
-                            handleManifestGUIErrors={handleManifestGUIError}
-                            manifestGUIFormRef={manifestGUIFormRef}
-                            isManifestEditable={isManifestEditable}
-                            {...(isResourceBrowserView
-                                ? { isResourceBrowserView: true }
-                                : { isResourceBrowserView: false, isDynamicTabsStuck, handleStickDynamicTabsToTop })}
-                        />
-                    </Route>
-                    <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
-                        <EventsComponent
-                            key={getComponentKeyFromParams()}
-                            selectedTab={handleSelectedTab}
-                            isDeleted={isDeleted}
-                            isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
-                            clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
-                            aiWidgetEventDetails={getAIAnalyticsEvents(
-                                isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
-                                isResourceBrowserView ? null : appDetails.appType,
-                            )}
-                            shouldScroll={isResourceBrowserView || isDynamicTabsStuck}
-                        />
-                    </Route>
-                    <Route path={`${path}/${NodeDetailTab.LOGS}`}>
-                        <div className="flex-grow-1 flexbox-col">
-                            <LogsComponent
+                <Routes>
+                    <Route
+                        path={NodeDetailTab.MANIFEST}
+                        element={
+                            <ManifestComponent
                                 key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}
                                 isDeleted={isDeleted}
-                                logSearchTerms={logSearchTerms}
-                                setLogSearchTerms={setLogSearchTerms}
+                                toggleManagedFields={toggleManagedFields}
+                                hideManagedFields={hideManagedFields}
+                                selectedResource={selectedResource}
+                                manifestViewRef={manifestViewRef}
+                                getComponentKey={getComponentKeyFromParams}
+                                showManifestCompareView={showManifestCompareView}
+                                setShowManifestCompareView={setShowManifestCompareView}
+                                manifestCodeEditorMode={manifestCodeEditorMode}
+                                setManifestCodeEditorMode={setManifestCodeEditorMode}
+                                handleSwitchToYAMLMode={handleSwitchToYAMLMode}
+                                manifestFormConfigurationType={manifestFormConfigurationType}
+                                handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
+                                handleManifestGUIErrors={handleManifestGUIError}
+                                manifestGUIFormRef={manifestGUIFormRef}
+                                isManifestEditable={isManifestEditable}
+                                {...(isResourceBrowserView
+                                    ? { isResourceBrowserView: true }
+                                    : {
+                                          isResourceBrowserView: false,
+                                          isDynamicTabsStuck,
+                                          handleStickDynamicTabsToTop,
+                                      })}
+                            />
+                        }
+                    />
+                    <Route
+                        path={NodeDetailTab.EVENTS}
+                        element={
+                            <EventsComponent
+                                key={getComponentKeyFromParams()}
+                                selectedTab={handleSelectedTab}
+                                isDeleted={isDeleted}
                                 isResourceBrowserView={isResourceBrowserView}
                                 selectedResource={selectedResource}
-                                ephemeralContainerType={ephemeralContainerType}
-                                targetContainerOption={targetContainerOption}
-                                imageListOption={imageListOption}
-                                isExternalApp={isExternalApp}
+                                clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
+                                aiWidgetEventDetails={getAIAnalyticsEvents(
+                                    isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
+                                    isResourceBrowserView ? null : appDetails.appType,
+                                )}
+                                shouldScroll={isResourceBrowserView || isDynamicTabsStuck}
                             />
-                        </div>
-                    </Route>
+                        }
+                    />
+                    <Route
+                        path={NodeDetailTab.LOGS}
+                        element={
+                            <div className="flex-grow-1 flexbox-col">
+                                <LogsComponent
+                                    key={getComponentKeyFromParams()}
+                                    selectedTab={handleSelectedTab}
+                                    isDeleted={isDeleted}
+                                    logSearchTerms={logSearchTerms}
+                                    setLogSearchTerms={setLogSearchTerms}
+                                    isResourceBrowserView={isResourceBrowserView}
+                                    selectedResource={selectedResource}
+                                    ephemeralContainerType={ephemeralContainerType}
+                                    targetContainerOption={targetContainerOption}
+                                    imageListOption={imageListOption}
+                                    isExternalApp={isExternalApp}
+                                />
+                            </div>
+                        }
+                    />
                     {!location.pathname.endsWith('/terminal') && (
-                        <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
+                        <Route path="*" element={<Navigate to={`${NodeDetailTab.MANIFEST.toLowerCase()}`} />} />
                     )}
-                </Switch>
+                </Routes>
             )}
             {showEphemeralContainerDrawer && (
                 <EphemeralContainerDrawer
                     setShowEphemeralContainerDrawer={setShowEphemeralContainerDrawer}
                     onClickShowLaunchEphemeral={onClickShowLaunchEphemeral}
-                    params={params}
+                    params={params as ParamsType}
                     setResourceContainers={setResourceContainers}
                     setEphemeralContainerType={setEphemeralContainerType}
                     ephemeralContainerType={ephemeralContainerType}

@@ -1,31 +1,20 @@
-
-# Ignoring the test files for the time beinggi
-*.test.ts
-*.test.tsx
 .eslintrc.js
 vite.config.mts
 scripts/
 
 # The following files have eslint errors/warnings
-src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
 src/components/AppSelector/ChartSelector.tsx
 src/components/ApplicationGroup/AppGroup.service.ts
 src/components/ApplicationGroup/AppGroup.utils.ts
 src/components/ApplicationGroup/AppGroupAppFilter.components.tsx
 src/components/ApplicationGroup/AppGroupDetailsRoute.tsx
-src/components/ApplicationGroup/AppGroupRoute.tsx
 src/components/ApplicationGroup/Constants.ts
 src/components/ApplicationGroup/CreateAppGroup.tsx
 src/components/ApplicationGroup/Details/EnvCDDetails/EnvCDDetails.tsx
-src/components/ApplicationGroup/Details/EnvCDDetails/__test__/EnvCDDetails.test.tsx
 src/components/ApplicationGroup/Details/EnvCIDetails/EnvCIDetails.tsx
-src/components/ApplicationGroup/Details/EnvCIDetails/__test__/EnvCIDetails.test.tsx
-src/components/ApplicationGroup/Details/EnvironmentConfig/__test__/ApplicationRoutes.test.tsx
-src/components/ApplicationGroup/Details/EnvironmentConfig/__test__/EnvConfig.test.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateModal.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusListDrawer.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.tsx
-src/components/ApplicationGroup/Details/EnvironmentOverview/__test__/EnvironmentOverview.test.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCDTrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCITrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/EnvTriggerView.tsx
@@ -51,20 +40,15 @@ src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
 src/components/ClusterNodes/NodeDetails.tsx
-src/components/ClusterNodes/__tests__/ClusterManifest.test.tsx
-src/components/ClusterNodes/__tests__/NodeList.test.tsx
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
 src/components/Jobs/JobList/JobListView.tsx
-src/components/Jobs/Jobs.tsx
 src/components/Jobs/JobsEmptyState.tsx
 src/components/Jobs/Service.ts
 src/components/Jobs/Utils.ts
 src/components/LogViewer/LogViewer.tsx
-src/components/ResourceBrowser/ResourceList/__tests__/Sidebar.test.tsx
 src/components/__mocks__/xterm-webfont.js
-src/components/app/LogFilter.test.ts
 src/components/app/LogFilter.ts
 src/components/app/Overview/EnvironmentList.tsx
 src/components/app/Overview/Overview.tsx
@@ -75,7 +59,6 @@ src/components/app/ResponsiveDrawer.tsx
 src/components/app/WebWorker.ts
 src/components/app/create/CreateApp.tsx
 src/components/app/create/validationRules.ts
-src/components/app/details/AboutAppInfoModal.tsx
 src/components/app/details/AboutTagEditModal.tsx
 src/components/app/details/appDetails/AppMetrics.tsx
 src/components/app/details/appDetails/AppStatusCard.tsx
@@ -83,7 +66,6 @@ src/components/app/details/appDetails/DeploymentStatusDetailModal.tsx
 src/components/app/details/appDetails/GraphsModal.tsx
 src/components/app/details/appDetails/IssuesCard.tsx
 src/components/app/details/appDetails/SourceInfo.tsx
-src/components/app/details/appDetails/__tests__/GenericInfo.test.tsx
 src/components/app/details/appDetails/index.tsx
 src/components/app/details/appDetails/utils.tsx
 src/components/app/details/cIDetails/CIDetails.tsx
@@ -101,7 +83,6 @@ src/components/app/details/testViewer/TestRunDetails.tsx
 src/components/app/details/testViewer/TestRunList.tsx
 src/components/app/details/triggerView/EmptyStateCIMaterial.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
-src/components/app/details/triggerView/__tests__/triggerview.test.tsx
 src/components/app/details/triggerView/ciWebhook.service.ts
 src/components/app/details/triggerView/config.ts
 src/components/app/details/triggerView/workflow.service.ts
@@ -118,7 +99,6 @@ src/components/app/list-new/AppListService.ts
 src/components/app/list-new/GenericAppList.tsx
 src/components/app/list-new/HelmAppList.tsx
 src/components/app/list/TriggerUrl.tsx
-src/components/app/list/__tests__/AppListView.test.tsx
 src/components/app/list/appList.modal.ts
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
@@ -136,7 +116,6 @@ src/components/charts/ChartGroupDeployments.tsx
 src/components/charts/ChartGroupDetails.tsx
 src/components/charts/ChartGroupUpdate.tsx
 src/components/charts/ChartHeaderFilters.tsx
-src/components/charts/Charts.tsx
 src/components/charts/MultiChartSummary.tsx
 src/components/charts/chartValues/ChartValues.tsx
 src/components/charts/charts.service.ts
@@ -200,7 +179,6 @@ src/components/common/DatePickers/Calender.tsx
 src/components/common/DatePickers/DayPickerRangeController.tsx
 src/components/common/DeprecatedUpdateWarn.tsx
 src/components/common/Description/GenericDescription.tsx
-src/components/common/DynamicTabs/__tests__/DynamicTabs.test.tsx
 src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
@@ -219,7 +197,6 @@ src/components/common/helpers/time.ts
 src/components/common/helpers/utils.tsx
 src/components/common/helpers/workflowURL.ts
 src/components/common/hooks/FileReader.ts
-src/components/common/hooks/__tests__/FileReader.test.tsx
 src/components/common/icons/Icons.tsx
 src/components/common/lineChart/lineChart.tsx
 src/components/common/navigation/Navigation.tsx
@@ -227,7 +204,6 @@ src/components/dockerRegistry/Docker.tsx
 src/components/dockerRegistry/ManageRegistry.tsx
 src/components/dockerRegistry/service.tsx
 src/components/external-apps/ExternalAppService.ts
-src/components/external-apps/ExternalApps.tsx
 src/components/externalArgoApps/ExternalArgoApp.tsx
 src/components/externalArgoApps/ExternalArgoAppDetail.tsx
 src/components/externalLinks/ExternalLinks.component.tsx
@@ -239,7 +215,6 @@ src/components/externalLinks/ExternalLinksFilters.tsx
 src/components/gitOps/GitOpsConfiguration.tsx
 src/components/gitOps/UserGitRepConfiguration.tsx
 src/components/gitOps/UserGitRepo.tsx
-src/components/gitOps/__tests__/GitOpsConfiguration.test.tsx
 src/components/gitOps/gitops.service.tsx
 src/components/gitOps/gitops.type.ts
 src/components/gitProvider/AddGitHostConfigModal.tsx
@@ -269,19 +244,9 @@ src/components/scopedVariables/ScopedVariablesEditor.tsx
 src/components/scopedVariables/ScopedVariablesLoader.tsx
 src/components/scopedVariables/UploadScopedVariables.tsx
 src/components/scopedVariables/VariablesList.tsx
-src/components/scopedVariables/__tests__/Descriptor.test.tsx
-src/components/scopedVariables/__tests__/DescriptorSearchBar.test.tsx
-src/components/scopedVariables/__tests__/SavedVariables.test.tsx
-src/components/scopedVariables/__tests__/ScopedVariables.test.tsx
-src/components/scopedVariables/__tests__/ScopedVariablesEditor.test.tsx
-src/components/scopedVariables/__tests__/ScopedVariablesLoader.test.tsx
-src/components/scopedVariables/__tests__/UploadScopedVariables.test.tsx
-src/components/scopedVariables/__tests__/VariablesList.test.tsx
-src/components/scopedVariables/__tests__/utils.test.tsx
 src/components/scopedVariables/utils.tsx
 src/components/security/AddCveModal.tsx
 src/components/security/DeleteCVEModal.tsx
-src/components/security/SecurityPoliciesTab.tsx
 src/components/security/SecurityPolicyApp.tsx
 src/components/security/SecurityPolicyCluster.tsx
 src/components/security/SecurityPolicyEdit.tsx
@@ -293,7 +258,6 @@ src/components/terminal/TerminalWrapper.tsx
 src/components/util/KeyValueFileInput.tsx
 src/components/v2/appDetails/ReleaseStatusEmptyState.tsx
 src/components/v2/appDetails/SyncError.component.tsx
-src/components/v2/appDetails/__tests__/index.store.test.ts
 src/components/v2/appDetails/appDetails.api.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
@@ -301,15 +265,12 @@ src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CustomLogsModal/CustomLogsModal.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Terminal.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tests__/Terminal.component.test.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tests__/TerminalWrapper.test.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/PodTabSection.tsx
-src/components/v2/appDetails/k8Resource/nodeType/__tests__/NodeTree.component.test.ts
 src/components/v2/appDetails/k8Resource/nodeType/nodeType.util.ts
 src/components/v2/appDetails/k8Resource/nodeType/useNodeTreeReducer.ts
 src/components/v2/appDetails/sourceInfo/EnvironmentSelector.component.tsx
@@ -364,4 +325,3 @@ src/services/service.types.ts
 src/util/MurmurHash3.ts
 src/util/Subject.ts
 src/util/Util.ts
-src/util/__tests__/Subject.test.ts

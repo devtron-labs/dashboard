@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Prompt, useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
     ApiQueuingWithBatch,
@@ -82,7 +82,7 @@ export const RestartWorkloadModal = ({
     const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
 
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
     const [showStatusModal, setShowStatusModal] = useState(false)
     const location = useLocation()
 
@@ -116,7 +116,7 @@ export const RestartWorkloadModal = ({
         delete newParams.modal
 
         abortControllerRef.current.abort()
-        history.push({ search: new URLSearchParams(newParams).toString() })
+        navigate({ search: new URLSearchParams(newParams).toString() })
 
         onClose?.()
     }
@@ -185,7 +185,7 @@ export const RestartWorkloadModal = ({
         } else {
             const newParams = { ...searchParams }
             delete newParams.modal
-            history.push({ search: new URLSearchParams(newParams).toString() })
+            navigate({ search: new URLSearchParams(newParams).toString() })
         }
     }
 
@@ -655,28 +655,24 @@ export const RestartWorkloadModal = ({
         setShowResistanceBox(false)
     }
     return (
-        <>
-            <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
-                <div
-                    onClick={stopPropagation}
-                    className="flexbox-col dc__content-space bg__primary cn-9 w-800 h-100 fs-13 lh-20"
-                >
-                    <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
-                        {renderHeaderSection()}
-                        {renderBodySection()}
-                    </div>
-                    {renderFooterSection()}
+        <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
+            <div
+                onClick={stopPropagation}
+                className="flexbox-col dc__content-space bg__primary cn-9 w-800 h-100 fs-13 lh-20"
+            >
+                <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+                    {renderHeaderSection()}
+                    {renderBodySection()}
                 </div>
-                {isDeploymentBlockedViaWindow && showResistanceBox && BulkDeployResistanceTippy && (
-                    <BulkDeployResistanceTippy
-                        actionHandler={onSave}
-                        handleOnClose={hideResistanceBox}
-                        modalType={MODAL_TYPE.RESTART}
-                    />
-                )}
-            </Drawer>
-
-            <Prompt when={statusModalLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-        </>
+                {renderFooterSection()}
+            </div>
+            {isDeploymentBlockedViaWindow && showResistanceBox && BulkDeployResistanceTippy && (
+                <BulkDeployResistanceTippy
+                    actionHandler={onSave}
+                    handleOnClose={hideResistanceBox}
+                    modalType={MODAL_TYPE.RESTART}
+                />
+            )}
+        </Drawer>
     )
 }

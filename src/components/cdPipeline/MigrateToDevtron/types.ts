@@ -26,11 +26,15 @@ import {
 import { MigrateToDevtronBaseFormStateType, MigrateToDevtronFormState } from '../cdPipeline.types'
 import { BuildCDProps } from '../types'
 
-export interface MigrateFromArgoProps
-    extends Pick<BuildCDProps, 'setMigrateToDevtronFormState' | 'migrateToDevtronFormState'> {}
+export interface MigrateFromArgoProps extends Pick<
+    BuildCDProps,
+    'setMigrateToDevtronFormState' | 'migrateToDevtronFormState'
+> {}
 
-export interface MigrateToDevtronValidationFactoryProps
-    extends Pick<MigrateToDevtronBaseFormStateType, 'validationResponse'> {
+export interface MigrateToDevtronValidationFactoryProps extends Pick<
+    MigrateToDevtronBaseFormStateType,
+    'validationResponse'
+> {
     refetchValidationResponse: () => void
     appName: string
 }
@@ -49,8 +53,10 @@ export interface ExternalHelmAppDTO {
     chartAvatar: string
 }
 
-export interface ExternalHelmAppType
-    extends Pick<ExternalHelmAppDTO, 'releaseName' | 'clusterId' | 'namespace' | 'environmentId' | 'status'> {
+export interface ExternalHelmAppType extends Pick<
+    ExternalHelmAppDTO,
+    'releaseName' | 'clusterId' | 'namespace' | 'environmentId' | 'status'
+> {
     icon: SelectPickerOptionType['startIcon']
 }
 
@@ -74,7 +80,6 @@ export interface ClusterSelectProps {
 }
 
 export interface GetMigrateAppOptionsParamsType
-    extends Pick<MigrateToDevtronFormState, 'deploymentAppType'>,
-        Pick<APIOptions, 'abortControllerRef'> {
+    extends Pick<MigrateToDevtronFormState, 'deploymentAppType'>, Pick<APIOptions, 'abortControllerRef'> {
     clusterId: number
 }

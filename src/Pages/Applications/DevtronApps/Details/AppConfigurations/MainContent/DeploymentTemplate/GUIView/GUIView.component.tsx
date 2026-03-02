@@ -59,13 +59,13 @@ const GUIView = ({
     mergeStrategy,
 }: GUIViewProps) => {
     const [formData, setFormData] = useState(null)
-    const [configurableGUIViewUISchema, setConfigurableGUIViewUISchema] = useState<object>({})
+    const [configurableGUIViewUISchema, setConfigurableGUIViewUISchema] = useState<FormProps['uiSchema']>({})
     const [invalidGUISchemaError, setInvalidGUISchemaError] = useState<GUIViewError | null>(null)
     const modelRef = useRef<typeof ConfigurableGUIViewModel>(null)
 
     // NOTE: need this ref since we need the updated formData on unmount;
     // if we directly use formData in cleanup function of unmount; we will have a stale reference of formData
-    const formDataRef = useRef<object>(null)
+    const formDataRef = useRef<FormProps['formData']>(null)
 
     useEffect(() => {
         try {

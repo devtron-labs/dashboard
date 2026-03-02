@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
 import {
     AppConfigProps,
     ChangeCIPayloadType,
@@ -30,6 +28,7 @@ import {
     PipelineFormType,
     PluginType,
     RefVariableType,
+    RouterV5Props,
     ScriptType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -335,14 +334,16 @@ export interface LinkedCIPipelineState {
     }
 }
 
-export interface CIPipelineProps
-    extends RouteComponentProps<{ appId: string; ciPipelineId: string; workflowId: string }>,
-        Required<Pick<AppConfigProps, 'isTemplateView'>> {
-    appName: string
+export interface LinkedCIPipelineViewProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
-    changeCIPayload?: ChangeCIPayloadType
+}
+
+export interface LinkedCIPipelineEditProps
+    extends RouterV5Props<{ appId: string; workflowId: string }>, LinkedCIPipelineViewProps {
+    appName: string
+    changeCIPayload: ChangeCIPayloadType
 }
 
 export const PatchAction = {
@@ -387,8 +388,7 @@ export interface WebhookCIProps {
 }
 
 export interface BuildType
-    extends Pick<AdvancedConfigOptionsProps, 'appId'>,
-        Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    extends Pick<AdvancedConfigOptionsProps, 'appId'>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
     isAdvanced: boolean
     ciPipeline: CIPipelineDataType
     pageState: string

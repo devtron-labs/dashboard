@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     showError,
     Progressing,
@@ -34,8 +34,10 @@ import {
     TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS,
     TYPE_TO_SEE_MATCHING_RESULTS,
     SourceTypeMap,
+    ROUTER_URLS,
+    RouterV5Props,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
@@ -63,7 +65,7 @@ import { EMAIL_AGENT } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
 
-interface AddNotificationsProps extends RouteComponentProps<{}> {}
+interface AddNotificationsProps extends RouterV5Props<{}> {}
 
 export enum FilterOptions {
     ENVIRONMENT = 'environment',
@@ -448,7 +450,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
         saveNotification(selectedPipelines, selectedChannels)
             .then(() => {
-                this.props.history.push(`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`)
+                this.props.navigate(`${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/channels`)
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
                     description: 'Saved Successfully',
@@ -951,7 +953,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 </div>
                 <div className="form__button-group-bottom flex right">
                     <Link
-                        to={`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`}
+                        to={`${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/channels`}
                         className="cta cancel mr-16 dc__no-decor"
                         tabIndex={8}
                     >

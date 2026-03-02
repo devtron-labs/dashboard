@@ -53,9 +53,11 @@ import {
     RegistryCredentialsType,
     RemoteConnectionType,
     AuthenticationType,
+    BASE_ROUTES,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary, Trash } from '../common'
 import {
     getClusterListMinWithoutAuth,
@@ -73,7 +75,6 @@ import {
     REGISTRY_TITLE_DESCRIPTION_CONTENT,
     RegistryType,
     EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
-    URLS,
     PATTERNS,
     OCIRegistryStorageActionType,
 } from '../../config'
@@ -257,20 +258,19 @@ const CollapsedList = ({
     disabledFields = [],
     ociRegistryConfig,
     registryCredentialsType,
-    ...rest
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
-    const history = useHistory()
-    const { path } = useRouteMatch()
+    const navigate = useNavigate()
     const params = useParams<{ id: string }>()
 
     const setToggleCollapse = () => {
+        const DOCKER_ROUTE = BASE_ROUTES.GLOBAL_CONFIG.DOCKER
         if (id === null && params.id !== '0') {
-            history.push(`${path.replace(':id', '0')}`)
+            navigate(`../${DOCKER_ROUTE}/0`)
         } else if (id && params.id !== id) {
-            history.push(`${path.replace(':id', id)}`)
+            navigate(`../${DOCKER_ROUTE}/${id}`)
         } else {
-            history.push(`${path.replace('/:id', '')}`)
+            navigate(`../${DOCKER_ROUTE}`)
         }
     }
 
@@ -402,7 +402,7 @@ const DockerForm = ({
         },
         onValidation,
     )
-    const history = useHistory()
+    const navigate = useNavigate()
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
     const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false)
@@ -565,7 +565,7 @@ const DockerForm = ({
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
     const [repositoryError, setRepositoryError] = useState<string>('')
-    const ChartStoreRedirectionUrl: string = id ? `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}?registryId=${id}` : URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER
+    const ChartStoreRedirectionUrl: string = id ? `${ROUTER_URLS.CHART_STORE}?registryId=${id}` : ROUTER_URLS.CHART_STORE
 
     const customHandleChange = (e): void => {
         updateWithCustomStateValidation(e.target.name, e.target.value)
@@ -1132,7 +1132,7 @@ const DockerForm = ({
         setManageModal(false)
     }
     const handleChartStoreRedirection = (): void => {
-        history.push(ChartStoreRedirectionUrl)
+        navigate(ChartStoreRedirectionUrl)
     }
 
     const handleContainerStoreUpdateAction = (isContainerStore: boolean): void => {

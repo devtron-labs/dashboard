@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { useRouteMatch } from 'react-router-dom'
-
 import {
     Button,
     ButtonComponentType,
@@ -41,7 +39,6 @@ const UserPermissionListHeader = ({
     handleStatusFilterChange,
     status,
 }: UserPermissionListHeaderProps) => {
-    const { path } = useRouteMatch()
     const { isSuperAdmin } = useMainContext()
 
     return (
@@ -71,7 +68,7 @@ const UserPermissionListHeader = ({
                     startIcon={<PlusIcon />}
                     component={ButtonComponentType.link}
                     linkProps={{
-                        to: `${path}/add`,
+                        to: 'add',
                     }}
                     size={ComponentSizeType.medium}
                     dataTestId="add-users-link"

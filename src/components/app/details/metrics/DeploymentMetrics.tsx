@@ -16,7 +16,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -28,11 +28,11 @@ import {
     ErrorScreenManager,
     GenericEmptyState,
     Progressing,
+    ROUTER_URLS,
     SelectPicker,
     showError,
     Tooltip,
     UpdateDateRangeType,
-    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
@@ -222,7 +222,7 @@ const RecoveryAndLeadTimeGraphLegend = ({
 const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
 
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [state, setState] = useState<DeploymentMetricsState>({
         code: 0,
@@ -341,8 +341,11 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     }
 
     const handleEnvironmentChange = (selected): void => {
-        const URL = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/deployment-metrics/${selected.value}`
-        history.push(URL)
+        const URL = generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.DEPLOYMENT_METRICS}/:envId`, {
+            appId,
+            envId: selected.value,
+        })
+        navigate(URL)
         ReactGA.event({
             category: 'Deployment Metrics',
             action: 'Environment Selection Changed',
@@ -868,15 +871,22 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
 const DeploymentMetrics = (props: DeploymentMetricsProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { environmentId, setEnvironmentId } = useAppContext()
-    const { path } = useRouteMatch()
-    const { replace } = useHistory()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (envId && +envId !== environmentId) {
             setEnvironmentId(+envId)
         }
         if (!envId && environmentId) {
-            replace(generatePath(path, { appId, envId: environmentId }))
+            navigate(
+                generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.DEPLOYMENT_METRICS}/:envId`, {
+                    appId,
+                    envId: String(environmentId),
+                }),
+                {
+                    replace: true,
+                },
+            )
         }
     }, [envId])
 

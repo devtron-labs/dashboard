@@ -16,7 +16,7 @@
 
 import { generatePath, NavLink } from 'react-router-dom'
 
-import { AppConfigProps, URLS as CommonURLS, VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, ROUTER_URLS, URLS as CommonURLS, VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy.svg'
 import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride.svg'
@@ -54,7 +54,7 @@ const CDSuccessModal = ({
             </div>
             {!isTemplateView && (
                 <NavLink
-                    to={`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_TRIGGER}`}
+                    to={generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER, { appId })}
                     data-testid="go-to-build-deploy-link"
                     className="cb-5 dc__no-decor"
                 >
@@ -72,10 +72,10 @@ const CDSuccessModal = ({
             <NavLink
                 to={`${
                     isTemplateView
-                        ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
+                        ? generatePath(ROUTER_URLS.APP_TEMPLATE_DETAIL, {
                               appId,
                           })
-                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}`
+                        : generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT, { appId })
                 }/${CommonURLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`}
                 data-testid="go-to-environmentOverride-link"
                 className="cb-5 dc__no-decor"

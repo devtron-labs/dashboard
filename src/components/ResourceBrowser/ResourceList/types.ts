@@ -42,8 +42,7 @@ import {
 } from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<ClusterListType, 'updateTabUrl'>,
-        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
+    extends Pick<ClusterListType, 'updateTabUrl'>, Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
     clusterName: string
 }
 
@@ -51,41 +50,47 @@ export interface ResourceListUrlFiltersType {
     targetK8sVersion: string
 }
 
-export interface K8sResourceListURLParams extends ClusterDetailBaseParams {
+export type K8sResourceListURLParams = ClusterDetailBaseParams & {
     version: string
     kind: string
     group: string
 }
 
-export interface K8sResourceDetailURLParams extends K8sResourceListURLParams {
+export type K8sResourceDetailURLParams = K8sResourceListURLParams & {
     name: string
     namespace: string
 }
 
 export interface NodeDetailComponentWrapperProps
-    extends Pick<UseTabsReturnType, 'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId'>,
+    extends
+        Pick<UseTabsReturnType, 'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId'>,
         Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
     clusterName: string
 }
-export interface NodeDetailURLParams {
+export type NodeDetailURLParams = {
     name: string
 }
 
-export interface K8sResourceListFilterType
-    extends Record<(typeof NODE_SEARCH_KEYS)[keyof typeof NODE_SEARCH_KEYS], string> {
+export interface K8sResourceListFilterType extends Record<
+    (typeof NODE_SEARCH_KEYS)[keyof typeof NODE_SEARCH_KEYS],
+    string
+> {
     selectedNamespace?: string
     [NODE_K8S_VERSION_FILTER_KEY]?: string
     eventType: 'warning' | 'normal'
 }
 
-export interface AdminTerminalDummyProps
-    extends Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'getTabById'> {
+export interface AdminTerminalDummyProps extends Pick<
+    UseTabsReturnType,
+    'markTabActiveById' | 'updateTabUrl' | 'getTabById'
+> {
     clusterName: string
 }
 
 export interface ResourcePageHeaderProps {
     breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
     renderPageHeaderActionButtons?: () => JSX.Element
+    breadcrumbsPathPattern: string
 }
 
 export interface ClusterListOptionsTypes {
@@ -123,16 +128,15 @@ export type ClusterUpgradeCompatibilityInfoTableCellComponentProps = TableCellCo
 // <--------- CLUSTER UPGRADE COMPATIBILITY INFO TABLE PROPS
 
 // K8s RESOURCE LIST TABLE PROPS --------->
-export interface K8sResourceListTableAdditionalProps
-    extends Pick<
-        K8SResourceListType,
-        | 'selectedCluster'
-        | 'selectedResource'
-        | 'addTab'
-        | 'lowercaseKindToResourceGroupMap'
-        | 'clusterName'
-        | 'renderRefreshBar'
-    > {
+export interface K8sResourceListTableAdditionalProps extends Pick<
+    K8SResourceListType,
+    | 'selectedCluster'
+    | 'selectedResource'
+    | 'addTab'
+    | 'lowercaseKindToResourceGroupMap'
+    | 'clusterName'
+    | 'renderRefreshBar'
+> {
     reloadResourceListData: () => void
     isNodeListing: boolean
     isEventListing: boolean
@@ -164,17 +168,17 @@ export type DynamicTabComponentWrapperProps = Pick<
 > &
     ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
         children?: React.ReactElement
+        path: string
     }
 
-export interface ResourceRecommenderTableViewWrapperProps
-    extends TableViewWrapperProps<
-        K8sResourceDetailDataType,
-        FiltersTypeEnum.URL,
-        ResourceFilterOptionsProps & {
-            resourceListError: ServerErrors
-            reloadResourceListData: () => void
-        }
-    > {}
+export interface ResourceRecommenderTableViewWrapperProps extends TableViewWrapperProps<
+    K8sResourceDetailDataType,
+    FiltersTypeEnum.URL,
+    ResourceFilterOptionsProps & {
+        resourceListError: ServerErrors
+        reloadResourceListData: () => void
+    }
+> {}
 
 export interface NodeSearchListOptionType extends SelectPickerOptionType<string> {
     identifier: NODE_SEARCH_KEYS

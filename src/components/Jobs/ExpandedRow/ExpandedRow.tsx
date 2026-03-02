@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import { ReactComponent as Expand } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ExpandedRowProps, Job, JobCIPipeline } from '../Types'
 import './ExpandedRow.scss'
-import { URLS } from '../../../config'
 import { environmentName } from '../Utils'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
-import { AppStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ExpandedRow(props: ExpandedRowProps) {
     const handleEditJob = () => {
@@ -31,7 +29,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
     }
 
     const redirectToJobPipelineDetails = (job: Job, ciPipeline: JobCIPipeline): string => {
-        return `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${job.id}/${URLS.APP_CI_DETAILS}/${ciPipeline.ciPipelineId}`
+        return `${generatePath(ROUTER_URLS.JOB_DETAIL.CI_DETAILS, { appId: String(job.id) })}/${ciPipeline.ciPipelineId}`
     }
 
     const renderRows = () => {

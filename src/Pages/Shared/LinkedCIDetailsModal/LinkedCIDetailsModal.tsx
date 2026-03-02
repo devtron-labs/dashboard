@@ -15,12 +15,13 @@
  */
 
 import { useMemo, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
     CommonNodeAttr,
     DEFAULT_BASE_PAGE_SIZE,
+    Drawer,
     ErrorScreenNotAuthorized,
     GenericEmptyState,
     getIsRequestAborted,
@@ -45,7 +46,8 @@ import { getLinkedCITippyContent, parseSearchParams } from './utils'
 
 import './linkedCIAppList.scss'
 
-const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalProps) => {
+const LinkedCIDetailsModal = ({ workflows }: LinkedCIDetailModalProps) => {
+    const navigate = useNavigate()
     const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
 
     const selectedNode =
@@ -102,6 +104,10 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
         !!result,
     )
 
+    const handleClose = () => {
+        navigate('..')
+    }
+
     const updateEnvironmentFilter = (environmentOption: OptionType) => {
         updateSearchParams({
             environment: environmentOption.value,
@@ -148,62 +154,64 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
     }
 
     return (
-        <div className="bg__primary h-100 flexbox-col show-shimmer-loading">
-            <div className="flexbox-col flex-grow-1 dc__overflow-auto">
-                <div className="dc__position-sticky dc__top-0 bg__primary dc__zi-20">
-                    <div className="flex flex-justify dc__border-bottom pt-10 pr-20 pb-10 pl-20">
-                        <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
-                        <button
-                            type="button"
-                            className="dc__transparent dc__no-shrink flexbox"
-                            aria-label="close-modal"
-                            onClick={handleClose}
-                        >
-                            <Close className="icon-dim-24" />
-                        </button>
+        <Drawer position="right" width="800px" onEscape={handleClose}>
+            <div className="bg__primary h-100 flexbox-col show-shimmer-loading">
+                <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+                    <div className="dc__position-sticky dc__top-0 bg__primary dc__zi-20">
+                        <div className="flex flex-justify dc__border-bottom pt-10 pr-20 pb-10 pl-20">
+                            <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
+                            <button
+                                type="button"
+                                className="dc__transparent dc__no-shrink flexbox"
+                                aria-label="close-modal"
+                                onClick={handleClose}
+                            >
+                                <Close className="icon-dim-24" />
+                            </button>
+                        </div>
+                        <InfoBlock description={getLinkedCITippyContent(linkedWorkflowCount)} />
                     </div>
-                    <InfoBlock description={getLinkedCITippyContent(linkedWorkflowCount)} />
+                    <div className="flexbox-col flex-grow-1">
+                        <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20 dc__zi-5">
+                            <SearchBar
+                                containerClassName="w-250"
+                                inputProps={{
+                                    placeholder: 'Search application',
+                                    autoFocus: true,
+                                    disabled: showLoadingState,
+                                }}
+                                initialSearchText={searchKey}
+                                handleEnter={handleSearch}
+                            />
+                            <SelectPicker
+                                inputId="linked-ci-environment-dropdown"
+                                isDisabled={showLoadingState || envLoading}
+                                options={selectOptions}
+                                isLoading={envLoading}
+                                onChange={updateEnvironmentFilter}
+                                value={selectedOption}
+                            />
+                        </div>
+                        <LinkedCIAppList
+                            appList={result?.data || []}
+                            totalCount={result?.totalCount || 0}
+                            isLoading={showLoadingState}
+                            urlFilters={urlFilters}
+                        />
+                    </div>
                 </div>
-                <div className="flexbox-col flex-grow-1">
-                    <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20 dc__zi-5">
-                        <SearchBar
-                            containerClassName="w-250"
-                            inputProps={{
-                                placeholder: 'Search application',
-                                autoFocus: true,
-                                disabled: showLoadingState,
-                            }}
-                            initialSearchText={searchKey}
-                            handleEnter={handleSearch}
-                        />
-                        <SelectPicker
-                            inputId="linked-ci-environment-dropdown"
-                            isDisabled={showLoadingState || envLoading}
-                            options={selectOptions}
-                            isLoading={envLoading}
-                            onChange={updateEnvironmentFilter}
-                            value={selectedOption}
-                        />
-                    </div>
-                    <LinkedCIAppList
-                        appList={result?.data || []}
-                        totalCount={result?.totalCount || 0}
-                        isLoading={showLoadingState}
-                        urlFilters={urlFilters}
+                {!showLoadingState && result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
+                    <Pagination
+                        rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top dc__no-shrink"
+                        size={result.totalCount}
+                        offset={offset}
+                        pageSize={pageSize}
+                        changePage={changePage}
+                        changePageSize={changePageSize}
                     />
-                </div>
+                )}
             </div>
-            {!showLoadingState && result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
-                <Pagination
-                    rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top dc__no-shrink"
-                    size={result.totalCount}
-                    offset={offset}
-                    pageSize={pageSize}
-                    changePage={changePage}
-                    changePageSize={changePageSize}
-                />
-            )}
-        </div>
+        </Drawer>
     )
 }
 

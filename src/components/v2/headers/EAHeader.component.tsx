@@ -15,7 +15,7 @@
  */
 
 import ReactGA from 'react-ga4'
-import { Link, useParams, useRouteMatch } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
@@ -36,11 +36,12 @@ const EAHeaderComponent = ({
     redirectURL,
     showAppDetailsOnly = false,
     breadCrumbConfig,
+    breadcrumbPathPattern,
 }: EAHeaderComponentType) => {
-    const match = useRouteMatch()
     const params = useParams<{ appId: string; appName: string }>()
 
     const { breadcrumbs } = useBreadcrumb(
+        breadcrumbPathPattern,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
@@ -63,7 +64,7 @@ const EAHeaderComponent = ({
         [params.appName],
     )
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={breadcrumbPathPattern} />
 
     const renderExternalHelmApp = () => {
         const tabs: TabProps[] = [
@@ -72,7 +73,7 @@ const EAHeaderComponent = ({
                 label: 'App details',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    to: URLS.APP_DETAILS,
                     onClick: () => {
                         ReactGA.event({
                             category: 'External App',
@@ -91,7 +92,7 @@ const EAHeaderComponent = ({
                     tabType: 'navLink',
                     icon: Settings,
                     props: {
-                        to: `${match.url}/${URLS.APP_VALUES}`,
+                        to: URLS.APP_VALUES,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'External App',
@@ -105,7 +106,7 @@ const EAHeaderComponent = ({
                     label: 'Deployment history',
                     tabType: 'navLink',
                     props: {
-                        to: `${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`,
+                        to: URLS.APP_DEPLOYMNENT_HISTORY,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'External App',

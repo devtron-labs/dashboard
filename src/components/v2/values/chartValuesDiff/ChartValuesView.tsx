@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useReducer, useRef } from 'react'
-import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
     showError,
@@ -44,10 +44,10 @@ import {
     handleAnalyticsEvent,
     Icon,
     AnimatedDeployButton,
-    URLS as CommonURLS,
     SegmentedControl,
     ComponentSizeType,
-    SegmentType
+    SegmentType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -158,8 +158,7 @@ const ChartValuesView = ({
     selectedVersionFromParent,
     init,
 }: ChartValuesViewType) => {
-    const history = useHistory()
-    const { url } = useRouteMatch()
+    const navigate = useNavigate()
     const { chartValueId, presetValueId, envId } = useParams<{
         chartValueId: string
         presetValueId: string
@@ -231,7 +230,10 @@ const ChartValuesView = ({
 
     const enablePrompt = shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty)
 
-    usePrompt({ shouldPrompt: enablePrompt })
+    usePrompt({
+        shouldPrompt: enablePrompt,
+        message: isFormDirty ? UNSAVED_CHANGES_PROMPT_MESSAGE : DEFAULT_ROUTE_PROMPT_MESSAGE,
+    })
 
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)
@@ -688,7 +690,7 @@ const ChartValuesView = ({
                     if (typeof init === 'function') {
                         init()
                     }
-                    history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
+                    navigate(getSavedValuesListURL(installedConfigFromParent.appStoreId))
                     return
                 }
                 // ends
@@ -704,7 +706,7 @@ const ChartValuesView = ({
                     })
 
                     init && init()
-                    history.push(URLS.HELM_APP_LIST)
+                    navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM)
                     return
                 }
 
@@ -825,14 +827,20 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${getAppId({
-                clusterId: commonState.selectedEnvironment.clusterId,
-                namespace: commonState.selectedEnvironment.namespace,
+            return generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
+                appId: getAppId({
+                    clusterId: commonState.selectedEnvironment.clusterId,
+                    namespace: commonState.selectedEnvironment.namespace,
+                    appName,
+                }),
                 appName,
-            })}/${appName}`
+            })
         }
 
-        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
+        return `${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART, {
+            appId: String(newInstalledAppId),
+            envId: String(newEnvironmentId),
+        })}/${URLS.APP_DETAILS}?newDeployment=true`
     }
 
     const isRequestDataValid = (validatedName: { isValid: boolean; message: string }): boolean => {
@@ -1052,7 +1060,7 @@ const ChartValuesView = ({
                     variant: ToastVariantType.success,
                     description: toastMessage,
                 })
-                history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
+                navigate(getSavedValuesListURL(installedConfigFromParent.appStoreId))
             } else if (isDeployChartView && res?.result) {
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
@@ -1061,7 +1069,7 @@ const ChartValuesView = ({
                     variant: ToastVariantType.success,
                     description: CHART_VALUE_TOAST_MSGS.DeploymentInitiated,
                 })
-                history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
+                navigate(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
                 appDetails?.isVirtualEnvironment &&
                     onClickManifestDownload(
@@ -1075,7 +1083,7 @@ const ChartValuesView = ({
                     description: CHART_VALUE_TOAST_MSGS.UpdateInitiated,
                 })
                 IndexStore.clearAppDetails()
-                history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+                navigate(`../${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
@@ -1124,7 +1132,7 @@ const ChartValuesView = ({
     const redirectToChartValues = async () => {
         const _chartId = commonState.repoChartValue?.chartId || commonState.installedConfig?.appStoreId
         if (_chartId) {
-            history.push(getChartValuesURL(_chartId))
+            navigate(getChartValuesURL(_chartId))
         }
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_NEW_PRESET_VALUE' })
     }
@@ -1922,10 +1930,6 @@ const ChartValuesView = ({
                         }
                     />
                 )}
-                <Prompt
-                    when={enablePrompt}
-                    message={isFormDirty ? UNSAVED_CHANGES_PROMPT_MESSAGE : DEFAULT_ROUTE_PROMPT_MESSAGE}
-                />
             </div>
         )
     }
