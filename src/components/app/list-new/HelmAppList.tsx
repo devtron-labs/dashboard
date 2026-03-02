@@ -31,10 +31,10 @@ import {
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
     DocLink,
-    URLS as CommonURLS,
     ComponentSizeType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
@@ -316,10 +316,17 @@ const HelmAppList = ({
     }
 
     function _buildAppDetailUrl(app: HelmApp) {
+        const APP_DETAIL_ROUTE = ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL
         if (app.isExternal) {
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
+            return generatePath(APP_DETAIL_ROUTE.EXTERNAL_HELM_APP, {
+                appId: app.appId,
+                appName: app.appName,
+            })
         }
-        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
+        return generatePath(APP_DETAIL_ROUTE.DEVTRON_CHART, {
+            appId: app.appId,
+            envId: `${app.environmentDetail.environmentId}`,
+        })
     }
 
     function _removeExternalAppFetchError(e) {
@@ -490,7 +497,7 @@ const HelmAppList = ({
                 {showGuidedContentCards && (
                     <div className="helm-app-guided-cards-wrapper">
                         <ContentCard
-                            redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
+                            redirectTo={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}
                             direction={CardContentDirection.Horizontal}
                             imgSrc={HelmCluster}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
@@ -500,7 +507,7 @@ const HelmAppList = ({
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
                         />
                         <ContentCard
-                            redirectTo={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
+                            redirectTo={`${ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
                             direction={CardContentDirection.Horizontal}
                             imgSrc={DeployCICD}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
@@ -544,7 +551,7 @@ const HelmAppList = ({
 
     function askToConnectAClusterForNoResult() {
         const handleButton = () => (
-            <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
+            <Link to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}>
                 <button type="button" className="cta flex">
                     {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
                 </button>

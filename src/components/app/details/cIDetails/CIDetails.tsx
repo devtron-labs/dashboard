@@ -14,56 +14,61 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { generatePath, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    Reload,
-    GenericEmptyState,
-    useAsync,
-    PipelineType,
-    Sidebar,
-    LogResizeButton,
+    Artifacts,
+    asyncWrap,
     CICDSidebarFilterOptionType,
+    EMPTY_STATE_STATUS,
+    ErrorScreenManager,
+    FetchIdDataStatus,
+    GenericEmptyState,
+    GitChanges,
     History,
     HistoryComponentType,
-    FetchIdDataStatus,
-    Scroller,
-    GitChanges,
-    TriggerDetails,
-    useScrollable,
-    useInterval,
-    mapByKey,
-    asyncWrap,
-    Artifacts,
+    LogResizeButton,
     LogsRenderer,
+    mapByKey,
     ModuleNameMap,
-    EMPTY_STATE_STATUS,
+    PipelineType,
+    Progressing,
+    Reload,
+    sanitizeTargetPlatforms,
+    Scroller,
+    SecurityDetailsCards,
+    showError,
+    Sidebar,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
-    ErrorScreenManager,
-    SecurityDetailsCards,
-    sanitizeTargetPlatforms,
+    TriggerDetails,
+    useAsync,
+    useInterval,
+    useScrollable,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
-import {
-    getCIPipelines,
-    getCIHistoricalStatus,
-    getTriggerHistory,
-    getTagDetails,
-    getArtifactForJobCi,
-} from '../../service'
-import { URLS, Routes } from '../../../../config'
-import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { ImageNotScannedView, CIRunningView } from './cIDetails.util'
-import './ciDetails.scss'
+
+import { importComponentFromFELibrary } from '@Components/common'
+
+import { Routes as ROUTES } from '../../../../config'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import {
+    getArtifactForJobCi,
+    getCIHistoricalStatus,
+    getCIPipelines,
+    getTagDetails,
+    getTriggerHistory,
+} from '../../service'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
-import { importComponentFromFELibrary } from '@Components/common'
 import { useGetAppSecurityDetails } from '../appDetails/AppSecurity'
+import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
+import { CIRunningView, ImageNotScannedView } from './cIDetails.util'
+import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
+
+import './ciDetails.scss'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -84,6 +89,8 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchBuildIdData, setFetchBuildIdData] = useState<FetchIdDataStatus>(null)
+
+    const ciDetailsPath = isJobView ? ROUTER_URLS.JOB_DETAIL.CI_DETAILS : ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS
 
     const triggerDetails = triggerHistory?.get(+buildId)
     // This is only meant for logsRenderer
@@ -106,8 +113,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
         !!pipelineId,
     )
 
-    const { path } = useRouteMatch()
-    const { push, replace } = useHistory()
+    const navigate = useNavigate()
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
@@ -143,14 +149,15 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
         setTriggerHistory(new Map(newTriggerHistory))
     }, [triggerHistoryResult])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
             setHasMore(false)
             setFetchBuildIdData(null)
-        }
-    }, [pipelineId])
+        },
+        [pipelineId],
+    )
 
     function synchroniseState(triggerId: number, triggerDetails: History, triggerDetailsError: any) {
         if (triggerDetailsError) {
@@ -192,42 +199,65 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
             setTriggerHistory(new Map(mapByKey(triggerHistoryResult.result.ciWorkflows, 'id')))
         }
         setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
-        replace(generatePath(path, { appId, pipelineId }))
+        navigate(
+            generatePath(`${ciDetailsPath}/:pipelineId`, {
+                appId,
+                pipelineId,
+            }),
+            { replace: true },
+        )
     }
 
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
     }
     if (pipelineId && !buildId && triggerHistory.size > 0) {
-        replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], appId, pipelineId }))
+        navigate(
+            generatePath(`${ciDetailsPath}/:pipelineId/:buildId`, {
+                buildId: triggerHistory.entries().next().value[0],
+                appId,
+                pipelineId,
+            }),
+            {
+                replace: true,
+            },
+        )
     }
-    const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
+    const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.result || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL' && pipeline.pipelineType !== PipelineType.LINKED_CD,
     ) // external and LINKED_CD pipelines not visible in dropdown
     const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
 
     if (!pipelines.length && pipelineId) {
         // reason is un-required params like logs were leaking
-        replace(generatePath(path, { appId }))
+        navigate(generatePath(ciDetailsPath, { appId }), { replace: true })
     } else if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist && pipelines.length)) {
-        replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
+        navigate(
+            generatePath(`${ciDetailsPath}/:pipelineId`, {
+                appId,
+                pipelineId: String(pipelines[0].id),
+            }),
+            { replace: true },
+        )
     }
-    const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
-        return { value: `${item.id}`, label: item.name, pipelineId: item.id, pipelineType: item.pipelineType }
-    })
+    const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => ({
+        value: `${item.id}`,
+        label: item.name,
+        pipelineId: item.id,
+        pipelineType: item.pipelineType,
+    }))
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
 
     const redirectToArtifactLogs = () => {
-        push(`${URLS.APPLICATION_MANAGEMENT_APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`)
+        navigate(generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS}/logs`, { appId: pipeline.parentAppId }))
     }
-    const renderSourcePipelineButton = () => {
-        return (
-            <button className="flex cta h-32" onClick={redirectToArtifactLogs}>
-                View Source Pipeline
-            </button>
-        )
-    }
+
+    const renderSourcePipelineButton = () => (
+        <button className="flex cta h-32" onClick={redirectToArtifactLogs}>
+            View Source Pipeline
+        </button>
+    )
     return (
         <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
             {!fullScreenView && (
@@ -240,6 +270,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                         setPagination={setPagination}
                         fetchIdData={fetchBuildIdData}
                         handleViewAllHistory={handleViewAllHistory}
+                        path={`${ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS}/:pipelineId?/:buildId?`}
                     />
                 </div>
             )}
@@ -257,21 +288,18 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                         pipeline && (
                             <>
                                 {triggerHistory.size > 0 || fetchBuildIdData ? (
-                                    <Route
-                                        path={`${path
-                                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                            .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
-                                    >
+                                    pipelineId &&
+                                    buildId && (
                                         <Details
                                             fullScreenView={fullScreenView}
                                             synchroniseState={synchroniseState}
                                             triggerHistory={triggerHistory}
                                             isSecurityModuleInstalled={
-                                                initDataResults[1]?.['value']?.['result']?.status ===
+                                                initDataResults[1]?.['value']?.result?.status ===
                                                     ModuleStatus.INSTALLED || false
                                             }
                                             isBlobStorageConfigured={
-                                                initDataResults[2]?.['value']?.['result']?.enabled || false
+                                                initDataResults[2]?.['value']?.result?.enabled || false
                                             }
                                             isJobView={isJobView}
                                             tagsEditable={tagsEditable}
@@ -282,7 +310,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                                             scrollToTop={scrollToTop}
                                             scrollToBottom={scrollToBottom}
                                         />
-                                    </Route>
+                                    )
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
                                     // Empty state if there is no linked pipeline
                                     <GenericEmptyState
@@ -396,6 +424,7 @@ export const Details = ({
         }
         return 30000 // 30s for normal
     }, [triggerDetails])
+
     useInterval(reloadTriggerDetails, timeout)
 
     if (
@@ -531,12 +560,11 @@ const HistoryLogs = ({
     scrollToBottom,
     fullScreenView,
 }: HistoryLogsType) => {
-    const { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
 
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
-    const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
+    const downloadArtifactUrl = `${ROUTES.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
     const targetPlatforms = sanitizeTargetPlatforms(triggerDetails.targetPlatforms)
 
     useEffect(() => {
@@ -559,92 +587,105 @@ const HistoryLogs = ({
         }
     }
 
-    const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => {
+    const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => (
         // TargetPlatforms are not supported for Artifacts in case of JobCI
-        return (
-            <Artifacts
-                status={triggerDetails.status}
-                artifact={ciJobArtifact[index]}
-                blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                downloadArtifactUrl={downloadArtifactUrl}
-                isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                isJobCI={isJobCI}
-                imageComment={triggerDetails.imageComment}
-                imageReleaseTags={triggerDetails.imageReleaseTags}
-                ciPipelineId={triggerDetails.ciPipelineId}
-                artifactId={triggerDetails.artifactId}
-                tagsEditable={tagsEditable}
-                appReleaseTagNames={appReleaseTags}
-                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                rootClassName="pb-0-imp"
-                renderCIListHeader={renderCIListHeader}
-                targetPlatforms={[]}
-            />
-        )
-    })
+        <Artifacts
+            status={triggerDetails.status}
+            artifact={ciJobArtifact[index]}
+            blobStorageEnabled={triggerDetails.blobStorageEnabled}
+            downloadArtifactUrl={downloadArtifactUrl}
+            isArtifactUploaded={triggerDetails.isArtifactUploaded}
+            isJobCI={isJobCI}
+            imageComment={triggerDetails.imageComment}
+            imageReleaseTags={triggerDetails.imageReleaseTags}
+            ciPipelineId={triggerDetails.ciPipelineId}
+            artifactId={triggerDetails.artifactId}
+            tagsEditable={tagsEditable}
+            appReleaseTagNames={appReleaseTags}
+            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+            rootClassName="pb-0-imp"
+            renderCIListHeader={renderCIListHeader}
+            targetPlatforms={[]}
+        />
+    ))
     return (
         <div className="trigger-outputs-container flexbox-col flex-grow-1">
-            <Switch>
-                <Route path={`${path}/logs`}>
-                    <LogsRenderer
-                        triggerDetails={triggerDetails}
-                        isBlobStorageConfigured={isBlobStorageConfigured}
-                        parentType={HistoryComponentType.CI}
-                        fullScreenView={fullScreenView}
-                    />
-                    {(scrollToTop || scrollToBottom) && (
-                        <Scroller
-                            style={{ position: 'absolute', bottom: '52px', right: '12px', zIndex: '4' }}
-                            {...{ scrollToTop, scrollToBottom }}
-                        />
-                    )}
-                </Route>
-                <Route path={`${path}/source-code`}>
-                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
-                </Route>
-                <Route path={`${path}/artifacts`}>
-                    {loading ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        <div className="p-16 flexbox-col dc__gap-8 flex-grow-1">
-                            {isJobCI && CiArtifactsArrayCards}
-                            <Artifacts
-                                status={triggerDetails.status}
-                                artifact={triggerDetails.artifact}
-                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                downloadArtifactUrl={downloadArtifactUrl}
-                                isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                                isJobCI={isJobCI}
-                                imageComment={triggerDetails.imageComment}
-                                imageReleaseTags={triggerDetails.imageReleaseTags}
-                                ciPipelineId={triggerDetails.ciPipelineId}
-                                artifactId={triggerDetails.artifactId}
-                                tagsEditable={tagsEditable}
-                                appReleaseTagNames={appReleaseTags}
-                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                                renderCIListHeader={renderCIListHeader}
-                                targetPlatforms={targetPlatforms}
+            <Routes>
+                <Route
+                    path="logs"
+                    element={
+                        <>
+                            <LogsRenderer
+                                triggerDetails={triggerDetails}
+                                isBlobStorageConfigured={isBlobStorageConfigured}
+                                parentType={HistoryComponentType.CI}
+                                fullScreenView={fullScreenView}
                             />
-                        </div>
-                    )}
-                </Route>
-                {
-                    <Route path={`${path}/security`}>
+                            {(scrollToTop || scrollToBottom) && (
+                                <Scroller
+                                    style={{ position: 'absolute', bottom: '52px', right: '12px', zIndex: '4' }}
+                                    {...{ scrollToTop, scrollToBottom }}
+                                />
+                            )}
+                        </>
+                    }
+                />
+                <Route
+                    path="source-code"
+                    element={
+                        <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
+                    }
+                />
+                <Route
+                    path="artifacts"
+                    element={
+                        loading ? (
+                            <Progressing pageLoader />
+                        ) : (
+                            <div className="p-16 flexbox-col dc__gap-8 flex-grow-1">
+                                {isJobCI && CiArtifactsArrayCards}
+                                <Artifacts
+                                    status={triggerDetails.status}
+                                    artifact={triggerDetails.artifact}
+                                    blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                    downloadArtifactUrl={downloadArtifactUrl}
+                                    isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                                    isJobCI={isJobCI}
+                                    imageComment={triggerDetails.imageComment}
+                                    imageReleaseTags={triggerDetails.imageReleaseTags}
+                                    ciPipelineId={triggerDetails.ciPipelineId}
+                                    artifactId={triggerDetails.artifactId}
+                                    tagsEditable={tagsEditable}
+                                    appReleaseTagNames={appReleaseTags}
+                                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                    renderCIListHeader={renderCIListHeader}
+                                    targetPlatforms={targetPlatforms}
+                                />
+                            </div>
+                        )
+                    }
+                />
+                <Route
+                    path="security"
+                    element={
                         <SecurityTab
                             artifactId={triggerDetails.artifactId}
                             status={triggerDetails.status}
                             appIdFromParent={appIdFromParent}
                         />
-                    </Route>
-                }
-                <Redirect
-                    to={
-                        !isJobView && triggerDetails.status.toLowerCase() === 'succeeded'
-                            ? `${path}/artifacts`
-                            : `${path}/logs`
                     }
                 />
-            </Switch>
+                <Route
+                    path="*"
+                    element={
+                        <Navigate
+                            to={
+                                !isJobView && triggerDetails.status.toLowerCase() === 'succeeded' ? 'artifacts' : 'logs'
+                            }
+                        />
+                    }
+                />
+            </Routes>
         </div>
     )
 }

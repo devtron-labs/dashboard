@@ -15,14 +15,13 @@
  */
 
 import { useEffect, useMemo, useRef } from 'react'
-import { Prompt, useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
     APIResponseHandler,
     BaseURLParams,
     Button,
-    checkIfPathIsMatching,
     CM_SECRET_STATE,
     CodeEditor,
     ComponentSizeType,
@@ -34,6 +33,7 @@ import {
     hasHashiOrAWS,
     MODES,
     ToggleResolveScopedVariables,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
     useAsync,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -75,9 +75,9 @@ export const ConfigMapSecretDryRun = ({
     updateCMSecret,
     formData,
     isFormDirty,
+    routePath,
 }: ConfigMapSecretDryRunProps) => {
     // HOOKS
-    const location = useLocation()
     const { appId, envId } = useParams<Pick<BaseURLParams, 'appId' | 'envId'>>()
     const abortControllerRef = useRef<AbortController>(null)
 
@@ -86,7 +86,7 @@ export const ConfigMapSecretDryRun = ({
     const shouldPrompt = isCreateView && isFormDirty
 
     // PROMPT FOR UNSAVED CHANGES
-    usePrompt({ shouldPrompt })
+    usePrompt({ shouldPrompt, message: UNSAVED_CHANGES_PROMPT_MESSAGE })
 
     const dryRunConfigMapSecretData = useMemo(
         () =>
@@ -174,9 +174,9 @@ export const ConfigMapSecretDryRun = ({
 
         if (fileDeletionRequest) {
             return cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN ? (
-                <ConfigMapSecretNullState nullStateType="DELETE_OVERRIDE" />
+                <ConfigMapSecretNullState nullStateType="DELETE_OVERRIDE" routePath={routePath} />
             ) : (
-                <ConfigMapSecretNullState nullStateType="DELETE" componentName={componentName} />
+                <ConfigMapSecretNullState nullStateType="DELETE" componentName={componentName} routePath={routePath} />
             )
         }
 
@@ -287,18 +287,15 @@ export const ConfigMapSecretDryRun = ({
         )
 
     return (
-        <>
-            <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
-            <div className="flexbox-col h-100 dc__overflow-hidden">
-                <div className={`flex-grow-1 dc__overflow-hidden ${!hideManifest ? 'dc__grid-half' : ''}`}>
-                    {renderLHS()}
-                    {!hideManifest && renderRHS()}
-                </div>
-                {showCrudButtons &&
-                    dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES &&
-                    (!fileDeletionRequest || dryRunEditorMode !== DryRunEditorMode.VALUES_FROM_DRAFT) &&
-                    renderCrudButton()}
+        <div className="flexbox-col h-100 dc__overflow-hidden">
+            <div className={`flex-grow-1 dc__overflow-hidden ${!hideManifest ? 'dc__grid-half' : ''}`}>
+                {renderLHS()}
+                {!hideManifest && renderRHS()}
             </div>
-        </>
+            {showCrudButtons &&
+                dryRunEditorMode !== DryRunEditorMode.PUBLISHED_VALUES &&
+                (!fileDeletionRequest || dryRunEditorMode !== DryRunEditorMode.VALUES_FROM_DRAFT) &&
+                renderCrudButton()}
+        </div>
     )
 }

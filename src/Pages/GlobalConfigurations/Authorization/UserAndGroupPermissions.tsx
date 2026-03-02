@@ -15,9 +15,10 @@
  */
 
 import { lazy, useMemo, useState } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 import {
+    BASE_ROUTES,
     ConditionalWrap,
     ERROR_EMPTY_SCREEN,
     ErrorScreenNotAuthorized,
@@ -29,7 +30,7 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { API_STATUS_CODES, Routes } from '../../../config'
+import { API_STATUS_CODES } from '../../../config'
 import { getCustomRoles } from './authorization.service'
 import { AuthorizationProvider } from './AuthorizationProvider'
 import { AuthorizationContextProps, UserAndGroupPermissionsWrapProps } from './types'
@@ -42,6 +43,8 @@ const UserPermissions = lazy(() => import('./UserPermissions'))
 const PermissionGroups = lazy(() => import('./PermissionGroups'))
 
 const AuthorizationGlobalConfigWrapper = importComponentFromFELibrary('AuthorizationGlobalConfigWrapper')
+
+const AUTHORIZATION_ROUTES = BASE_ROUTES.GLOBAL_CONFIG.AUTH
 
 const UserAndGroupPermissionsWrap = ({ children, setIsAutoAssignFlowEnabled }: UserAndGroupPermissionsWrapProps) => {
     const getWrap = (child) => (
@@ -60,7 +63,6 @@ const UserAndGroupPermissionsWrap = ({ children, setIsAutoAssignFlowEnabled }: U
 const UserAndGroupPermissions = ({
     authorizationContainerRef,
 }: Pick<AuthorizationContextProps, 'authorizationContainerRef'>) => {
-    const { path } = useRouteMatch()
     const [isDataLoading, customRolesList, error, reload] = useAsync(getCustomRoles)
     // For handling the auto assign flow for enterprise
     const [isAutoAssignFlowEnabled, setIsAutoAssignFlowEnabled] = useState(false)
@@ -97,20 +99,26 @@ const UserAndGroupPermissions = ({
     return (
         <div className="flexbox-col flex-grow-1 dc__content-center">
             <AuthorizationProvider value={authorizationProviderValue}>
-                <Switch>
-                    <Route path={`${path}/${Routes.USER_PERMISSIONS}`}>
-                        <UserAndGroupPermissionsWrap setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}>
-                            <UserPermissions />
-                        </UserAndGroupPermissionsWrap>
-                    </Route>
-                    <Route path={`${path}/${Routes.PERMISSION_GROUPS}`}>
-                        <UserAndGroupPermissionsWrap setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}>
-                            <PermissionGroups />
-                        </UserAndGroupPermissionsWrap>
-                    </Route>
-                    <Route path={`${path}/${Routes.API_TOKEN}`} component={APITokens} />
-                    <Redirect to={`${path}/${Routes.USER_PERMISSIONS}`} />
-                </Switch>
+                <Routes>
+                    <Route
+                        path={`${AUTHORIZATION_ROUTES.USERS}/*`}
+                        element={
+                            <UserAndGroupPermissionsWrap setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}>
+                                <UserPermissions />
+                            </UserAndGroupPermissionsWrap>
+                        }
+                    />
+                    <Route
+                        path={`${AUTHORIZATION_ROUTES.GROUPS}/*`}
+                        element={
+                            <UserAndGroupPermissionsWrap setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}>
+                                <PermissionGroups />
+                            </UserAndGroupPermissionsWrap>
+                        }
+                    />
+                    <Route path={`${AUTHORIZATION_ROUTES.API_TOKEN}/*`} element={<APITokens />} />
+                    <Route path="*" element={<Navigate to={AUTHORIZATION_ROUTES.USERS} />} />
+                </Routes>
             </AuthorizationProvider>
         </div>
     )

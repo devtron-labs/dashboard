@@ -15,7 +15,7 @@
  */
 
 import { Fragment, useEffect, useState } from 'react'
-import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Link, NavLink, useLocation, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -31,6 +31,7 @@ import {
     Icon,
     InfoBlock,
     Progressing,
+    ROUTER_URLS,
     SelectPicker,
     showError,
     ToastManager,
@@ -61,7 +62,6 @@ const EnvOverridesHelpNote = () => (
 )
 
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
-    const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()
 
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
@@ -142,7 +142,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             })
         }
         const path = pipeline
-            ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
+            ? `${generatePath(`${ROUTER_URLS.JOBS}/:appId`, { appId })}/edit/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
             : ''
         if (showConfirmationDialog) {
             return renderConfirmationDeleteModal(pipeline, path)

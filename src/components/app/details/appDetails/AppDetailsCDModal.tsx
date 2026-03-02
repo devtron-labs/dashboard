@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -39,7 +39,6 @@ const AppDetailsCDModal = ({
     materialType,
     closeCDModal,
 }: AppDetailsCDModalType): JSX.Element => {
-    const history = useHistory()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const mode = queryParams.get('mode')
@@ -62,7 +61,6 @@ const AppDetailsCDModal = ({
                 pipelineId={cdModal.cdPipelineId}
                 getModuleInfo={getModuleInfo}
                 ciPipelineId={cdModal.ciPipelineId}
-                history={history}
             />
         )
 

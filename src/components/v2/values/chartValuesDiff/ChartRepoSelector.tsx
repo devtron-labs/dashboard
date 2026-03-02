@@ -23,10 +23,9 @@ import { getChartsByKeyword } from '../../../charts/charts.service'
 import { ChartRepoDetailsType, ChartRepoOptions, ChartRepoSelectorType } from './ChartValuesView.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
-import { URLS } from '../../../../config'
 import { getCommonSelectStyle } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
-import { getNoMatchingResultText, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
+import { getNoMatchingResultText, InfoBlock, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ChartRepoSelector = ({
     isExternal,
@@ -131,7 +130,7 @@ export const ChartRepoSelector = ({
                         description={
                             <div>
                                 {CONNECT_CHART_REPO_TEXTS.InfoText}
-                                <NavLink to={URLS.GLOBAL_CONFIG_CHART_REPO} target="_blank" className="fw-6">
+                                <NavLink to={ROUTER_URLS.GLOBAL_CONFIG_CHART_REPOSITORIES} target="_blank" className="fw-6">
                                     {CONNECT_CHART_REPO_TEXTS.LinkText}
                                 </NavLink>
                             </div>

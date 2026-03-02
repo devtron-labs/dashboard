@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ErrorScreenManager, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenManager, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { ResourceRecommenderTableViewWrapperProps } from './types'
@@ -54,7 +54,7 @@ export const ResourceRecommenderTableViewWrapper = ({
         {resourceListError ? (
             <ErrorScreenManager
                 code={resourceListError?.code}
-                redirectURL={URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
+                redirectURL={ROUTER_URLS.RESOURCE_BROWSER.ROOT}
                 reload={reloadResourceListData}
             />
         ) : (

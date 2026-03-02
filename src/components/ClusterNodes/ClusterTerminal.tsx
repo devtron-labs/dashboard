@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { generatePath, useHistory, useLocation } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     Checkbox,
@@ -27,8 +27,8 @@ import {
     NodeTaintType,
     noop,
     OptionType,
-    RESOURCE_BROWSER_ROUTES,
     ResponseType,
+    ROUTER_URLS,
     SelectPickerOptionType,
     ServerErrors,
     showError,
@@ -76,6 +76,8 @@ import {
 } from './constants'
 import { ClusterTerminalType } from './types'
 
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
+
 let clusterTimeOut
 
 const ClusterTerminal = ({
@@ -86,12 +88,12 @@ const ClusterTerminal = ({
     taints,
     updateTabUrl,
 }: ClusterTerminalType) => {
-    const { replace } = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const isAdminTerminalVisible =
         location.pathname ===
         generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
-            clusterId,
+            clusterId: String(clusterId),
         })
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
@@ -188,10 +190,10 @@ const ClusterTerminal = ({
         queryParams.set('node', selectedNodeName.value)
         updateTabUrl({
             id: ResourceBrowserTabsId.terminal,
-            url: `${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`,
+            url: `${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId: String(clusterId) })}?${queryParams.toString()}`,
         })
         if (isAdminTerminalVisible) {
-            replace({ search: queryParams.toString() })
+            navigate({ search: queryParams.toString() }, { replace: true })
         }
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
@@ -286,7 +288,7 @@ const ClusterTerminal = ({
                 showError(error)
             }
         }
-        return null
+        return noop
     }, [manifestData, forceDelete])
 
     useEffect(() => {
@@ -716,7 +718,7 @@ const ClusterTerminal = ({
             <div
                 className={`${selectedTabIndex === 0 ? 'flexbox-col flex-grow-1 dc__overflow-hidden' : 'dc__hide-section'}`}
             >
-                {connectTerminal && terminalView}
+                {connectTerminal && terminalView()}
             </div>
             {selectedTabIndex === 1 && (
                 <div className="flex-grow-1 flexbox-col dc__overflow-auto">

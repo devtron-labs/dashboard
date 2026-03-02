@@ -20,7 +20,7 @@ import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
 import { AppType } from '../../appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
-import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
@@ -59,20 +59,18 @@ const EnvironmentStatusComponent = ({
     isVirtualEnvironment,
     updateDeploymentStatusDetailsBreakdownData,
 }: EnvironmentStatusComponentType) => {
+    const navigate = useNavigate()
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
     const status = appDetails.resourceTree?.status || appDetails?.appStatus || ''
-    const { url } = useRouteMatch()
-    const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
     const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
 
     const onClickUpgrade = () => {
-        const _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
-        history.push(_url)
+        navigate(`../${URLS.APP_VALUES}`)
     }
 
     const notes = appDetails.notes || notesResult?.result?.gitOpsNotes
@@ -85,7 +83,7 @@ const EnvironmentStatusComponent = ({
             loadingCards.push(<LoadingCard key={i} />)
         }
 
-        return <div className="flex left ml-20 mb-16">{loadingCards}</div>
+        return <div className="flex left ml-20 mb-16 dc__gap-12">{loadingCards}</div>
     }
     const renderStatusBlock = () => {
         if (!status) {

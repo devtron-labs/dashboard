@@ -117,8 +117,10 @@ export type PermissionGroupCreateOrUpdatePayload = Pick<
 >
 
 // User Permissions
-export interface UserDto
-    extends Pick<PermissionGroupDto, 'roleFilters' | 'accessRoleFilters' | 'superAdmin' | 'canManageAllAccess'> {
+export interface UserDto extends Pick<
+    PermissionGroupDto,
+    'roleFilters' | 'accessRoleFilters' | 'superAdmin' | 'canManageAllAccess'
+> {
     /**
      * ID of the user
      */
@@ -175,17 +177,16 @@ export interface UserDto
     isDeleted: boolean
 }
 
-export interface User
-    extends Omit<
-        UserDto,
-        | 'timeoutWindowExpression'
-        | 'email_id'
-        | 'userStatus'
-        | 'userRoleGroups'
-        | 'roleFilters'
-        | 'accessRoleFilters'
-        | 'userGroups'
-    > {
+export interface User extends Omit<
+    UserDto,
+    | 'timeoutWindowExpression'
+    | 'email_id'
+    | 'userStatus'
+    | 'userRoleGroups'
+    | 'roleFilters'
+    | 'accessRoleFilters'
+    | 'userGroups'
+> {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -214,8 +215,10 @@ export type UserCreateOrUpdateParamsType = Pick<
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
 } & Pick<UserDto, 'accessRoleFilters'>
 
-export interface UserCreateOrUpdatePayloadType
-    extends Omit<UserDto, 'userGroups' | 'createdOn' | 'updatedOn' | 'isDeleted'> {
+export interface UserCreateOrUpdatePayloadType extends Omit<
+    UserDto,
+    'userGroups' | 'createdOn' | 'updatedOn' | 'isDeleted'
+> {
     userGroups: Pick<UserGroupDTO, 'identifier'>[]
 }
 
@@ -308,8 +311,10 @@ export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     key?: number
 }
 
-export interface CreateUserPermissionPayloadParams
-    extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups' | 'canManageAllAccess'> {
+export interface CreateUserPermissionPayloadParams extends Pick<
+    User,
+    'userStatus' | 'timeToLive' | 'userRoleGroups' | 'canManageAllAccess'
+> {
     id: number
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
     hideApiToken?: TokenResponseType['hideApiToken']
@@ -321,8 +326,9 @@ export interface CreateUserPermissionPayloadParams
     permissionType: PermissionType
 }
 
-export interface DeleteUserPermissionProps
-    extends Partial<Pick<DeleteConfirmationModalProps, 'title' | 'onDelete' | 'closeConfirmationModal'>> {
+export interface DeleteUserPermissionProps extends Partial<
+    Pick<DeleteConfirmationModalProps, 'title' | 'onDelete' | 'closeConfirmationModal'>
+> {
     isUserGroup?: boolean
 }
 
@@ -341,8 +347,9 @@ export enum UserAccessResourceKind {
     CLUSTER_RESOURCES = 'cluster/resources',
 }
 
-export interface GetUserPermissionResourcesPayload
-    extends Partial<Pick<K8sResourceListPayloadType, 'clusterId' | 'k8sRequest'>> {
+export interface GetUserPermissionResourcesPayload extends Partial<
+    Pick<K8sResourceListPayloadType, 'clusterId' | 'k8sRequest'>
+> {
     entity: EntityTypes
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
     teamIds?: number[]
@@ -357,5 +364,4 @@ export interface GetUserResourceOptionsProps {
 }
 
 export interface GetUserAccessAllWorkflowsParams
-    extends Pick<GetUserPermissionResourcesPayload, 'appNames'>,
-        Pick<GetUserResourceOptionsProps, 'options'> {}
+    extends Pick<GetUserPermissionResourcesPayload, 'appNames'>, Pick<GetUserResourceOptionsProps, 'options'> {}

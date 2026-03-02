@@ -167,14 +167,14 @@ export interface SidebarProps extends Pick<CreateAppModalProps, 'isJobView'> {
 }
 
 export interface UpdateTemplateConfigProps
-    extends Pick<CreateAppModalProps, 'isJobView'>,
-        Pick<ApplicationInfoFormProps, 'handleFormStateChange'> {
+    extends Pick<CreateAppModalProps, 'isJobView'>, Pick<ApplicationInfoFormProps, 'handleFormStateChange'> {
     formState: CreateAppFormStateType
     formErrorState: CreateAppFormErrorStateType
 }
 
 export interface ApplicationSelectionListProps
-    extends Pick<CreateAppModalProps, 'isJobView'>,
+    extends
+        Pick<CreateAppModalProps, 'isJobView'>,
         Pick<
             ApplicationInfoFormProps,
             | 'formState'

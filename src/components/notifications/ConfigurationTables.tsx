@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
-
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
@@ -34,8 +32,6 @@ import { ConfigurationTablesTypes } from './types'
 import { WebhookConfigurationTable } from './WebhookConfigurationTable'
 
 export const ConfigurationTables = ({ activeTab, state, setState }: ConfigurationTablesTypes) => {
-    const { path } = useRouteMatch()
-
     const deleteClickHandler = (configId, type: ConfigurationsTabTypes) => async () => {
         try {
             if (type === ConfigurationsTabTypes.SLACK) {
@@ -102,11 +98,5 @@ export const ConfigurationTables = ({ activeTab, state, setState }: Configuratio
         }
     }
 
-    const renderTableRoute = () => (
-        <Switch>
-            <Route path={path} render={renderTableComponent} />
-        </Switch>
-    )
-
-    return renderTableRoute()
+    return renderTableComponent()
 }

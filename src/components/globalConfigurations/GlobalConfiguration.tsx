@@ -15,20 +15,19 @@
  */
 
 import { lazy, useState, useEffect, Suspense, isValidElement, PropsWithChildren } from 'react'
-import { Route, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom'
 import {
     showError,
     Progressing,
     useMainContext,
     PageHeader,
-    URLS as CommonURLS,
     SideNavigation,
     getComponentSpecificThemeClass,
     AppThemeType,
     SideNavigationProps,
     DOCUMENTATION,
+    BASE_ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../config'
 import { ErrorBoundary } from '../common'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
@@ -37,7 +36,6 @@ import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
     MODULE_STATUS_RETRY_COUNT,
-    Routes,
     SERVER_MODE,
 } from '../../config/constants'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
@@ -78,7 +76,7 @@ export default function GlobalConfiguration(props) {
     }, [])
 
     useEffect(() => {
-        if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
+        if (location.pathname.includes(BASE_ROUTES.GLOBAL_CONFIG.HOST_URL)) {
             getHostURLConfig()
         }
     }, [location.pathname])
@@ -143,28 +141,26 @@ export default function GlobalConfiguration(props) {
             {!shouldHidePageHeaderAndSidebar && (
                 <PageHeader headerName="Global Configurations" docPath={DOCUMENTATION.GLOBAL_CONFIGUDATIONS} />
             )}
-            <Router history={useHistory()}>
-                <GlobalConfigurationProvider>
-                    {!shouldHidePageHeaderAndSidebar && (
-                        <section className="global-configuration__navigation py-12 pl-8 pr-7 border__primary--right">
-                            <NavItem serverMode={serverMode} />
-                        </section>
-                    )}
-                    <section className="global-configuration__component-wrapper bg__secondary">
-                        <Suspense fallback={<Progressing pageLoader />}>
-                            <ErrorBoundary>
-                                <Body
-                                    isSuperAdmin={props.isSuperAdmin}
-                                    getHostURLConfig={getHostURLConfig}
-                                    checkList={checkList}
-                                    serverMode={serverMode}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                />
-                            </ErrorBoundary>
-                        </Suspense>
+            <GlobalConfigurationProvider>
+                {!shouldHidePageHeaderAndSidebar && (
+                    <section className="global-configuration__navigation py-12 pl-8 pr-7 border__primary--right">
+                        <NavItem serverMode={serverMode} />
                     </section>
-                </GlobalConfigurationProvider>
-            </Router>
+                )}
+                <section className="global-configuration__component-wrapper bg__secondary">
+                    <Suspense fallback={<Progressing pageLoader />}>
+                        <ErrorBoundary>
+                            <Body
+                                isSuperAdmin={props.isSuperAdmin}
+                                getHostURLConfig={getHostURLConfig}
+                                checkList={checkList}
+                                serverMode={serverMode}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                            />
+                        </ErrorBoundary>
+                    </Suspense>
+                </section>
+            </GlobalConfigurationProvider>
         </main>
     )
 }
@@ -221,7 +217,7 @@ const NavItem = ({ serverMode }) => {
                       id: 'host-url',
                       title: 'Host URL',
                       dataTestId: 'global-configurations-host-url',
-                      href: URLS.GLOBAL_CONFIG_HOST_URL,
+                      href: BASE_ROUTES.GLOBAL_CONFIG.HOST_URL,
                   },
               ]
             : []),
@@ -229,31 +225,31 @@ const NavItem = ({ serverMode }) => {
             title: 'External Links',
             dataTestId: 'click-on-configurations-external-links',
             id: 'external-links',
-            href: URLS.GLOBAL_CONFIG_EXTERNAL_LINKS,
+            href: BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS,
         },
         {
             title: 'Chart Repository',
             dataTestId: 'click-on-configurations-chart-repository',
             id: 'chart-repository',
-            href: URLS.GLOBAL_CONFIG_CHART_REPO,
+            href: BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES,
         },
         {
             id: 'clusters-environments',
             title: `Clusters${window._env_.K8S_CLIENT ? '' : ' & Environments'}`,
             dataTestId: 'global-configurations-clusters-environments',
-            href: URLS.GLOBAL_CONFIG_CLUSTER,
+            href: BASE_ROUTES.GLOBAL_CONFIG.CLUSTER_ENV.ROOT,
         },
         {
             id: 'container-oci-registry',
             title: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
             dataTestId: 'global-configurations-container-oci-registry',
-            href: URLS.GLOBAL_CONFIG_DOCKER,
+            href: BASE_ROUTES.GLOBAL_CONFIG.DOCKER,
         },
         {
             id: 'global-configurations-projects',
             title: 'Projects',
             dataTestId: 'global-configurations-projects',
-            href: CommonURLS.GLOBAL_CONFIG_PROJECTS,
+            href: BASE_ROUTES.GLOBAL_CONFIG.PROJECTS,
         },
         {
             id: 'authorization',
@@ -264,13 +260,13 @@ const NavItem = ({ serverMode }) => {
                     id: 'sso-login-services',
                     title: 'SSO Login Services',
                     dataTestId: 'authorization-sso-login-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.SSO_LOGIN_SERVICES}`,
+                    href: `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.LOGIN_SERVICE}`,
                 },
                 {
                     id: 'user-permissions',
                     title: 'User Permissions',
                     dataTestId: 'authorization-user-permissions-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.USER_PERMISSIONS}`,
+                    href: `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USERS}`,
                     tooltipProps: {
                         alwaysShowTippyOnHover: true,
                         trigger: 'manual',
@@ -279,7 +275,7 @@ const NavItem = ({ serverMode }) => {
                         animation: 'shift-toward-subtle',
                         visible:
                             tippyConfig.showTippy &&
-                            tippyConfig.showOnRoute === `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.USER_PERMISSIONS}`,
+                            tippyConfig.showOnRoute === `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USERS}`,
                         className: `global-configuration__user-permissions-tooltip no-content-padding dc__mxw-250 br-8 ${getComponentSpecificThemeClass(AppThemeType.light)}`,
                         placement: 'right',
                         content: <UserPermissionsTooltipContent onClose={handleTooltipClose} />,
@@ -289,13 +285,13 @@ const NavItem = ({ serverMode }) => {
                     id: 'permission-groups',
                     title: 'Permission Groups',
                     dataTestId: 'authorization-permission-groups-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.PERMISSION_GROUPS}`,
+                    href: `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.GROUPS}`,
                 },
                 {
                     id: 'api-tokens',
                     title: 'API Tokens',
                     dataTestId: 'authorization-api-tokens-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`,
+                    href: `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.API_TOKEN}`,
                 },
             ],
         },
@@ -307,71 +303,53 @@ const NavItem = ({ serverMode }) => {
 const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
-            return URLS.GLOBAL_CONFIG_CLUSTER
+            return BASE_ROUTES.GLOBAL_CONFIG.CLUSTER_ENV.ROOT
         }
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return CommonURLS.GLOBAL_CONFIG_PROJECTS
+            return BASE_ROUTES.GLOBAL_CONFIG.PROJECTS
         }
-        return URLS.GLOBAL_CONFIG_HOST_URL
+        return BASE_ROUTES.GLOBAL_CONFIG.HOST_URL
     }
 
     return (
-        <Switch>
-            <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
-                <ExternalLinks />
-            </Route>
-            <Route key={URLS.GLOBAL_CONFIG_CHART_REPO} path={URLS.GLOBAL_CONFIG_CHART_REPO}>
-                {(props) => <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />}
-            </Route>
-            <Route
-                path={URLS.GLOBAL_CONFIG_CLUSTER}
-                render={() => {
-                    return <Clusters />
-                }}
-            />
-            <Route key={CommonURLS.GLOBAL_CONFIG_PROJECTS} path={CommonURLS.GLOBAL_CONFIG_PROJECTS}>
-                <ProjectList isSuperAdmin={isSuperAdmin} />
-            </Route>
-
-            {!window._env_.K8S_CLIENT && [
+        <Routes>
+            <Route key={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS} path={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS} element={<ExternalLinks />} />
+            <Route key={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES} path={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES} element={<ChartRepo isSuperAdmin={isSuperAdmin} />} />
+            <Route path={`${BASE_ROUTES.GLOBAL_CONFIG.CLUSTER_ENV.ROOT}/*`} element={<Clusters />} />
+            <Route key={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS} path={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS} element={<ProjectList isSuperAdmin={isSuperAdmin} />} />
+            {!window._env_.K8S_CLIENT ? [
                 ...(serverMode !== SERVER_MODE.EA_ONLY
                     ? [
                           <Route
-                              key={URLS.GLOBAL_CONFIG_HOST_URL}
-                              path={URLS.GLOBAL_CONFIG_HOST_URL}
-                              render={(props) => {
-                                  return (
-                                      <HostURLConfiguration
-                                          {...props}
-                                          isSuperAdmin={isSuperAdmin}
-                                          refreshGlobalConfig={getHostURLConfig}
-                                          handleChecklistUpdate={handleChecklistUpdate}
-                                      />
-                                  )
-                              }}
+                              key={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
+                              path={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
+                              element={
+                                  <HostURLConfiguration
+                                      isSuperAdmin={isSuperAdmin}
+                                      refreshGlobalConfig={getHostURLConfig}
+                                      handleChecklistUpdate={handleChecklistUpdate}
+                                  />
+                              }
                           />,
                       ]
                     : []),
 
                 <Route
-                    key={URLS.GLOBAL_CONFIG_DOCKER}
-                    path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
-                    render={(props) => {
-                        return (
-                            <Docker
-                                {...props}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                                isSuperAdmin={isSuperAdmin}
-                                isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
-                            />
-                        )
-                    }}
+                    key={BASE_ROUTES.GLOBAL_CONFIG.DOCKER}
+                    path={`${BASE_ROUTES.GLOBAL_CONFIG.DOCKER}/:id?`}
+                    element={
+                        <Docker
+                            handleChecklistUpdate={handleChecklistUpdate}
+                            isSuperAdmin={isSuperAdmin}
+                            isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
+                        />
+                    }
                 />,
 
-                <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
-            ]}
-            <Redirect to={defaultRoute()} />
-        </Switch>
+                <Route key={BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT} path={`${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/*`} element={<Authorization />} />,
+            ]: []}
+            <Route path="*" element={<Navigate to={defaultRoute()} />} />
+        </Routes>
     )
 }
 

@@ -15,18 +15,19 @@
  */
 
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     API_STATUS_CODES,
     APPROVAL_MODAL_TYPE,
+    BASE_ROUTES,
     BreadcrumbStore,
     DevtronProgressing,
     ErrorScreenManager,
     getUrlWithSearchParams,
+    ROUTER_URLS,
     setGlobalAPITimeout,
     showError,
-    URLS as CommonURLS,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -36,7 +37,6 @@ import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
 import { validateToken } from './services/service'
-import { URLS } from './config'
 
 import './css/application.scss'
 
@@ -53,14 +53,14 @@ const App = () => {
     const { setEmail } = useUserEmail()
 
     const location = useLocation()
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     const isDirectApprovalNotification =
         location.pathname &&
         location.pathname.includes('approve') &&
         location.search &&
         location.search.includes(`?token=${approvalToken}`)
-    const customThemeClassName = location.pathname.startsWith(CommonURLS.NETWORK_STATUS_INTERFACE)
+    const customThemeClassName = location.pathname.startsWith(ROUTER_URLS.NETWORK_STATUS_INTERFACE.ROOT)
         ? 'custom-theme-override'
         : ''
 
@@ -68,32 +68,29 @@ const App = () => {
         if (location.search) {
             const continueUrl = new URLSearchParams(location.search).get('continue')
             if (continueUrl) {
-                push(continueUrl)
+                navigate(continueUrl)
             }
         }
     }
 
     const toastEligibleRoutes: VersionUpdateProps['toastEligibleRoutes'] = [
         {
-            path: `/${approvalType?.toLowerCase()}/approve`,
-            exact: true,
+            path: `${approvalType?.toLowerCase()}/approve`,
             condition: isDirectApprovalNotification && GenericDirectApprovalModal,
             component: <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />,
             eligibleLocation: `/${approvalType?.toLowerCase()}/approve`,
         },
         {
-            path: CommonURLS.LICENSE_AUTH,
-            exact: false,
+            path: BASE_ROUTES.LICENSE_AUTH,
             condition: true,
             component: <ActivateLicense />,
-            eligibleLocation: CommonURLS.LICENSE_AUTH,
+            eligibleLocation: ROUTER_URLS.LICENSE_AUTH,
         },
         {
-            path: URLS.LOGIN,
-            exact: false,
+            path: `${BASE_ROUTES.LOGIN.ROOT}/*`,
             condition: !window._env_.K8S_CLIENT,
             component: <Login />,
-            eligibleLocation: URLS.LOGIN_SSO || URLS.LOGIN_ADMIN,
+            eligibleLocation: ROUTER_URLS.LOGIN.SSO || ROUTER_URLS.LOGIN.ADMIN,
         },
     ]
 
@@ -122,11 +119,11 @@ const App = () => {
         } catch (err: any) {
             // push to login without breaking search
             if (err?.code === API_STATUS_CODES.UNAUTHORIZED) {
-                const loginPath = URLS.LOGIN_SSO
-                if (location.pathname.includes(URLS.LOGIN_SSO)) {
-                    push(`${loginPath}${location.search}`)
+                const loginPath = ROUTER_URLS.LOGIN.SSO
+                if (location.pathname.includes(loginPath)) {
+                    navigate(`${loginPath}${location.search}`)
                 } else {
-                    push(getUrlWithSearchParams(loginPath, { continue: `${location.pathname}${location.search}` }))
+                    navigate(getUrlWithSearchParams(loginPath, { continue: `${location.pathname}${location.search}` }))
                 }
             } else {
                 setErrorPage(true)
@@ -140,7 +137,7 @@ const App = () => {
     useEffect(() => {
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         //  No need to validate token if on license auth page
-        if (!window._env_.K8S_CLIENT && location.pathname !== CommonURLS.LICENSE_AUTH) {
+        if (!window._env_.K8S_CLIENT && location.pathname !== ROUTER_URLS.LICENSE_AUTH) {
             // By Passing validations for direct email approval notifications
             if (isDirectApprovalNotification) {
                 redirectToDirectApprovalNotification()
@@ -156,32 +153,6 @@ const App = () => {
         setGlobalAPITimeout(window._env_.GLOBAL_API_TIMEOUT)
     }, [])
 
-    useEffect(() => {
-        // Mapping few commonly used old routes to new routes
-        const parts = location.pathname.split('/').filter((part) => part)
-
-        if (parts?.[0] === 'app') {
-            if (Number.isNaN(Number(parts?.[1]))) {
-                return
-            }
-
-            const pageHeaderTab = parts?.[2]
-
-            if (
-                pageHeaderTab === CommonURLS.APP_DETAILS ||
-                pageHeaderTab === CommonURLS.APP_TRIGGER ||
-                pageHeaderTab === URLS.APP_CI_DETAILS ||
-                pageHeaderTab === URLS.APP_CD_DETAILS ||
-                pageHeaderTab === URLS.APP_DEPLOYMENT_METRICS ||
-                pageHeaderTab === CommonURLS.APP_CONFIG
-            ) {
-                parts[0] = URLS.APPLICATION_MANAGEMENT_APP
-                const newPath = parts.join('/')
-                push(newPath)
-            }
-        }
-    }, [location])
-
     const renderRoutesWithErrorBoundary = () =>
         errorPage ? (
             <div className="full-height-width bg__tertiary">
@@ -190,17 +161,14 @@ const App = () => {
         ) : (
             <ErrorBoundary>
                 <BreadcrumbStore>
-                    <Switch>
-                        {toastEligibleRoutes.map(({ exact, path, condition, component }) =>
-                            condition ? (
-                                <Route key={path} path={path} exact={exact}>
-                                    {component}
-                                </Route>
-                            ) : null,
-                        )}
-                        <Route path="/" render={() => <NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
-                        <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
-                    </Switch>
+                    <Routes>
+                        {toastEligibleRoutes
+                            .filter(({ condition }) => condition)
+                            .map(({ path, component }) => (
+                                <Route key={path} path={path} element={component} />
+                            ))}
+                        <Route path="/*" element={<NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
+                    </Routes>
                 </BreadcrumbStore>
             </ErrorBoundary>
         )

@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Prompt, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
@@ -32,16 +32,16 @@ import {
     InfoIconTippy,
     PageHeader,
     Progressing,
+    ROUTER_URLS,
     showError,
     stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
     useBreadcrumb,
     useMainContext,
+    usePrompt,
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ChartDetails } from '@Pages/ChartStore'
 
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
@@ -69,13 +69,12 @@ import ChartCardSkeletonRow from './ChartCardSkeleton'
 import ChartGroupRouter from './ChartGroup'
 import { ChartsList } from './ChartsList'
 import { CHART_STORE_TIPPY_CONTENT, getDeployableChartsFromConfiguredCharts } from './utils'
+import { ChartDetailsWithKey } from '@Pages/ChartStore'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useMainContext()
     const location = useLocation()
-    const history = useHistory()
-    const match = useRouteMatch()
-    const { url } = match
+    const navigate = useNavigate()
     const {
         state,
         configureChart,
@@ -123,6 +122,11 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     isLeavingPageNotAllowed.current = !state.charts.every(
         (chart: ChartGroupEntry) => chart.originalValuesYaml === chart.valuesYaml,
     )
+
+    usePrompt({
+        shouldPrompt: isLeavingPageNotAllowed.current,
+        message: 'Your changes will be lost. Do you want to leave without deploying?',
+    })
 
     const { isLoading, data: chartsList } = useQuery({
         queryKey: ['chartsList'],
@@ -220,7 +224,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 description: 'Deployment initiated',
             })
             setInstalling(false)
-            history.push(URLS.HELM_APP_LIST)
+            navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM)
         } catch (err) {
             showError(err)
         } finally {
@@ -301,7 +305,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     }
 
     function handleViewAllCharts(): void {
-        history.push(URLS.GLOBAL_CONFIG_CHART_REPO)
+        navigate(ROUTER_URLS.GLOBAL_CONFIG_CHART_REPOSITORIES)
     }
 
     function renderCreateGroupButton() {
@@ -323,6 +327,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     }
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.CHART_STORE,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
@@ -362,7 +367,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             )
         }
 
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
+        return <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.CHART_STORE} />
     }
 
     async function reloadNextAfterBottom() {
@@ -370,7 +375,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     }
 
     const clearSearch = (): void => {
-        history.push(url)
+        navigate(ROUTER_URLS.CHART_STORE)
     }
 
     const renderChartStoreEmptyState = (): JSX.Element =>
@@ -389,13 +394,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         <>
             <div className={`discover-charts bg__primary ${state.charts.length > 0 ? 'summary-show' : ''}`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
+                    <PageHeader
+                        isBreadcrumbs
+                        breadCrumbs={renderBreadcrumbs}
+                        docPath={DOCUMENTATION.INFRA_MANAGEMENT}
+                    />
                 </ConditionalWrap>
-
-                <Prompt
-                    when={isLeavingPageNotAllowed.current}
-                    message="Your changes will be lost. Do you want to leave without deploying?"
-                />
                 {!state.loading ? (
                     <div className="discover-charts__body">
                         {typeof state.configureChartIndex !== 'number' && chartRepos?.length > 0 && (
@@ -485,8 +489,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                         subtractChart={subtractChart}
                                                                         onClick={(chartId) =>
                                                                             state.charts.length === 0
-                                                                                ? history.push(
-                                                                                      `${url}/chart/${chart.id}`,
+                                                                                ? navigate(
+                                                                                      `${ROUTER_URLS.CHART_STORE}/chart/${chart.id}`,
                                                                                   )
                                                                                 : selectChart(chartId)
                                                                         }
@@ -644,9 +648,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
             {showChartGroupModal ? (
                 <CreateChartGroup
-                    history={history}
+                    navigate={navigate}
+                    params={{}}
                     location={location}
-                    match={match}
                     closeChartGroupModal={() => {
                         toggleChartGroupModal(!showChartGroupModal)
                     }}
@@ -659,24 +663,13 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 }
 
 export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
-    const match = useRouteMatch()
-    const { path } = match
-
     return (
-        <Switch>
-            <Route path={`${path}/group`}>
-                <ChartGroupRouter />
-            </Route>
-            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} exact>
-                <ChartValues />
-            </Route>
-            <Route path={`${path}${URLS.CHART}/:chartId`}>
-                {({ match: { params } }) => <ChartDetails key={params.chartId} />}
-            </Route>
-            <Route>
-                <DiscoverChartList isSuperAdmin={isSuperAdmin} />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route path="group/*" element={<ChartGroupRouter />} />
+            <Route path={`${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} element={<ChartValues />} />
+            <Route path={`${URLS.CHART}/:chartId/*`} element={<ChartDetailsWithKey />} />                    
+            <Route index element={<DiscoverChartList isSuperAdmin={isSuperAdmin} />} />
+        </Routes>
     )
 }
 
@@ -766,8 +759,7 @@ export const ChartGroupListMin = ({
     isGrid?: boolean
     renderCreateGroupButton?: () => JSX.Element
 }) => {
-    const history = useHistory()
-    const match = useRouteMatch()
+    const navigate = useNavigate()
     if (chartGroups.length == 0) {
         return (
             <EmptyChartGroup showChartGroupModal={showChartGroupModal} toggleChartGroupModal={toggleChartGroupModal} />
@@ -775,7 +767,7 @@ export const ChartGroupListMin = ({
     }
 
     const redirectToGroup = () => {
-        history.push(`${match.url}/group`)
+        navigate(`${ROUTER_URLS.CHART_STORE}/group`)
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_ALL_CHART_GROUPS' })
     }
 
@@ -805,7 +797,9 @@ export const ChartGroupListMin = ({
                 </div>
             </div>
             <div className={`chart-grid ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
-                {chartGroups?.map((chartGroup, idx) => <ChartGroupCard key={idx} chartGroup={chartGroup} />)}
+                {chartGroups?.map((chartGroup, idx) => (
+                    <ChartGroupCard key={idx} chartGroup={chartGroup} />
+                ))}
             </div>
         </div>
     )

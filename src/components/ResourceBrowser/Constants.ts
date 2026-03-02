@@ -18,8 +18,7 @@ import {
     K8S_EMPTY_GROUP as K8S_EMPTY_GROUP_FROM_COMMON,
     NO_MATCHING_RESULT,
     Nodes,
-    RESOURCE_BROWSER_ROUTES,
-    URLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
@@ -374,14 +373,19 @@ export const ResourceBrowserGAEvent = {
     RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED: 'RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED',
 }
 
+const CLUSTER_DETAILS_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
+
 export const ResourceBrowserRouteToTabIdMap: Partial<
-    Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
+    Record<
+        (typeof ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS)[keyof typeof ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS],
+        ResourceBrowserTabsId | string
+    >
 > = {
-    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/:kind/:group`]: ResourceBrowserTabsId.k8s_Resources,
-    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/overview`]: ResourceBrowserTabsId.cluster_overview,
-    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`]: MONITORING_DASHBOARD_TAB_ID,
-    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/terminal`]: ResourceBrowserTabsId.terminal,
-    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/resource-recommender`]: RESOURCE_RECOMMENDER_TAB_ID,
+    [CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_LIST]: ResourceBrowserTabsId.k8s_Resources,
+    [CLUSTER_DETAILS_ROUTES.OVERVIEW]: ResourceBrowserTabsId.cluster_overview,
+    [CLUSTER_DETAILS_ROUTES.MONITORING_DASHBOARD]: MONITORING_DASHBOARD_TAB_ID,
+    [CLUSTER_DETAILS_ROUTES.TERMINAL]: ResourceBrowserTabsId.terminal,
+    [CLUSTER_DETAILS_ROUTES.RESOURCE_RECOMMENDER]: RESOURCE_RECOMMENDER_TAB_ID,
 }
 
 export const KUBERNETES_RESOURCE_BROWSER_DESCRIPTION =

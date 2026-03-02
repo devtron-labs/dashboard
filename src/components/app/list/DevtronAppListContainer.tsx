@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 
@@ -30,8 +30,8 @@ import {
     getIsRequestAborted,
     handleUTCTime,
     Pagination,
+    ROUTER_URLS,
     SortableTableHeaderCell,
-    URLS as CommonURLS,
     useAsync,
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -48,7 +48,7 @@ import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-o
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
-import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
+import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../../config'
 import { AppListSortableKeys } from '../list-new/AppListType'
 import { APP_LIST_HEADERS, appListLoadingArray } from '../list-new/Constants'
 import { getAppList } from '../service'
@@ -75,7 +75,7 @@ const DevtronAppList = ({
     setAppCount,
     appListContainerRef,
 }: DevtronAppListProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
         identifier: 'app-list',
@@ -125,8 +125,11 @@ const DevtronAppList = ({
     }, [appListResponseLoading])
 
     const handleEditApp = (appId: number): void => {
-        const url = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${Routes.EDIT}`
-        history.push(url)
+        navigate(
+            generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, {
+                appId: String(appId),
+            }),
+        )
     }
 
     const handleEditAppRedirect = (event): void => {
@@ -139,9 +142,14 @@ const DevtronAppList = ({
         setCurrentAppName(app.name)
 
         if (envId) {
-            return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/details/${envId}`
+            return generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+                appId: String(app.id),
+                envId: String(envId),
+            })
         }
-        return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/trigger`
+        return generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER, {
+            appId: String(app.id),
+        })
     }
 
     const expandRow = (id: number): void => {
@@ -207,7 +215,7 @@ const DevtronAppList = ({
                 />
                 <ContentCard
                     datatestid="create-application"
-                    redirectTo={CommonURLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP}
+                    redirectTo={ROUTER_URLS.CREATE_DEVTRON_APP}
                     rootClassName="ev-5"
                     imgSrc={DeployCICD}
                     title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}

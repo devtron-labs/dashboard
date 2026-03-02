@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react'
-import ReactMde from 'react-mde'
+import { useState, useEffect, useRef } from 'react'
+// import ReactMde from 'react-mde'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
-import 'react-mde/lib/styles/css/react-mde-all.css'
+// import 'react-mde/lib/styles/css/react-mde-all.css'
 import { MarkDown, showError, ToastManager, ToastVariantType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { MDEditorSelectedTabType } from '../../ClusterNodes/types'
 import { ReactComponent as HeaderIcon } from '../../../assets/icons/mdeditor/ic-header.svg'
@@ -364,7 +364,7 @@ export default function GenericDescription({
                                 Edit
                             </div>
                         </div>
-                        <ReactMde
+                        {/* <ReactMde
                             classes={{
                                 reactMde:
                                     'mark-down-editor-container dc__word-break pb-16 pt-8 mark-down-editor__no-border',
@@ -378,11 +378,11 @@ export default function GenericDescription({
                             generateMarkdownPreview={(markdown) =>
                                 Promise.resolve(<MarkDown markdown={markdown} breaks disableEscapedText />)
                             }
-                        />
+                        /> */}
                     </div>
                 ) : (
                     <div className="min-w-500">
-                        <ReactMde
+                        {/* <ReactMde
                             ref={mdeRef}
                             classes={{
                                 reactMde: `mark-down-editor-container dc__word-break ${
@@ -422,7 +422,7 @@ export default function GenericDescription({
                                     tabIndex,
                                 },
                             }}
-                        />
+                        /> */}
                         {initialEditDescriptionView && (
                             <div className="form cluster__description-footer pt-12 pb-12">
                                 <div className="form__buttons pl-16 pr-16">

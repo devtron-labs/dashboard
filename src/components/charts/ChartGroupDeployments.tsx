@@ -15,19 +15,18 @@
  */
 
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import {
     not,
     GenericEmptyState,
     DeleteConfirmationModal,
-    URLS as CommonURLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg'
 import NoDeploymentImg from '../../assets/img/app-not-configured.png'
 import { InstalledChartGroup, InstalledChart, ChartGroupDeploymentsProps } from './charts.types'
-import { URLS } from '../../config'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
 import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
@@ -124,7 +123,10 @@ const CollapsibleDeployment: React.FC<{
                 {props.installedChartGroup.installedCharts.map((chart: InstalledChart, index) => {
                     return (
                         <Link
-                            to={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`}
+                            to={generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART, {
+                                appId: String(chart.installedAppId),
+                                envId: String(chart.environmentId),
+                            })}
                             key={`${index} - ${chart.chartName}}`}
                             className="chart-group-deployment__row"
                             data-testid={`group-deployment-${props.index}`}

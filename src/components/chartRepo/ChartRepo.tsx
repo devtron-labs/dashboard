@@ -35,6 +35,7 @@ import {
     ComponentSizeType,
     ERROR_STATUS_CODE,
     DeleteConfirmationModal,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
@@ -52,7 +53,7 @@ import {
     deleteChartRepo,
 } from './chartRepo.service'
 import { getChartRepoList } from '../../services/service'
-import { PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS, HEADER_TEXT } from '../../config'
+import { PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, HEADER_TEXT } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
@@ -529,7 +530,7 @@ const ChartForm = ({
                         Looking to add OCI-based registry?
                         <NavLink
                             className="dc__no-decor pl-8 pr-8 flex left cb-5"
-                            to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}
+                            to={`${ROUTER_URLS.GLOBAL_CONFIG_DOCKER}/0`}
                         >
                             Add OCI Registry
                         </NavLink>

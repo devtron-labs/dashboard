@@ -5,7 +5,7 @@ import {
     getSelectPickerOptionByValue,
     OVERVIEW_PAGE_SIZE_OPTIONS_SMALL,
     Pagination,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
@@ -23,8 +23,8 @@ const ClusterNameCellComponent = ({
     clusterId,
     clusterName,
 }: Pick<ClusterCapacityDistribution, 'clusterId' | 'clusterName'>) => {
-    const path = generatePath(RESOURCE_BROWSER_ROUTES.OVERVIEW, {
-        clusterId,
+    const path = generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.OVERVIEW, {
+        clusterId: String(clusterId),
     })
 
     return (

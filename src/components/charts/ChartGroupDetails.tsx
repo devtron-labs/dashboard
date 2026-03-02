@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import {
     showError,
@@ -34,12 +34,12 @@ import {
     getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
     DOCUMENTATION,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
-import { URLS } from '../../config'
 import { ReactComponent as Pencil } from '@Icons/ic-pencil.svg'
 import {
     deployChartGroup,
@@ -55,10 +55,11 @@ import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarni
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
 
+const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId`
+
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()
-    const { push } = useHistory()
-    const { url } = useRouteMatch()
+    const navigate = useNavigate()
     const [projectId, setProjectId] = useState(null)
     const [loading, setLoading] = useState(null)
     const {
@@ -73,14 +74,15 @@ export default function ChartGroupDetails() {
         setEnvironmentList,
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
+        pagePathPattern,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
-                'chart-store': {
+                'chart-store': null,
+                discover: {
                     component: <BreadcrumbText heading="Chart Store" />,
                     linked: true,
                 },
-                 'discover': null,
                 group: 'Chart groups',
                 ':groupId': {
                     component: (
@@ -90,6 +92,7 @@ export default function ChartGroupDetails() {
                             primaryValue="name"
                             matchedKeys={[]}
                             apiPrimaryKey="id"
+                            path={pagePathPattern}
                         />
                     ),
                     linked: false,
@@ -108,15 +111,16 @@ export default function ChartGroupDetails() {
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
 
     function handleAdvancedChart() {
-        push(`${url}/deploy`, {
-            charts: state.charts,
-            configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
+        navigate('deploy', {
+            state: {
+                charts: state.charts,
+                configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
+            },
         })
     }
 
     function redirectToConfigure() {
-        const url = `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}/edit`
-        push(url)
+        navigate('edit')
     }
 
     async function deleteInstalledChartFromDeployments(installedAppId: number) {
@@ -156,7 +160,7 @@ export default function ChartGroupDetails() {
             installedChartData: chartGroupInstalled?.result?.installedChartData,
         }
         await deleteChartGroup(payload)
-        push(URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER)
+        navigate(ROUTER_URLS.CHART_STORE)
     }
 
     const renderDeleteComponent = () => {
@@ -229,7 +233,7 @@ export default function ChartGroupDetails() {
     const renderBreadcrumbs = () => {
         return (
             <div className="flex left">
-                <BreadCrumb sep="/" breadcrumbs={breadcrumbs} />
+                <BreadCrumb sep="/" breadcrumbs={breadcrumbs} path={pagePathPattern} />
             </div>
         )
     }
@@ -267,10 +271,12 @@ export default function ChartGroupDetails() {
                                         })
                                         return
                                     }
-                                    push(`${url}/deploy`, {
-                                        configureChartIndex: index,
-                                        charts: state.charts,
-                                        projectId,
+                                    navigate('deploy', {
+                                        state: {
+                                            configureChartIndex: index,
+                                            charts: state.charts,
+                                            projectId,
+                                        },
                                     })
                                 }}
                                 handleChartValueChange={handleChartValueChange}
@@ -344,7 +350,7 @@ export default function ChartGroupDetails() {
                     handleEnvironmentChangeOfAllCharts={handleEnvironmentChangeOfAllCharts}
                     redirectToAdvancedOptions={() => {
                         toggleDeployModal(false)
-                        push(`${url}/deploy`, { charts: state.charts, projectId })
+                        navigate('deploy', { state: { charts: state.charts, projectId } })
                     }}
                     setEnvironments={setEnvironmentList}
                 />

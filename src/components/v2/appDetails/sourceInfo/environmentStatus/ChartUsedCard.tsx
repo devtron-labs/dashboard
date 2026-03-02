@@ -18,13 +18,12 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
-import { LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
+import { LoadingCard, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as DefaultChart } from '@Icons/ic-default-chart.svg'
 import { ReactComponent as File } from '@Icons/ic-file.svg'
 import { ReactComponent as QuestionIcon } from '@Icons/ic-question.svg'
 
-import { URLS } from '../../../../../config'
 import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
 import { getUsedChartContent } from '../utils'
 
@@ -76,7 +75,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onCli
                     <div className="fs-13 fw-6 dc__ellipsis-right" data-testid="full-chart-name-with-version">
                         <Link
                             className={`fw-6 ${appDetails.appStoreChartId ? 'cb-5' : 'cn-9'}`}
-                            to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${appDetails.appStoreChartId}`}
+                            to={`${ROUTER_URLS.CHART_STORE}/chart/${appDetails.appStoreChartId}`}
                             style={{ pointerEvents: !appDetails.appStoreChartId ? 'none' : 'auto' }}
                         >
                             {appDetails.appStoreAppName}

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'

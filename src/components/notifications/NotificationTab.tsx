@@ -36,6 +36,8 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     SourceTypeMap,
+    RouterV5Props,
+    BASE_ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import {
@@ -61,7 +63,7 @@ import { renderPipelineTypeIcon } from './notifications.util'
 import { NotificationTabState } from './types'
 import { InValidHostUrlWarningBlock } from '@Components/common'
 
-export class NotificationTab extends Component<any, NotificationTabState> {
+export class NotificationTab extends Component<RouterV5Props<{}>, NotificationTabState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -382,7 +384,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 description: TOAST_ACCESS_DENIED.SUBTITLE,
             })
         } else {
-            this.props.history.push(URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW)
+            this.props.navigate(`../${BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS_ADD_NEW}`)
         }
     }
 

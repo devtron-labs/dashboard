@@ -47,9 +47,9 @@ export interface PluginDetailHeaderProps {
 export interface PluginVersionSelectProps extends PluginDetailHeaderProps {}
 
 export interface PluginVersionSelectOptionType
-    extends OptionType<number, string>,
-        Pick<ParentPluginType['pluginVersions'][0], 'isLatest'> {}
-export interface TaskDetailComponentParamsType {
+    extends OptionType<number, string>, Pick<ParentPluginType['pluginVersions'][0], 'isLatest'> {}
+
+export type TaskDetailComponentParamsType = {
     appId: string
 }
 

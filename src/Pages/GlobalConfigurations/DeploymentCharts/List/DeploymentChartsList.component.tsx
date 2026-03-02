@@ -25,9 +25,9 @@ import {
     GenericFilterEmptyState,
     getAlphabetIcon,
     highlightSearchText,
+    ROUTER_URLS,
     SortableTableHeaderCell,
     Tooltip,
-    URLS,
     useAsync,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -209,7 +209,7 @@ const DeploymentChartsList = () => {
             errorScreenManagerProps={{
                 code: chartListError?.code,
                 reload: reloadChartList,
-                redirectURL: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS,
+                redirectURL: ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.DEPLOYMENT_CHARTS,
             }}
         >
             {!!chartList && (

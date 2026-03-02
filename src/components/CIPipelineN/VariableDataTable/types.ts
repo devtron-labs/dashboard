@@ -168,18 +168,17 @@ export type GetValColumnRowPropsType = Pick<
         'format' | 'value' | 'refVariableName' | 'refVariableStage' | 'valueConstraint' | 'description' | 'variableType'
     > & { type: PluginVariableType; isFileUploading?: boolean }
 
-export interface GetVariableDataTableInitialRowsProps
-    extends Omit<
-        GetValColumnRowPropsType,
-        | 'description'
-        | 'format'
-        | 'variableType'
-        | 'value'
-        | 'refVariableName'
-        | 'refVariableStage'
-        | 'valueConstraint'
-        | 'isFileUploading'
-    > {
+export interface GetVariableDataTableInitialRowsProps extends Omit<
+    GetValColumnRowPropsType,
+    | 'description'
+    | 'format'
+    | 'variableType'
+    | 'value'
+    | 'refVariableName'
+    | 'refVariableStage'
+    | 'valueConstraint'
+    | 'isFileUploading'
+> {
     ioVariables: VariableType[]
     type: PluginVariableType
     isCustomTask: boolean

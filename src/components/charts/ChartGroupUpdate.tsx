@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router-dom'
+import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -28,6 +28,8 @@ import {
     getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
     DOCUMENTATION,
+    ROUTER_URLS,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ChartCard from './ChartCard'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
@@ -36,17 +38,17 @@ import AdvancedConfig from './AdvancedConfig'
 import { updateChartGroupEntries, getChartProviderList } from './charts.service'
 import useChartGroup from './useChartGroup'
 import CreateChartGroup from './modal/CreateChartGroup'
-import { URLS } from '../../config'
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './constants'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import { sortOptionsByLabel } from '../common'
 
+const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId/edit`
+
 export default function ChartGroupUpdate({}) {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const match = useRouteMatch()
     const { groupId } = useParams<{ groupId }>()
     const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -74,7 +76,6 @@ export default function ChartGroupUpdate({}) {
     const [appStoreName, setAppStoreName] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [includeDeprecated, setIncludeDeprecated] = useState(0)
-    const { url } = match
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
     const [chartLists, setChartLists] = useState<ChartListType[]>([])
@@ -82,6 +83,7 @@ export default function ChartGroupUpdate({}) {
     const [isGrid, setIsGrid] = useState<boolean>(true)
 
     const { breadcrumbs } = useBreadcrumb(
+        pagePathPattern,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
@@ -166,11 +168,12 @@ export default function ChartGroupUpdate({}) {
 
     useEffect(() => {
         getChartFilter()
-        window.addEventListener('beforeunload', reloadCallback)
-        return () => {
-            window.removeEventListener('beforeunload', reloadCallback)
-        }
     }, [])
+
+    usePrompt({
+        shouldPrompt: isLeavingPageNotAllowed.current,
+        message: 'Your changes will be lost. Do you want to leave without saving?',
+    })
 
     useEffect(() => {
         if (!state.loading) {
@@ -180,16 +183,8 @@ export default function ChartGroupUpdate({}) {
         }
     }, [chartRepos, location.search, state.loading])
 
-    function reloadCallback(event): void {
-        event.preventDefault()
-        if (isLeavingPageNotAllowed.current) {
-            event.returnValue = 'Your changes will be lost. Do you want to leave without deploying?'
-        }
-    }
-
     function redirectToGroupDetail(): void {
-        const url = `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}`
-        history.push(url)
+        navigate(`${ROUTER_URLS.CHART_STORE}/group/${groupId}`)
     }
 
     function closeChartGroupModal(props): void {
@@ -265,7 +260,7 @@ export default function ChartGroupUpdate({}) {
         await applyFilterOnCharts(location.search, false)
     }
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={pagePathPattern} />
 
     const renderChartGroupEditActionButton = () => {
         return (
@@ -288,7 +283,11 @@ export default function ChartGroupUpdate({}) {
     }
 
     function handleViewAllCharts(): void {
-        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`)
+        const newSearch = new URLSearchParams(location.search)
+        newSearch.append(QueryParams.IncludeDeprecated, '1')
+        navigate({
+            search: newSearch.toString()
+        })
     }
 
     return (
@@ -299,10 +298,6 @@ export default function ChartGroupUpdate({}) {
                     breadCrumbs={renderBreadcrumbs}
                     renderActionButtons={renderChartGroupEditActionButton}
                     docPath={DOCUMENTATION.INFRA_MANAGEMENT}
-                />
-                <Prompt
-                    when={isLeavingPageNotAllowed.current}
-                    message="Your changes will be lost. Do you want to leave without saving?"
                 />
 
                 {!state.loading ? (
@@ -379,9 +374,9 @@ export default function ChartGroupUpdate({}) {
             {chartDetailsUpdate && (
                 <CreateChartGroup
                     closeChartGroupModal={closeChartGroupModal}
-                    history={history}
                     location={location}
-                    match={match}
+                    params={{}}
+                    navigate={navigate}
                     chartGroupId={Number(groupId)}
                     name={state.name}
                     description={state.description}

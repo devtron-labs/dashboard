@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Prompt, useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import {
     APIResponseHandler,
@@ -8,7 +8,6 @@ import {
     CommonNodeAttr,
     ComponentSizeType,
     ConsequenceAction,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DocLink,
     Drawer,
     ErrorScreenManagerProps,
@@ -57,7 +56,7 @@ const BuildImageModal = ({
     environmentLists,
     reloadWorkflowStatus,
 }: BuildImageModalProps) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
     const materialListAbortControllerRef = useRef<AbortController>(new AbortController())
 
@@ -174,7 +173,7 @@ const BuildImageModal = ({
         getCIPipelineURL(String(appId), String(workflowId), true, ciNodeId, false, ciNode.isJobCI, false)
 
     const redirectToCIPipeline = () => {
-        push(getCIPipelineURLWrapper())
+        navigate(getCIPipelineURLWrapper())
     }
 
     const handleWebhookModalBack = () => {
@@ -401,34 +400,31 @@ const BuildImageModal = ({
     )
 
     return (
-        <>
-            <Drawer position="right" width="1024px" onClose={handleClose} onEscape={handleClose}>
-                <div
-                    className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
-                    onClick={stopPropagation}
-                >
-                    <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                        <BuildImageHeader
-                            showWebhookModal={showWebhookModal}
-                            handleWebhookModalBack={handleWebhookModalBack}
-                            pipelineName={ciNode?.title}
-                            isJobView={isJobView}
-                            handleClose={handleClose}
-                        />
+        <Drawer position="right" width="1024px" onClose={handleClose} onEscape={handleClose}>
+            <div
+                className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
+                onClick={stopPropagation}
+            >
+                <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                    <BuildImageHeader
+                        showWebhookModal={showWebhookModal}
+                        handleWebhookModalBack={handleWebhookModalBack}
+                        pipelineName={ciNode?.title}
+                        isJobView={isJobView}
+                        handleClose={handleClose}
+                    />
 
-                        <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
-                    </div>
-
-                    {!ciNode || ciNode.isTriggerBlocked || showWebhookModal || !!screenErrorData ? null : (
-                        <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
-                            {isJobView ? renderEnvironments() : renderCacheInfo()}
-                            {renderCTAButton()}
-                        </div>
-                    )}
+                    <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                 </div>
-            </Drawer>
-            <Prompt when={isBuildTriggerLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-        </>
+
+                {!ciNode || ciNode.isTriggerBlocked || showWebhookModal || !!screenErrorData ? null : (
+                    <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
+                        {isJobView ? renderEnvironments() : renderCacheInfo()}
+                        {renderCTAButton()}
+                    </div>
+                )}
+            </div>
+        </Drawer>
     )
 }
 

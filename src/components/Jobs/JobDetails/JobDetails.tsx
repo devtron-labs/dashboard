@@ -15,44 +15,41 @@
  */
 
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    generatePath,
-    Redirect,
-    Route,
-    Switch,
-    useHistory,
-    useLocation,
-    useParams,
-    useRouteMatch,
-} from 'react-router-dom'
-import { APP_TYPE, URLS } from '../../../config'
-import {
+    BASE_ROUTES,
     BreadCrumb,
-    Progressing,
-    showError,
-    useBreadcrumb,
-    PageHeader,
-    ResourceKindType,
-    TabProps,
-    TabGroup,
-    URLS as CommonURLS,
-    handleAnalyticsEvent,
     BreadcrumbText,
     DOCUMENTATION,
+    getAutomationEnablementBreadcrumb,
+    handleAnalyticsEvent,
+    PageHeader,
+    Progressing,
+    ResourceKindType,
+    ROUTER_URLS,
+    showError,
+    TabGroup,
+    TabProps,
+    useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import { APP_TYPE } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
-import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
+import Overview from '../../app/Overview/Overview'
 import { getAppMetaInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
-import { ErrorBoundary } from '../../common'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { AppSelector } from '../../AppSelector'
+import { ErrorBoundary } from '../../common'
+
 import '../../app/details/appDetails/appDetails.scss'
 
-export default function JobDetails() {
-    const { path } = useRouteMatch()
+const JOB_DETAIL_ROUTES = BASE_ROUTES.AUTOMATION_AND_ENABLEMENT.JOBS.DETAIL
+
+const JobDetails = () => {
     const { appId } = useParams<{ appId: string }>()
     const [jobName, setJobName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
@@ -84,25 +81,28 @@ export default function JobDetails() {
             <JobHeader jobName={jobName} />
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
-                    <Switch>
-                        <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview
-                                appType={APP_TYPE.JOB}
-                                appMetaInfo={appMetaInfo}
-                                getAppMetaInfoRes={getAppMetaInfoRes}
-                            />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                            <TriggerView isJobView />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} isJobView />
-                        </Route>
-                        <Route path={`${path}/${CommonURLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} resourceKind={ResourceKindType.job} />
-                        </Route>
-                        <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
-                    </Switch>
+                    <Routes>
+                        <Route
+                            path={JOB_DETAIL_ROUTES.OVERVIEW}
+                            element={
+                                <Overview
+                                    appType={APP_TYPE.JOB}
+                                    appMetaInfo={appMetaInfo}
+                                    getAppMetaInfoRes={getAppMetaInfoRes}
+                                />
+                            }
+                        />
+                        <Route path={`${JOB_DETAIL_ROUTES.TRIGGER}/*`} element={<TriggerView isJobView />} />
+                        <Route
+                            path={`${JOB_DETAIL_ROUTES.CI_DETAILS}/:pipelineId?/:buildId?/*`}
+                            element={<CIDetails key={appId} isJobView />}
+                        />
+                        <Route
+                            path={`${JOB_DETAIL_ROUTES.CONFIGURATIONS}/*`}
+                            element={<AppConfig appName={jobName} resourceKind={ResourceKindType.job} />}
+                        />
+                        <Route path="*" element={<Navigate to={JOB_DETAIL_ROUTES.OVERVIEW} />} />
+                    </Routes>
                 </Suspense>
             </ErrorBoundary>
         </div>
@@ -111,8 +111,7 @@ export default function JobDetails() {
 
 const JobHeader = ({ jobName }: { jobName: string }) => {
     const { appId } = useParams<{ appId: string }>()
-    const match = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const currentPathname = useRef('')
 
@@ -133,10 +132,11 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
     }, [location.pathname])
 
     const handleAppChange = useCallback(
-        ({ label, value }) => {
-            const tab = currentPathname.current.replace(match.url, '').split('/')[1]
-            const newUrl = generatePath(match.path, { appId: value })
-            history.push(`${newUrl}/${tab}`)
+        ({ value }) => {
+            const currentUrl = generatePath(ROUTER_URLS.JOB_DETAIL.ROOT, { appId })
+            const tab = currentPathname.current.replace(currentUrl, '').split('/')[1]
+            const newUrl = generatePath(ROUTER_URLS.JOB_DETAIL.ROOT, { appId: value })
+            navigate(`${newUrl}/${tab}`)
             handleAnalyticsEvent({
                 category: 'Job Selector',
                 action: 'Job Selection Changed',
@@ -146,9 +146,11 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
     )
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.JOB_DETAIL.ROOT,
         {
             alias: {
-                ':appId(\\d+)': {
+                ...getAutomationEnablementBreadcrumb(),
+                ':appId': {
                     component: (
                         <AppSelector onChange={handleAppChange} appId={Number(appId)} appName={jobName} isJobView />
                     ),
@@ -170,10 +172,10 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 label: 'Overview',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    to: JOB_DETAIL_ROUTES.OVERVIEW,
                     onClick: handleEventClick,
-                    ['data-testid']: 'overview-link',
-                    ['data-action']: 'Overview Clicked',
+                    'data-testid': 'overview-link',
+                    'data-action': 'Overview Clicked',
                 },
             },
             {
@@ -181,10 +183,10 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 label: 'Trigger Job',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_TRIGGER}`,
+                    to: JOB_DETAIL_ROUTES.TRIGGER,
                     onClick: handleEventClick,
-                    ['data-testid']: 'trigger-job-link',
-                    ['data-action']: 'Trigger Job Clicked',
+                    'data-testid': 'trigger-job-link',
+                    'data-action': 'Trigger Job Clicked',
                 },
             },
             {
@@ -192,10 +194,10 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 label: 'Run History',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_CI_DETAILS}`,
+                    to: JOB_DETAIL_ROUTES.CI_DETAILS,
                     onClick: handleEventClick,
-                    ['data-testid']: 'run-history-link',
-                    ['data-action']: 'Run History Clicked',
+                    'data-testid': 'run-history-link',
+                    'data-action': 'Run History Clicked',
                 },
             },
             {
@@ -204,10 +206,10 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 tabType: 'navLink',
                 icon: Settings,
                 props: {
-                    to: `${match.url}/${CommonURLS.APP_CONFIG}`,
+                    to: JOB_DETAIL_ROUTES.CONFIGURATIONS,
                     onClick: handleEventClick,
-                    ['data-testid']: 'job-config-link',
-                    ['data-action']: 'Job Configurations Clicked',
+                    'data-testid': 'job-config-link',
+                    'data-action': 'Job Configurations Clicked',
                 },
             },
         ]
@@ -215,9 +217,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
         return <TabGroup tabs={tabs} hideTopPadding />
     }
 
-    const renderBreadcrumbs = () => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
-    }
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.JOB_DETAIL.ROOT} />
 
     return (
         <div className="job-header-wrapper">
@@ -231,3 +231,5 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
         </div>
     )
 }
+
+export default JobDetails

@@ -15,7 +15,7 @@
  */
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
+import { Route, useNavigate, Routes, useLocation, Navigate } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -26,6 +26,8 @@ import {
     AppStatusModalTabType,
     noop,
     InstallationType,
+    BASE_ROUTES,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, importComponentFromFELibrary, useInterval } from '../../common'
@@ -64,8 +66,8 @@ export default function DevtronStackManager({
     isSuperAdmin: boolean
 }) {
     const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } = useMainContext()
-    const history: RouteComponentProps['history'] = useHistory()
-    const location: RouteComponentProps['location'] = useLocation()
+    const navigate = useNavigate()
+    const location = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({
         isLoading: false,
         discoverModulesList: [],
@@ -80,7 +82,7 @@ export default function DevtronStackManager({
     })
     const [detailsMode, setDetailsMode] = useState('')
     const [selectedTabIndex, setSelectedTabIndex] = useState(
-        location.pathname.includes(URLS.STACK_MANAGER_ABOUT_RELEASES) ? 1 : 0,
+        location.pathname.includes(ROUTER_URLS.STACK_MANAGER.ABOUT_RELEASES) ? 1 : 0,
     )
     const stackManagerRef = useRef<HTMLElement>()
     const queryParams = new URLSearchParams(location.search)
@@ -134,7 +136,7 @@ export default function DevtronStackManager({
         if (queryParams.get('actionTriggered') === 'true') {
             getLatestInfo()
             queryParams.delete('actionTriggered')
-            history.push(`${location.pathname}?${queryParams.toString()}`)
+            navigate(`${location.pathname}?${queryParams.toString()}`)
         } else if (location.pathname.includes(URLS.DETAILS) && selectedModule) {
             const moduleId = queryParams.get('id')
             if (moduleId && selectedModule.name.toLowerCase() !== moduleId.toLowerCase()) {
@@ -156,27 +158,27 @@ export default function DevtronStackManager({
     useEffect(() => {
         if (stackDetails.discoverModulesList.length > 0) {
             if (
-                location.pathname.includes(URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS) &&
+                location.pathname.includes(ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES_DETAILS) &&
                 stackDetails.installedModulesList.length === 0
             ) {
-                history.push(URLS.STACK_MANAGER_INSTALLED_MODULES)
+                navigate(ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES)
             } else if (location.pathname.includes(URLS.DETAILS) && queryParams.get('id')) {
                 const _selectedModule = stackDetails.discoverModulesList.find(
                     (module) => module.name.toLowerCase() === queryParams.get('id').toLowerCase(),
                 )
 
                 if (!_selectedModule) {
-                    history.push(
-                        location.pathname.includes(URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS)
-                            ? URLS.STACK_MANAGER_DISCOVER_MODULES
-                            : URLS.STACK_MANAGER_INSTALLED_MODULES,
+                    navigate(
+                        location.pathname.includes(ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS)
+                            ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES
+                            : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES,
                     )
                 }
 
                 setSelectedModule(_selectedModule)
                 if (!detailsMode) {
                     setDetailsMode(
-                        location.pathname.includes(URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS)
+                        location.pathname.includes(ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS)
                             ? 'discover'
                             : 'installed',
                     )
@@ -242,7 +244,7 @@ export default function DevtronStackManager({
         } finally {
             setActionTriggered({
                 ...actionTriggered,
-                [location.pathname.includes(URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS)
+                [location.pathname.includes(ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS)
                     ? `moduleAction-${queryParams.get('id')?.toLowerCase()}`
                     : 'serverAction']: false,
             })
@@ -347,7 +349,11 @@ export default function DevtronStackManager({
         })
 
         // 1. Execute all APIs - get all modules, get logPodName & releaseNotes
-        Promise.allSettled([getAllModules(), getLogPodName(), getReleasesNotes(serverInfo.installationType, serverInfo.currentVersion)])
+        Promise.allSettled([
+            getAllModules(),
+            getLogPodName(),
+            getReleasesNotes(serverInfo.installationType, serverInfo.currentVersion),
+        ])
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 const allModulesRes: AllModuleInfoResponse = responses[0].value
                 const allModulesErrorRes = responses[0].reason
@@ -398,13 +404,12 @@ export default function DevtronStackManager({
         setDetailsMode(fromDiscoverModules ? 'discover' : 'installed')
         setSelectedModule(moduleDetails)
 
-        history.push(
-            `${
-                fromDiscoverModules
-                    ? URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS
-                    : URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS
-            }?${queryParams.toString()}`,
-        )
+        navigate({
+            pathname: fromDiscoverModules
+                    ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS
+                    : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES_DETAILS,
+                search: `?${queryParams.toString()}`,
+        })
     }
 
     const handleBreadcrumbClick = () => {
@@ -431,8 +436,8 @@ export default function DevtronStackManager({
 
     const Body = () => {
         return (
-            <Switch location={location}>
-                <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}>
+            <Routes>
+                <Route path={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES_DETAILS}>
                     <ModuleDetailsView
                         modulesList={stackDetails.discoverModulesList}
                         moduleDetails={selectedModule}
@@ -443,8 +448,6 @@ export default function DevtronStackManager({
                         fromDiscoverModules
                         isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
                         handleActionTrigger={handleActionTrigger}
-                        history={history}
-                        location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
                         isSuperAdmin={isSuperAdmin}
                         setSelectedModule={setSelectedModule}
@@ -460,7 +463,7 @@ export default function DevtronStackManager({
                         toggled={toggled}
                     />
                 </Route>
-                <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
+                <Route path={BASE_ROUTES.STACK_MANAGER.INSTALLED_MODULES_DETAILS}>
                     <ModuleDetailsView
                         modulesList={stackDetails.installedModulesList}
                         moduleDetails={selectedModule}
@@ -470,8 +473,6 @@ export default function DevtronStackManager({
                         logPodName={logPodName}
                         isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
                         handleActionTrigger={handleActionTrigger}
-                        history={history}
-                        location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
                         setSelectedModule={setSelectedModule}
                         isSuperAdmin={isSuperAdmin}
@@ -487,20 +488,20 @@ export default function DevtronStackManager({
                         toggled={toggled}
                     />
                 </Route>
-                <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>
+                <Route path={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES}>
                     <ModulesListingView
                         modulesList={stackDetails.discoverModulesList}
                         isDiscoverModulesView
                         handleModuleCardClick={handleModuleSelection}
                     />
                 </Route>
-                <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES}>
+                <Route path={BASE_ROUTES.STACK_MANAGER.INSTALLED_MODULES}>
                     <ModulesListingView
                         modulesList={stackDetails.installedModulesList}
                         handleModuleCardClick={handleModuleSelection}
                     />
                 </Route>
-                <Route path={URLS.STACK_MANAGER_ABOUT}>
+                <Route path={BASE_ROUTES.STACK_MANAGER.ABOUT}>
                     <AboutDevtronView
                         parentRef={stackManagerRef}
                         releaseNotes={stackDetails.releaseNotes}
@@ -517,7 +518,7 @@ export default function DevtronStackManager({
                         setPreRequisiteChecked={setPreRequisiteChecked}
                     />
                 </Route>
-                <Route path={URLS.STACK_MANAGER_ABOUT_RELEASES}>
+                <Route path={BASE_ROUTES.STACK_MANAGER.ABOUT_RELEASES}>
                     <AboutDevtronView
                         parentRef={stackManagerRef}
                         releaseNotes={stackDetails.releaseNotes}
@@ -534,8 +535,8 @@ export default function DevtronStackManager({
                         setPreRequisiteChecked={setPreRequisiteChecked}
                     />
                 </Route>
-                <Redirect to={URLS.STACK_MANAGER_DISCOVER_MODULES} />
-            </Switch>
+                <Route path="*" element={<Navigate to={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES} />} />
+            </Routes>
         )
     }
 
@@ -560,7 +561,7 @@ export default function DevtronStackManager({
                     <ErrorScreenManager code={stackDetails.errorStatusCode} />
                 </div>
             ) : (
-                <Router history={history}>
+                <>
                     {!detailsMode && (
                         <section className="stack-manager__navigation">
                             <NavItem
@@ -602,7 +603,7 @@ export default function DevtronStackManager({
                             </ErrorBoundary>
                         </Suspense>
                     </section>
-                </Router>
+                </>
             )}
         </main>
     )

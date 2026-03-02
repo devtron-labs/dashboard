@@ -153,8 +153,7 @@ interface CommonAppConfigurationProps extends Required<Pick<AppConfigProps, 'isT
 }
 
 export interface AppConfigurationContextType
-    extends CommonAppConfigurationProps,
-        Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
+    extends CommonAppConfigurationProps, Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     isCiPipeline: boolean
@@ -219,21 +218,24 @@ export interface EnvConfigurationsNavProps extends Required<Pick<AppConfigProps,
     hideEnvSelector?: boolean
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
     shouldSetEnvInContext?: boolean
+    path: string
 }
 
-export interface EnvConfigRouteParams {
+export type EnvConfigRouteParams = {
     appId: string
     envId: string
     resourceType?: EnvResourceType
 }
 
-export interface ExtendedCollapsibleListItem
-    extends Pick<CollapsibleListItem<'navLink'>, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
+export interface ExtendedCollapsibleListItem extends Pick<
+    CollapsibleListItem<'navLink'>,
+    'title' | 'subtitle' | 'href' | 'iconConfig'
+> {
     configState: ResourceConfigState
 }
 
 // DEPLOYMENT CONFIG COMPARE INTERFACES & TYPES ------- START
-export interface DeploymentConfigParams {
+export type DeploymentConfigParams = {
     appId: string
     envId: string
     compareTo: string
@@ -247,6 +249,7 @@ export type DeploymentConfigCompareProps = {
     goBackURL?: string
     getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string
     overwriteNavHeading?: string
+    routePath: string
 } & (
     | {
           type: 'appGroup'

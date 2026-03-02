@@ -54,17 +54,16 @@ export interface AppPermissionsDetailType {
     getListForAccessType: (accessType: ACCESS_TYPE_MAP) => AppsList | JobsList
 }
 
-export interface DirectPermissionRowProps
-    extends Pick<
-        AppPermissionsDetailType,
-        | 'appsList'
-        | 'jobsList'
-        | 'appsListHelmApps'
-        | 'projectsList'
-        | 'getEnvironmentOptions'
-        | 'environmentClusterOptions'
-        | 'getListForAccessType'
-    > {
+export interface DirectPermissionRowProps extends Pick<
+    AppPermissionsDetailType,
+    | 'appsList'
+    | 'jobsList'
+    | 'appsListHelmApps'
+    | 'projectsList'
+    | 'getEnvironmentOptions'
+    | 'environmentClusterOptions'
+    | 'getListForAccessType'
+> {
     permission: DirectPermissionsRoleFilter
     handleDirectPermissionChange: (...rest) => void
     index: number
@@ -76,22 +75,23 @@ export interface WorkflowListType {
     loading: boolean
 }
 
-export interface WorkflowSelectorProps
-    extends Pick<DirectPermissionRowProps, 'permission' | 'handleDirectPermissionChange'> {
+export interface WorkflowSelectorProps extends Pick<
+    DirectPermissionRowProps,
+    'permission' | 'handleDirectPermissionChange'
+> {
     workflowList: WorkflowListType
 }
 
-export interface AppOrJobSelectorProps
-    extends Pick<
-        DirectPermissionRowProps,
-        | 'permission'
-        | 'getListForAccessType'
-        | 'handleDirectPermissionChange'
-        | 'projectsList'
-        | 'appsList'
-        | 'jobsList'
-        | 'appsListHelmApps'
-    > {
+export interface AppOrJobSelectorProps extends Pick<
+    DirectPermissionRowProps,
+    | 'permission'
+    | 'getListForAccessType'
+    | 'handleDirectPermissionChange'
+    | 'projectsList'
+    | 'appsList'
+    | 'jobsList'
+    | 'appsListHelmApps'
+> {
     setWorkflowList: Dispatch<SetStateAction<WorkflowListType>>
 }
 

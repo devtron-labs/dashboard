@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
@@ -38,11 +38,10 @@ const DeploymentStatusCard = ({
     hideDetails,
     isVirtualEnvironment,
 }: DeploymentStatusCardType) => {
-    const history = useHistory()
-
+    const navigate = useNavigate()
     const showDeploymentDetailedStatus = (e): void => {
         e.stopPropagation()
-        history.push({
+        navigate({
             search: DEPLOYMENT_STATUS_QUERY_PARAM,
         })
     }

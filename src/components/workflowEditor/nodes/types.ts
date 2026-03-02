@@ -1,6 +1,4 @@
-import { RouteComponentProps } from 'react-router-dom'
-
-import { CommonNodeAttr, SelectedNode } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, RouterV5Props, SelectedNode } from '@devtron-labs/devtron-fe-common-lib'
 
 import { WorkflowProps } from '../types'
 
@@ -23,8 +21,7 @@ export interface StaticNodeProps {
 }
 
 export interface CINodeProps
-    extends RouteComponentProps<{}>,
-        Pick<WorkflowProps, 'isOffendingPipelineView' | 'isTemplateView'> {
+    extends RouterV5Props<{}>, Pick<WorkflowProps, 'isOffendingPipelineView' | 'isTemplateView'> {
     x: number
     y: number
     width: number
