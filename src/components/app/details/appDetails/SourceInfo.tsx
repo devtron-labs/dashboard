@@ -64,6 +64,7 @@ const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusBut
 const SwapTraffic = importComponentFromFELibrary('SwapTraffic', null, 'function')
 const getHibernationPatchConfig = importComponentFromFELibrary('getHibernationPatchConfig', null, 'function')
 const DeploymentStrategyCard = importComponentFromFELibrary('DeploymentStrategyCard', null, 'function')
+const isFELibAvailable = !!AppDetailsDownloadCard
 
 export const SourceInfo = ({
     appDetails,
@@ -326,8 +327,8 @@ export const SourceInfo = ({
                                                     <div className="divider__secondary" />
                                                 </>
                                             )}
-
-                                            {window._env_.ENABLE_RESTART_WORKLOAD &&
+                                            {/* Enabled in OSS by default */}
+                                            {(!isFELibAvailable || window._env_.ENABLE_RESTART_WORKLOAD) &&
                                                 !isVirtualEnvironment &&
                                                 setRotateModal && (
                                                     <>
