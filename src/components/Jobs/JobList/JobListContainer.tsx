@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import { Reducer, useEffect, useMemo, useReducer, useRef } from 'react'
+import { useEffect, useMemo, useReducer, useRef } from 'react'
 import { generatePath, useLocation, useNavigate } from 'react-router-dom'
 
 import { FilterChips, ROUTER_URLS, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 
 import { JobListViewType } from '../Constants'
 import { getJobs } from '../Service'
-import {
-    JobListPayload,
-    JobListProps,
-    JobListState,
-    JobListStateAction,
-    JobListStateActionTypes,
-    JobListUrlFiltersType,
-} from '../Types'
+import { JobListPayload, JobListProps, JobListStateActionTypes, JobListUrlFiltersType } from '../Types'
 import { getInitialJobListState, jobListModal, jobListReducer } from '../Utils'
 import JobListFilters from './JobListFilters'
 import JobListView from './JobListView'
@@ -68,10 +61,7 @@ const JobListContainer = ({
         [filterConfig],
     )
 
-    const [state, dispatch] = useReducer<Reducer<JobListState, JobListStateAction>>(
-        jobListReducer,
-        getInitialJobListState(payload),
-    )
+    const [state, dispatch] = useReducer(jobListReducer, getInitialJobListState(payload))
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const getJobsList = async (request): Promise<void> => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Dispatch, type JSX, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
@@ -755,7 +755,7 @@ export const ChartGroupListMin = ({
 }: {
     chartGroups
     showChartGroupModal?: boolean
-    toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
+    toggleChartGroupModal?: Dispatch<SetStateAction<boolean>>
     isGrid?: boolean
     renderCreateGroupButton?: () => JSX.Element
 }) => {

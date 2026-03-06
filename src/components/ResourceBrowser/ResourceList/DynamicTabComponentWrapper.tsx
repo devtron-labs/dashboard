@@ -85,6 +85,9 @@ export const DynamicTabComponentWrapper = ({
     }, [pathname, search])
 
     return children
-        ? (cloneElement(children, { ...children.props, key: getTabById(tabId)?.componentKey }) as ReactElement)
+        ? (cloneElement(children, {
+              ...(children.props as object),
+              key: getTabById(tabId)?.componentKey,
+          }) as ReactElement)
         : null
 }

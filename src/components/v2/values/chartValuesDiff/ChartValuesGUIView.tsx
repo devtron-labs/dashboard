@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState } from 'react'
+import React, { type JSX, useMemo, useState } from 'react'
 import { compare as JSONPatchCompare } from 'fast-json-patch'
 
 import {

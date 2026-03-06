@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
+import { Component, type JSX } from 'react'
 import {
     ConditionalWrap,
     Checkbox,

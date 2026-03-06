@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react'
+import React, { type JSX, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
@@ -218,13 +218,13 @@ const Details: React.FC<DetailsType> = ({
     )
 
     const showAppDetailsLoading =
-        appDetailsQueryStatus === 'loading' ||
+        appDetailsQueryStatus === 'pending' ||
         (appDetailsQueryStatus === 'error' && !appDetails && isFetchingAppDetails)
 
     const showLoadingResourceTree =
         showAppDetailsLoading ||
         (appDetails?.isPipelineTriggered || appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS
-            ? resourceTreeQueryStatus === 'loading' ||
+            ? resourceTreeQueryStatus === 'pending' ||
               (resourceTreeQueryStatus === 'error' && !appDetails?.resourceTree && isFetchingResourceTree)
             : false)
 
