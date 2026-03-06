@@ -23,14 +23,8 @@ import {
     AppStatus,
     Host,
     useMainContext,
-    Pagination,
     ResponseType,
-    SortableTableHeaderCell,
-    DEFAULT_BASE_PAGE_SIZE,
-    stringComparatorBySortOrder,
     showError,
-    useStickyEvent,
-    getClassNameForStickyHeaderWithShadow,
     InfrastructureManagementAppListType,
     URLS as CommonURLS,
     Table,
@@ -38,25 +32,17 @@ import {
     FiltersTypeEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import { getArgoInstalledExternalApps } from './AppListService'
-import { LazyImage } from '../../common'
 import { Routes, URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import SelectClusterImage from '../../../assets/icons/ic-select-cluster.svg'
-import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
-import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import '../list/list.scss'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
     APP_LIST_HEADERS,
-    appListLoadingArray,
-    FLUX_CD_HELM_RELEASE_LABEL,
 } from './Constants'
-import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import {
     AppListSortableKeys,
-    FluxCDTemplateType,
     GenericAppListProps,
     GenericAppListResponse,
     GenericAppType,
@@ -64,7 +50,6 @@ import {
 } from './AppListType'
 import { getGenericAppListColumns } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
-import AskToClearFilters from './AppListComponents'
 
 import './styles.scss'
 
@@ -75,11 +60,7 @@ const GenericAppList = ({
     appType,
     clusterIdsCsv,
     clusterList,
-    changePage,
-    changePageSize,
-    handleSorting,
     setShowPulsatingDot,
-    appListContainerRef,
 }: GenericAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -263,7 +244,6 @@ const GenericAppList = ({
 
     const askToConnectAClusterForNoResult = () => {
         return {
-            imgName: 'img-no-chart-in-clusters',
             title: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound,
             subTitle: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText,
             // NOTE: if handleClearFilters is provided renderButton is not rendered
