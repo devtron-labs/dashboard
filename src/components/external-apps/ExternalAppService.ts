@@ -23,10 +23,10 @@ import {
     getUrlWithSearchParams,
     getAPIOptionsWithTriggerTimeout,
     APIOptions,
+    ResourceTree
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
-import { ResourceTree } from '../v2/appDetails/appDetails.type'
 import { getK8sResourcePayloadAppType } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 import { GetArgoAppDetailParamsType } from './types'
 

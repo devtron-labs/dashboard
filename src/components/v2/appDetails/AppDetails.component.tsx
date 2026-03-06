@@ -248,7 +248,7 @@ const AppDetailsComponent = ({
             <ClusterMetaDataBar
                 clusterName={appDetails.clusterName}
                 namespace={appDetails.namespace}
-                clusterId={appDetails.clusterId?.toString()}
+                clusterId={appDetails.clusterId}
             />
         </>
     )

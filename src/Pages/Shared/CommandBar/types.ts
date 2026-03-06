@@ -82,3 +82,8 @@ export interface CommandBarProps {
     showCommandBar: boolean
     setShowCommandBar: Dispatch<SetStateAction<boolean>>
 }
+
+export interface NavigationUpgradedDialogProps {
+    isOpen: boolean
+    onClose: () => void
+}

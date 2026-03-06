@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
+    activateLicense,
     ActivateLicenseDialog,
     API_STATUS_CODES,
     Button,
@@ -31,10 +32,13 @@ import {
     ICDevtronWithBorder,
     Icon,
     InfoBlock,
+    LICENSE_KEY_QUERY_PARAM,
     LicensingErrorCodes,
     LoginBanner,
+    showError,
     URLS,
     useAsync,
+    useSearchString,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -42,12 +46,31 @@ import { getDevtronLicenseInfo } from './service'
 
 const ActivateLicense = () => {
     const history = useHistory()
-    const [isLoading, licenseData, licenseDataError, reloadLicenseData] = useAsync(getDevtronLicenseInfo, [])
-    const [showActivateDialog, setShowActivateDialog] = useState<boolean>(false)
+    const { searchParams } = useSearchString()
     const { appTheme } = useTheme()
+
+    const [isLoading, licenseData, licenseDataError, reloadLicenseData] = useAsync(getDevtronLicenseInfo, [])
+
+    const [showActivateDialog, setShowActivateDialog] = useState<boolean>(false)
+    const [isActivatingLicense, setIsActivatingLicense] = useState<boolean>(false)
 
     const redirectToLogin = () => {
         history.replace(URLS.LOGIN_SSO)
+    }
+
+    const handleActivateLicense = async () => {
+        const license = searchParams[LICENSE_KEY_QUERY_PARAM]
+        if (license) {
+            setIsActivatingLicense(true)
+            try {
+                await activateLicense(license)
+                setIsActivatingLicense(false)
+                redirectToLogin()
+            } catch (error) {
+                showError(error)
+                setIsActivatingLicense(false)
+            }
+        }
     }
 
     useEffect(() => {
@@ -62,12 +85,15 @@ const ActivateLicense = () => {
             return
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        handleActivateLicense()
+
         if (licenseData?.licenseStatusError?.code === LicensingErrorCodes.LicKeyNotFound) {
             setShowActivateDialog(true)
         }
     }, [isLoading, licenseData])
 
-    if (isLoading) {
+    if (isLoading || isActivatingLicense) {
         return <DevtronProgressing parentClasses="bg__primary flex full-height-width" classes="icon-dim-80" />
     }
 
@@ -133,6 +159,7 @@ const ActivateLicense = () => {
                     isFreemium={licenseData.isFreemium}
                     appTheme={appTheme}
                     licenseStatusError={licenseData.licenseStatusError}
+                    isSaasInstance={licenseData.isSaasInstance}
                 />
             )}
             <div className="flex dc__content-space">

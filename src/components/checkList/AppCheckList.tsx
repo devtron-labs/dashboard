@@ -42,7 +42,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                     )}
                     {!project && (
                         <NavLink
-                            to={COMMON_URLS.APPLICATION_MANAGEMENT_PROJECTS}
+                            to={COMMON_URLS.GLOBAL_CONFIG_PROJECTS}
                             className="dc__no-decor  mt-8 flex left"
                             style={{ color: project ? `var(--N500)` : `var(--B500)` }}
                         >

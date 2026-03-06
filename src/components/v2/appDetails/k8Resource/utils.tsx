@@ -19,7 +19,7 @@ import { AppType, Node, NodeFilters } from '@devtron-labs/devtron-fe-common-lib'
 import { ApplicationsGAEvents } from '../constants'
 
 export const doesNodeSatisfiesFilter = (node: Node, filter: string) =>
-    node.health?.status.toLowerCase() === filter || (filter === NodeFilters.drifted && node.hasDrift)
+    node.health?.status?.toLowerCase() === filter || (filter === NodeFilters.drifted && node.hasDrift)
 
 export const getApplicationsGAEvent = (appType: AppType) => {
     switch (appType) {

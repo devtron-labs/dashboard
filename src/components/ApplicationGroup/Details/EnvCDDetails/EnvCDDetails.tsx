@@ -33,9 +33,6 @@ import {
     getTriggerHistory,
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
-    STAGE_TYPE,
-    DeploymentStageType,
-    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'

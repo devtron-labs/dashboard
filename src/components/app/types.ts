@@ -18,15 +18,14 @@ import React, { Dispatch, SetStateAction } from 'react'
 
 import {
     ACTION_STATE,
+    AppDetails,
     AppEnvironment,
     BaseAppMetaData,
     DeploymentAppTypes,
-    DeploymentStatusDetailsBreakdownDataType,
-    HelmReleaseStatus,
-    PodMetadatum,
-    ReleaseMode,
+    ServerErrors,
     TagType,
     Teams,
+    useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { APP_TYPE } from '@Config/constants'
@@ -43,49 +42,6 @@ interface CDModalProps {
     ciPipelineId?: number
     isRedirectedFromAppDetails?: boolean
     deploymentUserActionState?: ACTION_STATE
-}
-
-export interface AppDetails extends CDModalProps {
-    appStoreChartId: number
-    appStoreChartName: string
-    appStoreAppVersion: string
-    appStoreAppName: string
-    appId: number
-    deploymentAppType?: DeploymentAppTypes
-    externalCi?: boolean
-    isApprovalPolicyApplicable?: boolean
-    ciArtifactId?: number
-    parentArtifactId?: number
-    deprecated?: boolean
-    k8sVersion?: number
-    clusterName?: string
-    dockerRegistryId?: string
-    ipsAccessProvided?: boolean
-    description?: string
-    isVirtualEnvironment?: boolean
-    image?: string
-    helmPackageName?: string
-    appName: string
-    environmentId: number
-    environmentName: string
-    namespace: string
-    lastDeployedTime: string
-    lastDeployedBy: string
-    materialInfo: MaterialInfo[]
-    releaseVersion: string
-    dataSource: string
-    lastDeployedPipeline: string
-    instanceDetail?: any
-    otherEnvironment: OtherEnvironment[]
-    resourceTree: ResourceTree
-    projectName?: string
-    clusterId?: number
-    deploymentAppDeleteRequest: boolean
-    imageTag?: string
-    isPipelineTriggered?: boolean
-    releaseMode: ReleaseMode
-    trafficSwitched?: boolean
-    pcoId?: number
 }
 
 export interface LabelTag {
@@ -137,19 +93,6 @@ export interface AppHeaderType extends GroupFilterType {
     appName: string
     appMetaInfo: AppMetaInfo
     reloadMandatoryProjects: boolean
-}
-
-interface ResourceTree {
-    nodes: Node[]
-    newGenerationReplicaSet: string
-    status: string
-    podMetadata: PodMetadatum[]
-    conditions?: any
-    releaseStatus?: HelmReleaseStatus
-    // lastSnapshotTime and wfrId are only available for isolated
-    lastSnapshotTime?: string
-    wfrId?: number
-    hasDrift?: boolean
 }
 
 interface Node {
@@ -215,16 +158,6 @@ export interface OtherEnvironment {
     appMetrics: boolean
     infraMetrics: boolean
     prod: boolean
-}
-
-interface MaterialInfo {
-    author: string
-    branch: string
-    message: string
-    modifiedTime: string
-    revision: string
-    url: string
-    webhookData: string
 }
 
 interface Source {
@@ -512,10 +445,9 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     environment: AppEnvironment
     environments: AppEnvironment[]
-    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    setShowCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
     showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
     showHibernateModal?: React.Dispatch<React.SetStateAction<HibernationModalTypes>>
-    deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
     loadingDetails?: boolean
     loadingResourceTree?: boolean
     isVirtualEnvironment?: boolean
@@ -527,7 +459,6 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
     setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
-    isResourceTreeReloading?: boolean
     handleOpenCDModal?: (isForRollback?: boolean) => () => void
 }
 
@@ -566,4 +497,26 @@ export interface EditDescRequest {
     active: boolean
     default: boolean
     description: string
+}
+
+export interface DeploymentWindowParsedMetaData {
+    isDeploymentBlocked: boolean
+    userActionState: ACTION_STATE
+}
+
+export interface UseGetDTAppDetailsParams {
+    appId: string | number
+    envId: string | number
+}
+
+export interface UseGetDTAppDetailsReturnType {
+    appDetails: AppDetails
+    isFetchingAppDetails: boolean
+    isFetchingResourceTree: boolean
+    appDetailsError: ServerErrors | null
+    resourceTreeError: ServerErrors | null
+    refetchAppDetails: () => void
+    refetchResourceTree: () => void
+    appDetailsQueryStatus: ReturnType<typeof useQuery>['status']
+    resourceTreeQueryStatus: ReturnType<typeof useQuery>['status']
 }

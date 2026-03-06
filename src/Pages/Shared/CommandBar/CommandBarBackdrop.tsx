@@ -72,7 +72,11 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
         [resourceList],
     )
 
-    const { data: recentActionsGroup, isLoading } = useQuery({
+    const {
+        data: recentActionsGroup,
+        isLoading,
+        refetch: refetchActionsGroup,
+    } = useQuery({
         queryFn: ({ signal }) =>
             getUserPreferences(signal).then((response) => {
                 const responseData: ResponseType<typeof response> = {
@@ -175,6 +179,8 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
         if (item.excludeFromRecent) {
             return
         }
+
+        await refetchActionsGroup()
 
         const currentItemId = sanitizeItemId(item)
 
