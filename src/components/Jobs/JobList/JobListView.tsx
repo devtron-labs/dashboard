@@ -31,7 +31,7 @@ import { JobTableAdditionalProps, JobTableRowData } from './types'
 
 import './styles.scss'
 
-export const JobListView = ({
+const JobListView = ({
     searchKey,
     status,
     project,
@@ -150,3 +150,5 @@ export const JobListView = ({
         />
     )
 }
+
+export default JobListView
