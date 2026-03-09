@@ -28,12 +28,14 @@ import {
     highlightSearchText,
     Icon,
     IconName,
+    MainContext,
     Nodes,
     noop,
     RESOURCE_BROWSER_ROUTES,
     ResourceBrowserActionMenuEnum,
     TableSignalEnum,
     Tooltip,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
@@ -72,6 +74,7 @@ const K8sResourceListTableCellComponent = ({
     const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
     const nameButtonRef = useRef<HTMLButtonElement>(null)
     const contextMenuRef = useRef<HTMLButtonElement>(null)
+    const { aiAgentContext } = useMainContext()
 
     const [showCreateEnvironmentDrawer, setShowCreateEnvironmentDrawer] = useState(false)
 
@@ -216,15 +219,42 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
-    const eventDetails = {
+    const baseEventDetails = {
         message: resourceData.message as string,
         namespace: resourceData.namespace as string,
-        object: resourceData[EVENT_LIST.dataKeys.involvedObject] as string,
         source: resourceData.source as string,
         count: resourceData.count as number,
         age: resourceData.age as string,
         lastSeen: resourceData[EVENT_LIST.dataKeys.lastSeen] as string,
     }
+
+    const eventDetails = {
+        ...baseEventDetails,
+        object: resourceData[EVENT_LIST.dataKeys.involvedObject] as string,
+    }
+
+    const eventIntelligentConfig: MainContext['intelligenceConfig'] = {
+        clusterId: +clusterId,
+        metadata: eventDetails,
+        prompt: JSON.stringify(eventDetails),
+        analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
+    }
+
+    const eventDebugAgentContext = aiAgentContext
+        ? ({
+              ...aiAgentContext,
+              prompt: `Explain why the event occurred with the following details: ${JSON.stringify(eventDetails)}`,
+              data: {
+                  ...aiAgentContext.data,
+                  ...baseEventDetails,
+                  uiMarkup: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
+                      baseEventDetails,
+                  )
+                      .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
+                      .join('')}</div>`,
+              },
+          } as MainContext['debugAgentContext'])
+        : null
 
     if (columnName === 'cpu.usagePercentage') {
         return (
@@ -263,8 +293,8 @@ const K8sResourceListTableCellComponent = ({
                                 className="dc__unset-button-styles dc__align-left dc__truncate"
                                 data-name={resourceData.name}
                                 data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
-                                data-kind={selectedResource.gvk.Kind}
-                                data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
+                                data-kind={selectedResource.gvk?.Kind}
+                                data-group={selectedResource.gvk?.Group || K8S_EMPTY_GROUP}
                                 onClick={onClickHandler}
                                 ref={nameButtonRef}
                             >
@@ -348,12 +378,8 @@ const K8sResourceListTableCellComponent = ({
                             isEventListing &&
                             resourceData.type === 'Warning' && (
                                 <ExplainWithAIButton
-                                    intelligenceConfig={{
-                                        clusterId,
-                                        metadata: eventDetails,
-                                        prompt: JSON.stringify(eventDetails),
-                                        analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
-                                    }}
+                                    intelligenceConfig={eventIntelligentConfig}
+                                    debugAgentContext={eventDebugAgentContext}
                                 />
                             )}
                         <span>
@@ -380,6 +406,21 @@ const K8sResourceListTableCellComponent = ({
                                     prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
                                     analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
                                 }}
+                                debugAgentContext={
+                                    aiAgentContext
+                                        ? {
+                                              ...aiAgentContext,
+                                              prompt: `Why is ${selectedResource?.gvk?.Kind} '${resourceData.name}' of '${resourceData.namespace}' namespace in ${resourceData.status} state?`,
+                                              data: {
+                                                  ...aiAgentContext.data,
+                                                  kind: selectedResource?.gvk?.Kind,
+                                                  name: resourceData.name,
+                                                  namespace: resourceData.namespace,
+                                                  status: resourceData.status ?? '',
+                                              },
+                                          }
+                                        : null
+                                }
                             />
                         </div>
                     )}

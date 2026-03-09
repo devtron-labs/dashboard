@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import {
-    getiNodesByKindWithChildNodes,
-    getPodsRootParentNameAndStatus,
-    IndexStore,
-    reduceKindStatus,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 
-export default IndexStore
-export { getiNodesByKindWithChildNodes, getPodsRootParentNameAndStatus, reduceKindStatus }
+import { SecurityScanType } from '../security.types'
+import { getSeverityWithCount } from './utils'
+
+export const SeverityCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) =>
+    getSeverityWithCount(row.data.severityCount)

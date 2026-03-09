@@ -15,9 +15,10 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Route, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
+    AIAgentContextSourceType,
     BreadcrumbText,
     DevtronProgressing,
     ErrorScreenManager,
@@ -76,7 +77,6 @@ const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton'
 const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) => {
     const params = useParams<ClusterDetailBaseParams>()
     const { clusterId } = params
-    const { path } = useRouteMatch()
     const location = useLocation()
     const {
         tabs,
@@ -126,20 +126,22 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
 
         return () => {
             setIntelligenceConfig(null)
-            setAIAgentContext(null)
         }
     }, [])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffect(() => {
         setAIAgentContext({
-            path,
-            context: {
-                ...params,
+            source: AIAgentContextSourceType.RESOURCE_BROWSER_CLUSTER,
+            data: {
+                clusterId: +clusterId || undefined,
                 clusterName: selectedCluster.label,
-                search: location.search,
             },
         })
+
+        return () => {
+            setAIAgentContext(null)
+        }
     }, [location.pathname, location.search, selectedCluster.label])
 
     const refreshData = () => {

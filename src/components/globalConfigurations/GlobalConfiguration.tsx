@@ -55,6 +55,7 @@ const Clusters = lazy(() => import('@Pages/GlobalConfigurations/ClustersAndEnvir
 const ChartRepo = lazy(() => import('@Components/chartRepo/ChartRepo'))
 const ExternalLinks = lazy(() => import('@Components/externalLinks/ExternalLinks'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
+const ProjectList = lazy(() => import('@Components/project/ProjectList'))
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -214,12 +215,16 @@ const NavItem = ({ serverMode }) => {
     }
 
     const sideNavigationList: SideNavigationProps['list'] = [
-        ...(serverMode === SERVER_MODE.FULL ? [{
-            id: 'host-url',
-            title: 'Host URL',
-            dataTestId: 'global-configurations-host-url',
-            href: URLS.GLOBAL_CONFIG_HOST_URL,
-        }] : []),
+        ...(serverMode === SERVER_MODE.FULL
+            ? [
+                  {
+                      id: 'host-url',
+                      title: 'Host URL',
+                      dataTestId: 'global-configurations-host-url',
+                      href: URLS.GLOBAL_CONFIG_HOST_URL,
+                  },
+              ]
+            : []),
         {
             title: 'External Links',
             dataTestId: 'click-on-configurations-external-links',
@@ -243,6 +248,12 @@ const NavItem = ({ serverMode }) => {
             title: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
             dataTestId: 'global-configurations-container-oci-registry',
             href: URLS.GLOBAL_CONFIG_DOCKER,
+        },
+        {
+            id: 'global-configurations-projects',
+            title: 'Projects',
+            dataTestId: 'global-configurations-projects',
+            href: CommonURLS.GLOBAL_CONFIG_PROJECTS,
         },
         {
             id: 'authorization',
@@ -299,23 +310,17 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
             return URLS.GLOBAL_CONFIG_CLUSTER
         }
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return CommonURLS.APPLICATION_MANAGEMENT_PROJECTS
+            return CommonURLS.GLOBAL_CONFIG_PROJECTS
         }
         return URLS.GLOBAL_CONFIG_HOST_URL
     }
 
     return (
         <Switch>
-            <Route
-                key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-                path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-            >
+            <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                 <ExternalLinks />
             </Route>
-            <Route
-                key={URLS.GLOBAL_CONFIG_CHART_REPO}
-                path={URLS.GLOBAL_CONFIG_CHART_REPO}
-            >
+            <Route key={URLS.GLOBAL_CONFIG_CHART_REPO} path={URLS.GLOBAL_CONFIG_CHART_REPO}>
                 {(props) => <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />}
             </Route>
             <Route
@@ -324,6 +329,10 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
                     return <Clusters />
                 }}
             />
+            <Route key={CommonURLS.GLOBAL_CONFIG_PROJECTS} path={CommonURLS.GLOBAL_CONFIG_PROJECTS}>
+                <ProjectList isSuperAdmin={isSuperAdmin} />
+            </Route>
+
             {!window._env_.K8S_CLIENT && [
                 ...(serverMode !== SERVER_MODE.EA_ONLY
                     ? [

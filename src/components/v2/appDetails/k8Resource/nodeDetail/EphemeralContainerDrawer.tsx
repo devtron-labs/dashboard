@@ -411,7 +411,7 @@ const EphemeralContainerDrawer = ({
                 ...payload,
                 basicData: {
                     containerName: ephemeralForm.basicData.containerName,
-                    image: ephemeralForm.basicData?.image ? ephemeralForm.basicData.image : imageListOption[0].value,
+                    image: ephemeralForm.basicData?.image ? ephemeralForm.basicData.image : imageListOption[0]?.value,
                     targetContainerName: ephemeralForm.basicData?.targetContainerName
                         ? ephemeralForm.basicData.targetContainerName
                         : targetContainerOption[0]?.value || '',

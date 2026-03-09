@@ -191,16 +191,22 @@ export const TaskTypeDetailComponent = () => {
         setFormData(_formData)
     }
 
-    function handleCreatableBlur(e) {
-        if (e.target.value) {
-            setSelectedContainerImage({
-                label: e.target.value,
-                value: e.target.value,
-            })
-            const _formData = { ...formData }
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail['containerImagePath'] = e.target.value
-            setFormData(_formData)
+    const handleCreateContainerImage = (imageValue: string) => {
+        if (!imageValue) {
+            return
         }
+
+        setSelectedContainerImage({
+            label: imageValue,
+            value: imageValue,
+        })
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail['containerImagePath'] = imageValue
+        setFormData(_formData)
+    }
+
+    function handleCreatableBlur(e) {
+        handleCreateContainerImage(e.target.value)
     }
 
     const handleKeyDown = (event) => {
@@ -230,6 +236,7 @@ export const TaskTypeDetailComponent = () => {
                             classNamePrefix="select"
                             onBlur={handleCreatableBlur}
                             onKeyDown={handleKeyDown}
+                            onCreateOption={handleCreateContainerImage}
                             isCreatable
                             menuListFooterConfig={{
                                 type: 'text',

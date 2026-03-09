@@ -149,7 +149,7 @@ const K8sPermissionModal = ({
     }
 
     return (
-        <Drawer onEscape={close} position="right" width="800px">
+        <Drawer avoidFocusTrap onEscape={close} position="right" width="800px">
             <div onClick={stopPropagation} className="h-100 h-100 flexbox-col flex-grow-1 dc__content-space">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bg__primary dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>

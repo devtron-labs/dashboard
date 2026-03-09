@@ -12,7 +12,7 @@ export const GLANCE_METRICS_CARDS_CONFIG: Record<
     [GlanceMetricKeys.PROJECTS]: {
         iconName: 'ic-bg-project',
         metricTitle: 'Projects',
-        redirectionLink: COMMON_URLS.APPLICATION_MANAGEMENT_PROJECTS,
+        redirectionLink: COMMON_URLS.GLOBAL_CONFIG_PROJECTS,
         tooltipContent: 'Number of projects',
     },
     [GlanceMetricKeys.YOUR_APPLICATIONS]: {

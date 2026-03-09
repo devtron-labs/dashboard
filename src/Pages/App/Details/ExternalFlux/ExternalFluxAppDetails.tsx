@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
+    AIAgentContextSourceType,
     AppType,
     DeploymentAppTypes,
     ERROR_STATUS_CODE,
@@ -42,7 +43,7 @@ let initTimer = null
 
 const ExternalFluxAppDetails = () => {
     const { clusterId, appName, namespace, templateType } = useParams<ExternalFluxAppDetailParams>()
-    const { isSuperAdmin } = useMainContext()
+    const { isSuperAdmin, setAIAgentContext } = useMainContext()
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
     const [initialLoading, setInitialLoading] = useState(true)
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(true)
@@ -53,6 +54,7 @@ const ExternalFluxAppDetails = () => {
     useEffect(
         () => () => {
             abortControllerRef.current.abort()
+            setAIAgentContext(null)
         },
         [],
     )
@@ -65,6 +67,16 @@ const ExternalFluxAppDetails = () => {
             fluxTemplateType: templateType,
         }
 
+        setAIAgentContext({
+            source: AIAgentContextSourceType.APP_DETAILS,
+            data: {
+                appType: 'externalFluxApp',
+                appName: genericAppDetail.appName,
+                clusterId: genericAppDetail.clusterId,
+                namespace: genericAppDetail.namespace,
+                fluxAppDeploymentType: genericAppDetail.fluxTemplateType,
+            },
+        })
         IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
         setAppDetailsError(null)
     }

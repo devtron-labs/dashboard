@@ -58,7 +58,7 @@ export const getClusterEnvironmentUpdatePayload = ({
           }
 
 export const getClusterNamespaceByName = (namespacesList: ClusterNamespacesDTO[], name: string) =>
-    namespacesList.find(({ name: _name }) => _name === name)
+    namespacesList?.find(({ name: _name }) => _name === name)
 
 export const getNamespaceLabels = (clusterNamespace: ClusterNamespacesDTO) =>
     clusterNamespace?.labels.map(({ key, value }, index) => ({
