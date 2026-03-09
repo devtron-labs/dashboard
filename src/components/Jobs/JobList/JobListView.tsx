@@ -14,26 +14,33 @@
  * limitations under the License.
  */
 
-import { useCallback, useState  } from 'react'
-import {
-    FiltersTypeEnum,
-    PaginationEnum,
-    Table,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { useCallback, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import { JobListViewProps } from '../Types'
+
+import { FiltersTypeEnum, PaginationEnum, Table } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../../config'
-import { JOB_LIST_TABLE_COLUMNS, JobRowActionsComponent } from './constants'
-import { JobTableRowData, JobTableAdditionalProps } from './types'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
-import { getJobs  } from '../Service'
-import { jobListModal, environmentName } from '../Utils'
-import JobsEmptyState from '../JobsEmptyState'
 import { JobListViewType } from '../Constants'
+import JobsEmptyState from '../JobsEmptyState'
+import { getJobs } from '../Service'
+import { JobListViewProps } from '../Types'
+import { environmentName, jobListModal } from '../Utils'
+import { JOB_LIST_TABLE_COLUMNS, JobRowActionsComponent } from './constants'
+import { JobTableAdditionalProps, JobTableRowData } from './types'
 
 import './styles.scss'
 
-export default function JobListView(props: JobListViewProps) {
+export const JobListView = ({
+    searchKey,
+    status,
+    project,
+    environment,
+    setJobCount,
+    handleEditJob,
+    clearFilters,
+    sortBy,
+}: JobListViewProps) => {
     const history = useHistory()
     const location = useLocation()
     const [noJobs, setNoJobs] = useState(false)
@@ -42,64 +49,58 @@ export default function JobListView(props: JobListViewProps) {
         history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
     }
 
-    const isSearchOrFilterApplied = !!(
-        props.searchKey ||
-        props.status?.length ||
-        props.project?.length ||
-        props.environment?.length
-    )
+    const isSearchOrFilterApplied = !!(searchKey || status?.length || project?.length || environment?.length)
 
     // Use getRows to fetch data with pagination
     const getRows = useCallback(
-        async ({ offset, pageSize, sortBy, sortOrder }, signal: AbortSignal) => {
+        async ({ offset, pageSize, sortBy: getRowsSortBy, sortOrder }, signal: AbortSignal) => {
             const request = {
-                appNameSearch: props.searchKey.toLowerCase(),
-                appStatuses: props.status,
-                environments: props.environment.map((envId) => +envId),
-                teams: props.project.map((projectId) => +projectId),
+                appNameSearch: searchKey.toLowerCase(),
+                appStatuses: status,
+                environments: environment.map((envId) => +envId),
+                teams: project.map((projectId) => +projectId),
                 offset,
                 size: pageSize,
-                sortBy,
+                sortBy: getRowsSortBy,
                 sortOrder,
             }
 
             const response = await getJobs(request, { signal })
             const jobs = jobListModal(response.result?.jobContainers)
             const totalCount = response.result.jobCount
-            props.setJobCount(totalCount)
+            setJobCount(totalCount)
             setNoJobs(totalCount === 0 && !isSearchOrFilterApplied)
 
             return {
                 rows: jobs.map((job) => {
-                    const pipeline = job.defaultPipeline
-                    const envName = environmentName(pipeline)
+                    const envName = environmentName(job.defaultPipeline)
 
-                    return ({
-                    id: String(job.id),
-                    data: { ...job,
-                        'defaultPipeline.environmentName':`${envName || '-'}${envName === DEFAULT_ENV ? ' (default)' : ''}`,
+                    const jobDetails = {
+                        ...job,
+                        'defaultPipeline.environmentName': `${envName || '-'}${envName === DEFAULT_ENV ? ' (default)' : ''}`,
                         'defaultPipeline.lastRunAt': job.defaultPipeline?.lastRunAt || '-',
-                        'defaultPipeline.lastSuccessAt':  job.defaultPipeline?.lastSuccessAt || '-' },
-                    expandableRows:
-                        job.ciPipelines.length > 1
-                            ? job.ciPipelines.map((pipeline) => {
-                                const environment = environmentName(pipeline)
+                        'defaultPipeline.lastSuccessAt': job.defaultPipeline?.lastSuccessAt || '-',
+                    }
 
-                                return ({
-                                id: `expanded-row-${job.id}-${pipeline.ciPipelineId}` as const,
-                                data: {
-                                    ...job,
-                                    pipeline,
-                                    'defaultPipeline.environmentName':`${environment}${environment === DEFAULT_ENV ? ' (default)' : ''}`,
-                                    'defaultPipeline.lastRunAt': pipeline?.lastRunAt || '-',
-                                    'defaultPipeline.lastSuccessAt':  pipeline?.lastSuccessAt || '-' },
-                            })})
+                    return {
+                        id: String(job.id),
+                        data: jobDetails,
+                        expandableRows:
+                            job.ciPipelines.length > 1
+                                ? job.ciPipelines.map((pipeline) => ({
+                                      id: `expanded-row-${job.id}-${pipeline.ciPipelineId}` as const,
+                                      data: {
+                                          ...jobDetails,
+                                          pipeline,
+                                      },
+                                  }))
                                 : undefined,
-                })}),
+                    }
+                }),
                 totalRows: totalCount,
             }
         },
-        [props.searchKey, props.status, props.environment, props.project, props.setJobCount, isSearchOrFilterApplied],
+        [searchKey, status, environment, project, setJobCount, isSearchOrFilterApplied],
     )
 
     const onRowClick = useCallback(({ data }, isExpandedRow) => {
@@ -128,21 +129,21 @@ export default function JobListView(props: JobListViewProps) {
                 noRowsForFilterConfig: {
                     title: 'No jobs found',
                     subTitle: 'Try adjusting your search or filters',
-                    clearFilters: props.clearFilters,
+                    clearFilters,
                 },
             }}
             rowActionOnHoverConfig={{
                 Component: JobRowActionsComponent,
                 width: 64,
             }}
-            rowStartIconConfig={{ name: 'ic-devtron-job', color: null, size: 24, }}
-            clearFilters={props.clearFilters}
+            rowStartIconConfig={{ name: 'ic-devtron-job', color: null, size: 24 }}
+            clearFilters={clearFilters}
             areFiltersApplied={isSearchOrFilterApplied}
             additionalFilterProps={{
-                initialSortKey: props.sortBy,
+                initialSortKey: sortBy,
             }}
             additionalProps={{
-                handleEditJob: props.handleEditJob,
+                handleEditJob,
             }}
             data-testid="job-list-container"
             onRowClick={onRowClick}
