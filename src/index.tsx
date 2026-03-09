@@ -131,7 +131,6 @@ if (!window || !window._env_) {
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: true,
         CLAIR_TOOL_VERSION: 'V4',
-        ENABLE_RESTART_WORKLOAD: true,
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',

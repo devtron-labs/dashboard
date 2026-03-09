@@ -18,7 +18,6 @@
 | ENABLE_CHART_SEARCH_IN_HELM_DEPLOY                        | "true"                                   | Enable chart search in Helm deploy                                                                               |
 | ENABLE_EXTERNAL_ARGO_CD                                   | "true"                                   | Enable External Argo CD                                                                                          |
 | ENABLE_SCOPED_VARIABLES                                   | "false"                                  | For enabling scoped variable from UI, also need to enable it in backend.                                         |
-| ENABLE_RESTART_WORKLOAD                                   | "false"                                  | Show restart pods option in app details page                                                                     |
 | FORCE_SECURITY_SCANNING                                   | "false"                                  | Force security scanning                                                                                          |
 | GA_ENABLED                                                | "true"                                   | Enable Google Analytics (GA)                                                                                     |
 | GA_TRACKING_ID                                            | G-XXXXXXXX                               | Google Analytics tracking ID                                                                                     |
