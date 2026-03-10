@@ -80,15 +80,11 @@ export default function ChartValues() {
     }
 
     useEffect(() => {
-        let id
-        let kind
-        if (chartValueId !== '0') {
-            id = parseInt(chartValueId)
-            kind = ChartKind.TEMPLATE
-        } else {
-            id = availableVersions[0]?.id
-            kind = ChartKind.DEFAULT
-        }
+        const [id, kind] =
+            chartValueId !== '0'
+                ? [parseInt(chartValueId), ChartKind.TEMPLATE]
+                : [availableVersions[0]?.id, ChartKind.DEFAULT]
+
         if (id) {
             const chartValues = chartValuesList.find((chrtValue) => {
                 if (chrtValue.kind === kind && chrtValue.id === id) {
@@ -110,7 +106,7 @@ export default function ChartValues() {
         }
     }, [availableVersions, chartValuesList])
 
-    if (loader) {
+    if (loader || !chartVersionId) {
         return <Progressing pageLoader />
     }
     if (errorStatusCode > 0) {
@@ -143,11 +139,11 @@ const Header = ({ appStoreApplicationName, name }) => {
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
-                'chart-store': {
-                    component: <BreadcrumbText heading='Chart Store' />,
+                'chart-store': null,
+                discover: {
+                    component: <BreadcrumbText heading="Chart Store" />,
                     linked: true,
                 },
-                discover: null,
                 ':chartId': appStoreApplicationName || null,
                 chart: null,
                 ':chartValueId': { component: name || 'New value', linked: false },
@@ -161,7 +157,10 @@ const Header = ({ appStoreApplicationName, name }) => {
         () =>
             breadcrumbs.map((item) =>
                 item.name === 'Preset values'
-                    ? { ...item, to: `${item.to.replace(URLS.PRESET_VALUES, '')}?tab=${ChartDetailsSegment.PRESET_VALUES}` }
+                    ? {
+                          ...item,
+                          to: `${item.to.replace(URLS.PRESET_VALUES, '')}?tab=${ChartDetailsSegment.PRESET_VALUES}`,
+                      }
                     : item,
             ),
         [breadcrumbs],
@@ -174,5 +173,7 @@ const Header = ({ appStoreApplicationName, name }) => {
             </div>
         )
     }
-    return <PageHeader isBreadcrumbs breadCrumbs={renderChartValueBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
+    return (
+        <PageHeader isBreadcrumbs breadCrumbs={renderChartValueBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
+    )
 }
