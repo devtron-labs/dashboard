@@ -359,7 +359,13 @@ const Details: React.FC<DetailsType> = ({
 
         const showResourceTreeError = resourceTreeQueryStatus === 'error' && !appDetails?.resourceTree
         if (showResourceTreeError) {
-            return <GenericSectionErrorState title="Unable to fetch" reload={refetchResourceTree} />
+            return (
+                <GenericSectionErrorState
+                    title="Unable to fetch"
+                    reload={refetchResourceTree}
+                    rootClassName="flex-grow-1"
+                />
+            )
         }
 
         if (!appDetails.resourceTree && appDetails.isVirtualEnvironment && VirtualAppDetailsEmptyState) {

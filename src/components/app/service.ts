@@ -86,6 +86,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
         error: appDetailsError,
         refetch: refetchAppDetails,
         status: appDetailsQueryStatus,
+        dataUpdatedAt: appDetailsDataUpdatedAt,
     } = useQuery<AppDetails, AppDetails>({
         queryKey: ['dt-app-details', appId, envId],
         queryFn: ({ signal }) =>
@@ -102,24 +103,20 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
     })
 
     useEffect(() => {
-        // Publish app details to IndexStore if resource tree is not to be fetched
-        if (
-            appDetailsQueryStatus === 'success' &&
-            appDetails &&
-            !appDetails.isPipelineTriggered &&
-            appDetails.releaseMode === ReleaseMode.NEW_DEPLOYMENT
-        ) {
-            IndexStore.publishAppDetails(
-                {
-                    ...appDetails,
-                },
-                AppType.DEVTRON_APP,
-            )
+        if (!appDetails) {
+            return
         }
 
-        // Refetch resource tree to get latest data after app details fetch
-        queryClient.refetchQueries({ queryKey: [resourceTreeQueryKey, appId, envId] })
-    }, [appDetails, appDetailsQueryStatus])
+        // Publish app details to IndexStore if resource tree is not to be fetched
+        if (!appDetails.isPipelineTriggered && appDetails.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
+            IndexStore.publishAppDetails({ ...appDetails }, AppType.DEVTRON_APP)
+        }
+
+        // Refetch resource tree to get latest data after app details fetch.
+        // NOTE: dependency is appDetailsDataUpdatedAt (not appDetails) so this fires on every
+        // successful poll even when data is structurally identical.
+        queryClient.refetchQueries({ queryKey: [resourceTreeQueryKey] })
+    }, [appDetailsDataUpdatedAt])
 
     const {
         data: resourceTree,
@@ -127,6 +124,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
         error: resourceTreeError,
         refetch: refetchResourceTree,
         status: resourceTreeQueryStatus,
+        dataUpdatedAt: resourceTreeDataUpdatedAt,
     } = useQuery<AppDetails['resourceTree']>({
         queryKey: [resourceTreeQueryKey, appId, envId],
         queryFn: ({ signal }) =>
@@ -143,18 +141,20 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
     })
 
     useEffect(() => {
-        // Publish app details with resource tree to IndexStore after resource tree is fetched successfully
-        if (resourceTreeQueryStatus === 'success' && resourceTree) {
-            IndexStore.publishAppDetails(
-                {
-                    ...appDetails,
-                    resourceTree,
-                },
-                AppType.DEVTRON_APP,
-            )
-            queryClient.refetchQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
+        if (!resourceTree) {
+            return
         }
-    }, [resourceTree, resourceTreeQueryStatus])
+
+        IndexStore.publishAppDetails(
+            {
+                ...appDetails,
+                resourceTree,
+            },
+            AppType.DEVTRON_APP,
+        )
+
+        queryClient.refetchQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
+    }, [resourceTreeDataUpdatedAt])
 
     // Returning appDetails, resourceTree as null if it doesn't exist, to form loading and error states properly
     const mergedAppDetails: AppDetails = appDetails
