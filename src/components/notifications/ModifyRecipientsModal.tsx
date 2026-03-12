@@ -80,16 +80,15 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
 
     addRecipient = (selectedProviders): void => {
         const state = { ...this.state }
-        state.selectedRecipient = selectedProviders || []
-        state.recipientWithoutEmailAgent = selectedProviders.some(
-            (item) => item.data.dest === 'ses' || item.data.dest === 'smtp',
-        )
-        state.selectedRecipient = state.selectedRecipient.map((p) => {
+        state.selectedRecipient = (selectedProviders || []).map((p) => {
             if (p.__isNew__) {
                 return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
             }
             return p
         })
+        state.recipientWithoutEmailAgent = state.selectedRecipient.some(
+            (item) => item?.data?.dest === 'ses' || item?.data?.dest === 'smtp',
+        )
         this.setState(state)
     }
 

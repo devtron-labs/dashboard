@@ -189,7 +189,7 @@ export enum EVENTS {
     SUCCESS = 'success',
     FAILURE = 'failure',
     CONFIG_APPROVAL = 'configApproval',
-    IMAGE_APPROVAL = 'imageApproval',
+    DEPLOYMENT_APPROVAL = 'imageApproval',
 }
 
 export const EVENT_LABEL = {
@@ -197,7 +197,7 @@ export const EVENT_LABEL = {
     [EVENTS.SUCCESS]: 'Success',
     [EVENTS.FAILURE]: 'Failure',
     [EVENTS.CONFIG_APPROVAL]: 'Config change approval',
-    [EVENTS.IMAGE_APPROVAL]: 'Deployment approval',
+    [EVENTS.DEPLOYMENT_APPROVAL]: 'Deployment approval',
 }
 
 export const EVENT_ID = {
@@ -205,7 +205,7 @@ export const EVENT_ID = {
     [EVENTS.SUCCESS]: 2,
     [EVENTS.FAILURE]: 3,
     [EVENTS.CONFIG_APPROVAL]: 4,
-    [EVENTS.IMAGE_APPROVAL]: 7,
+    [EVENTS.DEPLOYMENT_APPROVAL]: 7,
 }
 
 export const EVENT_ICONS = {
@@ -213,5 +213,5 @@ export const EVENT_ICONS = {
     [EVENTS.SUCCESS]: 'ic-check',
     [EVENTS.FAILURE]: 'ic-close-small',
     [EVENTS.CONFIG_APPROVAL]: 'ic-code',
-    [EVENTS.IMAGE_APPROVAL]: 'ic-rocket-launch',
+    [EVENTS.DEPLOYMENT_APPROVAL]: 'ic-rocket-launch',
 }
