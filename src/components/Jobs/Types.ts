@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
 import {
     ResponseType,
     SelectPickerOptionType,
@@ -36,9 +34,6 @@ export enum JobListStateActionTypes {
     showCommandBar = 'showCommandBar',
     offset = 'offset',
     pageSize = 'pageSize',
-    expandedRow = 'expandedRow',
-    isAllExpanded = 'isAllExpanded',
-    isAllExpandable = 'isAllExpandable',
     multipleOptions = 'multipleOptions',
 }
 
@@ -79,9 +74,6 @@ export interface JobListState {
     size: number
     offset: number
     pageSize: number
-    expandedRow: Record<number, boolean>
-    isAllExpanded: boolean
-    isAllExpandable: boolean
 }
 
 export interface ExpandedRowProps {
@@ -125,19 +117,13 @@ export interface JobListProps
     getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => string
 }
 
-export interface JobListViewProps
-    extends JobListState,
-        RouteComponentProps<{}>,
-        Pick<
-            UseUrlFiltersReturnType<JobsListSortableKeys>,
-            'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting'
-        > {
-    expandRow: (id: number | null) => void
-    closeExpandedRow: (id: number | null) => void
+export interface JobListViewProps extends Pick<JobListFilterConfig, 'searchKey' | 'sortBy' | 'sortOrder'> {
+    status: string[]
+    environment: string[]
+    project: string[]
     handleEditJob: (jobId: number) => void
-    jobListCount: number
-    openJobCreateModel: (e) => void
-    toggleExpandAllRow: () => void
+    clearFilters: () => void
+    setJobCount: React.Dispatch<React.SetStateAction<number>>
 }
 
 export interface JobSelectorType {

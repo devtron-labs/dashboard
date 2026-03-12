@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, trash, put, ResponseType, sortCallback, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config/constants'
-import { FilterOptions, PipelineType } from './AddNotification'
-import { NotificationConfiguration, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import { FilterOptions, NotificationConfiguration, NotificationPipelineType, PipelineType, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -30,7 +29,7 @@ interface SaveNotificationPayload {
         appId: number[]
         envId: number[]
         pipelineId: number
-        pipelineType: 'CI' | 'CD'
+        pipelineType: NotificationPipelineType
         eventTypeIds: number[]
     }[]
     providers: { configId: number; dest: 'ses' | 'slack' | ''; recipient: string }[]
@@ -93,6 +92,12 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
         }
         if (config.failure) {
             eventTypeIds.push(3)
+        }
+        if (config.configApproval) {
+            eventTypeIds.push(4)
+        }
+        if (config.imageApproval) {
+            eventTypeIds.push(7)
         }
 
         const teamId = config.appliedFilters
@@ -234,6 +239,8 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
                 trigger: config.eventTypes.includes(1),
                 success: config.eventTypes.includes(2),
                 failure: config.eventTypes.includes(3),
+                configApproval: config.eventTypes.includes(4) || config.eventTypes.includes(5),
+                imageApproval: config.eventTypes.includes(7),
                 isSelected: false,
                 providers,
                 appliedFilters: {
@@ -290,12 +297,13 @@ export function updateNotificationRecipients(
             }
         }
         updatedProviders = updatedProviders.concat(newRecipients)
+
         updatedProviders = updatedProviders.map((r) => {
             if (r.configId) {
                 return {
                     configId: r.configId,
                     dest: r.dest === 'slack' || r.dest === 'webhook' ? r.dest : emailChannel,
-                    recipient: '',
+                    recipient: r.recipient,
                 }
             }
             return {
@@ -442,7 +450,7 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
 
             return {
                 appliedFilters: projects.concat(app, environment, cluster),
-                checkbox: { isChecked: false, value: 'INTERMEDIATE' },
+                checkbox: { isChecked: false, value: CHECKBOX_VALUE.INTERMEDIATE },
                 pipelineId: row.pipeline?.id,
                 appName: row?.pipeline?.appName,
                 branch: row?.pipeline?.branches?.join(', '),
@@ -452,6 +460,8 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
                 trigger: false,
                 success: false,
                 failure: false,
+                configApproval: false,
+                imageApproval: false,
             }
         })
         const matchingPipelines = parsedResult.filter((r) => r.appliedFilters.length == 0)

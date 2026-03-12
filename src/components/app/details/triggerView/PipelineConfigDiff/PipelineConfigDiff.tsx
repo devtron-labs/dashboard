@@ -24,6 +24,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
+import { deploymentConfigDiffTabs } from '@Pages/Shared'
 
 import { PipelineConfigDiffProps } from './types'
 
@@ -76,6 +77,8 @@ export const PipelineConfigDiff = ({
         sortOrder,
     }
 
+    const isManifestView = props.tabConfig?.activeTab === deploymentConfigDiffTabs.MANIFEST
+
     return (
         <DeploymentConfigDiff
             {...props}
@@ -84,7 +87,7 @@ export const PipelineConfigDiff = ({
             scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
             navHeading="Deployment Configuration"
             headerText=""
-            sortingConfig={sortingConfig}
+            sortingConfig={isManifestView ? undefined : sortingConfig}
             scopeVariablesConfig={scopeVariablesConfig}
             renderedInDrawer
             showDetailedDiffState

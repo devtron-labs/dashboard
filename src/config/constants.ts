@@ -282,6 +282,7 @@ export const Routes = {
     SECURITY_VULNERABILITY_TREND: 'overview/security/vulnerability-trend',
     SECURITY_DEPLOYMENT_STATUS: 'overview/security/deployment-security-status',
     SECURITY_BLOCKED_DEPLOYMENTS_TREND: 'overview/security/blocked-deployments-trend',
+    AUTHORISATION_GLOBAL_CONFIG: 'authorisation/global-config',
 }
 
 export enum ViewType {

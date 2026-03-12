@@ -47,12 +47,11 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
+import { UserAutoAssignedRoleGroupsTable, UserPermissionsInfoBar } from '../../SSOLoginServices/AutoAssign'
 import { User } from '../../types'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../../utils'
 import { DeleteUserPermission } from '../DeleteUserPermission'
 
-const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
-const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 const UserGroupSelector = importComponentFromFELibrary('UserGroupSelector', null, 'function')
 
