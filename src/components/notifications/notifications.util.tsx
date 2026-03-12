@@ -33,9 +33,16 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText, EVENTS } from './constants'
 import { validateEmail } from '../common'
-import { FormError, NotificationPipelineType, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
+import {
+    FormError,
+    NotificationPipelineType,
+    SESFormType,
+    SMTPFormType,
+    WebhookDataRowType,
+    WebhookHeaderKeyType,
+} from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -155,14 +162,14 @@ export const Option = (props) => {
     )
 }
 
-export const renderPipelineTypeIcon = (row, size = 24 as IconBaseSizeType ) => {
+export const renderPipelineTypeIcon = (row, size = 24 as IconBaseSizeType) => {
     if (row.isVirtualEnvironment) {
         return <Rocket className="icon-dim-24" />
     }
     if (row.pipelineType === 'CI' || row.type === 'CI') {
-        return <Icon name="ic-build-color" color={null} size={size}  />
+        return <Icon name="ic-build-color" color={null} size={size} />
     }
-    if (row.pipelineType === NotificationPipelineType.BASE || row.type === NotificationPipelineType.BASE ) {
+    if (row.pipelineType === NotificationPipelineType.BASE || row.type === NotificationPipelineType.BASE) {
         return <Icon name="ic-configuration-file" color={null} size={size} />
     }
     return <Icon name="ic-deploy-color" color={null} size={size} />
@@ -363,3 +370,10 @@ export const getRecipientChipStartIcon = (config: string) => {
     }
     return <Icon name="ic-email" color={null} />
 }
+
+export const getNotificationEvents = (isEnterprise: boolean): EVENTS[] =>
+    isEnterprise
+        ? Object.values(EVENTS)
+        : Object.values(EVENTS).filter(
+              (value) => value !== EVENTS.CONFIG_APPROVAL && value !== EVENTS.DEPLOYMENT_APPROVAL,
+          )

@@ -31,7 +31,6 @@ import {
     GenericEmptyState,
     Icon,
     Pagination,
-    PopupMenu,
     Progressing,
     Reload,
     showError,
@@ -42,7 +41,7 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { InValidHostUrlWarningBlock } from '@Components/common'
+import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '@Components/common'
 
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import { ViewType } from '../../config'
@@ -56,11 +55,12 @@ import {
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
 import { NotificationPipelineType, NotificationTabState } from './types'
-import { EVENT_ID } from './constants'
+import { EVENT_ID, EVENT_LABEL, EVENTS } from './constants'
 import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
 import React from 'react'
 import { AddNotificationButton } from './AddNotificationButton'
 
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 export class NotificationTab extends Component<any, NotificationTabState> {
     bulkMultiSelectWidgetRef = React.createRef<HTMLDivElement>()
 
@@ -112,6 +112,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             selectedNotificationList: [],
         }
     }
+
+
 
     componentDidMount() {
         this.getHostURLConfig()
@@ -604,12 +606,12 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     ) : (
                                         <div className="icon-dim-20" />
                                     )}
-                                    {row.configApproval ? (
+                                    {isFELibAvailable && row.configApproval ? (
                                         <Icon
                                             name="ic-code"
                                             color={null}
                                             tooltipProps={{
-                                                content: 'Config Change Approval',
+                                                content: EVENT_LABEL[EVENTS.CONFIG_APPROVAL],
                                                 alwaysShowTippyOnHover: true,
                                             }}
                                         />
@@ -617,12 +619,12 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                         <div className="icon-dim-20" />
                                     )}
 
-                                    {row.imageApproval ? (
+                                    {isFELibAvailable && row.imageApproval ? (
                                         <Icon
                                             name="ic-rocket-launch"
                                             color={null}
                                             tooltipProps={{
-                                                content: 'Deployment Approval',
+                                                content: 'EVENT_LABEL[EVENTS.DEPLOYMENT_APPROVAL]',
                                                 alwaysShowTippyOnHover: true,
                                             }}
                                         />
