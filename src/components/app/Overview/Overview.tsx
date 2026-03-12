@@ -464,7 +464,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             setNewUpdatedBy(response.result.updatedBy)
             setNewUpdatedOn(response.result.updatedOn)
             setDescriptionId(response.result.id)
-            appMetaInfo.note = response.result
         }
     }
 
