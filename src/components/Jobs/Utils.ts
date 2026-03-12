@@ -45,9 +45,6 @@ export const getInitialJobListState = (payloadParsedFromUrl): JobListState => {
         showCommandBar: false,
         offset: payloadParsedFromUrl.offset ?? 0,
         pageSize: payloadParsedFromUrl.size ?? 20,
-        expandedRow: null,
-        isAllExpanded: false,
-        isAllExpandable: false,
     }
 }
 
@@ -71,12 +68,6 @@ export const jobListReducer = (state: JobListState, action: JobListStateAction) 
             return { ...state, offset: action.payload }
         case JobListStateActionTypes.pageSize:
             return { ...state, pageSize: action.payload }
-        case JobListStateActionTypes.expandedRow:
-            return { ...state, expandedRow: action.payload }
-        case JobListStateActionTypes.isAllExpanded:
-            return { ...state, isAllExpanded: action.payload }
-        case JobListStateActionTypes.isAllExpandable:
-            return { ...state, isAllExpandable: action.payload }
         case JobListStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:
