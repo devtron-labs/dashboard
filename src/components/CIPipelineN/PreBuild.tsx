@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useContext } from 'react'
+import React, { type JSX, useEffect, useContext } from 'react'
 import {
     PluginType,
     ScriptType,

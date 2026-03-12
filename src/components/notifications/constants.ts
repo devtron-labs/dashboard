@@ -16,7 +16,14 @@
 
 // ------------ Configuration Constants ------------
 
-import { SlackFormType } from './types'
+import { FiltersTypeEnum, TableProps } from '@devtron-labs/devtron-fe-common-lib'
+
+import {
+    SESConfigurationTableRowType,
+    SlackFormType,
+    SlackWebhookConfigurationTableRowType,
+    SMTPConfigurationTableRowType,
+} from './types'
 
 export enum ConfigurationsTabTypes {
     SES = 'ses',
@@ -120,3 +127,91 @@ export const DefaultWebhookValidations = {
 }
 
 export const SlackIncomingWebhookUrl = 'https://slack.com/marketplace/A0F7XDUAZ-incoming-webhooks'
+
+// ------------ Common Configuration Constants ------------
+
+export const BASE_CONFIG = [
+    {
+        label: 'Name',
+        field: 'name',
+        size: null,
+    },
+]
+
+export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRowType, FiltersTypeEnum.STATE, {}>['columns'] = [
+    ...BASE_CONFIG,
+    {
+        label: 'Access Key Id',
+        field: 'accessKeyId',
+        size: null,
+    },
+    {
+        label: "Sender's Email",
+        field: 'email',
+        size: null,
+    },
+]
+
+export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRowType, FiltersTypeEnum.STATE, {}>['columns'] = [
+    ...BASE_CONFIG,
+    {
+        label: 'Host',
+        field: 'host',
+        size: null,
+    },
+    {
+        label: 'Port',
+        field: 'port',
+        size: null,
+    },
+    {
+        label: "Sender's Email",
+        field: 'email',
+        size: null,
+    },
+]
+
+export const SLACK_WEBHOOK_TABLE_COLUMNS: TableProps<
+    SlackWebhookConfigurationTableRowType,
+    FiltersTypeEnum.STATE,
+    {}
+>['columns'] = [
+    ...BASE_CONFIG,
+    {
+        label: 'Webhook URL',
+        field: 'webhookUrl',
+        size: null,
+    },
+]
+
+export enum EVENTS {
+    TRIGGER = 'trigger',
+    SUCCESS = 'success',
+    FAILURE = 'failure',
+    CONFIG_APPROVAL = 'configApproval',
+    IMAGE_APPROVAL = 'imageApproval',
+}
+
+export const EVENT_LABEL = {
+    [EVENTS.TRIGGER]: 'Trigger',
+    [EVENTS.SUCCESS]: 'Success',
+    [EVENTS.FAILURE]: 'Failure',
+    [EVENTS.CONFIG_APPROVAL]: 'Config change approval',
+    [EVENTS.IMAGE_APPROVAL]: 'Deployment approval',
+}
+
+export const EVENT_ID = {
+    [EVENTS.TRIGGER]: 1,
+    [EVENTS.SUCCESS]: 2,
+    [EVENTS.FAILURE]: 3,
+    [EVENTS.CONFIG_APPROVAL]: 4,
+    [EVENTS.IMAGE_APPROVAL]: 7,
+}
+
+export const EVENT_ICONS = {
+    [EVENTS.TRIGGER]: 'ic-play-outline',
+    [EVENTS.SUCCESS]: 'ic-check',
+    [EVENTS.FAILURE]: 'ic-close-small',
+    [EVENTS.CONFIG_APPROVAL]: 'ic-code',
+    [EVENTS.IMAGE_APPROVAL]: 'ic-rocket-launch',
+}

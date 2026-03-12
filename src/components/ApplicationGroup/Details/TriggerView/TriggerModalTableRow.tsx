@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
+
 import { useDownload } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'

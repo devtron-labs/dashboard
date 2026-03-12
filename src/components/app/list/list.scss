@@ -127,57 +127,8 @@
     }
 }
 
-.app-list__cell {
-    min-width: 0px;
-    display: flex;
-    align-items: center;
-    height: 100%;
-}
-
-.app-list__cell-header {
-    background: transparent;
-    font-weight: 600;
-    padding: 0px;
-    border: none;
-    min-width: 0px;
-    user-select: none;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    text-transform: uppercase;
-}
-
 .app-list__cell--icon {
     height: 24px;
-}
-
-.app-list__cell--name {
-    justify-content: flex-start;
-    padding-left: 0px;
-}
-
-.app-list__cell--name .value {
-    color: var(--B500);
-}
-
-.app-list__cell--env,
-.app-list__cell--cluster,
-.app-list__cell--namespace,
-.app-list__cell--app_status {
-    justify-content: flex-start;
-}
-
-.app-list__cell--env-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0px;
-    display: block;
-    margin-right: 7px;
-}
-
-.app-list__cell--env-text.not-configured {
-    color: var(--N500);
 }
 
 .app-list__cell--material-info {
@@ -403,3 +354,19 @@
         grid-template-rows: 40px;
     }
 }
+
+#table-wrapper-table__devtron-app-list {
+    .generic-table__row {
+        padding-block: 8px;
+        padding-inline-end: 0px;
+    }
+
+    .generic-table__row--expanded-row {
+        padding-block: 0px;
+    }
+
+    .generic-table__header {
+        padding: 0 0 0 20px;
+    }
+}
+

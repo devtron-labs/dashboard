@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { NavLink } from 'react-router-dom'

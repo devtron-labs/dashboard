@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent, useMemo, useState } from 'react'
+import { SyntheticEvent, useMemo, useState, type JSX } from 'react'
 import './environmentStatus.scss'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'

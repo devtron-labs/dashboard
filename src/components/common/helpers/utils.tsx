@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import { sortCallback, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'

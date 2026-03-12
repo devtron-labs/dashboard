@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
+    AIAgentContextSourceType,
     BASE_ROUTES,
     BreadcrumbText,
     DevtronProgressing,
@@ -127,7 +128,6 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
 
         return () => {
             setIntelligenceConfig(null)
-            setAIAgentContext(null)
         }
     }, [])
 
@@ -135,13 +135,16 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
 
     useEffect(() => {
         setAIAgentContext({
-            path: '',
-            context: {
-                clusterId,
+            source: AIAgentContextSourceType.RESOURCE_BROWSER_CLUSTER,
+            data: {
+                clusterId: +clusterId || undefined,
                 clusterName: selectedCluster.label,
-                search: location.search,
             },
         })
+
+        return () => {
+            setAIAgentContext(null)
+        }
     }, [location.pathname, location.search, selectedCluster.label])
 
     const refreshData = () => {

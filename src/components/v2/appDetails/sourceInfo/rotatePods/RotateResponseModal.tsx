@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { showError, Progressing, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Success } from '../../../../../assets/icons/appstatus/healthy.svg'

@@ -16,8 +16,6 @@
 
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
 import { ConfigurationsTabTypes } from './constants'
 import {
     getSESConfiguration,
@@ -73,7 +71,7 @@ export const ConfigurationTables = ({ activeTab, state, setState }: Configuratio
                     ...state,
                     webhookConfig: {
                         ...result,
-                        channel: DeleteComponentsName.WebhookConfigurationTab,
+                        channel: ConfigurationsTabTypes.WEBHOOK,
                     },
                     confirmation: true,
                     activeTab: ConfigurationsTabTypes.WEBHOOK,

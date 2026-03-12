@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { type JSX, useState, useEffect, useRef } from 'react'
 // import ReactMde from 'react-mde'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactElement, useState } from 'react'
+import { type JSX, ReactElement, useState } from 'react'
 import {
     WorkflowNodeType,
     ConditionalWrap,

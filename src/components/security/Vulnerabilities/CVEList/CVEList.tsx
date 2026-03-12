@@ -18,7 +18,7 @@ const CVEList = () => (
         }}
         paginationVariant={PaginationEnum.PAGINATED}
         filtersVariant={FiltersTypeEnum.URL}
-        filter={() => true}
+        filter={null}
         additionalFilterProps={{
             initialSortKey: 'cveName',
             parseSearchParams,

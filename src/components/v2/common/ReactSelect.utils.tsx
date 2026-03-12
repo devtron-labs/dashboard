@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import {

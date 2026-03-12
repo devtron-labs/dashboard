@@ -270,7 +270,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                         setPagination={setPagination}
                         fetchIdData={fetchBuildIdData}
                         handleViewAllHistory={handleViewAllHistory}
-                        path={`${ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS}/:pipelineId?/:buildId?`}
+                        path={`${isJobView ? ROUTER_URLS.JOB_DETAIL.CI_DETAILS :  ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS}/:pipelineId?/:buildId?`}
                     />
                 </div>
             )}
