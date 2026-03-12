@@ -372,8 +372,6 @@ export const getRecipientChipStartIcon = (config: string) => {
 }
 
 export const getNotificationEvents = (isEnterprise: boolean): EVENTS[] =>
-    isEnterprise
-        ? Object.values(EVENTS)
-        : Object.values(EVENTS).filter(
-              (value) => value !== EVENTS.CONFIG_APPROVAL && value !== EVENTS.DEPLOYMENT_APPROVAL,
-          )
+    Object.values(EVENTS).filter(
+        (value) => isEnterprise || (value !== EVENTS.CONFIG_APPROVAL && value !== EVENTS.DEPLOYMENT_APPROVAL),
+    )

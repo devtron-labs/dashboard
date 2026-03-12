@@ -30,6 +30,7 @@ import {
     EMPTY_STATE_STATUS,
     GenericEmptyState,
     Icon,
+    IconsProps,
     Pagination,
     Progressing,
     Reload,
@@ -54,13 +55,13 @@ import {
     updateNotificationEvents,
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
-import { NotificationPipelineType, NotificationTabState } from './types'
+import { NotificationConfiguration, NotificationPipelineType, NotificationTabState } from './types'
 import { EVENT_ID, EVENT_LABEL, EVENTS } from './constants'
 import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
 import React from 'react'
 import { AddNotificationButton } from './AddNotificationButton'
 
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const isEnterprise = importComponentFromFELibrary('isEnterprise', null, 'function')
 export class NotificationTab extends Component<any, NotificationTabState> {
     bulkMultiSelectWidgetRef = React.createRef<HTMLDivElement>()
 
@@ -567,7 +568,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 {row.pipelineType === NotificationPipelineType.CD ? row?.environmentName : ''}
                             </td>
                             <td className="pipeline-list__stages p-10">
-                                <div className="flexbox flex-justify dc__gap-12">
+                                <div className="flexbox dc__gap-12">
                                     {row.trigger ? (
                                         <Icon
                                             name="ic-play-outline"
@@ -604,30 +605,34 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     ) : (
                                         <div className="icon-dim-20" />
                                     )}
-                                    {isFELibAvailable && row.configApproval ? (
-                                        <Icon
-                                            name="ic-code"
-                                            color={null}
-                                            tooltipProps={{
-                                                content: EVENT_LABEL[EVENTS.CONFIG_APPROVAL],
-                                                alwaysShowTippyOnHover: true,
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="icon-dim-20" />
-                                    )}
+                                    {isEnterprise && (
+                                        <>
+                                            {row.configApproval ? (
+                                                <Icon
+                                                    name="ic-code"
+                                                    color={null}
+                                                    tooltipProps={{
+                                                        content: EVENT_LABEL[EVENTS.CONFIG_APPROVAL],
+                                                        alwaysShowTippyOnHover: true,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="icon-dim-20" />
+                                            )}
 
-                                    {isFELibAvailable && row.imageApproval ? (
-                                        <Icon
-                                            name="ic-rocket-launch"
-                                            color={null}
-                                            tooltipProps={{
-                                                content: 'EVENT_LABEL[EVENTS.DEPLOYMENT_APPROVAL]',
-                                                alwaysShowTippyOnHover: true,
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="icon-dim-20" />
+                                            {row.imageApproval ? (
+                                                <Icon
+                                                    name="ic-rocket-launch"
+                                                    color={null}
+                                                    tooltipProps={{
+                                                        content: EVENT_LABEL[EVENTS.DEPLOYMENT_APPROVAL],
+                                                        alwaysShowTippyOnHover: true,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="icon-dim-20" />
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </td>
