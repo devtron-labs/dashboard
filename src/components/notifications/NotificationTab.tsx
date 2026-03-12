@@ -113,8 +113,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
-
-
     componentDidMount() {
         this.getHostURLConfig()
         this.getAllNotifications()
@@ -380,9 +378,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    renderAddNotificationButton = () => (
-        <AddNotificationButton disableEdit={this.props.disableEdit} />
-    )
+    renderAddNotificationButton = () => <AddNotificationButton disableEdit={this.props.disableEdit} />
     renderGenericEmptyState = () => (
         <GenericEmptyState
             image={EmptyImage}
