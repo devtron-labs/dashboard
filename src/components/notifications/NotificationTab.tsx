@@ -442,10 +442,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     renderPipelineList = () => (
-        <table className="flexbox-col flex-grow-1">
+        <table className="pipeline-list">
             <thead>
                 <tr className="pipeline-list__header">
-                    <th className="pipeline-list__checkbox flex-grow-1">
+                    <th className="pipeline-list__checkbox">
                         <Checkbox
                             rootClassName="mb-0 flex"
                             isChecked={this.state.headerCheckbox.isChecked}
@@ -456,9 +456,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             <span />
                         </Checkbox>
                     </th>
-                    <th className="pipeline-list__pipeline-name fw-6 flex left dc__gap-8">
-                        <span className="icon-dim-16" />
-                        Resource
+                    <th className="pipeline-list__pipeline-name fw-6">
+                        <div className="flex left dc__gap-8">
+                            <span className="icon-dim-16" />
+                            Resource
+                        </div>
                     </th>
                     <th className="pipeline-list__app-name fw-6">Application Name</th>
                     <th className="pipeline-list__environment fw-6">Env/Branch</th>
@@ -645,17 +647,19 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     ))}
                                 </div>
                             </td>
-                            <td className="pipeline-list__hover flex p-10">
-                                <Button
-                                    icon={<Icon name="ic-delete" color={null} />}
-                                    ariaLabel="Delete"
-                                    variant={ButtonVariantType.borderLess}
-                                    style={ButtonStyleType.negativeGrey}
-                                    size={ComponentSizeType.medium}
-                                    data-id={row.id}
-                                    onClick={this.onClickDeleteButton}
-                                    dataTestId={`delete-notification-${row.id}-button`}
-                                />
+                            <td className="pipeline-list__hover p-10">
+                                <div className="flex">
+                                    <Button
+                                        icon={<Icon name="ic-delete" color={null} />}
+                                        ariaLabel="Delete"
+                                        variant={ButtonVariantType.borderLess}
+                                        style={ButtonStyleType.negativeGrey}
+                                        size={ComponentSizeType.medium}
+                                        data-id={row.id}
+                                        onClick={this.onClickDeleteButton}
+                                        dataTestId={`delete-notification-${row.id}-button`}
+                                    />
+                                </div>
                             </td>
                         </tr>
                     )
