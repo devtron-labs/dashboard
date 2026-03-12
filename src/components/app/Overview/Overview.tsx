@@ -36,6 +36,7 @@ import {
     ComponentSizeType,
     SegmentType,
     ROUTER_URLS,
+    GenericDescription,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -49,7 +50,7 @@ import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
-import GenericDescription from '../../common/Description/GenericDescription'
+import { patchApplicationNote } from '../../ClusterNodes/clusterNodes.service'
 import { editApp } from '../service'
 import { getAppConfig, getOverviewSegmentControlOptions, getResourceKindFromAppType } from './utils'
 import { EnvironmentList } from './EnvironmentList'
@@ -94,9 +95,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const [, isArgoInstalled] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD), [])
     const { resourceName } = config
 
-    let _moment: moment.Moment
-    let _date: string
-
     const setActiveTab = (selectedTab: AvailableTabs) => {
         const _searchParams = new URLSearchParams({
             [TAB_SEARCH_KEY]: selectedTab,
@@ -133,16 +131,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
-            _moment = moment(appMetaInfo?.note?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.note?.updatedOn
-            const description =
-                appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
-                    ? appMetaInfo.note.description
-                    : config.defaultNote
-            _date = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id ? _date : ''
-            setNewUpdatedOn(_date)
-            setNewUpdatedBy(appMetaInfo?.note?.updatedBy)
+            const hasNote = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
+            const description = hasNote ? appMetaInfo.note.description : config.defaultNote
             setNewDescription(description)
+            setNewUpdatedBy(hasNote ? appMetaInfo?.note?.updatedBy : '')
+            setNewUpdatedOn(hasNote ? appMetaInfo?.note?.updatedOn : '')
             setDescriptionId(appMetaInfo?.note?.id)
             setIsLoading(false)
         }
@@ -460,6 +453,21 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return <div className="flex column left">{renderWorkflowComponent()}</div>
     }
 
+    const handleUpdateDescription = async (description: string): Promise<void> => {
+        const response = await patchApplicationNote({
+            id: descriptionId,
+            identifier: Number(appId),
+            description,
+        })
+        if (response.result) {
+            setNewDescription(response.result.description)
+            setNewUpdatedBy(response.result.updatedBy)
+            setNewUpdatedOn(response.result.updatedOn)
+            setDescriptionId(response.result.id)
+            appMetaInfo.note = response.result
+        }
+    }
+
     function renderAppDescription() {
         return (
             <div>
@@ -468,14 +476,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <DeploymentWindowOverview appId={Number(appId)} filteredEnvIds={filteredEnvIds} />
                 )}
                 <GenericDescription
-                    isClusterTerminal={false}
-                    appId={Number(appId)}
-                    descriptionId={descriptionId}
-                    initialDescriptionText={newDescription}
-                    initialDescriptionUpdatedBy={newUpdatedBy}
-                    initialDescriptionUpdatedOn={newUpdatedOn}
-                    initialEditDescriptionView
-                    appMetaInfo={appMetaInfo}
+                    text={newDescription}
+                    updatedBy={newUpdatedBy}
+                    updatedOn={newUpdatedOn}
+                    updateDescription={handleUpdateDescription}
+                    title="Readme"
                 />
             </div>
         )
