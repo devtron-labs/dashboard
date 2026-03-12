@@ -43,7 +43,6 @@ src/components/ClusterNodes/NodeDetails.tsx
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
-src/components/Jobs/JobList/JobListView.tsx
 src/components/Jobs/JobsEmptyState.tsx
 src/components/Jobs/Service.ts
 src/components/Jobs/Utils.ts

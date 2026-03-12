@@ -19,6 +19,7 @@ import { GroupBase } from 'react-select'
 
 import {
     AppListConstants,
+    FiltersTypeEnum,
     GroupedFilterSelectPickerProps,
     GroupedOptionsType,
     InfrastructureManagementAppListType,
@@ -26,6 +27,7 @@ import {
     SelectPickerOptionType,
     SERVER_MODE,
     stringComparatorBySortOrder,
+    TableColumnType,
     Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,14 +37,16 @@ import { Cluster } from '@Services/service.types'
 
 import {
     AppListFilterMenuItemType,
+    AppListSortableKeys,
     AppListUrlFilters,
     AppListUrlFiltersType,
     AppStatuses,
     AppStatusesDTO,
+    GenericAppListRowType,
     GetAppListFiltersParams,
     useFilterOptionsProps,
 } from './AppListType'
-import { APPS_WITH_NO_PROJECT_OPTION, SELECT_CLUSTER_TIPPY } from './Constants'
+import { APP_LIST_HEADERS, ENVIRONMENT_HEADER_TIPPY_CONTENT, SELECT_CLUSTER_TIPPY } from './Constants'
 
 export const getAppTabNameFromAppType = (appType: InfrastructureManagementAppListType) => {
     switch (appType) {
@@ -115,7 +119,6 @@ export const useFilterOptions = ({
 
     const projectOptions: GroupedOptionsType[] = useMemo(
         () => [
-            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
             {
                 label: 'Projects',
                 options: appListFiltersResponse
@@ -285,3 +288,56 @@ export const getAppListFilters = ({
         ],
     },
 ]
+
+export const getGenericAppListColumns = (isFluxCDAppList: boolean) =>
+    [
+        {
+            field: AppListSortableKeys.APP_NAME,
+            label: APP_LIST_HEADERS.AppName,
+            isSortable: true,
+            size: {
+                fixed: 250,
+            },
+            comparator: stringComparatorBySortOrder,
+        },
+        {
+            field: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
+            label: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
+            size: {
+                fixed: 164,
+            },
+        },
+        ...(isFluxCDAppList
+            ? [
+                  {
+                      field: APP_LIST_HEADERS.FluxCDTemplateType,
+                      label: APP_LIST_HEADERS.FluxCDTemplateType,
+                      size: {
+                          fixed: 120,
+                      },
+                  } as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>,
+              ]
+            : []),
+        {
+            field: APP_LIST_HEADERS.Environment,
+            label: APP_LIST_HEADERS.Environment,
+            size: {
+                fixed: 200,
+            },
+            infoTooltipText: ENVIRONMENT_HEADER_TIPPY_CONTENT,
+        },
+        {
+            field: APP_LIST_HEADERS.Cluster,
+            label: APP_LIST_HEADERS.Cluster,
+            size: {
+                fixed: 150,
+            },
+        },
+        {
+            field: APP_LIST_HEADERS.Namespace,
+            label: APP_LIST_HEADERS.Namespace,
+            size: {
+                fixed: 150,
+            },
+        },
+    ] as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[]

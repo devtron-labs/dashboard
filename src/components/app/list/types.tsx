@@ -66,7 +66,6 @@ export interface DevtronAppListProps extends Pick<
     syncListData: boolean
     updateDataSyncing: (loading: boolean) => void
     clearAllFilters: () => void
-    setCurrentAppName: (appName: string) => void
     setAppCount: (appCount: number) => void
     appListContainerRef: MutableRefObject<HTMLDivElement>
 }
@@ -107,8 +106,4 @@ export interface GetEnvironmentsFromClusterNamespaceProps {
     namespaceList: EnvironmentListHelmResult[]
 }
 
-export interface DevtronAppExpandedState {
-    expandedRow: Record<number, boolean>
-    isAllExpanded: boolean
-    isAllExpandable: boolean
-}
+export interface TableAdditionalPropsType extends Pick<DevtronAppListProps, 'filterConfig'> {}

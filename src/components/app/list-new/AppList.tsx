@@ -41,7 +41,6 @@ import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
 
 import { SERVER_MODE } from '../../../config'
-import { useAppContext } from '../../common'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import DevtronAppList from '../list/DevtronAppListContainer'
 import AppListFilters from './AppListFilters'
@@ -71,7 +70,6 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     const location = useLocation()
     const params = useParams<{ appType: InfrastructureManagementAppListType }>()
     const { serverMode, isSuperAdmin } = useMainContext()
-    const { setCurrentAppName } = useAppContext()
 
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<string>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
@@ -402,7 +400,6 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                     appFiltersResponseLoading={appListFiltersLoading || namespaceListLoading}
                     isArgoInstalled={isArgoInstalled}
                     clearAllFilters={clearFilters}
-                    setCurrentAppName={setCurrentAppName}
                     changePage={changePage}
                     changePageSize={changePageSize}
                     handleSorting={handleSorting}

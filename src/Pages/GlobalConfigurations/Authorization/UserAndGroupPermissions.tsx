@@ -19,7 +19,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import {
     BASE_ROUTES,
-    ConditionalWrap,
     ERROR_EMPTY_SCREEN,
     ErrorScreenNotAuthorized,
     Progressing,
@@ -28,9 +27,8 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { API_STATUS_CODES } from '../../../config'
+import { AuthorizationGlobalConfigWrapper } from './SSOLoginServices/AutoAssign'
 import { getCustomRoles } from './authorization.service'
 import { AuthorizationProvider } from './AuthorizationProvider'
 import { AuthorizationContextProps, UserAndGroupPermissionsWrapProps } from './types'
@@ -42,23 +40,13 @@ const APITokens = lazy(() => import('./APITokens'))
 const UserPermissions = lazy(() => import('./UserPermissions'))
 const PermissionGroups = lazy(() => import('./PermissionGroups'))
 
-const AuthorizationGlobalConfigWrapper = importComponentFromFELibrary('AuthorizationGlobalConfigWrapper')
-
 const AUTHORIZATION_ROUTES = BASE_ROUTES.GLOBAL_CONFIG.AUTH
 
-const UserAndGroupPermissionsWrap = ({ children, setIsAutoAssignFlowEnabled }: UserAndGroupPermissionsWrapProps) => {
-    const getWrap = (child) => (
-        <AuthorizationGlobalConfigWrapper setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}>
-            {child}
-        </AuthorizationGlobalConfigWrapper>
-    )
-
-    return (
-        <ConditionalWrap condition={!!AuthorizationGlobalConfigWrapper} wrap={getWrap}>
-            {children}
-        </ConditionalWrap>
-    )
-}
+const UserAndGroupPermissionsWrap = ({ children, setIsAutoAssignFlowEnabled }: UserAndGroupPermissionsWrapProps) => (
+    <AuthorizationGlobalConfigWrapper setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}>
+        {children}
+    </AuthorizationGlobalConfigWrapper>
+)
 
 const UserAndGroupPermissions = ({
     authorizationContainerRef,

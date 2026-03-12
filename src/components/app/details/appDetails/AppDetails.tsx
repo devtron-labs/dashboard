@@ -20,6 +20,7 @@ import { generatePath, useLocation, useNavigate, useParams } from 'react-router-
 import {
     ACTION_STATE,
     aggregateNodes,
+    AIAgentContextSourceType,
     AppStatusModal,
     AppStatusModalTabType,
     ArtifactInfoModal,
@@ -172,15 +173,25 @@ const Details: React.FC<DetailsType> = ({
     } = appDetailsQueryData
 
     useEffect(() => {
-        setAIAgentContext({
-            path: '',
-            context: {
-                ...params,
-                environmentName: appDetails?.environmentName ?? '',
-                appName: appDetails?.appName ?? '',
-            },
-        })
-    }, [appDetails?.environmentName, appDetails?.appName])
+        // This check is here since we don't clear appDetails on env/app change for some reason :/ and this will cause data mismatch
+        if (appDetails?.environmentId === +params.envId && appDetails.appId === +params.appId) {
+            setAIAgentContext({
+                source: AIAgentContextSourceType.APP_DETAILS,
+                data: {
+                    appId: +params.appId,
+                    envId: +params.envId,
+                    clusterId: appDetails.clusterId,
+                    envName: appDetails.environmentName,
+                    appName: appDetails.appName,
+                    appType: 'devtronApp',
+                },
+            })
+        }
+
+        return () => {
+            setAIAgentContext(null)
+        }
+    }, [appDetails?.environmentName, appDetails?.appName, appDetails?.clusterId, params.appId, params.envId])
 
     const [showCommitInfo, setShowCommitInfo] = useState<boolean>(false)
     const [showAppStatusModal, setShowAppStatusModal] = useState<boolean>(false)
