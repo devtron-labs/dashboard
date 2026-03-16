@@ -8,8 +8,13 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
+
 import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
+import { getNotificationEvents } from './notifications.util'
 import { ModifyRecipientPopUpType, NotificationPipelineType } from './types'
+
+const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const ModifyRecipientPopUp = ({
     events,
@@ -17,21 +22,21 @@ export const ModifyRecipientPopUp = ({
     onChangeCheckboxHandler,
     selectedNotificationList,
 }: ModifyRecipientPopUpType) => {
-    const getDisabledLabel = (value) => {
+    const getDisabledLabel = (value: EVENTS) => {
         // If BASE type is present among all, only CONFIG_APPROVAL should be enabled
         if (selectedNotificationList.some((row) => row.pipelineType === NotificationPipelineType.BASE)) {
             return value !== EVENTS.CONFIG_APPROVAL
         }
 
-        // If CI is available, disable CONFIG_APPROVAL and IMAGE_APPROVAL
+        // If CI is available, disable CONFIG_APPROVAL and DEPLOYMENT_APPROVAL
         if (selectedNotificationList.some((row) => row.pipelineType === NotificationPipelineType.CI)) {
-            return value === EVENTS.CONFIG_APPROVAL || value === EVENTS.IMAGE_APPROVAL
+            return value === EVENTS.CONFIG_APPROVAL || value === EVENTS.DEPLOYMENT_APPROVAL
         }
 
         return false
     }
 
-    const options = Object.values(EVENTS).map((value) => ({
+    const options = getNotificationEvents(isEnterprise).map((value) => ({
         label: EVENT_LABEL[value],
         value,
         icon: EVENT_ICONS[value],
