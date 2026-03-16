@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react'
+import { Fragment, type JSX } from 'react'
 import ReactGA from 'react-ga4'
 import { useParams } from 'react-router-dom'
 

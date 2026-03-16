@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import {
     ACTION_STATE,
     API_STATUS_CODES,

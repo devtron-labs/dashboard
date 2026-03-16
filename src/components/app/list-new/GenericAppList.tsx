@@ -14,53 +14,44 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type JSX, useCallback, useRef } from 'react'
 import {
+    TableProps,
     ErrorScreenManager,
     ServerErrors,
     GenericEmptyState,
     AppStatus,
     Host,
     useMainContext,
-    Pagination,
     ResponseType,
-    SortableTableHeaderCell,
-    DEFAULT_BASE_PAGE_SIZE,
-    stringComparatorBySortOrder,
     showError,
-    useStickyEvent,
-    getClassNameForStickyHeaderWithShadow,
     InfrastructureManagementAppListType,
     ROUTER_URLS,
+    Table,
+    PaginationEnum,
+    FiltersTypeEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath, Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
 import { getArgoInstalledExternalApps } from './AppListService'
-import { LazyImage } from '../../common'
 import { Routes, URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import SelectClusterImage from '../../../assets/icons/ic-select-cluster.svg'
-import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
-import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import '../list/list.scss'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
     APP_LIST_HEADERS,
-    ENVIRONMENT_HEADER_TIPPY_CONTENT,
-    appListLoadingArray,
-    FLUX_CD_HELM_RELEASE_LABEL,
 } from './Constants'
-import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import {
     AppListSortableKeys,
-    FluxCDTemplateType,
     GenericAppListProps,
     GenericAppListResponse,
     GenericAppType,
+    GenericAppListRowType,
 } from './AppListType'
-import { renderIcon } from './list.utils'
+import { getGenericAppListColumns } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
-import AskToClearFilters from './AppListComponents'
+
+import './styles.scss'
 
 // This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
 const GenericAppList = ({
@@ -69,89 +60,81 @@ const GenericAppList = ({
     appType,
     clusterIdsCsv,
     clusterList,
-    changePage,
-    changePageSize,
-    handleSorting,
     setShowPulsatingDot,
-    appListContainerRef,
 }: GenericAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [appsList, setAppsList] = useState<GenericAppType[]>([])
-    const [sseConnection, setSseConnection] = useState<EventSource>(null)
+    const sseConnectionRef = useRef<EventSource>(null)
     const { isSuperAdmin } = useMainContext()
+
+    const navigate = useNavigate()
 
     const isArgoCDAppList = appType === InfrastructureManagementAppListType.ARGO_CD
     const isFluxCDAppList = appType === InfrastructureManagementAppListType.FLUX_CD
 
-    const { searchKey, sortBy, sortOrder, templateType, namespace, cluster, offset, pageSize } = filterConfig
+    const { searchKey, templateType, namespace, cluster } = filterConfig
 
-    const { filteredAppsList, filteredListTotalSize } = useMemo(() => {
-        let filteredAppsList = appsList
-        if (searchKey) {
-            const searchLowerCase = searchKey.toLowerCase()
-            filteredAppsList = filteredAppsList.filter((app) => app.appName.includes(searchLowerCase))
-        }
-        if (templateType.length) {
-            const templateTypeMap = new Map<string, boolean>(templateType.map((template) => [template, true]))
+    const rows = useMemo(() =>
+        appsList.map((app) => ({
+            id: `${app.appName}:${app.clusterName}:${app.namespace}`,
+            data: {
+                detail: app,
+                [AppListSortableKeys.APP_NAME]: app.appName,
+                [APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus']]: (
+                    <AppStatus status={app.appStatus} />
+                ),
+                [APP_LIST_HEADERS.FluxCDTemplateType]: app.fluxAppDeploymentType,
+                [APP_LIST_HEADERS.Environment]: `${app.clusterName}__${app.namespace}`,
+                [APP_LIST_HEADERS.Cluster]: app.clusterName,
+                [APP_LIST_HEADERS.Namespace]: app.namespace,
+            },
+        })) as TableProps<GenericAppListRowType, FiltersTypeEnum.URL>['rows'],
+        [appsList],
+    )
 
-            filteredAppsList = filteredAppsList.filter((app) => templateTypeMap.get(app.fluxAppDeploymentType) ?? false)
-        }
-        if (namespace.length) {
-            const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
-
-            filteredAppsList = filteredAppsList.filter(
-                (app) => namespaceMap.get(`${app.clusterId}_${app.namespace}`) ?? false,
-            )
-        }
-        filteredAppsList = filteredAppsList.sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName, sortOrder)) // Sorting
-
-        const filteredListTotalSize = filteredAppsList.length
-
-        filteredAppsList = filteredAppsList.slice(offset, offset + pageSize)
-        return { filteredAppsList, filteredListTotalSize }
-    }, [appsList, filterConfig])
-
-    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
-        identifier: 'generic-app-list',
-        containerRef: appListContainerRef,
-        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0
-    })
-
-    const closeSseConnection = (sseConnection: EventSource) => {
-        sseConnection.close()
-        setSseConnection(null)
+    const closeCurrentSseConnection = () => {
+        sseConnectionRef.current?.close()
+        sseConnectionRef.current = null
     }
+
+    const onSSEConnectionMessage = (message) => {
+        try {
+            const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
+            externalAppData.result.fluxApplication?.forEach((fluxApp) => {
+                if (fluxApp.appStatus === 'True') {
+                    fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
+                } else if (fluxApp.appStatus === 'False') {
+                    fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.NOT_READY
+                }
+            })
+            const receivedExternalFluxApps = externalAppData?.result?.fluxApplication || []
+            setAppsList((currAppList) => [...currAppList, ...receivedExternalFluxApps])
+            setDataStateType(AppListViewType.LIST)
+        } catch (err) {
+            showError(err)
+            setDataStateType(AppListViewType.ERROR)
+        }
+    }
+
 
     const getExternalInstalledFluxApps = (clusterIdsCsv: string) => {
         const fluxAppListURL = `${Host}/${Routes.FLUX_APPS}?clusterIds=${clusterIdsCsv}`
 
-        const sseConnection = new EventSource(fluxAppListURL, {
+        closeCurrentSseConnection()
+
+        sseConnectionRef.current = new EventSource(fluxAppListURL, {
             withCredentials: true,
         })
 
-        sseConnection.onmessage = (message) => {
-            try {
-                const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
-                externalAppData.result.fluxApplication?.forEach((fluxApp) => {
-                    if (fluxApp.appStatus === 'True') {
-                        fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
-                    } else if (fluxApp.appStatus === 'False') {
-                        fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.NOT_READY
-                    }
-                })
-                const receivedExternalFluxApps = externalAppData?.result?.fluxApplication || []
-                setAppsList((currAppList) => [...currAppList, ...receivedExternalFluxApps])
-                setDataStateType(AppListViewType.LIST)
-            } catch (err) {
-                showError(err)
-                setDataStateType(AppListViewType.ERROR)
-            }
-        }
-        sseConnection.onerror = () => {
-            closeSseConnection(sseConnection)
-        }
-        setSseConnection(sseConnection)
+        sseConnectionRef.current.onmessage = onSSEConnectionMessage
+        sseConnectionRef.current.onerror = closeCurrentSseConnection
+    }
+
+    const init = () => {
+        setDataStateType(clusterIdsCsv ? AppListViewType.LOADING : AppListViewType.LIST)
+        setAppsList([])
+        closeCurrentSseConnection()
     }
 
     // component load
@@ -177,6 +160,7 @@ const GenericAppList = ({
     }
 
     const handleFluxAppListing = () => {
+        closeCurrentSseConnection()
         setAppsList([])
         setDataStateType(AppListViewType.LOADING)
         getExternalInstalledFluxApps(clusterIdsCsv)
@@ -200,34 +184,13 @@ const GenericAppList = ({
         handleAppListing()
     }, [clusterIdsCsv])
 
-    const init = () => {
-        if (clusterIdsCsv) {
-            setDataStateType(AppListViewType.LOADING)
-        } else {
-            setDataStateType(AppListViewType.LIST)
-        }
-        setAppsList([])
-        if (sseConnection) {
-            sseConnection.close()
-        }
-        setSseConnection(null)
-    }
-
-    const handleAppNameSorting = () => handleSorting(AppListSortableKeys.APP_NAME)
-
     const isAnyFilterAppliedExceptCluster = !!searchKey || !!templateType.length || !!namespace.length
 
     const isAnyFilterApplied = isAnyFilterAppliedExceptCluster || !!clusterIdsCsv
 
-    const isAllClusterSelected = cluster.length === clusterList?.length
+    const isAllClusterSelected = cluster.length === clusterList?.filter((cluster) => !cluster.isVirtualCluster).length
 
-    const isOnlyAllClusterFilterApplied = isAllClusterSelected && templateType.length === 0 && !searchKey
-
-    function handleImageError(e) {
-        const target = e.target as HTMLImageElement
-        target.onerror = null
-        target.src = defaultChartImage
-    }
+    const isOnlyAllClusterFilterApplied = isAllClusterSelected && templateType.length === 0 && !searchKey && !namespace.length
 
     const buildAppDetailUrl = (app: GenericAppType): string => {
         if (isArgoCDAppList) {
@@ -245,195 +208,68 @@ const GenericAppList = ({
         })
     }
 
-    function renderAppListHeader() {
-        return (
-            <div
-                ref={stickyElementRef}
-                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} ${
-                   getClassNameForStickyHeaderWithShadow(isHeaderStuck, 'dc__top-47')
-                }`}
-            >
-                <div className="app-list__cell--icon" />
-                <div className="app-list__cell app-list__cell--name">
-                    <SortableTableHeaderCell
-                        title={APP_LIST_HEADERS.AppName}
-                        isSorted={sortBy === AppListSortableKeys.APP_NAME}
-                        isSortable
-                        triggerSorting={handleAppNameSorting}
-                        sortOrder={sortOrder}
-                        disabled={false}
-                    />
-                </div>
-                <div className="app-list__cell app-list__cell--app_status">
-                    <span className="app-list__cell-header">
-                        {/* In case of FluxCD AppStatus is shown as Status */}
-                        {isFluxCDAppList ? APP_LIST_HEADERS.Status : APP_LIST_HEADERS.AppStatus}
-                    </span>
-                </div>
-                {/* Template Type is only shown in FluxCD */}
-                {isFluxCDAppList && (
-                    <div className="app-list__cell">
-                        <span>{APP_LIST_HEADERS.FluxCDTemplateType}</span>
-                    </div>
-                )}
-                <div className="app-list__cell app-list__cell--env">
-                    <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
-                    >
-                        <div className="flex">
-                            <ICHelpOutline className="icon-dim-16" />
-                        </div>
-                    </Tippy>
-                </div>
-                <div className="app-list__cell app-list__cell--cluster">
-                    <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
-                </div>
-                <div className="app-list__cell app-list__cell--namespace">
-                    <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
-                </div>
-            </div>
-        )
-    }
-
-    const renderAppRow = (app: GenericAppType): JSX.Element => (
-        <Link
-            to={buildAppDetailUrl(app)}
-            className={`app-list__row ${isFluxCDAppList ? 'app-list__row__fluxcd' : ''}`}
-            data-testid="app-list-row"
-        >
-            <div className="app-list__cell--icon">
-                <LazyImage
-                    className="dc__chart-grid-item__icon icon-dim-24"
-                    src={renderIcon(appType)}
-                    onError={handleImageError}
-                />
-            </div>
-            <div className="app-list__cell app-list__cell--name flex column left">
-                <div className="dc__truncate-text  m-0 value">{app.appName}</div>
-            </div>
-            <div className="app-list__cell app-list__cell--namespace">
-                <AppStatus status={app.appStatus} />
-            </div>
-            {/* Template Type is only shown in FluxCD */}
-            {isFluxCDAppList && (
-                <div>
-                    {app.fluxAppDeploymentType === FluxCDTemplateType.HELM_RELEASE
-                        ? FLUX_CD_HELM_RELEASE_LABEL
-                        : app.fluxAppDeploymentType}
-                </div>
-            )}
-            <div className="app-list__cell app-list__cell--env">
-                <p
-                    className="dc__truncate-text  m-0"
-                    data-testid={`${`${app.clusterName}__${app.namespace}`}-environment`}
-                >
-                    {`${app.clusterName}__${app.namespace}`}
-                </p>
-            </div>
-            <div className="app-list__cell app-list__cell--cluster">
-                <p className="dc__truncate-text  m-0" data-testid={`${app.clusterName}`}>
-                    {app.clusterName}
-                </p>
-            </div>
-            <div className="app-list__cell app-list__cell--namespace">
-                <p className="dc__truncate-text  m-0" data-testid={`${app.namespace}`}>
-                    {app.namespace}
-                </p>
-            </div>
-        </Link>
+    const askToSelectClusterId = () => (
+        <div className="dc__position-rel flex-grow-1">
+            <GenericEmptyState
+                image={SelectClusterImage}
+                title={APP_LIST_EMPTY_STATE_MESSAGING.heading}
+                subTitle={
+                    isArgoCDAppList
+                        ? APP_LIST_EMPTY_STATE_MESSAGING.argoCDInfoText
+                        : APP_LIST_EMPTY_STATE_MESSAGING.fluxCDInfoText
+                }
+            />
+        </div>
     )
 
-    function renderApplicationList() {
-        return (
-            <div data-testid="external-argo-list-container">
-                {renderAppListHeader()}
-                {filteredAppsList.map((app, index) => (
-                    <div key={`${app.appName}-${index}`}>{renderAppRow(app)} </div>
-                ))}
-            </div>
-        )
-    }
+    const columns = useMemo(
+        () => getGenericAppListColumns(isFluxCDAppList),
+        [isFluxCDAppList],
+    )
 
-    function askToSelectClusterId() {
-        return (
-            <div className="dc__position-rel flex-grow-1">
-                <GenericEmptyState
-                    image={SelectClusterImage}
-                    title={APP_LIST_EMPTY_STATE_MESSAGING.heading}
-                    subTitle={
-                        isArgoCDAppList
-                            ? APP_LIST_EMPTY_STATE_MESSAGING.argoCDInfoText
-                            : APP_LIST_EMPTY_STATE_MESSAGING.fluxCDInfoText
-                    }
-                />
-            </div>
-        )
-    }
+    const onRowClick = useCallback(({ data: app }) => {
+        navigate(buildAppDetailUrl(app.detail))
+    }, [])
 
-    function askToClearFiltersWithSelectClusterTip() {
-        return (
-            <div className="flex column">
-                <AskToClearFilters clearAllFilters={clearAllFilters} showTipToSelectCluster />
-            </div>
-        )
-    }
+    const filter = useCallback(({ data: app }) => {
+        let isMatch = true
 
-    function askToConnectAClusterForNoResult() {
-        const handleButton = () => (
-            <Link to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}>
-                <button type="button" className="cta flex">
-                    {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
-                </button>
-            </Link>
-        )
-        return (
-            <div className="dc__position-rel flex-grow-1">
-                <GenericEmptyState
-                    image={noChartInClusterImage}
-                    title={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound}
-                    subTitle={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
-                    isButtonAvailable
-                    renderButton={handleButton}
-                />
-            </div>
-        )
-    }
-
-    function renderNoApplicationState() {
-        if (isAnyFilterAppliedExceptCluster && !clusterIdsCsv) {
-            return askToClearFiltersWithSelectClusterTip()
+        if (searchKey) {
+            const searchLowerCase = searchKey.toLowerCase()
+            isMatch = isMatch && app.detail.appName.includes(searchLowerCase)
         }
-        if (isOnlyAllClusterFilterApplied) {
-            return askToConnectAClusterForNoResult()
-        }
-        if (isAnyFilterApplied) {
-            return <AskToClearFilters clearAllFilters={clearAllFilters} />
-        }
-        return null
-    }
 
-    function renderFullModeApplicationListContainer() {
-        if (filteredListTotalSize === 0) {
-            return renderNoApplicationState()
+        if (templateType.length) {
+            isMatch = isMatch && templateType.includes(app.detail.fluxAppDeploymentType)
         }
-        return renderApplicationList()
-    }
 
-    const renderPagination = (): JSX.Element =>
-        filteredListTotalSize > DEFAULT_BASE_PAGE_SIZE && (
-            <Pagination
-                rootClassName="flex dc__content-space px-20"
-                size={filteredListTotalSize}
-                pageSize={pageSize}
-                offset={offset}
-                changePage={changePage}
-                changePageSize={changePageSize}
-            />
-        )
+        if (namespace.length) {
+            isMatch = isMatch && namespace.includes(`${app.detail.clusterId}_${app.detail.namespace}`)
+        }
+
+        return !isAnyFilterAppliedExceptCluster || isMatch
+    }, [searchKey, templateType, namespace, isAnyFilterAppliedExceptCluster])
+
+
+    const askToConnectAClusterForNoResult = () => {
+        return {
+            title: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound,
+            subTitle: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText,
+            // NOTE: if handleClearFilters is provided renderButton is not rendered
+            // therefore need to override this
+            handleClearFilters: null,
+            isButtonAvailable: true,
+            renderButton: () => {
+                return (
+                    <Link to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}>
+                        <button type="button" className="cta flex">
+                            {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
+                        </button>
+                    </Link>
+                )
+            },
+        }
+    }
 
     if (!isSuperAdmin) {
         return (
@@ -443,38 +279,49 @@ const GenericAppList = ({
         )
     }
 
+
     if (!clusterIdsCsv) {
         return askToSelectClusterId()
     }
 
+    if (dataStateType === AppListViewType.ERROR) {
+        return (
+            <div className="flex-grow-1">
+                <ErrorScreenManager code={errorResponseCode} />
+            </div>
+        )
+    }
+
     return (
-        <>
-            {dataStateType === AppListViewType.LOADING && (
-                <>
-                    {renderAppListHeader()}
-                    <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
-                        {appListLoadingArray.map((eachRow) => (
-                            <div className="pl-20 resource-list__table-row" key={eachRow.id}>
-                                {Object.keys(eachRow).map((eachKey) => (
-                                    <div className="child child-shimmer-loading" key={eachKey} />
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
-            {dataStateType === AppListViewType.ERROR && (
-                <div className="flex-grow-1">
-                    <ErrorScreenManager code={errorResponseCode} />
-                </div>
-            )}
-            {dataStateType === AppListViewType.LIST && (
-                <>
-                    {renderFullModeApplicationListContainer()}
-                    {renderPagination()}
-                </>
-            )}
-        </>
+        <Table<GenericAppListRowType, FiltersTypeEnum.URL>
+            id="table__generic-app-list"
+            columns={columns}
+            loading={dataStateType === AppListViewType.LOADING}
+            rows={rows}
+            filter={filter}
+            rowStartIconConfig={{
+                name: isFluxCDAppList ? 'ic-fluxcd-app' : 'ic-argocd-app',
+                color: null,
+                size: 24,
+            }}
+            filtersVariant={FiltersTypeEnum.URL}
+            paginationVariant={PaginationEnum.PAGINATED}
+            emptyStateConfig={{
+                noRowsForFilterConfig: isOnlyAllClusterFilterApplied ? askToConnectAClusterForNoResult() : {
+                    title: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound,
+                    subTitle: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText,
+                },
+                // NOTE: handled externally;
+                // since cluster Id filter has to be applied for table to be rendered
+                noRowsConfig: null,
+            }}
+            clearFilters={clearAllFilters}
+            onRowClick={onRowClick}
+            additionalFilterProps={{
+                initialSortKey: AppListSortableKeys.APP_NAME,
+            }}
+            areFiltersApplied={isAnyFilterApplied}
+        />
     )
 }
 

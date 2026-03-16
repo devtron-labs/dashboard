@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -80,8 +80,10 @@ export const ChartDetailsDeployments = ({ chartIcon }: ChartDetailsDeploymentsPr
     )
 
     // HANDLERS
-    const filter: DeploymentsTableProps['filter'] = (rowData, filterData) =>
-        rowData.data.appName.includes(filterData.searchKey.toLowerCase())
+    const filter: DeploymentsTableProps['filter'] = useCallback(
+        (rowData, filterData) => rowData.data.appName.includes(filterData.searchKey.toLowerCase()),
+        [],
+    )
 
     const handleCloseDeleteConfirmationModal = () => setIsOpenDeleteConfirmationModal(false)
 

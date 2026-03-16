@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { type JSX, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {

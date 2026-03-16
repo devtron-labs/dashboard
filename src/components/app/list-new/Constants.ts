@@ -16,12 +16,7 @@
 
 import { GroupBase } from 'react-select'
 
-import {
-    ExportToCsvProps,
-    OptionType,
-    SelectPickerOptionType,
-    UseUrlFiltersProps,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ExportToCsvProps, SelectPickerOptionType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AppStatuses, AppStatusesDTO, ExportAppListDataType, FluxCDTemplateType } from './AppListType'
 
@@ -91,11 +86,6 @@ export const APP_STATUS_FILTER_OPTIONS: GroupBase<SelectPickerOptionType>[] = [
         ],
     },
 ]
-
-export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
-    label: 'Apps with no project',
-    value: '0',
-}
 
 export const DEVTRON_APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] =
     'devtron-app-list__filters'

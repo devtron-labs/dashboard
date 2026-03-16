@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react'
+import React, { type JSX, lazy, Suspense } from 'react'
 import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {

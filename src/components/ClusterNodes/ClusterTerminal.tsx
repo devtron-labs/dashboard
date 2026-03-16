@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { type JSX, useEffect, useRef, useState } from 'react'
 import { generatePath, useLocation, useNavigate } from 'react-router-dom'
 
 import {
@@ -96,7 +96,7 @@ const ClusterTerminal = ({
             clusterId: String(clusterId),
         })
     const queryParams = new URLSearchParams(location.search)
-    const terminalAccessIdRef = useRef()
+    const terminalAccessIdRef = useRef(null)
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)

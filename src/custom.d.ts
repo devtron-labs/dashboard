@@ -32,3 +32,11 @@ declare module '*.gif' {
     const src: string
     export default src
 }
+
+// react-select's PublicBaseSelectProps (used transitively by devtron-fe-common-lib's
+// SelectPicker) is defined as JSX.LibraryManagedAttributes<typeof Select, Props<...>>,
+// which requires a global namespace JSX with LibraryManagedAttributes.
+// Without this, SelectPickerProps resolves to Pick<any, ...> with all props required.
+declare namespace JSX {
+    type LibraryManagedAttributes<C, P> = import('react').JSX.LibraryManagedAttributes<C, P>
+}

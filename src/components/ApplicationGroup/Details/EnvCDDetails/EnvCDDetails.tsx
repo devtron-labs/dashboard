@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type JSX } from 'react'
 import {
     Progressing,
     showError,

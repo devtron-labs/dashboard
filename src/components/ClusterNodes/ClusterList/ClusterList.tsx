@@ -67,7 +67,7 @@ const ClusterList = ({
             </div>
             {filteredList.map((clusterData) => (
                 <ClusterListRow
-                    key={clusterData.id ?? clusterData.installationId}
+                    key={`${clusterData.name}-${clusterData.id ?? clusterData.installationId}`}
                     clusterData={clusterData}
                     clusterListLoader={clusterListLoader}
                     showKubeConfigModal={showKubeConfigModal}
