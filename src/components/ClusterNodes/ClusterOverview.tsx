@@ -20,6 +20,7 @@ import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import {
     EditableTextArea,
     ErrorScreenManager,
+    GenericDescription,
     getRandomColor,
     getUrlWithSearchParams,
     Icon,
@@ -42,11 +43,11 @@ import { getAvailableCharts } from '@Services/service'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
-import GenericDescription from '../common/Description/GenericDescription'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import {
     getClusterOverviewClusterCapacity,
     getClusterOverviewDetails,
+    patchClusterNote,
     updateClusterShortDescription,
 } from './clusterNodes.service'
 import {
@@ -151,24 +152,37 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
         clusterNodeDetailsResponse ?? {}
 
     const handleUpdateClusterDescription = async (description: string): Promise<void> => {
-        const requestPayload = {
-            id: Number(clusterId),
-            description,
-        }
         try {
-            const response = await updateClusterShortDescription(requestPayload)
+            const response = await updateClusterShortDescription({ id: Number(clusterId), description })
             if (response.result) {
                 setClusterNodeDetails({
                     ...clusterNodeDetailsResponse,
-                    clusterDetails: {
-                        ...clusterDetails,
-                        shortDescription: description,
-                    },
+                    clusterDetails: { ...clusterDetails, shortDescription: description },
                 })
             }
         } catch (error) {
             showError(error)
             throw error
+        }
+    }
+
+    const handleUpdateClusterNote = async (description: string): Promise<void> => {
+        const response = await patchClusterNote({
+            id: descriptionData.descriptionId,
+            identifier: Number(clusterId),
+            description,
+        })
+        if (response.result) {
+            setClusterNodeDetails({
+                ...clusterNodeDetailsResponse,
+                descriptionData: {
+                    ...descriptionData,
+                    descriptionText: response.result.description,
+                    descriptionId: response.result.id,
+                    descriptionUpdatedBy: response.result.updatedBy,
+                    descriptionUpdatedOn: response.result.updatedOn,
+                },
+            })
         }
     }
 
@@ -467,13 +481,11 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
                     {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
-                        isClusterTerminal
-                        clusterId={clusterId}
-                        descriptionId={descriptionData.descriptionId}
-                        initialDescriptionText={descriptionData.descriptionText}
-                        initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
-                        initialDescriptionUpdatedOn={descriptionData.descriptionUpdatedOn}
-                        initialEditDescriptionView
+                        text={descriptionData.descriptionText}
+                        updatedBy={descriptionData.descriptionUpdatedBy}
+                        updatedOn={descriptionData.descriptionUpdatedOn}
+                        updateDescription={handleUpdateClusterNote}
+                        title="Readme"
                     />
                 </div>
             </div>
