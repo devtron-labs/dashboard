@@ -16,6 +16,8 @@
 
 import moment from 'moment'
 
+import { useRef } from 'react'
+
 import {
     ACTION_STATE,
     APIOptions,
@@ -78,6 +80,7 @@ export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIS
 export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): UseGetDTAppDetailsReturnType => {
     const queryClient = useQueryClient()
     const resourceTreeQueryKey = 'dt-app-resource-tree'
+    const resourceTreeETagRef = useRef<string>('')
 
     const {
         data: appDetails,
@@ -120,11 +123,36 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
         status: resourceTreeQueryStatus,
     } = useQuery<AppDetails['resourceTree']>({
         queryKey: [resourceTreeQueryKey, appId, envId],
-        queryFn: ({ signal }) =>
-            get<AppDetails['resourceTree']>(
-                getUrlWithSearchParams(`${Routes.APP_DETAIL}/resource-tree`, { 'app-id': appId, 'env-id': envId }),
-                { signal },
-            ),
+        queryFn: async ({ signal }) => {
+            const url = getUrlWithSearchParams(`${Routes.APP_DETAIL}/resource-tree`, {
+                'app-id': appId,
+                'env-id': envId,
+            })
+            const headers: Record<string, string> = {}
+            if (resourceTreeETagRef.current) {
+                headers['If-None-Match'] = resourceTreeETagRef.current
+            }
+
+            const response = await fetch(`${window.__ORCHESTRATOR_ROOT__}/${url}`, { signal, headers })
+
+            if (response.status === 304) {
+                // Tree hasn't changed — return previous cached data from TanStack Query
+                const previousData = queryClient.getQueryData<AppDetails['resourceTree']>([
+                    resourceTreeQueryKey,
+                    appId,
+                    envId,
+                ])
+                return { result: previousData } as any
+            }
+
+            const newETag = response.headers.get('Etag')
+            if (newETag) {
+                resourceTreeETagRef.current = newETag
+            }
+
+            const data = await response.json()
+            return data
+        },
         select: ({ result }) => result,
         enabled:
             !!appId &&
