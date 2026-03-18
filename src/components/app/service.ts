@@ -136,13 +136,19 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
             const response = await fetch(`${window.__ORCHESTRATOR_ROOT__}/${url}`, { signal, headers })
 
             if (response.status === 304) {
-                // Tree hasn't changed — return previous cached data from TanStack Query
-                const previousData = queryClient.getQueryData<AppDetails['resourceTree']>([
-                    resourceTreeQueryKey,
-                    appId,
-                    envId,
-                ])
-                return { result: previousData } as any
+                // Tree hasn't changed — return raw queryFn data so select() can unwrap it
+                const previousData = queryClient.getQueryData([resourceTreeQueryKey, appId, envId])
+                if (previousData) {
+                    return previousData
+                }
+                // No cached data yet — retry without ETag
+                resourceTreeETagRef.current = ''
+                const fallbackResponse = await fetch(`${window.__ORCHESTRATOR_ROOT__}/${url}`, { signal })
+                const fallbackETag = fallbackResponse.headers.get('Etag')
+                if (fallbackETag) {
+                    resourceTreeETagRef.current = fallbackETag
+                }
+                return fallbackResponse.json()
             }
 
             const newETag = response.headers.get('Etag')
