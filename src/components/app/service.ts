@@ -16,7 +16,6 @@
 
 import moment from 'moment'
 
-import { useRef } from 'react'
 
 import {
     ACTION_STATE,
@@ -80,8 +79,6 @@ export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIS
 export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): UseGetDTAppDetailsReturnType => {
     const queryClient = useQueryClient()
     const resourceTreeQueryKey = 'dt-app-resource-tree'
-    const resourceTreeETagRef = useRef<string>('')
-
     const {
         data: appDetails,
         isFetching: isFetchingAppDetails,
@@ -123,42 +120,11 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
         status: resourceTreeQueryStatus,
     } = useQuery<AppDetails['resourceTree']>({
         queryKey: [resourceTreeQueryKey, appId, envId],
-        queryFn: async ({ signal }) => {
-            const url = getUrlWithSearchParams(`${Routes.APP_DETAIL}/resource-tree`, {
-                'app-id': appId,
-                'env-id': envId,
-            })
-            const headers: Record<string, string> = {}
-            if (resourceTreeETagRef.current) {
-                headers['If-None-Match'] = resourceTreeETagRef.current
-            }
-
-            const response = await fetch(`${window.__ORCHESTRATOR_ROOT__}/${url}`, { signal, headers })
-
-            if (response.status === 304) {
-                // Tree hasn't changed — return raw queryFn data so select() can unwrap it
-                const previousData = queryClient.getQueryData([resourceTreeQueryKey, appId, envId])
-                if (previousData) {
-                    return previousData
-                }
-                // No cached data yet — retry without ETag
-                resourceTreeETagRef.current = ''
-                const fallbackResponse = await fetch(`${window.__ORCHESTRATOR_ROOT__}/${url}`, { signal })
-                const fallbackETag = fallbackResponse.headers.get('Etag')
-                if (fallbackETag) {
-                    resourceTreeETagRef.current = fallbackETag
-                }
-                return fallbackResponse.json()
-            }
-
-            const newETag = response.headers.get('Etag')
-            if (newETag) {
-                resourceTreeETagRef.current = newETag
-            }
-
-            const data = await response.json()
-            return data
-        },
+        queryFn: ({ signal }) =>
+            get<AppDetails['resourceTree']>(
+                getUrlWithSearchParams(`${Routes.APP_DETAIL}/resource-tree`, { 'app-id': appId, 'env-id': envId }),
+                { signal },
+            ),
         select: ({ result }) => result,
         enabled:
             !!appId &&
