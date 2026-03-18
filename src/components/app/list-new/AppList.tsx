@@ -313,15 +313,9 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             params.appType,
         )
 
-        // const hasUrlFilters = Object.values(urlChipConfig).some((v) => v.length > 0)
-
-        // if (!hasUrlFilters && !labelSelectors.length) {
-        //     return null
-        // }
-
         return (
             // TODO: Fix the css layout
-            <div className="flexbox flex-wrap dc__gap-8 px-20">
+            <div className="flexbox flex-wrap dc__gap-8 px-20 dc__align-items-center">
                 {labelSelectors.map((selector) => (
                     <Chip
                         key={selector.id}
