@@ -104,4 +104,7 @@ export interface GetEnvironmentsFromClusterNamespaceProps {
     namespaceList: EnvironmentListHelmResult[]
 }
 
-export interface TableAdditionalPropsType extends Pick<DevtronAppListProps, 'filterConfig'> {}
+export interface TableAdditionalPropsType extends Pick<DevtronAppListProps, 'filterConfig'> {
+    noRows: boolean
+    isSearchOrFilterApplied: boolean
+}
