@@ -28,6 +28,7 @@ import {
 
 import {
     AppListConstants,
+    Chip,
     FilterChips,
     getNamespaceListMin,
     handleUTCTime,
@@ -59,7 +60,13 @@ import {
     AppListUrlFiltersType,
     FluxCDTemplateType,
 } from './AppListType'
-import { APP_LIST_LOCAL_STORAGE_KEY, DEVTRON_APP_LIST_LOCAL_STORAGE_KEY, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import {
+    APP_LIST_LOCAL_STORAGE_KEY,
+    DEVTRON_APP_LIST_LOCAL_STORAGE_KEY,
+    FLUX_CD_HELM_RELEASE_LABEL,
+    LABEL_OPERATOR_DISPLAY_TEXT,
+    LABEL_OPERATORS_WITHOUT_VALUE,
+} from './Constants'
 import GenericAppList from './GenericAppList'
 import HelmAppList from './HelmAppList'
 import {
@@ -68,6 +75,7 @@ import {
     getFormattedFilterLabel,
     parseSearchParams,
 } from './list.utils'
+import { AppListFilterLabelType } from './types'
 
 import '../list/list.scss'
 
@@ -86,6 +94,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
     const [appCount, setAppCount] = useState<number>(0)
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
+    const [labelSelectors, setLabelSelectors] = useState<AppListFilterLabelType[]>([])
 
     const appListContainerRef = useRef<HTMLDivElement>(null)
 
@@ -124,10 +133,15 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
         handleSorting,
         changePage,
         changePageSize,
-        clearFilters,
+        clearFilters: clearFiltersFromUrl,
         handleSearch,
         updateSearchParams,
     } = urlFilters
+
+    const clearFilters = () => {
+        clearFiltersFromUrl()
+        setLabelSelectors([])
+    }
 
     const filterConfig: AppListFilterConfig = useMemo(
         () => ({
@@ -142,6 +156,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             cluster,
             namespace,
             templateType,
+            labelSelectors,
         }),
         [
             offset,
@@ -155,6 +170,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             JSON.stringify(cluster),
             JSON.stringify(namespace),
             JSON.stringify(templateType),
+            JSON.stringify(labelSelectors),
         ],
     )
 
@@ -279,21 +295,57 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
         setFetchingExternalApps(fetching)
     }
 
-    const renderAppliedFilters = () =>
-        !appListFiltersLoading &&
-        !appListFiltersError && (
-            <FilterChips<Partial<AppListUrlFiltersType>>
-                filterConfig={getFilterChipConfig(
-                    { appStatus, project, environment, cluster, namespace, templateType },
-                    params.appType,
-                )}
-                onRemoveFilter={updateSearchParams}
-                clearFilters={clearFilters}
-                className="px-20"
-                getFormattedLabel={getFormattedFilterLabel}
-                getFormattedValue={getFormattedFilterValue}
-            />
+    const handleApplyLabelSelectors = (selectors: AppListFilterLabelType[]): void => {
+        setLabelSelectors(selectors.filter((s) => !!s.key.trim()))
+    }
+
+    const getRemoveLabelSelectorHandler = (selectorId: string) => () => {
+        setLabelSelectors(labelSelectors.filter((s) => s.id !== selectorId))
+    }
+
+    const renderAppliedFilters = () => {
+        if (appListFiltersLoading || appListFiltersError) {
+            return null
+        }
+
+        const urlChipConfig = getFilterChipConfig(
+            { appStatus, project, environment, cluster, namespace, templateType },
+            params.appType,
         )
+
+        // const hasUrlFilters = Object.values(urlChipConfig).some((v) => v.length > 0)
+
+        // if (!hasUrlFilters && !labelSelectors.length) {
+        //     return null
+        // }
+
+        return (
+            // TODO: Fix the css layout
+            <div className="flexbox flex-wrap dc__gap-8 px-20">
+                {labelSelectors.map((selector) => (
+                    <Chip
+                        key={selector.id}
+                        label="Tags"
+                        value={
+                            LABEL_OPERATORS_WITHOUT_VALUE.includes(selector.operator)
+                                ? `${selector.key} ${LABEL_OPERATOR_DISPLAY_TEXT[selector.operator]}`
+                                : `${selector.key} ${LABEL_OPERATOR_DISPLAY_TEXT[selector.operator]} ${selector.value}`
+                        }
+                        onRemove={getRemoveLabelSelectorHandler(selector.id)}
+                    />
+                ))}
+
+                {/* FilterChips renders its own "Clear All" when URL chips are present */}
+                <FilterChips<Partial<AppListUrlFiltersType>>
+                    filterConfig={urlChipConfig}
+                    onRemoveFilter={updateSearchParams}
+                    clearFilters={clearFilters}
+                    getFormattedLabel={getFormattedFilterLabel}
+                    getFormattedValue={getFormattedFilterValue}
+                />
+            </div>
+        )
+    }
 
     const removePageNumber = (search: string) => {
         const searchParams = new URLSearchParams(search)
@@ -395,6 +447,9 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                 isDataSyncing={isDataSyncing}
                 lastSyncTimeString={lastDataSyncTimeString}
                 showExportCsvButton={isSuperAdmin && isDevtronAppList}
+                isDevtronAppList={isDevtronAppList}
+                labelSelectors={labelSelectors}
+                handleApplyLabelSelectors={handleApplyLabelSelectors}
             />
             {renderAppliedFilters()}
             {!isDevtronAppList && renderAppTabs()}

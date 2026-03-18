@@ -85,7 +85,7 @@ const DevtronAppList = ({
 }: DevtronAppListProps) => {
     const [noRows, setNoRows] = useState<boolean>(false)
 
-    const { searchKey, appStatus, project, environment, namespace, cluster } = filterConfig
+    const { searchKey, appStatus, project, environment, namespace, cluster, labelSelectors } = filterConfig
 
     const { push } = useHistory()
 
@@ -95,7 +95,8 @@ const DevtronAppList = ({
         project.length ||
         environment.length ||
         namespace.length ||
-        cluster.length
+        cluster.length ||
+        labelSelectors.length
     )
 
     const redirectToAppDetails = (app, envId: number): string => {

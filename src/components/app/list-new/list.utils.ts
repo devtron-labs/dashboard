@@ -36,6 +36,8 @@ import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
 import { Cluster } from '@Services/service.types'
 
 import {
+    APP_LIST_LABEL_SELECTOR_FILTER_KEY,
+    AppListFilterKey,
     AppListFilterMenuItemType,
     AppListSortableKeys,
     AppListUrlFilters,
@@ -219,7 +221,8 @@ export const getAppListFilters = ({
     isArgoInstalled,
     serverMode,
     selectedEnvironments,
-}: GetAppListFiltersParams): GroupedFilterSelectPickerProps<AppListUrlFilters>['options'] => [
+    isDevtronAppList,
+}: GetAppListFiltersParams): GroupedFilterSelectPickerProps<AppListFilterKey>['options'] => [
     {
         items: [
             ...((!(isExternalArgo || isExternalFlux)
@@ -285,6 +288,15 @@ export const getAppListFilters = ({
                 isDisabled: !clusterIdsCsv,
                 tooltipProps: { content: !clusterIdsCsv ? SELECT_CLUSTER_TIPPY : null },
             },
+            ...((isDevtronAppList
+                ? [
+                      {
+                          id: APP_LIST_LABEL_SELECTOR_FILTER_KEY,
+                          label: 'Tags',
+                          startIcon: { name: 'ic-tag' },
+                      },
+                  ]
+                : []) as AppListFilterMenuItemType[]),
         ],
     },
 ]
