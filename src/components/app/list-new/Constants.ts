@@ -138,10 +138,10 @@ export const LABEL_OPERATORS_WITHOUT_VALUE: AppListFilterLabelOperatorType[] = [
 export const DEFAULT_LABEL_SELECTOR_OPERATOR = AppListFilterLabelOperatorType.EQUALS
 
 export const LABEL_OPERATOR_DISPLAY_TEXT: Record<AppListFilterLabelOperatorType, string> = {
-    [AppListFilterLabelOperatorType.EQUALS]: '==',
-    [AppListFilterLabelOperatorType.DOES_NOT_EQUAL]: '!=',
-    [AppListFilterLabelOperatorType.CONTAINS]: 'in',
-    [AppListFilterLabelOperatorType.DOES_NOT_CONTAIN]: 'notin',
+    [AppListFilterLabelOperatorType.EQUALS]: 'equals',
+    [AppListFilterLabelOperatorType.DOES_NOT_EQUAL]: 'not equals',
+    [AppListFilterLabelOperatorType.CONTAINS]: 'contains',
+    [AppListFilterLabelOperatorType.DOES_NOT_CONTAIN]: 'does not contain',
     [AppListFilterLabelOperatorType.EXISTS]: 'exists',
-    [AppListFilterLabelOperatorType.DOES_NOT_EXIST]: '!exists',
+    [AppListFilterLabelOperatorType.DOES_NOT_EXIST]: 'does not exists',
 }

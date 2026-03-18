@@ -1,6 +1,10 @@
 import { DynamicDataTableProps, DynamicDataTableRowDataType, getUniqueId } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DEFAULT_LABEL_SELECTOR_OPERATOR, LABEL_OPERATORS_WITHOUT_VALUE } from './Constants'
+import {
+    DEFAULT_LABEL_SELECTOR_OPERATOR,
+    LABEL_OPERATOR_DISPLAY_TEXT,
+    LABEL_OPERATORS_WITHOUT_VALUE,
+} from './Constants'
 import { AppListFilterLabelOperatorType, AppListFilterLabelTableHeaderType, AppListFilterLabelType } from './types'
 
 export const getSelectorRowConfig = (
@@ -19,7 +23,7 @@ export const getSelectorRowConfig = (
             type: DynamicDataTableRowDataType.DROPDOWN,
             props: {
                 options: Object.values(AppListFilterLabelOperatorType).map((operator) => ({
-                    label: operator,
+                    label: LABEL_OPERATOR_DISPLAY_TEXT[operator] || operator,
                     value: operator,
                 })),
                 placeholder: 'Select operator',
