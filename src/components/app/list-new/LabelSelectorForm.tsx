@@ -6,7 +6,10 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     DynamicDataTable,
+    DynamicDataTableCellErrorType,
     DynamicDataTableProps,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
@@ -20,12 +23,13 @@ import {
     AppListFilterLabelType,
     LabelSelectorFormProps,
 } from './types'
-import { getEmptyLabelSelector, getSelectorRowConfig } from './utils'
+import { getEmptyLabelSelector, getSelectorRowConfig, getSelectorsErrorState } from './utils'
 
 const LabelSelectorForm = ({ closePopover, initialLabels, onApply }: LabelSelectorFormProps) => {
     const [selectors, setSelectors] = useState<AppListFilterLabelType[]>(() =>
         initialLabels.length ? initialLabels : [getEmptyLabelSelector()],
     )
+    const [cellError, setCellError] = useState<DynamicDataTableCellErrorType<AppListFilterLabelTableHeaderType>>({})
     const selectorRows: DynamicDataTableProps<AppListFilterLabelTableHeaderType>['rows'] =
         selectors.map(getSelectorRowConfig)
 
@@ -66,6 +70,7 @@ const LabelSelectorForm = ({ closePopover, initialLabels, onApply }: LabelSelect
             return selector
         })
         setSelectors(updatedSelectors)
+        setCellError(getSelectorsErrorState(updatedSelectors))
     }
 
     const handleRowDelete: DynamicDataTableProps<AppListFilterLabelTableHeaderType>['onRowDelete'] = (deletedRow) => {
@@ -83,9 +88,21 @@ const LabelSelectorForm = ({ closePopover, initialLabels, onApply }: LabelSelect
             : selectors.filter((selector) => selector.id !== deletedRow.id)
 
         setSelectors(updatedSelectors)
+        setCellError(getSelectorsErrorState(updatedSelectors))
     }
 
     const handleApply = () => {
+        const errors = getSelectorsErrorState(selectors)
+        setCellError(errors)
+
+        if (Object.keys(errors).length) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please fix the errors before applying.',
+            })
+            return
+        }
+
         onApply(selectors)
         closePopover()
     }
@@ -104,6 +121,7 @@ const LabelSelectorForm = ({ closePopover, initialLabels, onApply }: LabelSelect
                 onRowEdit={handleRowEdit}
                 onRowDelete={handleRowDelete}
                 shouldAutoFocusOnMount={false}
+                cellError={cellError}
             />
 
             <div className="flexbox dc__content-end dc__gap-8">
