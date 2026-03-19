@@ -28,7 +28,7 @@ import {
     DOCUMENTATION,
     BASE_ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ErrorBoundary } from '../common'
+import { ErrorBoundary, importComponentFromFELibrary } from '../common'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
 import './globalConfigurations.scss'
@@ -54,6 +54,8 @@ const ChartRepo = lazy(() => import('@Components/chartRepo/ChartRepo'))
 const ExternalLinks = lazy(() => import('@Components/externalLinks/ExternalLinks'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 const ProjectList = lazy(() => import('@Components/project/ProjectList'))
+
+const GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM: SideNavigationProps['list'][number]['items'][number] = importComponentFromFELibrary('GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM', null, 'function')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -253,7 +255,7 @@ const NavItem = ({ serverMode }) => {
         },
         {
             id: 'authorization',
-            title: 'Authorization',
+            title: 'USERS & PERMISSIONS',
             dataTestId: 'global-configurations-authorization',
             items: [
                 {
@@ -287,6 +289,7 @@ const NavItem = ({ serverMode }) => {
                     dataTestId: 'authorization-permission-groups-link',
                     href: `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.GROUPS}`,
                 },
+                ...(GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM ? [GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM] : []),
                 {
                     id: 'api-tokens',
                     title: 'API Tokens',
