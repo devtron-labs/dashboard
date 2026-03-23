@@ -143,5 +143,5 @@ export const LABEL_OPERATOR_DISPLAY_TEXT: Record<AppListFilterLabelOperatorType,
     [AppListFilterLabelOperatorType.CONTAINS]: 'contains',
     [AppListFilterLabelOperatorType.DOES_NOT_CONTAIN]: 'does not contain',
     [AppListFilterLabelOperatorType.EXISTS]: 'exists',
-    [AppListFilterLabelOperatorType.DOES_NOT_EXIST]: 'does not exists',
+    [AppListFilterLabelOperatorType.DOES_NOT_EXIST]: 'does not exist',
 }

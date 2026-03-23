@@ -56,7 +56,7 @@ const LabelSelectorForm = ({ closePopover, initialLabels, onApply }: LabelSelect
                     case AppListFilterLabelTableHeaderType.OPERATOR: {
                         const operator = (value as AppListFilterLabelOperatorType) || DEFAULT_LABEL_SELECTOR_OPERATOR
                         if (LABEL_OPERATORS_WITHOUT_VALUE.includes(operator)) {
-                            updatedSelector.value = ''
+                            delete updatedSelector.value
                         }
                         updatedSelector.operator = operator
 

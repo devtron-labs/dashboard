@@ -213,7 +213,7 @@ const AppListFilters = ({
                 reloadOptionList: reloadAppListFilters,
             },
             [AppListUrlFilters.labelSelector]: {
-                variant: 'popOver',
+                variant: 'popover',
                 component: renderLabelSelectionForm,
                 popoverConfig: { width: 560, position: 'bottom' },
             },
