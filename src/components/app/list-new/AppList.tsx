@@ -94,7 +94,6 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
     const [appCount, setAppCount] = useState<number>(0)
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
-    const [labelSelectors, setLabelSelectors] = useState<AppListFilterLabelType[]>([])
 
     const appListContainerRef = useRef<HTMLDivElement>(null)
 
@@ -130,18 +129,27 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
         cluster,
         project,
         templateType,
+        [AppListUrlFilters.labelSelector]: labelSelectorRaw,
         handleSorting,
         changePage,
         changePageSize,
-        clearFilters: clearFiltersFromUrl,
+        clearFilters,
         handleSearch,
         updateSearchParams,
     } = urlFilters
 
-    const clearFilters = () => {
-        clearFiltersFromUrl()
-        setLabelSelectors([])
-    }
+    const labelSelectors: AppListFilterLabelType[] = useMemo(() => {
+        if (!labelSelectorRaw) {
+            return []
+        }
+
+        try {
+            const parsed = JSON.parse(labelSelectorRaw)
+            return Array.isArray(parsed) ? parsed : []
+        } catch {
+            return []
+        }
+    }, [labelSelectorRaw])
 
     const filterConfig: AppListFilterConfig = useMemo(
         () => ({
@@ -156,6 +164,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             cluster,
             namespace,
             templateType,
+            [AppListUrlFilters.labelSelector]: labelSelectorRaw,
             labelSelectors,
         }),
         [
@@ -170,7 +179,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             JSON.stringify(cluster),
             JSON.stringify(namespace),
             JSON.stringify(templateType),
-            JSON.stringify(labelSelectors),
+            labelSelectorRaw,
         ],
     )
 
@@ -296,11 +305,17 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     }
 
     const handleApplyLabelSelectors = (selectors: AppListFilterLabelType[]): void => {
-        setLabelSelectors(selectors.filter((s) => !!s.key.trim()))
+        const filtered = selectors.filter((s) => !!s.key.trim())
+        updateSearchParams({
+            [AppListUrlFilters.labelSelector]: filtered.length ? JSON.stringify(filtered) : '',
+        })
     }
 
     const getRemoveLabelSelectorHandler = (selectorId: string) => () => {
-        setLabelSelectors(labelSelectors.filter((s) => s.id !== selectorId))
+        const updatedSelectors = labelSelectors.filter((s) => s.id !== selectorId)
+        updateSearchParams({
+            [AppListUrlFilters.labelSelector]: updatedSelectors.length ? JSON.stringify(updatedSelectors) : '',
+        })
     }
 
     const renderAppliedFilters = () => {
@@ -309,12 +324,18 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
         }
 
         const urlChipConfig = getFilterChipConfig(
-            { appStatus, project, environment, cluster, namespace, templateType },
+            {
+                appStatus,
+                project,
+                environment,
+                cluster,
+                namespace,
+                templateType,
+            },
             params.appType,
         )
 
         return (
-            // TODO: Fix the css layout
             <div className="flexbox flex-wrap dc__gap-8 px-20 dc__align-items-center">
                 {labelSelectors.map((selector) => (
                     <Chip

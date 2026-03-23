@@ -115,17 +115,15 @@ export enum AppListUrlFilters {
     namespace = 'namespace',
     cluster = 'cluster',
     templateType = 'templateType',
+    labelSelector = 'labelSelector',
 }
 
-export const APP_LIST_LABEL_SELECTOR_FILTER_KEY = 'labelSelector' as const
+export type AppListFilterKey = AppListUrlFilters
 
-/**
- * Union of URL-based filter keys and state-only filter keys (label selector).
- * Used as the generic type param for GroupedFilterSelectPicker.
- */
-export type AppListFilterKey = AppListUrlFilters | typeof APP_LIST_LABEL_SELECTOR_FILTER_KEY
-
-export interface AppListUrlFiltersType extends Record<AppListUrlFilters, string[]> {}
+export interface AppListUrlFiltersType
+    extends Omit<Record<AppListUrlFilters, string[]>, AppListUrlFilters.labelSelector> {
+    [AppListUrlFilters.labelSelector]: string
+}
 
 export interface LabelSelectorPayloadType {
     key: string

@@ -33,13 +33,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getDevtronAppListDataToExport } from './AppListService'
-import {
-    APP_LIST_LABEL_SELECTOR_FILTER_KEY,
-    AppListFilterKey,
-    AppListFiltersProps,
-    AppListUrlFilters,
-    AppStatuses,
-} from './AppListType'
+import { AppListFilterKey, AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
 import { APP_STATUS_FILTER_OPTIONS, APPLIST_EXPORT_HEADERS, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
 import LabelSelectorForm from './LabelSelectorForm'
 import { getAppListFilters, getAppTabNameFromAppType, useFilterOptions } from './list.utils'
@@ -218,7 +212,7 @@ const AppListFilters = ({
                 optionListError: appListFiltersError,
                 reloadOptionList: reloadAppListFilters,
             },
-            [APP_LIST_LABEL_SELECTOR_FILTER_KEY]: {
+            [AppListUrlFilters.labelSelector]: {
                 variant: 'popOver',
                 component: renderLabelSelectionForm,
                 popoverConfig: { width: 560, position: 'bottom' },

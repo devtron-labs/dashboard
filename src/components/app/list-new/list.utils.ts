@@ -36,7 +36,6 @@ import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
 import { Cluster } from '@Services/service.types'
 
 import {
-    APP_LIST_LABEL_SELECTOR_FILTER_KEY,
     AppListFilterKey,
     AppListFilterMenuItemType,
     AppListSortableKeys,
@@ -77,6 +76,7 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppListUrlFilters.cluster]: searchParams.getAll(AppListUrlFilters.cluster),
     [AppListUrlFilters.namespace]: searchParams.getAll(AppListUrlFilters.namespace),
     [AppListUrlFilters.templateType]: searchParams.getAll(AppListUrlFilters.templateType),
+    [AppListUrlFilters.labelSelector]: searchParams.get(AppListUrlFilters.labelSelector) ?? '',
 })
 
 export const getFormattedFilterLabel = (filterType: AppListUrlFilters) => {
@@ -200,7 +200,7 @@ export const useFilterOptions = ({
 }
 
 export const getFilterChipConfig = (
-    filterConfig: AppListUrlFiltersType,
+    filterConfig: Omit<AppListUrlFiltersType, AppListUrlFilters.labelSelector>,
     appType: InfrastructureManagementAppListType,
 ): Partial<AppListUrlFiltersType> => {
     const { cluster, namespace, templateType } = filterConfig
@@ -209,8 +209,9 @@ export const getFilterChipConfig = (
             return { cluster, namespace }
         case InfrastructureManagementAppListType.FLUX_CD:
             return { cluster, namespace, templateType }
-        default:
+        default: {
             return { ...filterConfig, templateType: [] }
+        }
     }
 }
 
@@ -291,7 +292,7 @@ export const getAppListFilters = ({
             ...((isDevtronAppList
                 ? [
                       {
-                          id: APP_LIST_LABEL_SELECTOR_FILTER_KEY,
+                          id: AppListUrlFilters.labelSelector,
                           label: 'Tags',
                           startIcon: { name: 'ic-tag' },
                       },
