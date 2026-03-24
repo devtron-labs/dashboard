@@ -99,6 +99,9 @@ export default defineConfig(({ mode }) => {
 
     const baseConfig: UserConfig = {
         base: '/dashboard',
+        define: {
+            global: 'globalThis',
+        },
         preview: {
             port: 3000,
         },
@@ -286,10 +289,6 @@ export default defineConfig(({ mode }) => {
     }
     if (mode === 'development') {
         console.log(mode)
-        // Global override for node environment
-        baseConfig['define'] = {
-            global: 'globalThis',
-        }
     }
 
     return baseConfig
