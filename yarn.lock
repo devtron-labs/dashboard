@@ -1359,9 +1359,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.23.3-beta-3":
-  version: 1.23.3-beta-3
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.23.3-beta-3"
+"@devtron-labs/devtron-fe-common-lib@npm:1.23.3-beta-7":
+  version: 1.23.3-beta-7
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.23.3-beta-7"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1396,7 +1396,6 @@ __metadata:
     marked: "npm:^13.0.3"
     nanoid: "npm:^3.3.8"
     qrcode.react: "npm:^4.2.0"
-    react-canvas-confetti: "npm:^2.0.7"
     react-csv: "npm:^2.2.2"
     react-day-picker: "npm:^9.11.2"
     react-draggable: "npm:^4.4.5"
@@ -1415,7 +1414,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/461339ca4360eb26eaa868d9f97b730a20d40ee1a5b150597076b2724ec697ae667f3f9e49e173c9187e35136c093b6db0fb95e03f4c20fad31f0bd903dd7062
+  checksum: 10c0/3d618d31053a56ab0784a51810e44b047f652a216cbb738c072c7e9a570f1ce6d80b6b9256c20617a92ea5d4a6454da393a3f0ba24bbdf2c61c19504263cc71a
   languageName: node
   linkType: hard
 
@@ -3358,13 +3357,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/canvas-confetti@npm:^1.6.4":
-  version: 1.9.0
-  resolution: "@types/canvas-confetti@npm:1.9.0"
-  checksum: 10c0/ffe2c674d466b8e13472c81ab2a97056f3433fd40a3513dbc1bb76764e4e7c3ff0a2a58d37b16ea6a245c831077c553db321b069dda6572eab59f2be61137b2e
-  languageName: node
-  linkType: hard
-
 "@types/d3-color@npm:*":
   version: 3.1.3
   resolution: "@types/d3-color@npm:3.1.3"
@@ -4694,13 +4686,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canvas-confetti@npm:^1.9.2":
-  version: 1.9.4
-  resolution: "canvas-confetti@npm:1.9.4"
-  checksum: 10c0/08f11b5fa20b365922108828d7488f9b3eac2afdf39bc478339268c1250b5215df82682d7074520a3f0f72f4728f9703bbc937dcfe793f196b44e6e8ac0b1f7b
-  languageName: node
-  linkType: hard
-
 "ccount@npm:^2.0.0":
   version: 2.0.1
   resolution: "ccount@npm:2.0.1"
@@ -5288,7 +5273,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.23.3-beta-3"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.23.3-beta-7"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@sentry/browser": "npm:7.119.1"
@@ -9802,18 +9787,6 @@ __metadata:
   dependencies:
     safe-buffer: "npm:^5.1.0"
   checksum: 10c0/50395efda7a8c94f5dffab564f9ff89736064d32addf0cc7e8bf5e4166f09f8ded7a0849ca6c2d2a59478f7d90f78f20d8048bca3cdf8be09d8e8a10790388f3
-  languageName: node
-  linkType: hard
-
-"react-canvas-confetti@npm:^2.0.7":
-  version: 2.0.7
-  resolution: "react-canvas-confetti@npm:2.0.7"
-  dependencies:
-    "@types/canvas-confetti": "npm:^1.6.4"
-    canvas-confetti: "npm:^1.9.2"
-  peerDependencies:
-    react: "*"
-  checksum: 10c0/709a0f3c41748018e4c128f2c60db1360b8c5d973d7532d99554adf7bd4b3b377d271b4feab4f7cd9018c9e7baf54138fc324fa1cca2322b89e2d2784f2b06be
   languageName: node
   linkType: hard
 
