@@ -28,7 +28,6 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import { VitePWA } from 'vite-plugin-pwa'
 // import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import { compression, defineAlgorithm } from 'vite-plugin-compression2'
-import { esmExternalRequirePlugin } from 'rolldown/plugins'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 const TARGET_URL = 'https://preview.devtron.ai/'
@@ -107,11 +106,6 @@ export default defineConfig(({ mode }) => {
             target: 'es2021',
             sourcemap: true,
             rolldownOptions: {
-                plugins: [
-                    esmExternalRequirePlugin({
-                        external: ['react-draggable']
-                    }),
-                ],
                 output: {
                     codeSplitting: {
                         groups: [
