@@ -35,7 +35,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyCustomChart from '@Images/empty-noresult@2x.png'
-import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
+import NoOffendingPipeline from '@Images/no-offending-pipeline.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { ClusterDetailBaseParams } from '../Types'

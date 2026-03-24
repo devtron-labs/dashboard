@@ -32,7 +32,7 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
+import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
 
 import Timer from './DynamicTabs.timer'
 import DynamicTabsSelect from './DynamicTabsSelect'

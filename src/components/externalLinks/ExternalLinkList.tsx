@@ -26,7 +26,7 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import Edit from '@Icons/ic-pencil.svg?react'
 import { Trash } from '@Components/common'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 

@@ -38,9 +38,9 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
+import ICStamp from '@Icons/ic-stamp.svg?react'
 
-import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
+import Add from '../../../../../../assets/icons/ic-add.svg?react'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
 import { URLS } from '../../../../../../config'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'

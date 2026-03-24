@@ -22,7 +22,7 @@ import {
     useGetResourceKindsOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICFolderColor } from '@Icons/ic-folder-color.svg'
+import ICFolderColor from '@Icons/ic-folder-color.svg?react'
 
 import { PROJECT_SELECT_INPUT_ID } from './constants'
 import { CreateAppFormStateType, ProjectSelectorProps } from './types'

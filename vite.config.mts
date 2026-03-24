@@ -16,7 +16,7 @@
 
 // Changed to .mts to support importing from ESM module
 
-import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin, UserConfig } from 'vite'
+import { defineConfig, PluginOption, loadEnv, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import fs from 'node:fs/promises'
@@ -27,8 +27,8 @@ import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
 // import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { compression, defineAlgorithm } from 'vite-plugin-compression2'
+import { esmExternalRequirePlugin } from 'rolldown/plugins'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 const TARGET_URL = 'https://preview.devtron.ai/'
@@ -59,9 +59,9 @@ function reactVirtualized(): PluginOption {
 const jsToBottomNoModule = () => {
     return {
         name: 'no-attribute',
-        transformIndexHtml(html) {
+        transformIndexHtml(html: string) {
             let customInjection = ''
-            const scriptTag = html.match(/<script type="module"[^>]*>(.*?)<\/script[^>]*>/)[0]
+            const scriptTag = html.match(/<script type="module"[^>]*>(.*?)<\/script[^>]*>/)![0]
             console.log('\n SCRIPT TAG', scriptTag, '\n')
             html = html.replace(scriptTag, '')
             customInjection += scriptTag
@@ -104,81 +104,91 @@ export default defineConfig(({ mode }) => {
             port: 3000,
         },
         build: {
+            target: 'es2021',
             sourcemap: true,
-            rollupOptions: {
+            rolldownOptions: {
+                plugins: [
+                    esmExternalRequirePlugin({
+                        external: ['react-draggable']
+                    }),
+                ],
                 output: {
-                    manualChunks(id: string): `@${string}` | undefined {
-                        if (
-                            id.includes('/node_modules/moment') ||
-                            id.includes('/node_modules/moment-timezone') ||
-                            id.includes('@moment')
-                        ) {
-                            return '@moment'
-                        }
+                    codeSplitting: {
+                        groups: [
+                            {
+                                name: (id) => {
+                                    if (
+                                        id.includes('/node_modules/moment') ||
+                                        id.includes('/node_modules/moment-timezone') ||
+                                        id.includes('@moment')
+                                    ) {
+                                        return '@moment'
+                                    }
 
-                        // @react-select is generated from @devtron-labs libs; same for others
-                        if (id.includes('/node_modules/react-select') || id.includes('@react-select')) {
-                            return '@react-select'
-                        }
+                                    // @react-select is generated from @devtron-labs libs; same for others
+                                    if (id.includes('/node_modules/react-select') || id.includes('@react-select')) {
+                                        return '@react-select'
+                                    }
 
-                        if (id.includes('node_modules/react-virtualized')) {
-                            return '@react-virtualized'
-                        }
+                                    if (id.includes('node_modules/react-virtualized')) {
+                                        return '@react-virtualized'
+                                    }
 
-                        if (id.includes('node_modules/@rjsf')) {
-                            return '@rjsf'
-                        }
+                                    if (id.includes('node_modules/@rjsf')) {
+                                        return '@rjsf'
+                                    }
 
-                        if (id.includes('node_modules/react-mde')) {
-                            return '@react-mde'
-                        }
-                        if (id.includes('dist/@code-editor')) {
-                            return '@code-editor'
-                        }
+                                    if (id.includes('node_modules/react-mde')) {
+                                        return '@react-mde'
+                                    }
+                                    if (id.includes('dist/@code-editor')) {
+                                        return '@code-editor'
+                                    }
 
-                        if (id.includes('node_modules/@rxjs')) {
-                            return '@rxjs'
-                        }
+                                    if (id.includes('node_modules/@rxjs')) {
+                                        return '@rxjs'
+                                    }
 
-                        if (id.includes('node_modules/@sentry')) {
-                            return '@sentry'
-                        }
+                                    if (id.includes('node_modules/@sentry')) {
+                                        return '@sentry'
+                                    }
 
-                        if (id.includes('react-router-dom') || id.includes('react-router')) {
-                            return '@react-router'
-                        }
+                                    if (id.includes('react-router-dom') || id.includes('react-router')) {
+                                        return '@react-router'
+                                    }
 
-                        // separating the common lib chunk
-                        if (id.includes('devtron-fe-common-lib')) {
-                            const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]
+                                    // separating the common lib chunk
+                                    if (id.includes('devtron-fe-common-lib')) {
+                                        const splittedChunk = id.split('devtron-fe-common-lib/dist/')?.[1]
 
-                            if (splittedChunk) {
-                                return `@devtron-common-${splittedChunk}`
-                            }
-                            return '@devtron-common'
-                        }
+                                        if (splittedChunk) {
+                                            return `@devtron-common-${splittedChunk}`
+                                        }
+                                        return '@devtron-common'
+                                    }
 
-                        // if (id.includes('devtron-fe-lib')) {
-                        //     const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
+                                    // if (id.includes('devtron-fe-lib')) {
+                                    //     const splittedChunk = id.split('devtron-fe-lib/dist/')?.[1]
 
-                        //     if (splittedChunk) {
-                        //         return `@devtron-fe-lib-${splittedChunk}`
-                        //     }
-                        //     return '@devtron-fe-lib'
-                        // }
+                                    //     if (splittedChunk) {
+                                    //         return `@devtron-fe-lib-${splittedChunk}`
+                                    //     }
+                                    //     return '@devtron-fe-lib'
+                                    // }
+                                },
+                            },
+                        ],
                     },
                 },
             },
             assetsInlineLimit: 0,
         },
         plugins: [
-            tsconfigPaths(),
             // @TODO: Check if we can remove the config object inside the react plugin
             react({
                 // Use React plugin in all *.jsx and *.tsx files
                 include: '**/*.{jsx,tsx}',
             }),
-            splitVendorChunkPlugin(),
             svgr({
                 svgrOptions: {},
             }),
@@ -251,18 +261,6 @@ export default defineConfig(({ mode }) => {
             }),
             jsToBottomNoModule(),
         ],
-        // test: {
-        //     globals: true,
-        //     environment: 'jsdom',
-        //     setupFiles: './src/setupTests.ts',
-        //     css: true,
-        //     reporters: ['verbose'],
-        //     coverage: {
-        //         reporter: ['text', 'json', 'html'],
-        //         include: ['src/**/*'],
-        //         exclude: [],
-        //     },
-        // },
         server: {
             port: 3000,
             proxy: {
@@ -275,6 +273,20 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true,
                 },
                 '/grafana': targetUrl,
+            },
+        },
+        resolve: {
+            alias: {
+                '@Icons': path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), 'src/assets/icons'),
+                '@Images': path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), 'src/assets/img'),
+                '@Components': path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), 'src/components'),
+                '@Config': path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), 'src/config'),
+                '@Pages': path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), 'src/Pages'),
+                '@PagesDevtron2.0': path.resolve(
+                    path.dirname(url.fileURLToPath(import.meta.url)),
+                    'src/Pages-Devtron-2.0',
+                ),
+                '@Services': path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), 'src/services'),
             },
         },
     }

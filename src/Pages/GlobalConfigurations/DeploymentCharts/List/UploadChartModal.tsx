@@ -28,8 +28,8 @@ import {
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
-import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
+import CloseIcon from '@Icons/ic-close.svg?react'
+import Info from '@Icons/ic-info-filled.svg?react'
 import errorImage from '@Images/ic_upload_chart_error.png'
 import { SERVER_ERROR_CODES } from '@Config/constants'
 

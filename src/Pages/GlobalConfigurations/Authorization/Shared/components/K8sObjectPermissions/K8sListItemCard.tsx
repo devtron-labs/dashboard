@@ -42,8 +42,8 @@ import {
     getUserAccessResourceGroupList,
 } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 
-import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
+import Clone from '../../../../../../assets/icons/ic-copy.svg?react'
+import Delete from '../../../../../../assets/icons/ic-delete-interactive.svg?react'
 import {
     convertToOptionsList,
     importComponentFromFELibrary,

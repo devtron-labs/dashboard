@@ -23,8 +23,8 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg'
+import Delete from '../../assets/icons/ic-delete.svg?react'
+import DownArrow from '../../assets/icons/ic-chevron-down.svg?react'
 import NoDeploymentImg from '../../assets/img/app-not-configured.png'
 import { InstalledChartGroup, InstalledChart, ChartGroupDeploymentsProps } from './charts.types'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'

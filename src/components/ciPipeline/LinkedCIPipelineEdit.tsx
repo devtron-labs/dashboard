@@ -36,10 +36,10 @@ import { ValidationRules } from './validationRules'
 import { Info } from '../common/icons/Icons'
 import { getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
 import './ciPipeline.scss'
 import { appListOptions } from '../AppSelector/AppSelectorUtil'
-import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
+import Warning from '../../assets/icons/ic-warning.svg?react'
 import { DUPLICATE_PIPELINE_NAME_VALIDATION, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class LinkedCIPipeline extends Component<LinkedCIPipelineEditProps, LinkedCIPipelineState> {

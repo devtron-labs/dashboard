@@ -22,9 +22,9 @@ import {
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
+import Clone from '../../../../../../assets/icons/ic-copy.svg?react'
+import TrashIcon from '../../../../../../assets/icons/ic-delete-interactive.svg?react'
+import Edit from '../../../../../../assets/icons/ic-pencil.svg?react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'

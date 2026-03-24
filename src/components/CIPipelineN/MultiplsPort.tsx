@@ -16,8 +16,8 @@
 
 import React, { useContext } from 'react'
 import { PortMap, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 

@@ -67,8 +67,8 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'

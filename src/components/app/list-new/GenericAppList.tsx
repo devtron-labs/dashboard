@@ -33,7 +33,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath, Link, useNavigate } from 'react-router-dom'
 import { getArgoInstalledExternalApps } from './AppListService'
-import { Routes, URLS } from '../../../config'
+import { Routes } from '../../../config'
 import { AppListViewType } from '../config'
 import SelectClusterImage from '../../../assets/icons/ic-select-cluster.svg'
 import '../list/list.scss'

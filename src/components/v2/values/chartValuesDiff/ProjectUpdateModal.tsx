@@ -26,7 +26,7 @@ import {
     InfoBlock,
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
 import { ProjectChangeMessageList } from './constant'

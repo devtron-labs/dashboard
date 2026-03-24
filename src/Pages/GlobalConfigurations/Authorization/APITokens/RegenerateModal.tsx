@@ -18,8 +18,8 @@ import { useState } from 'react'
 
 import { InfoBlock, Progressing, showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import Close from '../../../../assets/icons/ic-close.svg?react'
+import Warn from '../../../../assets/icons/ic-warning.svg?react'
 import { RegenerateModalType, TokenResponseType } from './apiToken.type'
 import { getDateInMilliseconds } from './apiToken.utils'
 import ExpirationDate from './ExpirationDate'

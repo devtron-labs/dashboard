@@ -18,7 +18,7 @@ import { generatePath, Link } from 'react-router-dom'
 
 import { Button, ButtonVariantType, InfoBlock, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
+import ArrowIcon from '../../assets/icons/ic-arrow-left.svg?react'
 import { CIContainerRegistryInfoBlockProps } from './types'
 
 export const CIContainerRegistryInfoBlock = ({

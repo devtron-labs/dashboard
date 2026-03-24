@@ -26,9 +26,9 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
-import { ReactComponent as ICCDStage } from '@Icons/ic-cd-stage.svg'
-import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
+import ICBookOpen from '@Icons/ic-book-open.svg?react'
+import ICCDStage from '@Icons/ic-cd-stage.svg?react'
+import ICHelp from '@Icons/ic-help.svg?react'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
 import { INLINE_PLUGIN_TEXT } from '../Constants'

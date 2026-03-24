@@ -44,7 +44,7 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+import ICClose from '@Icons/ic-close.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 

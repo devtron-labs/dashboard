@@ -16,9 +16,9 @@
 
 import { CollapsibleListItem } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCheckCircleDots } from '@Icons/ic-check-circle-dots.svg'
-import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
-import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
+import ICCheckCircleDots from '@Icons/ic-check-circle-dots.svg?react'
+import ICFileEdit from '@Icons/ic-file-edit.svg?react'
+import ICStamp from '@Icons/ic-stamp.svg?react'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 export const RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP: Record<

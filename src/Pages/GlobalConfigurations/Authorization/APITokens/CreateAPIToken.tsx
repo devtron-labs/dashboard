@@ -31,7 +31,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import Error from '../../../../assets/icons/ic-warning.svg?react'
 import { importComponentFromFELibrary } from '../../../../components/common'
 import { REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'

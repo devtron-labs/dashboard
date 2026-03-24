@@ -38,8 +38,8 @@ import {
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
+import ICFileCode from '@Icons/ic-file-code.svg?react'
+import ICFilePlay from '@Icons/ic-file-play.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy } from '@Pages/Applications'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'

@@ -18,9 +18,9 @@ import type { JSX } from 'react'
 
 import { DeploymentAppTypes, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ArgoCD } from '@Icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '@Icons/helm-app.svg'
-import { ReactComponent as FluxCD } from '@Icons/ic-fluxcd.svg'
+import ArgoCD from '@Icons/argo-cd-app.svg?react'
+import Helm from '@Icons/helm-app.svg?react'
+import FluxCD from '@Icons/ic-fluxcd.svg?react'
 
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 

@@ -26,8 +26,8 @@ import {
     ToastManager,
     ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
+import DropDownIcon from '../../../assets/icons/ic-chevron-down.svg?react'
+import AlertTriangle from '../../../assets/icons/ic-alert-triangle.svg?react'
 import IndexStore from './index.store'
 import { AppType, SyncErrorType } from './appDetails.type'
 import { AppDetailsErrorType } from '../../../config'

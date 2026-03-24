@@ -16,8 +16,8 @@
 
 import { NavLink } from 'react-router-dom'
 import { ROUTER_URLS, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
-import { ReactComponent as Close } from '@Icons/ic-cross.svg'
+import WarningIcon from '@Icons/ic-warning.svg?react'
+import Close from '@Icons/ic-cross.svg?react'
 import { NoGitOpsConfiguredWarningType } from './types'
 
 export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfiguredWarningType) {

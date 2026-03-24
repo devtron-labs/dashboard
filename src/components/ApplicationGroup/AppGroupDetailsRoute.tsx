@@ -41,7 +41,7 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
+import ICSlidersVertical from '@Icons/ic-sliders-vertical.svg?react'
 import AppDetail from '@Components/app/details/appDetails/AppDetails'
 
 import EmptyFolder from '../../assets/img/empty-folder.webp'

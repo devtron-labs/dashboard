@@ -18,7 +18,7 @@ import type { JSX } from 'react'
 
 import { DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
+import DockerWithImage from '../../assets/icons/ic-docker-with-image.svg?react'
 import { DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE, DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY } from '../../config'
 import { PullImageDigestToggleType } from './types'
 

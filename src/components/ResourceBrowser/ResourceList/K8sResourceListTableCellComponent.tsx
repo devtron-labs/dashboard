@@ -38,7 +38,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import ICErrorExclamation from '@Icons/ic-error-exclamation.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'

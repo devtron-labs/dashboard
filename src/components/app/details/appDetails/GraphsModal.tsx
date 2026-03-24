@@ -27,7 +27,7 @@ import {
     AppInfo,
     getAppMetricsPresetOptions,
 } from './utils'
-import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
+import GraphIcon from '../../../../assets/icons/ic-graph.svg?react'
 import { DEFAULTK8SVERSION } from '../../../../config'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
 import { GrafanaPresetOptionHandlerType } from './types'

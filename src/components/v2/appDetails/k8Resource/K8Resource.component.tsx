@@ -26,8 +26,8 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import Info from '@Icons/ic-info-outline.svg?react'
+import ICObject from '@Icons/ic-object.svg?react'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
 import { useSharedState } from '@Components/v2/utils/useSharedState'
