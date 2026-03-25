@@ -58,7 +58,6 @@ import '../login/login.scss'
 import './gitops.scss'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import Error from '../../assets/icons/ic-warning.svg?react'
-import ICInfoFilled from '../../assets/icons/ic-info-filled.svg?react'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import {
     GitHost,
