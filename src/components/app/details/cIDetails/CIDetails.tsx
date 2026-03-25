@@ -221,7 +221,9 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const pipeline = pipelinesMap.get(+pipelineId)
 
     const redirectToArtifactLogs = () => {
-        push(`${URLS.APPLICATION_MANAGEMENT_APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`)
+        push(
+            `${URLS.APPLICATION_MANAGEMENT_APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`,
+        )
     }
     const renderSourcePipelineButton = () => {
         return (
@@ -655,7 +657,6 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
     const { appId, buildId } = useParams<{ appId: string; buildId: string }>()
     const { isEnterprise } = useMainContext()
 
-
     const computedAppId = appId ?? appIdFromParent
 
     const { scanResultLoading, scanResultResponse, scanResultError, reloadScanResult } = useGetAppSecurityDetails({
@@ -663,37 +664,41 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
         artifactId,
     })
 
-    if (['starting', 'running'].includes(status.toLowerCase())) {
-        return <CIRunningView isSecurityTab />
-    }
+    const renderSecurityDetailsCards = () => {
+        if (['starting', 'running'].includes(status.toLowerCase())) {
+            return <CIRunningView isSecurityTab />
+        }
 
-    if (!artifactId) {
-        return (
-            <GenericEmptyState
-                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
-                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
-            />
-        )
-    }
+        if (!artifactId) {
+            return (
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                    subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+                />
+            )
+        }
 
-    if (scanResultLoading) {
-        return (
-            <div className="bg__primary flex-grow-1">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
-    if (scanResultError) {
-        return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
-    }
-    if (!scanResultResponse?.result.scanned) {
-        return <ImageNotScannedView />
+        if (scanResultLoading) {
+            return (
+                <div className="bg__primary flex-grow-1">
+                    <Progressing pageLoader />
+                </div>
+            )
+        }
+        if (scanResultError) {
+            return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
+        }
+        if (!scanResultResponse?.result.scanned) {
+            return <ImageNotScannedView />
+        }
+
+        return <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
     }
 
     return (
         <div className="p-20 bg__primary flex-grow-1">
             {isEnterprise && <SecurityScansRecommendations appId={+computedAppId} buildId={+buildId} />}
-            <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
+            {renderSecurityDetailsCards()}
         </div>
     )
 }
