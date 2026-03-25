@@ -103,7 +103,7 @@ export const SecurityScanModal = ({
 
     return (
         <VisibleModal
-            className="flexbox-col right flex-grow-1"
+            className="flex column right flex-grow-1"
             close={handleSecurityScanModal}
             onEscape={handleSecurityScanModal}
             initialFocus={`#${CLOSE_BUTTON_ID}`}
