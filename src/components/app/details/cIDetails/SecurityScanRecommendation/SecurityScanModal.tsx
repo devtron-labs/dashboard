@@ -103,13 +103,13 @@ export const SecurityScanModal = ({
 
     return (
         <VisibleModal
-            className="flex column right flex-grow-1"
+            className="flex column right flex-grow-1 dc__overflow-hidden"
             close={handleSecurityScanModal}
             onEscape={handleSecurityScanModal}
             initialFocus={`#${CLOSE_BUTTON_ID}`}
         >
             <div
-                className="security-scan-modal br-8 bg__primary mt-0-imp p-0 dc__no-top-radius flexbox-col flex-grow-1 w-800 mr-0-imp"
+                className="security-scan-modal br-8 bg__primary mt-0-imp p-0 dc__no-top-radius flexbox-col flex-grow-1 mh-0 w-800 mr-0-imp"
                 onClick={stopPropagation}
             >
                 <div className="flex dc__content-space dc__align-items-center px-20 pt-16 pb-12 dc__border-bottom">
@@ -125,31 +125,33 @@ export const SecurityScanModal = ({
                         icon={<Icon name="ic-close-large" color={null} />}
                     />
                 </div>
-                <SecurityScanRecommendationBar
-                    summary={summary}
-                    hasRecommendations={hasRecommendations}
-                    isModalView
-                    lastScanTime={lastScanTime}
-                />
-                <Table<
-                    SecurityScanRecommendationRowTypes,
-                    FiltersTypeEnum.URL,
-                    SecurityScanRecommendationTableAdditionalProps
-                >
-                    id="table__security-scan-recommendations"
-                    columns={SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS}
-                    rows={rows}
-                    filtersVariant={FiltersTypeEnum.URL}
-                    paginationVariant={PaginationEnum.NOT_PAGINATED}
-                    filter={null}
-                    additionalProps={additionalProps}
-                    emptyStateConfig={{
-                        noRowsConfig: {
-                            title: 'No recommendations found',
-                        },
-                    }}
-                    onRowClick={onRowClick}
-                />
+                <div className="dc__overflow-auto flexbox-col flex-grow-1 mh-0">
+                    <SecurityScanRecommendationBar
+                        summary={summary}
+                        hasRecommendations={hasRecommendations}
+                        isModalView
+                        lastScanTime={lastScanTime}
+                    />
+                    <Table<
+                        SecurityScanRecommendationRowTypes,
+                        FiltersTypeEnum.URL,
+                        SecurityScanRecommendationTableAdditionalProps
+                    >
+                        id="table__security-scan-recommendations"
+                        columns={SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS}
+                        rows={rows}
+                        filtersVariant={FiltersTypeEnum.URL}
+                        paginationVariant={PaginationEnum.NOT_PAGINATED}
+                        filter={null}
+                        additionalProps={additionalProps}
+                        emptyStateConfig={{
+                            noRowsConfig: {
+                                title: 'No recommendations found',
+                            },
+                        }}
+                        onRowClick={onRowClick}
+                    />
+                </div>
             </div>
         </VisibleModal>
     )

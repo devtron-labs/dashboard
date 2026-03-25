@@ -57,6 +57,11 @@
         background: var(--bg-primary);
     }
 
+    &__snippet-lines {
+        min-width: 100%;
+        width: max-content;
+    }
+
     &__snippet-empty {
         padding: 12px;
         border: 1px dashed var(--N200);
@@ -66,9 +71,11 @@
 
     &__snippet-line {
         display: grid;
-        grid-template-columns: 24px minmax(0, 1fr);
+        grid-template-columns: minmax(24px, max-content) max-content;
         gap: 12px;
         padding: 8px 12px;
+        min-width: 100%;
+        width: max-content;
 
         &--issue {
             color: var(--R500);
@@ -77,8 +84,9 @@
 
     &__snippet-content {
         color: var(--N900);
-        white-space: pre-wrap;
-        word-break: break-word;
+        white-space: pre;
+        word-break: normal;
+        overflow-wrap: normal;
     }
 
     .generic-table__row--is-expanded,

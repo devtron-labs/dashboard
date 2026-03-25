@@ -50,21 +50,23 @@ export const RecommendationCellComponent = ({
             <div className=" bg__secondary cn-9 fs-13 dc__top-radius-4 px-12 py-8 dc__border-bottom">Dockerfile</div>
             {snippetLines.length ? (
                 <div className="security-scan-modal__snippet">
-                    {snippetLines.map((snippetLine) => (
-                        <div
-                            key={`${row.id}-${snippetLine.line || 'line'}-${snippetLine.content}`}
-                            className="security-scan-modal__snippet-line fs-13 p-6"
-                        >
-                            <span
-                                className={`lh-20 flex ${
-                                    snippetLine.isIssue ? 'security-scan-modal__snippet-line--issue' : 'cn-9'
-                                }`}
+                    <div className="security-scan-modal__snippet-lines">
+                        {snippetLines.map((snippetLine) => (
+                            <div
+                                key={`${row.id}-${snippetLine.line || 'line'}-${snippetLine.content}`}
+                                className="security-scan-modal__snippet-line fs-13 p-6"
                             >
-                                {snippetLine.line || ''}
-                            </span>
-                            <span className="security-scan-modal__snippet-content">{snippetLine.content}</span>
-                        </div>
-                    ))}
+                                <span
+                                    className={`lh-20 flex ${
+                                        snippetLine.isIssue ? 'security-scan-modal__snippet-line--issue' : 'cn-9'
+                                    }`}
+                                >
+                                    {snippetLine.line || ''}
+                                </span>
+                                <span className="security-scan-modal__snippet-content">{snippetLine.content}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             ) : (
                 <div className="security-scan-modal__snippet-empty">No code snippet available.</div>
