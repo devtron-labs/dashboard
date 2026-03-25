@@ -44,6 +44,7 @@ import {
     ErrorScreenManager,
     SecurityDetailsCards,
     sanitizeTargetPlatforms,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -64,6 +65,7 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
 import { useGetAppSecurityDetails } from '../appDetails/AppSecurity'
+import { SecurityScansRecommendations } from './SecurityScanRecommendation/SecurityScanRecommendations.components'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -650,7 +652,9 @@ const HistoryLogs = ({
 }
 
 const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) => {
-    const { appId } = useParams<{ appId: string }>()
+    const { appId, buildId } = useParams<{ appId: string; buildId: string }>()
+    const { isEnterprise } = useMainContext()
+
 
     const computedAppId = appId ?? appIdFromParent
 
@@ -688,6 +692,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
 
     return (
         <div className="p-20 bg__primary flex-grow-1">
+            {isEnterprise && <SecurityScansRecommendations appId={+computedAppId} buildId={+buildId} />}
             <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
         </div>
     )

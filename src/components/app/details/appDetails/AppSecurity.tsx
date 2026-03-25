@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { getSecurityScan, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { getSecurityScan, getSecurityScanRecommendations, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { UseGetAppSecurityDetailsProps, UseGetAppSecurityDetailsReturnType } from './appDetails.type'
+import {
+    UseGetAppSecurityDetailsProps,
+    UseGetAppSecurityDetailsReturnType,
+    UseSecurityRecommendationReturnType,
+} from './appDetails.type'
 
 export const useGetAppSecurityDetails = ({
     appId,
@@ -26,8 +30,26 @@ export const useGetAppSecurityDetails = ({
 }: UseGetAppSecurityDetailsProps): UseGetAppSecurityDetailsReturnType => {
     const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
         () => getSecurityScan({ appId, envId, artifactId, installedAppId }),
-        [appId, envId, installedAppId],
+        [appId, envId, artifactId, installedAppId],
         !!appId || !!installedAppId,
+    )
+
+    return {
+        scanResultLoading,
+        scanResultResponse,
+        scanResultError,
+        reloadScanResult,
+    }
+}
+
+export const useGetAppSecurityDetailsRecommendations = ({
+    appId,
+    buildId,
+}: UseGetAppSecurityDetailsProps): UseSecurityRecommendationReturnType => {
+    const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
+        () => getSecurityScanRecommendations({ appId, buildId }),
+        [appId, buildId],
+        !!appId && !!buildId,
     )
 
     return {

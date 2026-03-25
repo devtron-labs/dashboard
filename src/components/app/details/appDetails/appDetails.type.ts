@@ -24,6 +24,7 @@ import {
     EnvAppsMetaDTO,
     OptionType,
     ResponseType,
+    ScanRecommendationsDTO,
     ScanResultDTO,
     SelectPickerProps,
     ServerErrors,
@@ -182,10 +183,17 @@ export interface UseGetAppSecurityDetailsProps {
     envId?: number
     installedAppId?: number
     artifactId?: number
+    buildId?: number
 }
 export interface UseGetAppSecurityDetailsReturnType {
     scanResultLoading: boolean
     scanResultResponse: ResponseType<ScanResultDTO>
+    scanResultError: ServerErrors
+    reloadScanResult: () => void
+}
+export interface UseSecurityRecommendationReturnType {
+    scanResultLoading: boolean
+    scanResultResponse: ResponseType<ScanRecommendationsDTO>
     scanResultError: ServerErrors
     reloadScanResult: () => void
 }

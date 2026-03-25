@@ -128,6 +128,7 @@ export default function CIPipeline({
         materials: [],
         triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
+        dockerfileScanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
         ciPipelineSourceTypeOptions: [],
@@ -616,7 +617,8 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
-            isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
+            isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || formData.dockerfileScanEnabled ||
+            !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
             ToastManager.showToast({
@@ -679,6 +681,7 @@ export default function CIPipeline({
                 ...formData,
                 materials: _materials,
                 scanEnabled: !isJobCard && isSecurityModuleInstalled ? formData.scanEnabled : false,
+                dockerfileScanEnabled: !isJobCard && isSecurityModuleInstalled ? formData.dockerfileScanEnabled : false,
             },
             _ciPipeline,
             _materials,

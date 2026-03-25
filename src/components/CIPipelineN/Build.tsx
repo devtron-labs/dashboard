@@ -166,6 +166,12 @@ export const Build = ({
         setFormData(_formData)
     }
 
+    const handleDockerfileScanToggle = (): void => {
+        const _formData = { ...formData }
+        _formData.dockerfileScanEnabled = !_formData.dockerfileScanEnabled
+        setFormData(_formData)
+    }
+
     const renderBasicCI = () => {
         const _webhookData: WebhookCIProps = {
             webhookConditionList: formData.webhookConditionList,
@@ -206,45 +212,54 @@ export const Build = ({
 
     const renderPipelineName = () => {
         return (
-            <label className="form__row">
-                <CustomInput
-                    name="name"
-                    label="Pipeline Name"
-                    disabled={!!ciPipeline?.id}
-                    placeholder="e.g. my-first-pipeline"
-                    type="text"
-                    value={formData.name}
-                    onChange={handlePipelineName}
-                    required
-                    error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
-                />
-            </label>
+            <CustomInput
+                name="name"
+                label="Pipeline Name"
+                disabled={!!ciPipeline?.id}
+                placeholder="e.g. my-first-pipeline"
+                type="text"
+                value={formData.name}
+                onChange={handlePipelineName}
+                required
+                error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
+            />
         )
     }
 
     const renderScanner = () => (
-        <>
-            <hr />
-            <div>
-                <div
-                    className="en-2 bw-1 br-4 pt-12 pb-12 pl-16 pr-12"
-                    style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}
-                >
-                    <BugScanner />
-                    <div>
-                        <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for vulnerabilities</p>
-                        <p className="fs-13 lh-18 mb-0 fs-12">Perform security scan after container image is built.</p>
-                    </div>
-                    <DTSwitch
-                        isDisabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
-                        ariaLabel="Toggle scan for security vulnerabilities"
-                        isChecked={formData.scanEnabled}
-                        onChange={handleScanToggle}
-                        name="create-build-pipeline-scan-vulnerabilities-toggle"
-                    />
+        <div className="en-2 bw-1 br-4 p-16 flexbox-col dc__gap-16">
+            <div style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}>
+                <BugScanner />
+                <div>
+                    <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for vulnerabilities</p>
+                    <p className="fs-13 lh-18 mb-0 fs-12">Perform security scan after container image is built.</p>
                 </div>
+                <DTSwitch
+                    isDisabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
+                    ariaLabel="Toggle scan for security vulnerabilities"
+                    isChecked={formData.scanEnabled}
+                    onChange={handleScanToggle}
+                    name="create-build-pipeline-scan-vulnerabilities-toggle"
+                />
             </div>
-        </>
+            <div className="dc__border-bottom dc__secondary" />
+            <div style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}>
+                <BugScanner />
+                <div>
+                    <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for recommendations</p>
+                    <p className="fs-13 lh-18 mb-0 fs-12">
+                        Perform linting scan of your docker file and get recommended optimizations.
+                    </p>
+                </div>
+                <DTSwitch
+                    isDisabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
+                    ariaLabel="Toggle scan for security vulnerabilities"
+                    isChecked={formData.dockerfileScanEnabled}
+                    onChange={handleDockerfileScanToggle}
+                    name="create-build-pipeline-scan-vulnerabilities-toggle"
+                />
+            </div>
+        </div>
     )
 
     return pageState === ViewType.LOADING.toString() ? (
@@ -252,7 +267,7 @@ export const Build = ({
             <Progressing pageLoader />
         </div>
     ) : (
-        <div className="p-20 ci-scrollable-content">
+        <div className="p-20 ci-scrollable-content flexbox-col dc__gap-16">
             {renderBasicCI()}
             {!isJobView && isAdvanced && (
                 <>
