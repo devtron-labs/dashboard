@@ -696,7 +696,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
     }
 
     return (
-        <div className="p-20 bg__primary flex-grow-1">
+        <div className="p-16 bg__primary flex-grow-1">
             {isEnterprise && <SecurityScansRecommendations appId={+computedAppId} buildId={+buildId} />}
             {renderSecurityDetailsCards()}
         </div>

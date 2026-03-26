@@ -1,6 +1,11 @@
 import { useState } from 'react'
 
-import { ErrorScreenManager, Progressing, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ErrorScreenManager,
+    Progressing,
+    ScannedByToolModal,
+    ScanRecommendationsDTO,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { useGetAppSecurityDetailsRecommendations } from '../../appDetails/AppSecurity'
 import { SecurityScanRecommendationBar } from './SecrityScanRecommendationBar'
@@ -56,6 +61,13 @@ export const SecurityScansRecommendations = ({ appId, buildId }: SecurityScansRe
                 </div>
             ) : (
                 <div className="security-recommendations__list">
+                    <div className="flex dc__content-space">
+                        <h3 className="m-0 fs-13 fw-6 lh-20 dc__border-bottom-n1">Dockerfile Linting</h3>
+                        <ScannedByToolModal
+                            scanToolName="Hadolint"
+                            scanToolUrl="https://hadolint.github.io/hadolint/"
+                        />
+                    </div>
                     <SecurityScanRecommendationBar
                         summary={severitySummary}
                         hasRecommendations={hasRecommendations}
