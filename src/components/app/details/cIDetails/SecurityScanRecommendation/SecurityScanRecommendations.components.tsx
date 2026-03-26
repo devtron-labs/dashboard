@@ -1,40 +1,16 @@
 import { useState } from 'react'
 
-import {
-    ErrorScreenManager,
-    Progressing,
-    ScannedByToolModal,
-    ScanRecommendationsDTO,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ScannedByToolModal, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SecurityScanRecommendationBar } from './SecrityScanRecommendationBar'
 import { HADOLINT_LINK } from './SecurityRecommendation.utils'
 import { SecurityScanModal } from './SecurityScanModal'
 import { SecurityScansRecommendationsProps } from './types'
 
-export const SecurityScansRecommendations = ({
-    scanRecommendationLoading,
-    scanRecommendationResponse,
-    scanRecommendationError,
-    reloadScanRecommendation,
-}: SecurityScansRecommendationsProps) => {
+export const SecurityScansRecommendations = ({ scanRecommendationResponse }: SecurityScansRecommendationsProps) => {
     const [showSecurityScanModal, setShowSecurityScanModal] = useState(false)
 
     const recommendations: ScanRecommendationsDTO | undefined = scanRecommendationResponse?.result
-
-    if (scanRecommendationLoading) {
-        return (
-            <div className="security-recommendations">
-                <div className="security-recommendations__state">
-                    <Progressing />
-                </div>
-            </div>
-        )
-    }
-
-    if (scanRecommendationError) {
-        return <ErrorScreenManager code={scanRecommendationError.code} reload={reloadScanRecommendation} />
-    }
 
     if (!recommendations) {
         return null

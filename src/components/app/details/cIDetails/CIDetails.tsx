@@ -706,7 +706,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
     }
 
     return (
-        <div className="p-16 bg__primary flex-grow-1">
+        <div className="flexbox-col p-16 bg__primary flex-grow-1 dc__gap-16">
             {isEnterprise && (
                 <SecurityScansRecommendations
                     scanRecommendationLoading={scanRecommendationsResultLoading}
