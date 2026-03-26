@@ -46,16 +46,17 @@ export const useGetAppSecurityDetailsRecommendations = ({
     appId,
     buildId,
 }: UseGetAppSecurityDetailsProps): UseSecurityRecommendationReturnType => {
-    const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
-        () => getSecurityScanRecommendations({ appId, buildId }),
-        [appId, buildId],
-        !!appId && !!buildId,
-    )
+    const [
+        scanRecommendationsResultLoading,
+        scanRecommendationsResultResponse,
+        scanRecommendationsResultError,
+        reloadScanRecommendationsResult,
+    ] = useAsync(() => getSecurityScanRecommendations({ appId, buildId }), [appId, buildId], !!appId && !!buildId)
 
     return {
-        scanResultLoading,
-        scanResultResponse,
-        scanResultError,
-        reloadScanResult,
+        scanRecommendationsResultLoading,
+        scanRecommendationsResultResponse,
+        scanRecommendationsResultError,
+        reloadScanRecommendationsResult,
     }
 }

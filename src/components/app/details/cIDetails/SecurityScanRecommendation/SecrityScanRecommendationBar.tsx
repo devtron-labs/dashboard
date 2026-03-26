@@ -1,7 +1,14 @@
 import dayjs from 'dayjs'
 
-import { DATE_TIME_FORMATS, Icon, SegmentedBarChart, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DATE_TIME_FORMATS,
+    Icon,
+    ScannedByToolModal,
+    SegmentedBarChart,
+    ZERO_TIME_STRING,
+} from '@devtron-labs/devtron-fe-common-lib'
 
+import { HADOLINT_LINK } from './SecurityRecommendation.utils'
 import { SecurityScanRecommendationBarProps } from './types'
 
 export const SecurityScanRecommendationBar = ({
@@ -55,11 +62,14 @@ export const SecurityScanRecommendationBar = ({
                         </div>
                     </div>
                     {shouldShowLastScanTime ? (
-                        <div className="flexbox dc__align-items-center dc__gap-6 py-8 dc__border-top py-8 px-16">
-                            <Icon name="ic-clock" color={null} size={20} />
-                            <span className="fs-12 fw-4 cn-8 lh-20">
-                                Scanned on {dayjs(lastScanTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}{' '}
-                            </span>
+                        <div className="flex dc__content-space">
+                            <div className="flexbox dc__align-items-center dc__gap-6 py-8 dc__border-top py-8 px-16">
+                                <Icon name="ic-clock" color={null} size={20} />
+                                <span className="fs-12 fw-4 cn-8 lh-20">
+                                    Scanned on {dayjs(lastScanTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}{' '}
+                                </span>
+                            </div>
+                            <ScannedByToolModal scanToolName="Hadolint" scanToolUrl={HADOLINT_LINK} />
                         </div>
                     ) : (
                         ''

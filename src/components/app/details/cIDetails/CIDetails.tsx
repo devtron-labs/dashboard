@@ -64,7 +64,7 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
-import { useGetAppSecurityDetails } from '../appDetails/AppSecurity'
+import { useGetAppSecurityDetails, useGetAppSecurityDetailsRecommendations } from '../appDetails/AppSecurity'
 import { SecurityScansRecommendations } from './SecurityScanRecommendation/SecurityScanRecommendations.components'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
@@ -664,6 +664,16 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
         artifactId,
     })
 
+    const {
+        scanRecommendationsResultLoading,
+        scanRecommendationsResultResponse,
+        scanRecommendationsResultError,
+        reloadScanRecommendationsResult,
+    } = useGetAppSecurityDetailsRecommendations({
+        appId: +computedAppId,
+        buildId: +buildId,
+    })
+
     const renderSecurityDetailsCards = () => {
         if (['starting', 'running'].includes(status.toLowerCase())) {
             return <CIRunningView isSecurityTab />
@@ -678,7 +688,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
             )
         }
 
-        if (scanResultLoading) {
+        if (scanResultLoading || scanRecommendationsResultLoading) {
             return (
                 <div className="bg__primary flex-grow-1">
                     <Progressing pageLoader />
@@ -697,7 +707,14 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
 
     return (
         <div className="p-16 bg__primary flex-grow-1">
-            {isEnterprise && <SecurityScansRecommendations appId={+computedAppId} buildId={+buildId} />}
+            {isEnterprise && (
+                <SecurityScansRecommendations
+                    scanRecommendationLoading={scanRecommendationsResultLoading}
+                    scanRecommendationResponse={scanRecommendationsResultResponse}
+                    scanRecommendationError={scanRecommendationsResultError}
+                    reloadScanRecommendation={reloadScanRecommendationsResult}
+                />
+            )}
             {renderSecurityDetailsCards()}
         </div>
     )

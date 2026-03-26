@@ -2,12 +2,37 @@ import { useEffect } from 'react'
 
 import { FiltersTypeEnum, stopPropagation, TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 
+import { SecurityScanRecommendationColumn } from '../../appDetails/appDetails.type'
 import {
     RecommendationResult,
     RecommendationSnippetLine,
     SecurityScanRecommendationRowTypes,
     SecurityScanRecommendationTableAdditionalProps,
 } from './types'
+
+const RECOMMENDATION_LEVEL_PRIORITY: Record<string, number> = {
+    error: 0,
+    warning: 1,
+}
+
+const levelComparator = (a: unknown, b: unknown): number => {
+    const aLevel = String(a || '').toLowerCase()
+    const bLevel = String(b || '').toLowerCase()
+
+    const aPriority = RECOMMENDATION_LEVEL_PRIORITY[aLevel] ?? Number.MAX_SAFE_INTEGER
+    const bPriority = RECOMMENDATION_LEVEL_PRIORITY[bLevel] ?? Number.MAX_SAFE_INTEGER
+
+    if (aPriority !== bPriority) {
+        return aPriority - bPriority
+    }
+
+    return aLevel.localeCompare(bLevel)
+}
+
+const codeComparator = (a: unknown, b: unknown): number =>
+    String(a || '')
+        .toLowerCase()
+        .localeCompare(String(b || '').toLowerCase())
 
 export const getRecommendationRowId = (recommendation: RecommendationResult, index: number) =>
     `recommendation-${recommendation.code || 'code'}-${index}`
@@ -121,7 +146,7 @@ export const LevelCellComponent = ({
     )
 }
 
-export const SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS = [
+export const SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS: SecurityScanRecommendationColumn[] = [
     {
         label: 'Recommendations',
         field: 'title',
@@ -133,6 +158,7 @@ export const SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS = [
         field: 'level',
         size: { fixed: 100 },
         isSortable: true,
+        comparator: levelComparator,
         CellComponent: LevelCellComponent,
     },
     {
@@ -140,6 +166,9 @@ export const SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS = [
         field: 'code',
         size: { fixed: 150 },
         isSortable: true,
+        comparator: codeComparator,
         CellComponent: CodeCellComponent,
     },
 ]
+
+export const HADOLINT_LINK = 'https://hadolint.github.io/hadolint/'

@@ -22,15 +22,21 @@ import {
     AppEnvironment,
     DeploymentStatusDetailsBreakdownDataType,
     EnvAppsMetaDTO,
+    FiltersTypeEnum,
     OptionType,
     ResponseType,
     ScanRecommendationsDTO,
     ScanResultDTO,
     SelectPickerProps,
     ServerErrors,
+    TableCellComponentProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AggregatedNodes, UseGetDTAppDetailsReturnType } from '../../types'
+import {
+    SecurityScanRecommendationRowTypes,
+    SecurityScanRecommendationTableAdditionalProps,
+} from '../cIDetails/SecurityScanRecommendation/types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -192,10 +198,10 @@ export interface UseGetAppSecurityDetailsReturnType {
     reloadScanResult: () => void
 }
 export interface UseSecurityRecommendationReturnType {
-    scanResultLoading: boolean
-    scanResultResponse: ResponseType<ScanRecommendationsDTO>
-    scanResultError: ServerErrors
-    reloadScanResult: () => void
+    scanRecommendationsResultLoading: boolean
+    scanRecommendationsResultResponse: ResponseType<ScanRecommendationsDTO>
+    scanRecommendationsResultError: ServerErrors
+    reloadScanRecommendationsResult: () => void
 }
 
 export enum HibernationModalTypes {
@@ -226,3 +232,24 @@ export type AppEnvSelectorProps =
           applications: EnvAppsMetaDTO['apps']
           environments?: never
       }
+
+export type SecurityScanRecommendationColumn = {
+    label: string
+    field: string
+    size: { fixed: number } | null
+    CellComponent: (
+        props: TableCellComponentProps<
+            SecurityScanRecommendationRowTypes,
+            FiltersTypeEnum.URL,
+            SecurityScanRecommendationTableAdditionalProps
+        >,
+    ) => JSX.Element | null
+} & (
+    | {
+          isSortable: true
+          comparator: (a: unknown, b: unknown) => number
+      }
+    | {
+          isSortable?: false
+      }
+)
