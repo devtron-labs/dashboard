@@ -24,8 +24,8 @@ import {
     Tooltip,
     Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
+import CloseIcon from '../../../assets/icons/ic-cross.svg?react'
+import Error from '../../../assets/icons/ic-warning.svg?react'
 import {
     ConfigureLinkActionType,
     ExternalLinkScopeType,

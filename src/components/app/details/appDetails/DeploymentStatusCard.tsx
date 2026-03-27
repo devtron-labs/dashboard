@@ -24,9 +24,9 @@ import {
     PROGRESSING_DEPLOYMENT_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CD } from '@Icons/ic-CD.svg'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as Rocket } from '@Icons/ic-paper-rocket.svg'
+import CD from '@Icons/ic-CD.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import Rocket from '@Icons/ic-paper-rocket.svg?react'
 
 import { DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'

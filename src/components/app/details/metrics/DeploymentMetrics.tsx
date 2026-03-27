@@ -35,11 +35,10 @@ import {
     UpdateDateRangeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
-import { ReactComponent as Fail } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as Deploy } from '@Icons/ic-nav-rocket.svg'
-import AppNotDeployed from '@Images/app-not-deployed.svg'
+import Success from '@Icons/appstatus/healthy.svg?react'
+import Fail from '@Icons/ic-error-exclamation.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import Deploy from '@Icons/ic-nav-rocket.svg?react'
 import SelectEnvImage from '@Images/ic-empty-dep-metrics@2x.png'
 
 import { ViewType } from '../../../../config'
@@ -717,7 +716,6 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                 {renderInputs()}
                 <div className="dc__position-rel bg__primary flex-grow-1">
                     <GenericEmptyState
-                        image={AppNotDeployed}
                         title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
                         subTitle={`There are no deployments in this period on '${envName}'.`}
                     />

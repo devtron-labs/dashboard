@@ -22,7 +22,7 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
+import ICArrowRight from '@Icons/ic-arrow-right.svg?react'
 
 export const getConfigureGitOpsCredentialsButtonProps = ({
     size,

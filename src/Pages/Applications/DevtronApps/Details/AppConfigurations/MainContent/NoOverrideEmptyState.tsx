@@ -23,7 +23,7 @@ import {
     ImageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import ICAdd from '@Icons/ic-add.svg?react'
 import cmCsEmptyState from '@Images/cm-cs-empty-state.png'
 
 import { NoOverrideEmptyStateProps } from './types'

@@ -21,7 +21,7 @@ import { SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-
 
 import { getGitProviderIcon } from '@Components/common'
 
-import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
+import Reset from '../../assets/icons/ic-arrow-anticlockwise.svg?react'
 import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
 

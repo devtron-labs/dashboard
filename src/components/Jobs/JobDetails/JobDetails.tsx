@@ -34,7 +34,7 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { APP_TYPE } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import CIDetails from '../../app/details/cIDetails/CIDetails'

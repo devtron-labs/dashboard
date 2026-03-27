@@ -19,6 +19,7 @@ import ReactGA from 'react-ga4'
 import { useLocation, useParams } from 'react-router-dom'
 import Select from 'react-select'
 import Tippy from '@tippyjs/react'
+import commandLineParser from 'command-line-parser'
 
 import {
     AppThemeType,
@@ -35,12 +36,12 @@ import {
     useKeyDown,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
-import { ReactComponent as Download } from '@Icons/ic-arrow-line-down.svg'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as LinesIcon } from '@Icons/ic-lines.svg'
-import { ReactComponent as PlayButton } from '@Icons/ic-play-filled.svg'
-import { ReactComponent as StopButton } from '@Icons/ic-stop-filled.svg'
+import Abort from '@Icons/ic-abort.svg?react'
+import Download from '@Icons/ic-arrow-line-down.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import LinesIcon from '@Icons/ic-lines.svg?react'
+import PlayButton from '@Icons/ic-play-filled.svg?react'
+import StopButton from '@Icons/ic-stop-filled.svg?react'
 
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { Subject } from '../../../../../../util/Subject'
@@ -71,7 +72,6 @@ import { SelectedCustomLogFilterType } from './node.type'
 import './nodeDetailTab.scss'
 
 const subject: Subject<string> = new Subject()
-const commandLineParser = require('command-line-parser')
 
 const LogsComponent = ({
     selectedTab,

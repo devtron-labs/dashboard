@@ -26,9 +26,9 @@ import {
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
-import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
-import { ReactComponent as ICFluxCDApp } from '@Icons/ic-fluxcd-app.svg'
+import ICArgoCDApp from '@Icons/ic-argocd-app.svg?react'
+import ICDefaultChart from '@Icons/ic-default-chart.svg?react'
+import ICFluxCDApp from '@Icons/ic-fluxcd-app.svg?react'
 import { getArgoInstalledExternalApps, getFluxInstalledExternalApps } from '@Components/app/list-new/AppListService'
 import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 import { Routes } from '@Config/constants'

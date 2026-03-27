@@ -26,7 +26,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
-import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
+import IcLink from '../../../../../../assets/icons/ic-link.svg?react'
 import { DEFAULT_ENV } from '../../Constants'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
 import { WorkflowProps } from '../../types'

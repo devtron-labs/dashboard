@@ -30,7 +30,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { updateChartProviderList, updateSyncSpecificChart } from '../charts.service'
-import { ReactComponent as Helm } from '../../../assets/icons/ic-helmchart.svg'
+import Helm from '../../../assets/icons/ic-helmchart.svg?react'
 import { ChartListType } from '../charts.types'
 import { getNonEditableChartRepoText } from '../../common'
 import { TOAST_INFO } from '../../../config/constantMessaging'

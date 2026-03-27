@@ -19,7 +19,7 @@ import { generatePath, useNavigate } from 'react-router-dom'
 
 import { LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Timer } from '@Icons/ic-clock-counterclockwise.svg'
+import Timer from '@Icons/ic-clock-counterclockwise.svg?react'
 
 import { URLS } from '../../../../config'
 import { LastUpdatedCardType } from './appDetails.type'

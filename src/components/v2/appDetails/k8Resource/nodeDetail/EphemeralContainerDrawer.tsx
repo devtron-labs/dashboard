@@ -41,7 +41,7 @@ import {
     EphemeralFormAdvancedType,
     ResponsePayload,
 } from './nodeDetail.type'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import Close from '../../../assets/icons/ic-close.svg?react'
 import {
     convertToOptionsList,
     filterImageList,

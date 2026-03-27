@@ -20,7 +20,7 @@ import React, { useEffect } from 'react'
 import { showError, Progressing, PopupMenu, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types'
 
-import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
+import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg?react'
 
 import './select.css'
 

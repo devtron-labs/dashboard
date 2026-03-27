@@ -34,9 +34,9 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICActivity } from '@Icons/ic-activity.svg'
-import { ReactComponent as ICArrowLineDown } from '@Icons/ic-arrow-line-down.svg'
-import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
+import ICActivity from '@Icons/ic-activity.svg?react'
+import ICArrowLineDown from '@Icons/ic-arrow-line-down.svg?react'
+import DevtronIcon from '@Icons/ic-devtron-app.svg?react'
 
 import {
     EnvironmentOverviewTableHeaderFixedKeys,

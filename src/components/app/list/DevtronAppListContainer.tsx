@@ -30,12 +30,12 @@ import {
     TableRowActionsOnHoverComponentProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
+import PlayMedia from '@Icons/ic-play-outline.svg?react'
 import ContentCard from '@Components/common/ContentCard/ContentCard'
 import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
 
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import ArrowRight from '../../../assets/icons/ic-arrow-right.svg?react'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../../config'

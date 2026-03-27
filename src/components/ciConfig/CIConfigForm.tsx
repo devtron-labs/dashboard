@@ -41,7 +41,7 @@ import {
     SelectedGitMaterialType,
     SourceConfigType,
 } from './types'
-import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
+import NextIcon from '../../assets/icons/ic-arrow-right.svg?react'
 import CIConfigDiffView from './CIConfigDiffView'
 import CIContainerRegistryConfig from './CIContainerRegistryConfig'
 import CIDockerFileConfig from './CIDockerFileConfig'

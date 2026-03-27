@@ -15,7 +15,7 @@
  */
 
 import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
+import CloseIcon from '../../assets/icons/ic-close.svg?react'
 import { WebhookConditionType } from './types'
 
 export const WebhookSelectorCondition = ({

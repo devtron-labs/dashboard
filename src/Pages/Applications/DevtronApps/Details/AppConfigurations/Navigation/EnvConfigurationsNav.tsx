@@ -37,11 +37,11 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
-import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
-import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import ICAdd from '@Icons/ic-add.svg?react'
+import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
+import ICBack from '@Icons/ic-caret-left-small.svg?react'
+import ICFileCode from '@Icons/ic-file-code.svg?react'
+import ICLocked from '@Icons/ic-locked.svg?react'
 import { useAppContext } from '@Components/common'
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { URLS } from '@Config/routes'

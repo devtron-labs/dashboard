@@ -19,9 +19,9 @@ import { generatePath, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { getWorkflowNodeStatusTitle, RouterV5Props, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import link from '@Icons/ic-link.svg'
-import { ReactComponent as ICLinkedCINode } from '@Icons/ic-node-build-linked.svg'
+import ICLinkedCINode from '@Icons/ic-node-build-linked.svg?react'
 import { TriggerStatus } from '../../../../config'
-import { DEFAULT_STATUS, URLS } from '../../../../../../config'
+import { DEFAULT_STATUS } from '../../../../../../config'
 
 export interface CINodeProps extends RouterV5Props<{ appId: string }> {
     x: number

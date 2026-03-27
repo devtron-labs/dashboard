@@ -33,9 +33,9 @@ import {
     handleUTCTime,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Lock from '@Icons/ic-locked.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'

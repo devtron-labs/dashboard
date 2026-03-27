@@ -35,10 +35,10 @@ import MultiplePort from './MultiplsPort'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
 import CustomScript from './CustomScript'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import Info from '../../assets/icons/ic-info-filled.svg?react'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const TaskTypeDetailComponent = () => {

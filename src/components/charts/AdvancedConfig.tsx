@@ -31,8 +31,8 @@ import { getEnvironmentListMin } from '../../services/service'
 import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
 import { getReadme, getChartValues } from './charts.service'
 import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
-import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
+import LockIcon from '../../assets/icons/ic-locked.svg?react'
+import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
 import { getSavedValuesListURL } from './charts.helper'
 
 interface AdvancedConfigProps extends AdvancedConfigHelpers {

@@ -20,7 +20,7 @@ import Tippy from '@tippyjs/react'
 
 import { RefVariableType, ToastManager, ToastVariantType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICSave } from '@Icons/ic-save.svg'
+import ICSave from '@Icons/ic-save.svg?react'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
 import { CreatePluginModal } from '../CreatePluginModal'

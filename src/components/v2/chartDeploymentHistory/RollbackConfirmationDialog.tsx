@@ -18,8 +18,8 @@ import React from 'react'
 
 import { ConfirmationModal, ConfirmationModalVariantType, usePrompt } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as DeployButton } from '@Icons/ic-nav-rocket.svg'
-import { ReactComponent as ICRollback } from '@Icons/ic-rollback-medium.svg'
+import DeployButton from '@Icons/ic-nav-rocket.svg?react'
+import ICRollback from '@Icons/ic-rollback-medium.svg?react'
 
 interface RollbackConfirmationDialogProps {
     deploying: boolean

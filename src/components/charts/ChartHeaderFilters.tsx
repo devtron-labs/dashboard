@@ -16,8 +16,8 @@
 
 import { CHECKBOX_VALUE, Checkbox, SearchBar, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
-import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
+import Grid from '../../assets/icons/ic-grid-view.svg?react'
+import List from '../../assets/icons/ic-list-view.svg?react'
 import { QueryParams } from './constants'
 import { ChartSourceAccordion } from './ChartSourceAccordion'
 import { CHART_KEYS } from './constants'

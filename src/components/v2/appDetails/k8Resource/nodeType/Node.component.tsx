@@ -32,7 +32,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
+import ICExpand from '@Icons/ic-expand.svg?react'
 
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'

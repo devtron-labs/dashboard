@@ -16,9 +16,9 @@
 
 import React from 'react'
 import { AppType, InstallationType, ModuleStatus, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
-import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
-import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
+import DiscoverIcon from '../../../assets/icons/ic-compass.svg?react'
+import DevtronIcon from '../../../assets/icons/ic-devtron.svg?react'
+import InstalledIcon from '../../../assets/icons/ic-check.svg?react'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
 import { CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
 import { handleError } from './DevtronStackManager.component'

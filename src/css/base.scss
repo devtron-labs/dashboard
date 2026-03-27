@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-@import './modal.scss';
-@import './whiteCard.scss';
-@import './workflow.scss';
-@import './icons.scss';
-@import './triggerView.scss';
+@use './modal.scss';
+@use './whiteCard.scss';
+@use './workflow.scss';
+@use './icons.scss';
+@use './triggerView.scss';
 
 :root {
     --modal-index: 20;
