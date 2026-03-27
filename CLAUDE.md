@@ -522,3 +522,81 @@ import { Icon } from '@devtron-labs/devtron-fe-common-lib'
 - **Purpose**: Primary web application for Devtron platform
 - **Type**: SPA (Single Page Application) - not a library
 - **Deployment**: Serves as the frontend for Kubernetes-native CI/CD platform
+
+## EA Mode (Hyperion) Frontend Behavior
+
+> **Deep reference**: See [EA_MODE_REFERENCE.md](../EA_MODE_REFERENCE.md) Section G for full frontend-backend mapping.
+
+### Server Mode Detection
+
+```typescript
+// Runtime environment variable set by backend
+window._env_.serverMode  // 'EA_ONLY' | 'FULL'
+
+// Common patterns for mode checking:
+import { ServerMode } from '@devtron-labs/devtron-fe-common-lib'
+
+// Check if running in EA mode
+const isEAMode = window._env_.serverMode === ServerMode.EA_ONLY
+// or
+const isEAMode = window._env_.serverMode === 'EA_ONLY'
+```
+
+### EA-Visible Routes
+
+These routes are available in EA mode:
+- `/dashboard` — Main dashboard
+- `/dashboard/cluster-list` — Cluster management
+- `/dashboard/chart-store` — Helm chart catalog (App Store)
+- `/dashboard/external-apps` — External Helm app list
+- `/dashboard/resource-browser` — K8s resource browser
+- `/dashboard/global-config` — Platform settings (SSO, auth, repos)
+- `/dashboard/security` — Security scanning results
+
+### EA-Hidden Routes (Full Mode Only)
+
+These routes/features are hidden or disabled in EA mode:
+- App creation wizard (`/dashboard/app/create`)
+- CI/CD workflow editor (`/dashboard/app/*/workflow-editor`)
+- CI build details (`/dashboard/app/*/ci-details`)
+- CD deployment details (`/dashboard/app/*/cd-details`)
+- Pipeline triggers (`/dashboard/app/*/trigger`)
+- Bulk edit operations (`/dashboard/bulk-edits`)
+- Notification settings (`/dashboard/notifications`)
+- GitOps configuration (`/dashboard/global-config/gitops`)
+
+### Conditional Rendering Pattern
+
+Components check server mode to show/hide features:
+
+```typescript
+// In component or page
+const { serverMode } = window._env_
+
+if (serverMode === 'EA_ONLY') {
+    // Show EA-specific UI (external apps, chart store)
+    return <ExternalAppList />
+}
+// Show full-mode UI (devtron apps, pipelines)
+return <AppList />
+```
+
+### EA-Specific Components
+
+Key components used primarily in EA mode:
+- `src/components/hyperion/` — EA-specific features
+- External app management components
+- Chart store browsing and deployment
+- Cluster/resource browser (shared with full mode)
+
+### API Proxy
+
+All API calls proxy through Vite dev server to `/orchestrator/*`:
+```
+Frontend → /orchestrator/application → Backend :8080
+Frontend → /orchestrator/app-store/* → Backend :8080
+Frontend → /orchestrator/cluster → Backend :8080
+Frontend → /orchestrator/k8s/* → Backend :8080
+```
+
+The backend router in EA mode (`cmd/external-app/router.go`) only registers EA-relevant endpoints, so full-mode API calls will 404 in EA deployments

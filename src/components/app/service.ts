@@ -16,6 +16,7 @@
 
 import moment from 'moment'
 
+
 import {
     ACTION_STATE,
     APIOptions,
@@ -78,7 +79,6 @@ export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIS
 export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): UseGetDTAppDetailsReturnType => {
     const queryClient = useQueryClient()
     const resourceTreeQueryKey = 'dt-app-resource-tree'
-
     const {
         data: appDetails,
         isFetching: isFetchingAppDetails,
