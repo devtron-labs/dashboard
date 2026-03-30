@@ -617,8 +617,12 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
-            isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || formData.dockerfileScanEnabled ||
-            !window._env_.FORCE_SECURITY_SCANNING
+            isJobCard ||
+            !isSecurityModuleInstalled ||
+            formData.scanEnabled ||
+            formData.dockerfileScanEnabled ||
+            !window._env_.FORCE_SECURITY_SCANNING ||
+            !window._env_.FORCE_DOCKERFILE_SCAN
         if (!scanValidation) {
             setApiInProgress(false)
             ToastManager.showToast({

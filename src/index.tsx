@@ -117,6 +117,7 @@ if (!window || !window._env_) {
         POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
+        FORCE_DOCKERFILE_SCAN: false,
         ENABLE_CI_JOB: true,
         HIDE_DISCORD: true,
         DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
