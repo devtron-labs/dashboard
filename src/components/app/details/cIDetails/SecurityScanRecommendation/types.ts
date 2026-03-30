@@ -19,7 +19,6 @@ export type RecommendationSnippetLine = {
 
 export type SecurityScanRecommendationModalProps = {
     summary: ScanRecommendationsDTO['severity_summary']
-    hasRecommendations: boolean
     recommendations: ScanRecommendationsDTO['results']
     handleSecurityScanModal?: () => void
     lastScanTime?: ScanRecommendationsDTO['createdOn'] | string
@@ -28,7 +27,7 @@ export type SecurityScanRecommendationModalProps = {
 
 export type SecurityScanRecommendationBarProps = Pick<
     SecurityScanRecommendationModalProps,
-    'hasRecommendations' | 'summary' | 'handleSecurityScanModal' | 'isModalView' | 'lastScanTime'
+    'summary' | 'handleSecurityScanModal' | 'isModalView' | 'lastScanTime'
 > & {}
 
 export type SecurityScanRecommendationRowTypes = {

@@ -28,7 +28,6 @@ const CLOSE_BUTTON_ID = 'security-scan-recommendations-close'
 
 export const SecurityScanModal = ({
     summary,
-    hasRecommendations,
     recommendations,
     handleSecurityScanModal,
     lastScanTime,
@@ -126,12 +125,7 @@ export const SecurityScanModal = ({
                     />
                 </div>
                 <div className="dc__overflow-auto flexbox-col flex-grow-1 mh-0">
-                    <SecurityScanRecommendationBar
-                        summary={summary}
-                        hasRecommendations={hasRecommendations}
-                        isModalView
-                        lastScanTime={lastScanTime}
-                    />
+                    <SecurityScanRecommendationBar summary={summary} isModalView lastScanTime={lastScanTime} />
                     <Table<
                         SecurityScanRecommendationRowTypes,
                         FiltersTypeEnum.URL,

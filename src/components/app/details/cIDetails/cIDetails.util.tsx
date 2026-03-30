@@ -14,40 +14,18 @@
  * limitations under the License.
  */
 
-import { EMPTY_STATE_STATUS, Icon, IconName } from '@devtron-labs/devtron-fe-common-lib'
+import { EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
 
-export const SecurityScanEmptyState = ({ title, subtitle, icon= "ic-warning" }: {
-    title: string,
-    subtitle: string,
-    icon?: IconName
-}) => {
-    return (
-        <div className="flex dc__border br-8 fs-13">
-            <div className="flexbox-col dc__gap-12 dc__align-items-center p-20 w-300">
-                <Icon name={icon} size={24} color="R500" />
-                <div className="flex column dc__gap-4">
-                    <div className="flex fw-6 cn-9 lh-20">{title}</div>
-                    <div className="flex cn-8">{subtitle}</div>
-                </div>
-            </div>
-        </div>
-    )
-}
 
-export const ImageNotScannedView = (): JSX.Element => {
+export const CIRunningView = (props) => {
     return (
-        <SecurityScanEmptyState
-            title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
-            subtitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.SUBTITLE}
-        />
-    )
-}
-
-export const CIRunningView = (props): JSX.Element => {
-    return (
-        <SecurityScanEmptyState
+        <div className="flexbox-col p-16 bg__primary flex-grow-1 en-1 bw-1 br-8">
+        <GenericEmptyState
+            SvgImage={MechanicalOperation}
             title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
-            subtitle={props.isSecurityTab ? null : EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
+            subTitle={props.isSecurityTab ? null : EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
         />
+        </div>
     )
 }

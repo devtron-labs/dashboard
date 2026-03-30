@@ -56,7 +56,7 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { ImageNotScannedView, CIRunningView } from './cIDetails.util'
+import { CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -66,6 +66,7 @@ import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../c
 import { importComponentFromFELibrary } from '@Components/common'
 import { useGetAppSecurityDetails, useGetAppSecurityDetailsRecommendations } from '../appDetails/AppSecurity'
 import { SecurityScansRecommendations } from './SecurityScanRecommendation/SecurityScanRecommendations.components'
+import { getSecurityScanRecommendationTitle } from './SecurityScanRecommendation/SecurityRecommendation.utils'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -488,7 +489,7 @@ export const Details = ({
                                     ? [
                                           {
                                               id: 'security-tab',
-                                              label: 'Security',
+                                              label: 'Reports',
                                               tabType: 'navLink' as const,
                                               props: {
                                                   to: 'security',
@@ -653,6 +654,38 @@ const HistoryLogs = ({
     )
 }
 
+const renderSecurityScanRecommendation = (appId: number, buildId: number) => {
+    const {
+        scanRecommendationsResultLoading,
+        scanRecommendationsResultResponse,
+        scanRecommendationsResultError,
+        reloadScanRecommendationsResult,
+    } = useGetAppSecurityDetailsRecommendations({
+        appId,
+        buildId,
+    })
+
+    return (
+        <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1200">
+            {getSecurityScanRecommendationTitle()}
+            {scanRecommendationsResultError && (
+                <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
+                    <ErrorScreenManager
+                        code={scanRecommendationsResultError.code}
+                        reload={reloadScanRecommendationsResult}
+                    />
+                </div>
+            )}
+            <SecurityScansRecommendations
+                scanRecommendationLoading={scanRecommendationsResultLoading}
+                scanRecommendationResponse={scanRecommendationsResultResponse}
+                scanRecommendationError={scanRecommendationsResultError}
+                reloadScanRecommendation={reloadScanRecommendationsResult}
+            />
+        </div>
+    )
+}
+
 const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId, buildId } = useParams<{ appId: string; buildId: string }>()
     const { isEnterprise } = useMainContext()
@@ -664,27 +697,39 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
         artifactId,
     })
 
-    const {
-        scanRecommendationsResultLoading,
-        scanRecommendationsResultResponse,
-        scanRecommendationsResultError,
-        reloadScanRecommendationsResult,
-    } = useGetAppSecurityDetailsRecommendations({
+    const { scanRecommendationsResultLoading } = useGetAppSecurityDetailsRecommendations({
         appId: +computedAppId,
         buildId: +buildId,
     })
 
+    const renderHeader = () => (
+        <div className="flexbox dc__content-space pb-8 dc__border-bottom-n1">
+            <span className="fs-13 fw-6 lh-1-5 cn-9">Security Scan</span>
+        </div>
+    )
     const renderSecurityDetailsCards = () => {
-        if (['starting', 'running'].includes(status.toLowerCase())) {
-            return <CIRunningView isSecurityTab />
+        const normalizedStatus = status?.toLowerCase()
+
+        if (['starting', 'running'].includes(normalizedStatus)) {
+            return (
+                <>
+                    {renderHeader()}
+                    <CIRunningView isSecurityTab />
+                </>
+            )
         }
 
         if (!artifactId) {
             return (
-                <GenericEmptyState
-                    title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
-                    subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
-                />
+                <>
+                    {renderHeader()}
+                    <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                            subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+                        />
+                    </div>
+                </>
             )
         }
 
@@ -695,26 +740,24 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
                 </div>
             )
         }
+
         if (scanResultError) {
-            return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
-        }
-        if (!scanResultResponse?.result.scanned) {
-            return <ImageNotScannedView />
+            return (
+                <>
+                    {renderHeader()}
+                    <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
+                        <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
+                    </div>
+                </>
+            )
         }
 
         return <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
     }
 
     return (
-        <div className="flexbox-col p-16 bg__primary flex-grow-1 dc__gap-16">
-            {isEnterprise && (
-                <SecurityScansRecommendations
-                    scanRecommendationLoading={scanRecommendationsResultLoading}
-                    scanRecommendationResponse={scanRecommendationsResultResponse}
-                    scanRecommendationError={scanRecommendationsResultError}
-                    reloadScanRecommendation={reloadScanRecommendationsResult}
-                />
-            )}
+        <div className="flexbox-col bg__primary flex-grow-1 dc__gap-16 p-16">
+            {isEnterprise && renderSecurityScanRecommendation(+computedAppId, +buildId)}
             {renderSecurityDetailsCards()}
         </div>
     )

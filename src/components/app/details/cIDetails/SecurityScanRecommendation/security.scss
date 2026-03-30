@@ -9,6 +9,16 @@
     color: var(--R500);
 }
 
+.security-scanner-bar {
+    &__no-recommendations {
+        background: radial-gradient(25.91% 100% at 100% 0%, var(--positive-G100, #E6F4EA) 0%, var(--bg-primary, #FFF) 100%);
+    }
+
+    &__recommendations {
+        background: radial-gradient(25.91% 100% at 100% 0%, var(--negative-R100, #FDE7E7) 0%, var(--bg-primary, #FFF) 100%);
+    }
+}
+
 .security-scan-modal {
     &__title {
         color: var(--N900);
@@ -90,14 +100,14 @@
     }
 
     .generic-table__row--is-expanded,
-    .generic-table__row--is-expanded > .generic-table__cell {
+    .generic-table__row--is-expanded>.generic-table__cell {
         background-color: var(--bg-secondary);
     }
 
     .generic-table__row--is-expanded:hover,
-    .generic-table__row--is-expanded:hover > .generic-table__cell,
+    .generic-table__row--is-expanded:hover>.generic-table__cell,
     .generic-table__row--is-expanded.generic-table__row--active,
-    .generic-table__row--is-expanded.generic-table__row--active > .generic-table__cell {
+    .generic-table__row--is-expanded.generic-table__row--active>.generic-table__cell {
         background-color: var(--bg-secondary);
     }
 
@@ -105,17 +115,17 @@
         background-color: transparent;
     }
 
-    .generic-table__row--expanded-row > .generic-table__cell,
-    .generic-table__row--expanded-row > .expanded-tree-line {
+    .generic-table__row--expanded-row>.generic-table__cell,
+    .generic-table__row--expanded-row>.expanded-tree-line {
         background-color: transparent;
     }
 
     .generic-table__row--expanded-row:hover,
-    .generic-table__row--expanded-row:hover > .generic-table__cell,
-    .generic-table__row--expanded-row:hover > .expanded-tree-line,
+    .generic-table__row--expanded-row:hover>.generic-table__cell,
+    .generic-table__row--expanded-row:hover>.expanded-tree-line,
     .generic-table__row--expanded-row.generic-table__row--active,
-    .generic-table__row--expanded-row.generic-table__row--active > .generic-table__cell,
-    .generic-table__row--expanded-row.generic-table__row--active > .expanded-tree-line {
+    .generic-table__row--expanded-row.generic-table__row--active>.generic-table__cell,
+    .generic-table__row--expanded-row.generic-table__row--active>.expanded-tree-line {
         background-color: transparent;
     }
 }

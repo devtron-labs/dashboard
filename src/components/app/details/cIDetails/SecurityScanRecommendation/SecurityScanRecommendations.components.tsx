@@ -1,9 +1,8 @@
 import { useState } from 'react'
 
-import { ScannedByToolModal, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SecurityScanRecommendationBar } from './SecrityScanRecommendationBar'
-import { HADOLINT_LINK } from './SecurityRecommendation.utils'
 import { SecurityScanModal } from './SecurityScanModal'
 import { SecurityScansRecommendationsProps } from './types'
 
@@ -22,30 +21,38 @@ export const SecurityScansRecommendations = ({ scanRecommendationResponse }: Sec
     const handleSecurityScanModal = () => {
         setShowSecurityScanModal((currentState) => !currentState)
     }
+    const { error, warning } = severitySummary
+
+    const hasThreats = error || warning
 
     return (
         <div className="security-recommendations">
-            {!hasRecommendations ? (
-                <div className="security-recommendations__state">
-                    <span className="security-recommendations__state-text">
-                        No recommendations available for this scanRecommendation.
-                    </span>
+            {!hasThreats || !hasRecommendations ? (
+                <div
+                    className={`security-scanner-bar__no-recommendations ${hasThreats ? 'security-scanner-bar__recommendations' : ''} flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16`}
+                >
+                    <div className="flexbox dc__content-space dc__gap-2">
+                        <div className="flexbox-col dc__gap-2">
+                            <span className="fs-12 cn-7 lh-1.5">Dockerfile Best Practices</span>
+                            <span className="fs-14 fw-6 lh-1.5">Looks good!</span>
+                        </div>
+                        <Icon name="ic-code-wrapped" color="G500" size={20} />
+                    </div>
+
+                    <div className="flexbox-col dc__gap-12">
+                        <div className="bcn-1 br-4 h-8" />
+                        <span>No recommendations suggested</span>
+                    </div>
                 </div>
             ) : (
                 <div className="flexbox-col dc__gap-12">
-                    <div className="flex dc__content-space dc__border-bottom-n1 pb-8">
-                        <h3 className="m-0 fs-13 fw-6 lh-20">Dockerfile Linting</h3>
-                        <ScannedByToolModal scanToolName="Hadolint" scanToolUrl={HADOLINT_LINK} />
-                    </div>
                     <SecurityScanRecommendationBar
                         summary={severitySummary}
-                        hasRecommendations={hasRecommendations}
                         handleSecurityScanModal={handleSecurityScanModal}
                     />
                     {showSecurityScanModal && (
                         <SecurityScanModal
                             summary={severitySummary}
-                            hasRecommendations={hasRecommendations}
                             recommendations={recommendations.results}
                             handleSecurityScanModal={handleSecurityScanModal}
                             isModalView={false}
