@@ -456,6 +456,7 @@ export interface RegistryPayloadType {
     awsAccessKeyId?: string
     awsSecretAccessKey?: string
     awsRegion?: string
+    assumeRoleArn?: string
     username?: string
     password?: string
     connection?: string

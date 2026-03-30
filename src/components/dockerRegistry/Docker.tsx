@@ -233,6 +233,7 @@ const CollapsedList = ({
     awsAccessKeyId = '',
     awsSecretAccessKey = '',
     awsRegion = '',
+    assumeRoleArn = '',
     isDefault = false,
     active = true,
     username = '',
@@ -319,6 +320,7 @@ const CollapsedList = ({
                         awsAccessKeyId,
                         awsSecretAccessKey,
                         awsRegion,
+                        assumeRoleArn,
                         isDefault,
                         active,
                         username,
@@ -353,6 +355,7 @@ const DockerForm = ({
     awsAccessKeyId,
     awsSecretAccessKey,
     awsRegion,
+    assumeRoleArn,
     isDefault,
     active,
     username,
@@ -431,6 +434,7 @@ const DockerForm = ({
             value: id && !awsSecretAccessKey ? DEFAULT_SECRET_PLACEHOLDER : awsSecretAccessKey,
             error: '',
         },
+        assumeRoleArn: { value: assumeRoleArn, error: '' },
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
@@ -629,6 +633,7 @@ const DockerForm = ({
             password: { value: selectedRegistry.password.defaultValue, error: '' },
             awsAccessKeyId: { value: '', error: '' },
             awsSecretAccessKey: { value: '', error: '' },
+            assumeRoleArn: { value: '', error: '' },
         }))
     }
 
@@ -788,6 +793,7 @@ const DockerForm = ({
                       awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),
                       awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
                       awsRegion,
+                      assumeRoleArn: customState.assumeRoleArn.value?.trim(),
                   }
                 : {}),
             ...((selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY &&
@@ -1619,6 +1625,16 @@ const DockerForm = ({
                                 </div>
                             </>
                         )}
+                        <div className="form__row">
+                            <CustomInput
+                                name="assumeRoleArn"
+                                value={customState.assumeRoleArn.value}
+                                error={customState.assumeRoleArn.error}
+                                onChange={customHandleChange}
+                                label="Assume Role ARN (cross-account)"
+                                placeholder="arn:aws:iam::123456789012:role/cross-account-ecr-role"
+                            />
+                        </div>
                     </>
                 )
             }
