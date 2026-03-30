@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { UaEventOptions } from 'react-ga4/types/ga4'
+import { HandleAnalyticsEventParams } from '@devtron-labs/devtron-fe-common-lib'
 
 export const APP_METRICS_CALENDAR_INPUT_DATE_FORMAT = 'DD-MM-YYYY hh:mm:ss'
 
-export const DA_APP_DETAILS_GA_EVENTS: Record<string, Pick<UaEventOptions, 'category' | 'action'>> = {
+export const DA_APP_DETAILS_GA_EVENTS: Record<string, HandleAnalyticsEventParams> = {
     DeployButtonClicked: {
         category: 'App Details',
         action: 'DA_APP_DETAIL_DEPLOY',
@@ -41,7 +41,7 @@ export const DA_APP_DETAILS_GA_EVENTS: Record<string, Pick<UaEventOptions, 'cate
     },
 }
 
-export const AG_APP_DETAILS_GA_EVENTS: Record<string, Pick<UaEventOptions, 'category' | 'action'>> = {
+export const AG_APP_DETAILS_GA_EVENTS: Record<string, HandleAnalyticsEventParams> = {
     DeployButtonClicked: {
         category: 'App Details',
         action: 'AG_APP_DETAIL_DEPLOY',

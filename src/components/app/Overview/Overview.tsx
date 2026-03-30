@@ -43,7 +43,7 @@ import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from 
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import EditIcon from '../../../assets/icons/ic-pencil.svg?react'
 import TagIcon from '../../../assets/icons/ic-tag.svg?react'
-import defaultChartImage from '../../../assets/icons/ic-default-chart.svg?react'
+import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import TagChipsContainer from './TagChipsContainer'

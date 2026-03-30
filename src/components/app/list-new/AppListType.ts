@@ -120,8 +120,10 @@ export enum AppListUrlFilters {
 
 export type AppListFilterKey = AppListUrlFilters
 
-export interface AppListUrlFiltersType
-    extends Omit<Record<AppListUrlFilters, string[]>, AppListUrlFilters.labelSelector> {
+export interface AppListUrlFiltersType extends Omit<
+    Record<AppListUrlFilters, string[]>,
+    AppListUrlFilters.labelSelector
+> {
     [AppListUrlFilters.labelSelector]: string
 }
 
