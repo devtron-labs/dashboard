@@ -45,6 +45,17 @@
     margin: 90px auto;
 }
 
+.pipeline-list {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    th,
+    td {
+        text-align: left;
+    }
+}
+
 .pipeline-list__header {
     width: 100%;
     font-size: 12px;
@@ -57,7 +68,7 @@
 
     th {
         padding: 10px;
-        vertical-align: left;
+        vertical-align: top;
     }
 }
 
@@ -90,7 +101,7 @@ thead {
 }
 
 .pipeline-list__environment {
-    width: 5%;
+    width: 10%;
     padding: 10px;
 }
 
@@ -109,7 +120,7 @@ thead {
 }
 
 .pipeline-list__hover {
-    width: 10%;
+    width: 5%;
     visibility: hidden;
 }
 

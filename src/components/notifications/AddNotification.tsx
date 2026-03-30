@@ -48,7 +48,7 @@ import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
-import { Select, validateEmail, ErrorBoundary } from '../common'
+import { Select, validateEmail, ErrorBoundary, importComponentFromFELibrary } from '../common'
 import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
@@ -62,6 +62,7 @@ import {
     Option,
     MultiValueContainer,
     renderPipelineTypeIcon,
+    getNotificationEvents,
 } from './notifications.util'
 import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
@@ -76,6 +77,8 @@ import {
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
 import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
+
+const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
     filterOptionsMain = [
@@ -818,12 +821,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                       )
                                                   }
                                               })
-                                            : Object.values(EVENTS)
-                                                  .filter((event) => {
+                                            : 
+                                                  getNotificationEvents(isEnterprise).filter((event) => {
                                                       return (
                                                           row.type !== NotificationPipelineType.CI ||
                                                           (event !== EVENTS.CONFIG_APPROVAL &&
-                                                              event !== EVENTS.IMAGE_APPROVAL)
+                                                              event !== EVENTS.DEPLOYMENT_APPROVAL)
                                                       )
                                                   })
                                                   .map((event) => {

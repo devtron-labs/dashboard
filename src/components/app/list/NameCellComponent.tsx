@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 
 import {
@@ -5,8 +6,10 @@ import {
     FiltersTypeEnum,
     highlightSearchText,
     statusColor,
+    stopPropagation,
     TableCellComponentProps,
     Tooltip,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { App, Environment, TableAdditionalPropsType } from './types'
@@ -31,14 +34,16 @@ export const NameCellComponent = ({
 
     const app = data as App
 
-    const { name } = app
+    const { name, id } = app
 
     return (
         <div className="flex left dc__gap-4 dc__visible-hover dc__visible-hover--parent">
             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <Tooltip content={name}>
-                <span
+                <Link
                     className="dc__link cursor dc__truncate"
+                    to={`${URLS.APPLICATION_MANAGEMENT_APP}/${id}/trigger`}
+                    onClick={stopPropagation}
                     // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(

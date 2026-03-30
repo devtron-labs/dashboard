@@ -126,6 +126,7 @@ const DevtronAppList = ({
     clearAllFilters,
     isArgoInstalled,
     setAppCount,
+    appFiltersResponseLoading,
 }: DevtronAppListProps) => {
     const [noRows, setNoRows] = useState<boolean>(false)
 
@@ -153,6 +154,13 @@ const DevtronAppList = ({
 
     const getRows = useCallback(
         async (_, signal) => {
+            if (appFiltersResponseLoading) {
+                return {
+                    rows: [],
+                    totalRows: 0,
+                }
+            }
+
             updateDataSyncing(true)
             const data = await getAppList(getDevtronAppListPayload(filterConfig, environmentList, namespaceList), {
                 signal,
@@ -182,7 +190,7 @@ const DevtronAppList = ({
                 totalRows: totalCount,
             }
         },
-        [syncListData, filterConfig],
+        [syncListData, filterConfig, appFiltersResponseLoading],
     )
 
     const onClearFilters = () => {
@@ -210,6 +218,7 @@ const DevtronAppList = ({
         <Table<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>
             id="table__devtron-app-list"
             getRows={getRows}
+            loading={appFiltersResponseLoading}
             paginationVariant={PaginationEnum.PAGINATED}
             filtersVariant={FiltersTypeEnum.URL}
             columns={columns}
