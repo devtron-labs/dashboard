@@ -30,8 +30,8 @@ import {
     EMPTY_STATE_STATUS,
     GenericEmptyState,
     Icon,
+    IconsProps,
     Pagination,
-    PopupMenu,
     Progressing,
     Reload,
     showError,
@@ -42,7 +42,7 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { InValidHostUrlWarningBlock } from '@Components/common'
+import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '@Components/common'
 
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import { ViewType } from '../../config'
@@ -55,12 +55,13 @@ import {
     updateNotificationEvents,
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
-import { NotificationPipelineType, NotificationTabState } from './types'
-import { EVENT_ID } from './constants'
+import { NotificationConfiguration, NotificationPipelineType, NotificationTabState } from './types'
+import { EVENT_ID, EVENT_LABEL, EVENTS } from './constants'
 import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
 import React from 'react'
 import { AddNotificationButton } from './AddNotificationButton'
 
+const isEnterprise = importComponentFromFELibrary('isEnterprise', null, 'function')
 export class NotificationTab extends Component<any, NotificationTabState> {
     bulkMultiSelectWidgetRef = React.createRef<HTMLDivElement>()
 
@@ -378,9 +379,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    renderAddNotificationButton = () => (
-        <AddNotificationButton disableEdit={this.props.disableEdit} />
-    )
+    renderAddNotificationButton = () => <AddNotificationButton disableEdit={this.props.disableEdit} />
     renderGenericEmptyState = () => (
         <GenericEmptyState
             image={EmptyImage}
@@ -440,10 +439,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     renderPipelineList = () => (
-        <table className="flexbox-col flex-grow-1">
+        <table className="pipeline-list">
             <thead>
                 <tr className="pipeline-list__header">
-                    <th className="pipeline-list__checkbox flex-grow-1">
+                    <th className="pipeline-list__checkbox">
                         <Checkbox
                             rootClassName="mb-0 flex"
                             isChecked={this.state.headerCheckbox.isChecked}
@@ -454,9 +453,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             <span />
                         </Checkbox>
                     </th>
-                    <th className="pipeline-list__pipeline-name fw-6 flex left dc__gap-8">
-                        <span className="icon-dim-16" />
-                        Resource
+                    <th className="pipeline-list__pipeline-name fw-6">
+                        <div className="flex left dc__gap-8">
+                            <span className="icon-dim-16" />
+                            Resource
+                        </div>
                     </th>
                     <th className="pipeline-list__app-name fw-6">Application Name</th>
                     <th className="pipeline-list__environment fw-6">Env/Branch</th>
@@ -567,7 +568,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 {row.pipelineType === NotificationPipelineType.CD ? row?.environmentName : ''}
                             </td>
                             <td className="pipeline-list__stages p-10">
-                                <div className="flexbox flex-justify dc__gap-12">
+                                <div className="flexbox dc__gap-12">
                                     {row.trigger ? (
                                         <Icon
                                             name="ic-play-outline"
@@ -604,30 +605,34 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     ) : (
                                         <div className="icon-dim-20" />
                                     )}
-                                    {row.configApproval ? (
-                                        <Icon
-                                            name="ic-code"
-                                            color={null}
-                                            tooltipProps={{
-                                                content: 'Config Change Approval',
-                                                alwaysShowTippyOnHover: true,
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="icon-dim-20" />
-                                    )}
+                                    {isEnterprise && (
+                                        <>
+                                            {row.configApproval ? (
+                                                <Icon
+                                                    name="ic-code"
+                                                    color={null}
+                                                    tooltipProps={{
+                                                        content: EVENT_LABEL[EVENTS.CONFIG_APPROVAL],
+                                                        alwaysShowTippyOnHover: true,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="icon-dim-20" />
+                                            )}
 
-                                    {row.imageApproval ? (
-                                        <Icon
-                                            name="ic-rocket-launch"
-                                            color={null}
-                                            tooltipProps={{
-                                                content: 'Deployment Approval',
-                                                alwaysShowTippyOnHover: true,
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="icon-dim-20" />
+                                            {row.imageApproval ? (
+                                                <Icon
+                                                    name="ic-rocket-launch"
+                                                    color={null}
+                                                    tooltipProps={{
+                                                        content: EVENT_LABEL[EVENTS.DEPLOYMENT_APPROVAL],
+                                                        alwaysShowTippyOnHover: true,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="icon-dim-20" />
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </td>
@@ -643,17 +648,19 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     ))}
                                 </div>
                             </td>
-                            <td className="pipeline-list__hover flex p-10">
-                                <Button
-                                    icon={<Icon name="ic-delete" color={null} />}
-                                    ariaLabel="Delete"
-                                    variant={ButtonVariantType.borderLess}
-                                    style={ButtonStyleType.negativeGrey}
-                                    size={ComponentSizeType.medium}
-                                    data-id={row.id}
-                                    onClick={this.onClickDeleteButton}
-                                    dataTestId={`delete-notification-${row.id}-button`}
-                                />
+                            <td className="pipeline-list__hover p-10">
+                                <div className="flex">
+                                    <Button
+                                        icon={<Icon name="ic-delete" color={null} />}
+                                        ariaLabel="Delete"
+                                        variant={ButtonVariantType.borderLess}
+                                        style={ButtonStyleType.negativeGrey}
+                                        size={ComponentSizeType.medium}
+                                        data-id={row.id}
+                                        onClick={this.onClickDeleteButton}
+                                        dataTestId={`delete-notification-${row.id}-button`}
+                                    />
+                                </div>
                             </td>
                         </tr>
                     )
