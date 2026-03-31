@@ -44,7 +44,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
     const renderSecurityScanRecommendation = () => {
         if (!forceDockerfileScan && !scanRecommendationsResultResponse?.result?.results?.length) {
-            return <ReportTabEmptyState title="Dockerfile scan is disabled" subtitle="" />
+            return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
         }
 
         if (scanRecommendationsResultLoading) {
