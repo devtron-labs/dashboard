@@ -67,6 +67,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { useGetAppSecurityDetails, useGetAppSecurityDetailsRecommendations } from '../appDetails/AppSecurity'
 import { SecurityScansRecommendations } from './SecurityScanRecommendation/SecurityScanRecommendations.components'
 import { getSecurityScanRecommendationTitle } from './SecurityScanRecommendation/SecurityRecommendation.utils'
+import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -670,10 +671,18 @@ const renderSecurityScanRecommendation = (appId: number, buildId: number) => {
             {getSecurityScanRecommendationTitle()}
             {scanRecommendationsResultError && (
                 <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
-                    <ErrorScreenManager
-                        code={scanRecommendationsResultError.code}
-                        reload={reloadScanRecommendationsResult}
-                    />
+                    {scanRecommendationsResultError.code === 404 ? (
+                        <GenericEmptyState
+                            title="Dockerfile scan not found"
+                            subTitle="The dockerfile scan for this build was not found."
+                            SvgImage={MechanicalOperation}
+                        />
+                    ) : (
+                        <ErrorScreenManager
+                            code={scanRecommendationsResultError.code}
+                            reload={reloadScanRecommendationsResult}
+                        />
+                    )}
                 </div>
             )}
             <SecurityScansRecommendations
@@ -697,11 +706,6 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
         artifactId,
     })
 
-    const { scanRecommendationsResultLoading } = useGetAppSecurityDetailsRecommendations({
-        appId: +computedAppId,
-        buildId: +buildId,
-    })
-
     const renderHeader = () => (
         <div className="flexbox dc__content-space pb-8 dc__border-bottom-n1">
             <span className="fs-13 fw-6 lh-1-5 cn-9">Security Scan</span>
@@ -712,16 +716,16 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
 
         if (['starting', 'running'].includes(normalizedStatus)) {
             return (
-                <>
+                <div className="flexbox-col mw-600 dc__mxw-1200">
                     {renderHeader()}
                     <CIRunningView isSecurityTab />
-                </>
+                </div>
             )
         }
 
         if (!artifactId) {
             return (
-                <>
+                <div className="flexbox-col mw-600 dc__mxw-1200">
                     {renderHeader()}
                     <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
                         <GenericEmptyState
@@ -729,11 +733,11 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
                             subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
                         />
                     </div>
-                </>
+                </div>
             )
         }
 
-        if (scanResultLoading || scanRecommendationsResultLoading) {
+        if (scanResultLoading) {
             return (
                 <div className="bg__primary flex-grow-1">
                     <Progressing pageLoader />
@@ -743,12 +747,12 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
 
         if (scanResultError) {
             return (
-                <>
+                <div className="flexbox-col mw-600 dc__mxw-1200">
                     {renderHeader()}
                     <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
                         <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
                     </div>
-                </>
+                </div>
             )
         }
 
