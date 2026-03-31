@@ -17,7 +17,7 @@ export const SecurityScanRecommendationBar = ({
     isModalView = false,
     lastScanTime,
 }: SecurityScanRecommendationBarProps) => {
-    const { error, warning } = summary
+    const { error, warning, info } = summary
     const totalCount = error + warning
     const shouldShowLastScanTime =
         isModalView && !!lastScanTime && lastScanTime !== ZERO_TIME_STRING && lastScanTime !== 0
@@ -41,6 +41,7 @@ export const SecurityScanRecommendationBar = ({
                             entities={[
                                 { color: 'var(--Y500)', label: 'Warnings', value: warning || 0 },
                                 { color: 'var(--R500)', label: 'Errors', value: error || 0 },
+                                { color: 'var(--N500)', label: 'Info', value: info || 0 },
                             ]}
                             labelClassName="fs-13 fw-4 lh-20"
                             countClassName="fs-13 fw-6 lh-20 cn-7"

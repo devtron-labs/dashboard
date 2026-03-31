@@ -1,12 +1,15 @@
 import { useState } from 'react'
 
-import { Icon, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, Progressing, ReportTabEmptyState, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SecurityScanRecommendationBar } from './SecrityScanRecommendationBar'
 import { SecurityScanModal } from './SecurityScanModal'
 import { SecurityScansRecommendationsProps } from './types'
 
-export const SecurityScansRecommendations = ({ scanRecommendationResponse }: SecurityScansRecommendationsProps) => {
+export const SecurityScansRecommendations = ({
+    scanRecommendationLoading,
+    scanRecommendationResponse,
+}: SecurityScansRecommendationsProps) => {
     const [showSecurityScanModal, setShowSecurityScanModal] = useState(false)
 
     const recommendations: ScanRecommendationsDTO | undefined = scanRecommendationResponse?.result
@@ -15,7 +18,7 @@ export const SecurityScansRecommendations = ({ scanRecommendationResponse }: Sec
         return null
     }
 
-    const { results, severity_summary: severitySummary } = recommendations
+    const { results, severity_summary: severitySummary, dockerfileScanEnabled } = recommendations
     const hasRecommendations = !!results?.length
 
     const handleSecurityScanModal = () => {
@@ -24,6 +27,23 @@ export const SecurityScansRecommendations = ({ scanRecommendationResponse }: Sec
     const { error, warning } = severitySummary
 
     const hasThreats = error || warning
+
+    if (!dockerfileScanEnabled && !hasRecommendations) {
+        return (
+            <ReportTabEmptyState
+                title="Dockerfile scan is disabled"
+                subtitle="Contact your administrator to enable Dockerfile scan"
+            />
+        )
+    }
+
+    if (scanRecommendationLoading) {
+        return (
+            <div className="flex en-2 bw-1">
+                <Progressing />
+            </div>
+        )
+    }
 
     return (
         <div className="security-recommendations">

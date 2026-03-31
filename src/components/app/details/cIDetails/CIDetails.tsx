@@ -666,8 +666,19 @@ const renderSecurityScanRecommendation = (appId: number, buildId: number) => {
         buildId,
     })
 
+    if(scanRecommendationsResultLoading) {
+        return (
+            <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1000 ">
+                {getSecurityScanRecommendationTitle()}
+                <div className="flex en-2 bw-1 p-20 h-200 br-8">
+                    <Progressing />
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1200">
+        <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1000">
             {getSecurityScanRecommendationTitle()}
             {scanRecommendationsResultError && (
                 <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
@@ -687,8 +698,6 @@ const renderSecurityScanRecommendation = (appId: number, buildId: number) => {
             <SecurityScansRecommendations
                 scanRecommendationLoading={scanRecommendationsResultLoading}
                 scanRecommendationResponse={scanRecommendationsResultResponse}
-                scanRecommendationError={scanRecommendationsResultError}
-                reloadScanRecommendation={reloadScanRecommendationsResult}
             />
         </div>
     )
@@ -715,7 +724,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
 
         if (['starting', 'running'].includes(normalizedStatus)) {
             return (
-                <div className="flexbox-col mw-600 dc__mxw-1200">
+                <div className="flexbox-col mw-600 dc__mxw-1000">
                     {renderHeader()}
                     <CIRunningView isSecurityTab />
                 </div>
@@ -724,7 +733,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
 
         if (!artifactId) {
             return (
-                <div className="flexbox-col mw-600 dc__mxw-1200">
+                <div className="flexbox-col mw-600 dc__mxw-1000 dc__gap-12">
                     {renderHeader()}
                     <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
                         <GenericEmptyState
@@ -746,7 +755,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
 
         if (scanResultError) {
             return (
-                <div className="flexbox-col mw-600 dc__mxw-1200">
+                <div className="flexbox-col mw-600 dc__mxw-1000">
                     {renderHeader()}
                     <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
                         <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />

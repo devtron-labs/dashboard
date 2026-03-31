@@ -15,6 +15,8 @@ import {
     SecurityScanRecommendationTableAdditionalProps,
 } from './types'
 
+import './security.scss'
+
 const RECOMMENDATION_LEVEL_PRIORITY: Record<string, number> = {
     error: 0,
     warning: 1,
