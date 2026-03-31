@@ -1628,6 +1628,7 @@ const DockerForm = ({
                         <div className="form__row">
                             <CustomInput
                                 name="assumeRoleArn"
+                                dataTestId="ecr-assume-role-arn-textbox"
                                 value={customState.assumeRoleArn.value}
                                 error={customState.assumeRoleArn.error}
                                 onChange={customHandleChange}
