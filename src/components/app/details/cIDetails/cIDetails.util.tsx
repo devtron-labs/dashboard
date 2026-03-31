@@ -20,7 +20,7 @@ import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-ope
 
 export const CIRunningView = (props) => {
     return (
-        <div className="flexbox-col p-16 bg__primary flex-grow-1 en-1 bw-1 br-8">
+        <div className="flexbox-col p-16 bg__primary flex-grow-1 en-2 bw-1 br-8">
         <GenericEmptyState
             SvgImage={MechanicalOperation}
             title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}

@@ -674,7 +674,6 @@ const renderSecurityScanRecommendation = (appId: number, buildId: number) => {
                     {scanRecommendationsResultError.code === 404 ? (
                         <GenericEmptyState
                             title="Dockerfile scan not found"
-                            subTitle="The dockerfile scan for this build was not found."
                             SvgImage={MechanicalOperation}
                         />
                     ) : (
