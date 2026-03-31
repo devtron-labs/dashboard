@@ -1,12 +1,10 @@
 import type { MouseEvent } from 'react'
 
-import { ResponseType, ScanRecommendationsDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SecurityScansRecommendationsProps {
     scanRecommendationLoading: boolean
     scanRecommendationResponse: ResponseType<ScanRecommendationsDTO>
-    scanRecommendationError: ServerErrors
-    reloadScanRecommendation: () => void
 }
 
 export type RecommendationResult = ScanRecommendationsDTO['results'][number]
