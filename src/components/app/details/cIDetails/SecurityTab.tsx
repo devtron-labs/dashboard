@@ -43,10 +43,6 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     })
 
     const renderSecurityScanRecommendation = () => {
-        if (!forceDockerfileScan && !scanRecommendationsResultResponse?.result?.results?.length) {
-            return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
-        }
-
         if (scanRecommendationsResultLoading) {
             return (
                 <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1000 ">
@@ -56,6 +52,10 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
                     </div>
                 </div>
             )
+        }
+
+        if (!forceDockerfileScan && !scanRecommendationsResultResponse?.result?.results?.length) {
+            return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
         }
 
         return (
@@ -114,8 +114,11 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
         if (scanResultLoading) {
             return (
-                <div className="bg__primary flex-grow-1">
-                    <Progressing pageLoader />
+                <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1000 ">
+                    {renderHeader()}
+                    <div className="flex en-2 bw-1 p-20 h-200 br-8">
+                        <Progressing />
+                    </div>
                 </div>
             )
         }
