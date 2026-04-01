@@ -42,18 +42,18 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     })
 
     const renderDockerfileScannerContent = () => {
+        const dockerfileScanRecommendation = scanRecommendationsResultResponse?.result
+
+        if (!forceDockerfileScan && !dockerfileScanRecommendation?.results?.length) {
+            return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
+        }
+
         if (scanRecommendationsResultLoading || scanRecommendationsResultResponse?.result?.status === 0) {
             return (
                 <div className="flex en-2 bw-1 p-20 h-150 br-8">
                     <Progressing />
                 </div>
             )
-        }
-
-        const dockerfileScanRecommendation = scanRecommendationsResultResponse?.result
-
-        if (!forceDockerfileScan && !dockerfileScanRecommendation?.results?.length) {
-            return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
         }
 
         if (scanRecommendationsResultError) {
@@ -91,6 +91,14 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     const renderSecurityScanContent = () => {
         const normalizedStatus = status?.toLowerCase()
 
+        if (scanResultLoading) {
+            return (
+                <div className="flex en-2 bw-1 p-20 h-150 br-8">
+                    <Progressing />
+                </div>
+            )
+        }
+
         if (['starting', 'running'].includes(normalizedStatus)) {
             return <CIRunningView isSecurityTab />
         }
@@ -102,14 +110,6 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
                         title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
                         subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
                     />
-                </div>
-            )
-        }
-
-        if (scanResultLoading) {
-            return (
-                <div className="flex en-2 bw-1 p-20 h-150 br-8">
-                    <Progressing />
                 </div>
             )
         }
