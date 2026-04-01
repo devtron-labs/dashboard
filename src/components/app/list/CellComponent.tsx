@@ -30,7 +30,7 @@ export const CellComponent = ({
         return (
             <div className="flex left" data-testid="devtron-app-status">
                 <AppStatus
-                    status={isExpandedRow ? env.status : app.defaultEnv.appStatus}
+                    status={isExpandedRow ? env.appStatus : app.defaultEnv.appStatus}
                     isVirtualEnv={isExpandedRow ? env.isVirtualEnvironment : app.defaultEnv.isVirtualEnvironment}
                 />
             </div>
