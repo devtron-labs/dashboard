@@ -42,43 +42,34 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     })
 
     const renderDockerfileScannerContent = () => {
-        const dockerfileScanRecommendation = scanRecommendationsResultResponse?.result
-
-        if (!forceDockerfileScan && !dockerfileScanRecommendation?.results?.length) {
-            return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
+        if (scanRecommendationsResultError) {
+            return (
+                <ErrorScreenManager
+                    code={scanRecommendationsResultError.code}
+                    reload={reloadScanRecommendationsResult}
+                />
+            )
         }
 
         if (scanRecommendationsResultLoading || scanRecommendationsResultResponse?.result?.status === 0) {
             return (
-                <div className="flex en-2 bw-1 p-20 h-150 br-8">
+                <div className="flexbox-col h-150">
                     <Progressing />
                 </div>
             )
         }
-
-        if (scanRecommendationsResultError) {
-            return (
-                <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
-                    <ErrorScreenManager
-                        code={scanRecommendationsResultError.code}
-                        reload={reloadScanRecommendationsResult}
-                    />
-                </div>
-            )
+        if (!forceDockerfileScan && !scanRecommendationsResultResponse?.result?.results) {
+            return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
         }
 
-        return (
-            <DockerfileScansRecommendations
-                scanRecommendationLoading={scanRecommendationsResultLoading}
-                scanRecommendationResponse={scanRecommendationsResultResponse}
-            />
-        )
+        return <DockerfileScansRecommendations scanRecommendationResponse={scanRecommendationsResultResponse} />
     }
 
     const renderDockerfileScanRecommendation = () => (
-        <div className="flexbox-col dc__gap-16">
+        <div className="flexbox-col dc__gap-16 ">
             {getSecurityScanRecommendationTitle()}
-            {renderDockerfileScannerContent()}
+
+            <div className="en-2 bw-1 br-8 cn-9">{renderDockerfileScannerContent()}</div>
         </div>
     )
 
@@ -93,7 +84,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
         if (scanResultLoading) {
             return (
-                <div className="flex en-2 bw-1 p-20 h-150 br-8">
+                <div className="flex en-2 bw-1 p-20 h-150 br-8 h-150">
                     <Progressing />
                 </div>
             )

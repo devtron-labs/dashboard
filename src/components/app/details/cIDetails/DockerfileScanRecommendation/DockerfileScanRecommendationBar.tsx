@@ -24,7 +24,7 @@ export const DockerfileScanRecommendationBar = ({
 
     return (
         <div
-            className={`security-scanner-bar__recommendations flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 ${isModalView ? 'm-20' : 'cursor'}`}
+            className={`security-scanner-bar__recommendations flexbox-col ${isModalView ? 'm-20' : 'cursor'}`}
             onClick={handleSecurityScanModal}
         >
             <div className="flexbox-col">

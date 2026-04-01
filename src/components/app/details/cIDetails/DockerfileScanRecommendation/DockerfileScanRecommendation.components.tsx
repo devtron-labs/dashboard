@@ -1,29 +1,19 @@
 import { useState } from 'react'
 
-import { Icon, Progressing, ReportTabEmptyState, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, ReportTabEmptyState, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DockerfileScanModal } from './DockerfileScanModal'
 import { DockerfileScanRecommendationBar } from './DockerfileScanRecommendationBar'
 import { DockerfileScansRecommendationsProps } from './types'
 
-export const DockerfileScansRecommendations = ({
-    scanRecommendationLoading,
-    scanRecommendationResponse,
-}: DockerfileScansRecommendationsProps) => {
+export const DockerfileScansRecommendations = ({ scanRecommendationResponse }: DockerfileScansRecommendationsProps) => {
     const [showSecurityScanModal, setShowSecurityScanModal] = useState(false)
 
     const recommendations: ScanRecommendationsDTO | undefined = scanRecommendationResponse?.result
 
-    if (!recommendations) {
-        return null
-    }
-
     const { results, severity_summary: severitySummary, dockerfileScanEnabled } = recommendations
-    const hasRecommendations = !!results?.length
 
-    const handleSecurityScanModal = () => {
-        setShowSecurityScanModal((currentState) => !currentState)
-    }
+    const hasRecommendations = !!results?.length
 
     const { error, warning } = severitySummary
 
@@ -38,19 +28,15 @@ export const DockerfileScansRecommendations = ({
         )
     }
 
-    if (scanRecommendationLoading) {
-        return (
-            <div className="flex en-2 bw-1">
-                <Progressing />
-            </div>
-        )
+    const handleSecurityScanModal = () => {
+        setShowSecurityScanModal((currentState) => !currentState)
     }
 
     return (
         <div className="security-recommendations">
             {!hasThreats || !hasRecommendations ? (
                 <div
-                    className={`security-scanner-bar__no-recommendations ${hasThreats ? 'security-scanner-bar__recommendations' : ''} flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16`}
+                    className={`security-scanner-bar__no-recommendations ${hasThreats ? 'security-scanner-bar__recommendations' : ''}  p-16`}
                 >
                     <div className="flexbox dc__content-space dc__gap-2">
                         <div className="flexbox-col dc__gap-2">

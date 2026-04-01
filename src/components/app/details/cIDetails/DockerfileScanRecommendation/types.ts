@@ -3,7 +3,6 @@ import type { MouseEvent } from 'react'
 import { ResponseType, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface DockerfileScansRecommendationsProps {
-    scanRecommendationLoading: boolean
     scanRecommendationResponse: ResponseType<ScanRecommendationsDTO>
 }
 

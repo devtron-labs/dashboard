@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useEffect } from 'react'
+
 import { getSecurityScan, getSecurityScanRecommendations, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
@@ -21,6 +23,8 @@ import {
     UseGetAppSecurityDetailsReturnType,
     UseSecurityRecommendationReturnType,
 } from './appDetails.type'
+
+const SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL = 3000
 
 export const useGetAppSecurityDetails = ({
     appId,
@@ -52,6 +56,20 @@ export const useGetAppSecurityDetailsRecommendations = ({
         scanRecommendationsResultError,
         reloadScanRecommendationsResult,
     ] = useAsync(() => getSecurityScanRecommendations({ appId, buildId }), [appId, buildId], !!appId && !!buildId)
+
+    useEffect(() => {
+        if (!appId || !buildId || scanRecommendationsResultResponse?.result?.status !== 0) {
+            return undefined
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            reloadScanRecommendationsResult()
+        }, SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL)
+
+        return () => {
+            window.clearTimeout(timeoutId)
+        }
+    }, [appId, buildId, reloadScanRecommendationsResult, scanRecommendationsResultResponse?.result?.status])
 
     return {
         scanRecommendationsResultLoading,
