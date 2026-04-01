@@ -229,6 +229,7 @@ const DevtronAppList = ({
                 filterConfig,
                 noRows,
                 isSearchOrFilterApplied,
+                redirectToAppDetails,
             }}
             additionalFilterProps={{
                 initialSortKey: AppListSortableKeys.APP_NAME,
