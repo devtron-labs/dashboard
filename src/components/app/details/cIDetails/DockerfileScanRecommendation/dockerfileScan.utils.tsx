@@ -178,11 +178,11 @@ export const SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS: SecurityScanRecommenda
     },
 ]
 
-export const HADOLINT_LINK = 'https://hadolint.github.io/hadolint/'
+export const HADOLINT_ICON_LINK = 'https://cdn.devtron.ai/images/Hadolint.svg'
 
 export const getSecurityScanRecommendationTitle = () => (
     <div className="flex dc__content-space dc__border-bottom-n1 pb-8">
         <h3 className="m-0 fs-13 fw-6 lh-20">Dockerfile Linting</h3>
-        <ScannedByToolModal scanToolName="Hadolint" scanToolUrl={HADOLINT_LINK} />
+        <ScannedByToolModal scanToolName="Hadolint" scanToolUrl={HADOLINT_ICON_LINK} />
     </div>
 )

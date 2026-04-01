@@ -36,6 +36,7 @@ import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
 import { Cluster } from '@Services/service.types'
 
 import {
+    AppListFilterKey,
     AppListFilterMenuItemType,
     AppListSortableKeys,
     AppListUrlFilters,
@@ -75,6 +76,7 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppListUrlFilters.cluster]: searchParams.getAll(AppListUrlFilters.cluster),
     [AppListUrlFilters.namespace]: searchParams.getAll(AppListUrlFilters.namespace),
     [AppListUrlFilters.templateType]: searchParams.getAll(AppListUrlFilters.templateType),
+    [AppListUrlFilters.labelSelector]: searchParams.get(AppListUrlFilters.labelSelector) ?? '',
 })
 
 export const getFormattedFilterLabel = (filterType: AppListUrlFilters) => {
@@ -198,7 +200,7 @@ export const useFilterOptions = ({
 }
 
 export const getFilterChipConfig = (
-    filterConfig: AppListUrlFiltersType,
+    filterConfig: Omit<AppListUrlFiltersType, AppListUrlFilters.labelSelector>,
     appType: InfrastructureManagementAppListType,
 ): Partial<AppListUrlFiltersType> => {
     const { cluster, namespace, templateType } = filterConfig
@@ -207,8 +209,9 @@ export const getFilterChipConfig = (
             return { cluster, namespace }
         case InfrastructureManagementAppListType.FLUX_CD:
             return { cluster, namespace, templateType }
-        default:
+        default: {
             return { ...filterConfig, templateType: [] }
+        }
     }
 }
 
@@ -219,7 +222,8 @@ export const getAppListFilters = ({
     isArgoInstalled,
     serverMode,
     selectedEnvironments,
-}: GetAppListFiltersParams): GroupedFilterSelectPickerProps<AppListUrlFilters>['options'] => [
+    isDevtronAppList,
+}: GetAppListFiltersParams): GroupedFilterSelectPickerProps<AppListFilterKey>['options'] => [
     {
         items: [
             ...((!(isExternalArgo || isExternalFlux)
@@ -285,6 +289,15 @@ export const getAppListFilters = ({
                 isDisabled: !clusterIdsCsv,
                 tooltipProps: { content: !clusterIdsCsv ? SELECT_CLUSTER_TIPPY : null },
             },
+            ...((isDevtronAppList
+                ? [
+                      {
+                          id: AppListUrlFilters.labelSelector,
+                          label: 'Tags',
+                          startIcon: { name: 'ic-tag' },
+                      },
+                  ]
+                : []) as AppListFilterMenuItemType[]),
         ],
     },
 ]

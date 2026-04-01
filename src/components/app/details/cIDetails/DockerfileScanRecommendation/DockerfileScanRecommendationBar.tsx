@@ -8,6 +8,7 @@ import {
     ZERO_TIME_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { HADOLINT_ICON_LINK } from './dockerfileScan.utils'
 import { DockerfileScanRecommendationBarProps } from './types'
 
 export const DockerfileScanRecommendationBar = ({
@@ -57,7 +58,7 @@ export const DockerfileScanRecommendationBar = ({
                                 Scanned on {dayjs(lastScanTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}{' '}
                             </span>
                         </div>
-                        <ScannedByToolModal scanToolName="Hadolint" scanToolUrl="" />
+                        <ScannedByToolModal scanToolName="Hadolint" scanToolUrl={HADOLINT_ICON_LINK} />
                     </div>
                 ) : null}
             </div>

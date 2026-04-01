@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { MutableRefObject, useMemo } from 'react'
 import ReactGA from 'react-ga4'
 
 import {
@@ -33,8 +33,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getDevtronAppListDataToExport } from './AppListService'
-import { AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
+import { AppListFilterKey, AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
 import { APP_STATUS_FILTER_OPTIONS, APPLIST_EXPORT_HEADERS, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
+import LabelSelectorForm from './LabelSelectorForm'
 import { getAppListFilters, getAppTabNameFromAppType, useFilterOptions } from './list.utils'
 
 const AppListFilters = ({
@@ -58,6 +59,9 @@ const AppListFilters = ({
     lastSyncTimeString,
     showExportCsvButton,
     isDataSyncing,
+    isDevtronAppList,
+    labelSelectors,
+    handleApplyLabelSelectors,
 }: AppListFiltersProps) => {
     const { appStatus, cluster, environment, namespace, project, templateType, searchKey } = filterConfig
 
@@ -131,7 +135,17 @@ const AppListFilters = ({
         updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
     }
 
-    const appListFiltersSelectPickerMap: GroupedFilterSelectPickerProps<AppListUrlFilters>['filterSelectPickerPropsMap'] =
+    const renderLabelSelectionForm = (closePopover: () => void, scrollableRef: MutableRefObject<HTMLDivElement>) => (
+        <div ref={scrollableRef} className="dc__overflow-auto mxh-400">
+            <LabelSelectorForm
+                closePopover={closePopover}
+                initialLabels={labelSelectors}
+                onApply={handleApplyLabelSelectors}
+            />
+        </div>
+    )
+
+    const appListFiltersSelectPickerMap: GroupedFilterSelectPickerProps<AppListFilterKey>['filterSelectPickerPropsMap'] =
         {
             [AppListUrlFilters.appStatus]: {
                 placeholder: 'App Status',
@@ -198,6 +212,11 @@ const AppListFilters = ({
                 optionListError: appListFiltersError,
                 reloadOptionList: reloadAppListFilters,
             },
+            [AppListUrlFilters.labelSelector]: {
+                variant: 'popover',
+                component: renderLabelSelectionForm,
+                popoverConfig: { width: 560, position: 'bottom' },
+            },
         }
 
     const getExportToCsvApiPromise: ExportToCsvProps<(typeof APPLIST_EXPORT_HEADERS)[number]['key']>['apiPromise'] = ({
@@ -247,7 +266,7 @@ const AppListFilters = ({
                     keyboardShortcut="/"
                 />
                 <div className="dc__position-rel">
-                    <GroupedFilterSelectPicker<AppListUrlFilters>
+                    <GroupedFilterSelectPicker<AppListFilterKey>
                         id="app-list-filters"
                         width={200}
                         isFilterApplied={
@@ -257,7 +276,8 @@ const AppListFilters = ({
                                 selectedEnvironments.length ||
                                 selectedTemplateTypes.length ||
                                 selectedClusters.length ||
-                                selectedNamespaces.length
+                                selectedNamespaces.length ||
+                                labelSelectors.length
                             )
                         }
                         options={getAppListFilters({
@@ -267,6 +287,7 @@ const AppListFilters = ({
                             isArgoInstalled,
                             serverMode,
                             selectedEnvironments,
+                            isDevtronAppList,
                         })}
                         filterSelectPickerPropsMap={appListFiltersSelectPickerMap}
                     />
