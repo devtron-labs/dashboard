@@ -1444,9 +1444,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.23.4-beta-1":
-  version: 1.23.4-beta-1
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.23.4-beta-1"
+"@devtron-labs/devtron-fe-common-lib@npm:1.23.4-beta-2":
+  version: 1.23.4-beta-2
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.23.4-beta-2"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1469,7 +1469,7 @@ __metadata:
     "@uiw/react-codemirror": "npm:4.23.7"
     "@uiw/react-md-editor": "npm:^4.0.11"
     "@xyflow/react": "npm:12.4.2"
-    ansi_up: "npm:^5.2.1"
+    ansi_up: "npm:6.0.6"
     chart.js: "npm:4.5.0"
     codemirror-json-schema: "npm:0.8.0"
     cronstrue: "npm:^3.9.0"
@@ -1499,7 +1499,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/1780e6ed466d2a6afc38ea9b05f4c6f01fcffbb20876908e68a8e9bf6a050c00f803fb44ca370e23c103457bb2489a2ba9f7be11ef6155dd8dab0a098ba98e5c
+  checksum: 10c0/f9e7b4bdce77103145be8dd3a8752ca66ca20b01c6ae186c43da0c6822020c590b93766cc4b2732d5ade74cf1c35d468fb5d6c26eb0344578b3047b55d1cd68b
   languageName: node
   linkType: hard
 
@@ -4400,10 +4400,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi_up@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "ansi_up@npm:5.2.1"
-  checksum: 10c0/5a91e80c3b1299a06e803ada5f896bca6659ffff39e2ca9599c398325ba33d03b43ca25f9a7fa880c8300eb801471cd792edaec2eacc9fb6ba8310f9d0575f20
+"ansi_up@npm:6.0.6":
+  version: 6.0.6
+  resolution: "ansi_up@npm:6.0.6"
+  checksum: 10c0/a94109bf8bb0da87260178c7d251fbbd3c4b7f079399bfc2de02a9ddcc82424a5392a813cc00270a25a3ae858cb2d30adc10e4999dd6da071ef4d59062cb440d
   languageName: node
   linkType: hard
 
@@ -5425,7 +5425,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.23.4-beta-1"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.23.4-beta-2"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@sentry/browser": "npm:7.119.1"
