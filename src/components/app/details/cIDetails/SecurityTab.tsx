@@ -44,10 +44,12 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     const renderDockerfileScannerContent = () => {
         if (scanRecommendationsResultError) {
             return (
-                <ErrorScreenManager
-                    code={scanRecommendationsResultError.code}
-                    reload={reloadScanRecommendationsResult}
-                />
+                <div className="p-20">
+                    <ErrorScreenManager
+                        code={scanRecommendationsResultError.code}
+                        reload={reloadScanRecommendationsResult}
+                    />
+                </div>
             )
         }
 
