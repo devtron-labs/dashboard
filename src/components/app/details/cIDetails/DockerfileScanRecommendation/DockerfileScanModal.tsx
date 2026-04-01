@@ -13,8 +13,8 @@ import {
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SecurityScanRecommendationBar } from './SecrityScanRecommendationBar'
-import { getRecommendationRowId, SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS } from './SecurityRecommendation.utils'
+import { getRecommendationRowId, SECURITY_SCAN_RECOMMENDATIONS_TABLE_COLUMNS } from './dockerfileScan.utils'
+import { DockerfileScanRecommendationBar } from './DockerfileScanRecommendationBar'
 import {
     ExpandRowCallback,
     SecurityScanRecommendationModalProps,
@@ -26,7 +26,7 @@ import './security.scss'
 
 const CLOSE_BUTTON_ID = 'security-scan-recommendations-close'
 
-export const SecurityScanModal = ({
+export const DockerfileScanModal = ({
     summary,
     recommendations,
     handleSecurityScanModal,
@@ -125,7 +125,7 @@ export const SecurityScanModal = ({
                     />
                 </div>
                 <div className="dc__overflow-auto flexbox-col flex-grow-1 mh-0">
-                    <SecurityScanRecommendationBar summary={summary} isModalView lastScanTime={lastScanTime} />
+                    <DockerfileScanRecommendationBar summary={summary} isModalView lastScanTime={lastScanTime} />
                     <Table<
                         SecurityScanRecommendationRowTypes,
                         FiltersTypeEnum.URL,

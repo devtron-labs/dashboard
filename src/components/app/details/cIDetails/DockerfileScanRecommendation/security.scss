@@ -1,5 +1,5 @@
 .warning {
-    color: var(--Y500);
+    color: var(--O600);
     border: 1px solid var(--progress-O200, #FFBEAD);
     background: var(--progress-O100, #FFE5DE);
     color: var(--O600, var(--progress-O600, #E55E39));
@@ -7,6 +7,14 @@
 
 .error {
     color: var(--R500);
+    border: 1px solid var(--negative-R200, #FCBCBC);
+    background: var(--negative-R100, #FDE7E7);
+}
+
+.info {
+    color: var(--B500);
+    border: 1px solid var(--B500);
+    background: var(--B100)
 }
 
 .security-scanner-bar {

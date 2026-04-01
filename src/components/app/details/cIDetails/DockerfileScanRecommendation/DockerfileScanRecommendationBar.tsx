@@ -8,15 +8,14 @@ import {
     ZERO_TIME_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { HADOLINT_LINK } from './SecurityRecommendation.utils'
-import { SecurityScanRecommendationBarProps } from './types'
+import { DockerfileScanRecommendationBarProps } from './types'
 
-export const SecurityScanRecommendationBar = ({
+export const DockerfileScanRecommendationBar = ({
     summary,
     handleSecurityScanModal,
     isModalView = false,
     lastScanTime,
-}: SecurityScanRecommendationBarProps) => {
+}: DockerfileScanRecommendationBarProps) => {
     const { error, warning, info } = summary
     const totalCount = error + warning
     const shouldShowLastScanTime =
@@ -41,7 +40,7 @@ export const SecurityScanRecommendationBar = ({
                             entities={[
                                 { color: 'var(--Y500)', label: 'Warnings', value: warning || 0 },
                                 { color: 'var(--R500)', label: 'Errors', value: error || 0 },
-                                { color: 'var(--N500)', label: 'Info', value: info || 0 },
+                                { color: 'var(--B500)', label: 'Info', value: info || 0 },
                             ]}
                             labelClassName="fs-13 fw-4 lh-20"
                             countClassName="fs-13 fw-6 lh-20 cn-7"
@@ -58,7 +57,7 @@ export const SecurityScanRecommendationBar = ({
                                 Scanned on {dayjs(lastScanTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}{' '}
                             </span>
                         </div>
-                        <ScannedByToolModal scanToolName="Hadolint" scanToolUrl={HADOLINT_LINK} />
+                        <ScannedByToolModal scanToolName="Hadolint" scanToolUrl="" />
                     </div>
                 ) : null}
             </div>

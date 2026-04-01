@@ -21,6 +21,7 @@ import {
     CiPipelineSourceTypeOption,
     CustomInput,
     SourceTypeMap,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
@@ -229,7 +230,9 @@ export const Build = ({
     const renderScanner = () => (
         <div className="en-2 bw-1 br-4 p-16 flexbox-col dc__gap-16">
             <div style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}>
-                <BugScanner />
+                <div className="flex icon-dim-40 scan-icon-wrapper">
+                    <Icon name="ic-bg-scan" size={30} color={null} />
+                </div>
                 <div>
                     <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for vulnerabilities</p>
                     <p className="fs-13 lh-18 mb-0 fs-12">Perform security scan after container image is built.</p>
@@ -244,7 +247,9 @@ export const Build = ({
             </div>
             <div className="dc__border-bottom dc__secondary" />
             <div style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}>
-                <BugScanner />
+                <div className="icon-dim-40 scan-icon-wrapper flex">
+                    <Icon name="ic-bg-docker-scanner" size={30} color={null} />
+                </div>
                 <div>
                     <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for recommendations</p>
                     <p className="fs-13 lh-18 mb-0 fs-12">

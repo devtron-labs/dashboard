@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import {
+    EMPTY_STATE_STATUS,
     ErrorScreenManager,
     GenericEmptyState,
     Progressing,
@@ -9,13 +10,11 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { EMPTY_STATE_STATUS } from '@Config/constantMessaging'
 
 import { useGetAppSecurityDetails, useGetAppSecurityDetailsRecommendations } from '../appDetails/AppSecurity'
-import { getSecurityScanRecommendationTitle } from './SecurityScanRecommendation/SecurityRecommendation.utils'
-import { SecurityScansRecommendations } from './SecurityScanRecommendation/SecurityScanRecommendations.components'
+import { getSecurityScanRecommendationTitle } from './DockerfileScanRecommendation/dockerfileScan.utils'
+import { DockerfileScansRecommendations } from './DockerfileScanRecommendation/DockerfileScanRecommendation.components'
 import { CIRunningView } from './cIDetails.util'
 import { SecurityTabType } from './types'
 
@@ -42,44 +41,46 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
         buildId: +buildId,
     })
 
-    const renderSecurityScanRecommendation = () => {
+    const renderDockerfileScannerContent = () => {
         if (scanRecommendationsResultLoading) {
             return (
-                <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1000 ">
-                    {getSecurityScanRecommendationTitle()}
-                    <div className="flex en-2 bw-1 p-20 h-200 br-8">
-                        <Progressing />
-                    </div>
+                <div className="flex en-2 bw-1 p-20 h-150 br-8">
+                    <Progressing />
                 </div>
             )
         }
 
-        if (!forceDockerfileScan && !scanRecommendationsResultResponse?.result?.results?.length) {
+        const dockerfileScanRecommendation = scanRecommendationsResultResponse?.result
+
+        if (!forceDockerfileScan && !dockerfileScanRecommendation?.results?.length) {
             return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
         }
 
+        if (scanRecommendationsResultError) {
+            return (
+                <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
+                    <ErrorScreenManager
+                        code={scanRecommendationsResultError.code}
+                        reload={reloadScanRecommendationsResult}
+                    />
+                </div>
+            )
+        }
+
         return (
-            <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1000">
-                {getSecurityScanRecommendationTitle()}
-                {scanRecommendationsResultError && (
-                    <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
-                        {scanRecommendationsResultError.code === 404 ? (
-                            <GenericEmptyState title="Dockerfile scan not found" SvgImage={MechanicalOperation} />
-                        ) : (
-                            <ErrorScreenManager
-                                code={scanRecommendationsResultError.code}
-                                reload={reloadScanRecommendationsResult}
-                            />
-                        )}
-                    </div>
-                )}
-                <SecurityScansRecommendations
-                    scanRecommendationLoading={scanRecommendationsResultLoading}
-                    scanRecommendationResponse={scanRecommendationsResultResponse}
-                />
-            </div>
+            <DockerfileScansRecommendations
+                scanRecommendationLoading={scanRecommendationsResultLoading}
+                scanRecommendationResponse={scanRecommendationsResultResponse}
+            />
         )
     }
+
+    const renderDockerfileScanRecommendation = () => (
+        <div className="flexbox-col dc__gap-16">
+            {getSecurityScanRecommendationTitle()}
+            {renderDockerfileScannerContent()}
+        </div>
+    )
 
     const renderHeader = () => (
         <div className="flexbox dc__content-space pb-8 dc__border-bottom-n1">
@@ -91,7 +92,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
         if (['starting', 'running'].includes(normalizedStatus)) {
             return (
-                <div className="flexbox-col mw-600 dc__mxw-1000">
+                <div className="flexbox-col">
                     {renderHeader()}
                     <CIRunningView isSecurityTab />
                 </div>
@@ -100,7 +101,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
         if (!artifactId) {
             return (
-                <div className="flexbox-col mw-600 dc__mxw-1000 dc__gap-12">
+                <div className="flexbox-col dc__gap-12">
                     {renderHeader()}
                     <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
                         <GenericEmptyState
@@ -114,9 +115,9 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
         if (scanResultLoading) {
             return (
-                <div className="flexbox-col dc__gap-16 mw-600 dc__mxw-1000 ">
+                <div className="flexbox-col dc__gap-16">
                     {renderHeader()}
-                    <div className="flex en-2 bw-1 p-20 h-200 br-8">
+                    <div className="flex en-2 bw-1 p-20 h-150 br-8">
                         <Progressing />
                     </div>
                 </div>
@@ -125,7 +126,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
         if (scanResultError) {
             return (
-                <div className="flexbox-col mw-600 dc__mxw-1000">
+                <div className="flexbox-col">
                     {renderHeader()}
                     <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
                         <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
@@ -138,9 +139,11 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     }
 
     return (
-        <div className="flexbox-col bg__primary flex-grow-1 dc__gap-16 p-16">
-            {isEnterprise && renderSecurityScanRecommendation()}
-            {renderSecurityDetailsCards()}
+        <div className="bg__primary flex-grow-1 p-16">
+            <div className="flexbox-col mw-600 dc__mxw-1000 dc__gap-16">
+                {isEnterprise && renderDockerfileScanRecommendation()}
+                {renderSecurityDetailsCards()}
+            </div>
         </div>
     )
 }

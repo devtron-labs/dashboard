@@ -2,14 +2,14 @@ import { useState } from 'react'
 
 import { Icon, Progressing, ReportTabEmptyState, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SecurityScanRecommendationBar } from './SecrityScanRecommendationBar'
-import { SecurityScanModal } from './SecurityScanModal'
-import { SecurityScansRecommendationsProps } from './types'
+import { DockerfileScanModal } from './DockerfileScanModal'
+import { DockerfileScanRecommendationBar } from './DockerfileScanRecommendationBar'
+import { DockerfileScansRecommendationsProps } from './types'
 
-export const SecurityScansRecommendations = ({
+export const DockerfileScansRecommendations = ({
     scanRecommendationLoading,
     scanRecommendationResponse,
-}: SecurityScansRecommendationsProps) => {
+}: DockerfileScansRecommendationsProps) => {
     const [showSecurityScanModal, setShowSecurityScanModal] = useState(false)
 
     const recommendations: ScanRecommendationsDTO | undefined = scanRecommendationResponse?.result
@@ -24,6 +24,7 @@ export const SecurityScansRecommendations = ({
     const handleSecurityScanModal = () => {
         setShowSecurityScanModal((currentState) => !currentState)
     }
+
     const { error, warning } = severitySummary
 
     const hasThreats = error || warning
@@ -66,12 +67,12 @@ export const SecurityScansRecommendations = ({
                 </div>
             ) : (
                 <div className="flexbox-col dc__gap-12">
-                    <SecurityScanRecommendationBar
+                    <DockerfileScanRecommendationBar
                         summary={severitySummary}
                         handleSecurityScanModal={handleSecurityScanModal}
                     />
                     {showSecurityScanModal && (
-                        <SecurityScanModal
+                        <DockerfileScanModal
                             summary={severitySummary}
                             recommendations={recommendations.results}
                             handleSecurityScanModal={handleSecurityScanModal}

@@ -36,7 +36,7 @@ import { AggregatedNodes, UseGetDTAppDetailsReturnType } from '../../types'
 import {
     SecurityScanRecommendationRowTypes,
     SecurityScanRecommendationTableAdditionalProps,
-} from '../cIDetails/SecurityScanRecommendation/types'
+} from '../cIDetails/DockerfileScanRecommendation/types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',

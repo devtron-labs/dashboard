@@ -2,7 +2,7 @@ import type { MouseEvent } from 'react'
 
 import { ResponseType, ScanRecommendationsDTO } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface SecurityScansRecommendationsProps {
+export interface DockerfileScansRecommendationsProps {
     scanRecommendationLoading: boolean
     scanRecommendationResponse: ResponseType<ScanRecommendationsDTO>
 }
@@ -23,7 +23,7 @@ export type SecurityScanRecommendationModalProps = {
     isModalView?: boolean
 }
 
-export type SecurityScanRecommendationBarProps = Pick<
+export type DockerfileScanRecommendationBarProps = Pick<
     SecurityScanRecommendationModalProps,
     'summary' | 'handleSecurityScanModal' | 'isModalView' | 'lastScanTime'
 > & {}

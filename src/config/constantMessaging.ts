@@ -253,11 +253,6 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'No pipeline selected',
         SUBTITLE: 'Please select a pipeline',
     },
-    CI_DETAILS_IMAGE_SCANNED_DISABLED: 'Go to build pipeline configurations and enable ’Scan for vulnerabilities’',
-    CI_DETAILS_IMAGE_NOT_SCANNED: {
-        TITLE: 'Image not scanned',
-        SUBTITLE: 'This build was executed before scanning was enabled for this pipeline.',
-    },
     CD_DETAILS_NO_ENVIRONMENT: {
         TITLE: 'No environment selected',
         SUBTITLE: 'Please select an environment to start seeing CD deployments.',
