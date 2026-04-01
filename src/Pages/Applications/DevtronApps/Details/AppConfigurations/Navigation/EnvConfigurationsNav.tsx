@@ -310,7 +310,7 @@ const EnvConfigurationsNavContent = ({
     )
 }
 
-export const EnvConfigurationsNav = ({
+const EnvConfigurationsNavComponent = ({
     showBaseConfigurations,
     showDeploymentTemplate,
     envConfig,
@@ -523,4 +523,10 @@ export const EnvConfigurationsNav = ({
             </div>
         </nav>
     )
+}
+
+export const EnvConfigurationsNav = (props: EnvConfigurationsNavProps) => {
+    const params = useParams<{ envId?: string }>()
+
+    return <EnvConfigurationsNavComponent {...props} key={params.envId ?? ''} />
 }
