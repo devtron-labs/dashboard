@@ -51,7 +51,7 @@ export const DockerfileScanRecommendationBar = ({
                     </div>
                 </div>
                 {shouldShowLastScanTime ? (
-                    <div className="flex dc__content-space">
+                    <div className="flex dc__content-space pr-16">
                         <div className="flexbox dc__align-items-center dc__gap-6 py-8 dc__border-top py-8 px-16">
                             <Icon name="ic-clock" color={null} size={20} />
                             <span className="fs-12 fw-4 cn-8 lh-20">

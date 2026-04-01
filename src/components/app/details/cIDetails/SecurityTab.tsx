@@ -42,7 +42,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     })
 
     const renderDockerfileScannerContent = () => {
-        if (scanRecommendationsResultLoading) {
+        if (scanRecommendationsResultLoading || scanRecommendationsResultResponse?.result?.status === 0) {
             return (
                 <div className="flex en-2 bw-1 p-20 h-150 br-8">
                     <Progressing />
@@ -87,56 +87,49 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
             <span className="fs-13 fw-6 lh-1-5 cn-9">Security Scan</span>
         </div>
     )
-    const renderSecurityDetailsCards = () => {
+
+    const renderSecurityScanContent = () => {
         const normalizedStatus = status?.toLowerCase()
 
         if (['starting', 'running'].includes(normalizedStatus)) {
-            return (
-                <div className="flexbox-col">
-                    {renderHeader()}
-                    <CIRunningView isSecurityTab />
-                </div>
-            )
+            return <CIRunningView isSecurityTab />
         }
 
         if (!artifactId) {
             return (
-                <div className="flexbox-col dc__gap-12">
-                    {renderHeader()}
-                    <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
-                        <GenericEmptyState
-                            title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
-                            subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
-                        />
-                    </div>
+                <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
+                    <GenericEmptyState
+                        title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                        subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+                    />
                 </div>
             )
         }
 
         if (scanResultLoading) {
             return (
-                <div className="flexbox-col dc__gap-16">
-                    {renderHeader()}
-                    <div className="flex en-2 bw-1 p-20 h-150 br-8">
-                        <Progressing />
-                    </div>
+                <div className="flex en-2 bw-1 p-20 h-150 br-8">
+                    <Progressing />
                 </div>
             )
         }
 
         if (scanResultError) {
             return (
-                <div className="flexbox-col">
-                    {renderHeader()}
-                    <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
-                        <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
-                    </div>
+                <div className="flexbox-col en-2 bw-1 br-8 dc__gap-16 cn-9 p-16">
+                    <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
                 </div>
             )
         }
-
         return <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
     }
+
+    const renderSecurityDetailsCards = () => (
+        <div className="flexbox-col dc__gap-16">
+            {renderHeader()}
+            {renderSecurityScanContent()}
+        </div>
+    )
 
     return (
         <div className="bg__primary flex-grow-1 p-16">
