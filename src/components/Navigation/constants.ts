@@ -147,6 +147,13 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: COMMON_URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP,
             },
             {
+                title: 'Audit Logs',
+                dataTestId: 'click-on-audit-logs',
+                id: 'application-management-audit-logs',
+                icon: 'ic-application-group',
+                href: '/application-management/audit-logs',
+            },
+            {
                 title: 'Bulk Edit',
                 dataTestId: 'click-on-bulk-edit',
                 id: 'application-management-bulk-edit',

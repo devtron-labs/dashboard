@@ -22,21 +22,15 @@ import {
     AppEnvironment,
     DeploymentStatusDetailsBreakdownDataType,
     EnvAppsMetaDTO,
-    FiltersTypeEnum,
     OptionType,
     ResponseType,
     ScanRecommendationsDTO,
     ScanResultDTO,
     SelectPickerProps,
     ServerErrors,
-    TableCellComponentProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AggregatedNodes, UseGetDTAppDetailsReturnType } from '../../types'
-import {
-    SecurityScanRecommendationRowTypes,
-    SecurityScanRecommendationTableAdditionalProps,
-} from '../cIDetails/DockerfileScanRecommendation/types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -232,24 +226,3 @@ export type AppEnvSelectorProps =
           applications: EnvAppsMetaDTO['apps']
           environments?: never
       }
-
-export type SecurityScanRecommendationColumn = {
-    label: string
-    field: string
-    size: { fixed: number } | null
-    CellComponent: (
-        props: TableCellComponentProps<
-            SecurityScanRecommendationRowTypes,
-            FiltersTypeEnum.URL,
-            SecurityScanRecommendationTableAdditionalProps
-        >,
-    ) => JSX.Element | null
-} & (
-    | {
-          isSortable: true
-          comparator: (a: unknown, b: unknown) => number
-      }
-    | {
-          isSortable?: false
-      }
-)

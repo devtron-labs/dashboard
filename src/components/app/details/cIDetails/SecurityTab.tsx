@@ -13,16 +13,20 @@ import {
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { useGetAppSecurityDetails, useGetAppSecurityDetailsRecommendations } from '../appDetails/AppSecurity'
-import { getSecurityScanRecommendationTitle } from './DockerfileScanRecommendation/dockerfileScan.utils'
-import { DockerfileScansRecommendations } from './DockerfileScanRecommendation/DockerfileScanRecommendation.components'
 import { CIRunningView } from './cIDetails.util'
 import { SecurityTabType } from './types'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
+const DockerfileScansRecommendations = importComponentFromFELibrary('DockerfileScansRecommendations')
+const getSecurityScanRecommendationTitle = importComponentFromFELibrary(
+    'getSecurityScanRecommendationTitle',
+    null,
+    'function',
+)
 
 export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId, buildId } = useParams<{ appId: string; buildId: string }>()
-    const { isEnterprise, forceDockerfileScan } = useMainContext()
+    const { forceDockerfileScan } = useMainContext()
 
     const computedAppId = appId ?? appIdFromParent
 
@@ -69,7 +73,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
     const renderDockerfileScanRecommendation = () => (
         <div className="flexbox-col dc__gap-16 ">
-            {getSecurityScanRecommendationTitle()}
+            {!!getSecurityScanRecommendationTitle && getSecurityScanRecommendationTitle()}
 
             <div className="en-2 bw-1 br-8 cn-9">{renderDockerfileScannerContent()}</div>
         </div>
@@ -127,7 +131,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     return (
         <div className="bg__primary flex-grow-1 p-16">
             <div className="flexbox-col mw-600 dc__mxw-1000 dc__gap-16">
-                {isEnterprise && renderDockerfileScanRecommendation()}
+                {DockerfileScansRecommendations && renderDockerfileScanRecommendation()}
                 {renderSecurityDetailsCards()}
             </div>
         </div>
