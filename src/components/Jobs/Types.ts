@@ -82,11 +82,10 @@ export interface ExpandedRowProps {
     close: (e: any) => void
 }
 
-export interface JobListPayload
-    extends Pick<
-        AppListPayloadType,
-        'appNameSearch' | 'appStatuses' | 'environments' | 'teams' | 'offset' | 'size' | 'sortOrder'
-    > {
+export interface JobListPayload extends Pick<
+    AppListPayloadType,
+    'appNameSearch' | 'appStatuses' | 'environments' | 'teams' | 'offset' | 'size' | 'sortOrder'
+> {
     sortBy: JobsListSortableKeys
 }
 
@@ -97,22 +96,19 @@ export interface JobsMasterFilters {
 }
 
 export interface JobListFilterConfig
-    extends JobListUrlFiltersType,
-        Pick<JobListPayload, 'offset' | 'sortBy' | 'sortOrder'> {
+    extends JobListUrlFiltersType, Pick<JobListPayload, 'offset' | 'sortBy' | 'sortOrder'> {
     searchKey: string
     pageSize: number
 }
 
-export interface JobListProps
-    extends Pick<
-        UseUrlFiltersReturnType<JobsListSortableKeys>,
-        'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting' | 'handleSearch' | 'updateSearchParams'
-    > {
+export interface JobListProps extends Pick<
+    UseUrlFiltersReturnType<JobsListSortableKeys>,
+    'changePage' | 'changePageSize' | 'clearFilters' | 'handleSorting' | 'handleSearch' | 'updateSearchParams'
+> {
     masterFilters: JobsMasterFilters
     filterConfig: JobListFilterConfig
     filtersLoading: boolean
     jobListCount: number
-    openJobCreateModel: (event) => void
     setJobCount: React.Dispatch<React.SetStateAction<number>>
     getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => string
 }
@@ -184,16 +180,15 @@ export enum JobListStatusDTO {
     FAILED = 'Failed',
 }
 
-export interface JobListFilterProps
-    extends Pick<
-        JobListProps,
-        | 'filtersLoading'
-        | 'jobListCount'
-        | 'masterFilters'
-        | 'handleSearch'
-        | 'filterConfig'
-        | 'updateSearchParams'
-        | 'getLabelFromValue'
-    > {
+export interface JobListFilterProps extends Pick<
+    JobListProps,
+    | 'filtersLoading'
+    | 'jobListCount'
+    | 'masterFilters'
+    | 'handleSearch'
+    | 'filterConfig'
+    | 'updateSearchParams'
+    | 'getLabelFromValue'
+> {
     payload: JobListPayload
 }

@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -28,7 +28,7 @@ import { ConfigurationTableProps, SlackWebhookConfigurationTableRowType } from '
 export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { webhookConfigurationList } = state
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onClickWebhookConfigEdit = (id: number) => () => {
         const newParams = {
@@ -36,7 +36,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
             configId: id.toString(),
             modal: ConfigurationsTabTypes.WEBHOOK,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

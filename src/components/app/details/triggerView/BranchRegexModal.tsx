@@ -32,7 +32,7 @@ import {
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import Close from '@Icons/ic-close.svg?react'
 import { getGitProviderIcon } from '@Components/common'
 
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'

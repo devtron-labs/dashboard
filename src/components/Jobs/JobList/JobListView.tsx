@@ -15,11 +15,10 @@
  */
 
 import { useCallback, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate } from 'react-router-dom'
 
-import { FiltersTypeEnum, PaginationEnum, Table } from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, PaginationEnum, ROUTER_URLS, Table } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '../../../config'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { JobListViewType } from '../Constants'
 import JobsEmptyState from '../JobsEmptyState'
@@ -41,12 +40,15 @@ const JobListView = ({
     clearFilters,
     sortBy,
 }: JobListViewProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const [noJobs, setNoJobs] = useState(false)
 
     const createJobHandler = () => {
-        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
+        navigate({
+            pathname: ROUTER_URLS.CREATE_JOB,
+            search: location.search,
+        })
     }
 
     const isSearchOrFilterApplied = !!(searchKey || status?.length || project?.length || environment?.length)
@@ -108,7 +110,7 @@ const JobListView = ({
             return
         }
 
-        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${data.id}/${URLS.APP_OVERVIEW}`)
+        navigate(generatePath(ROUTER_URLS.JOB_DETAIL.OVERVIEW, { appId: String(data.id) }))
     }, [])
 
     // Show empty state if no jobs exist

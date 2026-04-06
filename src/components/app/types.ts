@@ -462,11 +462,10 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     handleOpenCDModal?: (isForRollback?: boolean) => () => void
 }
 
-export interface AppDetailsCDModalType
-    extends Pick<
-        AppDetails,
-        'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
-    > {
+export interface AppDetailsCDModalType extends Pick<
+    AppDetails,
+    'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
+> {
     cdModal: CDModalProps
     appName?: string
     handleSuccess?: DeployImageModalProps['handleSuccess']

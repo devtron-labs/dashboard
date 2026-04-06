@@ -29,9 +29,8 @@ import {
     InitTabType,
     K8sResourceDetailDataType,
     Nodes,
-    RESOURCE_BROWSER_ROUTES,
     ResponseType,
-    URLS as CommonURLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { LAST_SEEN } from '../../config'
@@ -67,6 +66,8 @@ const getResourceRecommenderTabConfig = importComponentFromFELibrary(
     null,
     'function',
 )
+
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[]): Map<string, K8SObjectMapType> =>
@@ -409,7 +410,9 @@ export const parseNodeList = (response: ResponseType<NodeRowDetail[]>, idPrefix:
 
 export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
     shouldRedirectToInstallationStatus
-        ? `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/installation-cluster/${id}`
+        ? generatePath(ROUTER_URLS.RESOURCE_BROWSER.INSTALLATION_CLUSTER, {
+              installationId: id,
+          })
         : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
               clusterId: id,
               group: K8S_EMPTY_GROUP,

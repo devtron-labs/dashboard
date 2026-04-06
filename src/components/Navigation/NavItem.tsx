@@ -88,8 +88,9 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
         <NavLink
             to={href}
             data-testid={dataTestId}
-            className="nav-item flex left dc__gap-8 px-8 py-6 br-4"
-            activeClassName="is-selected fw-6"
+            className={({ isActive }) =>
+                `nav-item flex left dc__gap-8 px-8 py-6 br-4 ${disabled ? 'dc__disabled' : ''} ${isActive ? 'is-selected fw-6' : ''}`
+            }
             aria-disabled={disabled}
             onClick={disabled ? preventDefault : handleNavItemClick}
         >

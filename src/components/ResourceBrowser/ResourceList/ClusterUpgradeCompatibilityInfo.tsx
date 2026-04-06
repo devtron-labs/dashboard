@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     CollapsibleList,
@@ -27,15 +27,15 @@ import {
     LARGE_PAGE_SIZE_OPTIONS,
     PaginationEnum,
     Progressing,
+    ROUTER_URLS,
     Table,
     TARGET_K8S_VERSION_SEARCH_KEY,
     URL_FILTER_KEYS,
-    URLS,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyCustomChart from '@Images/empty-noresult@2x.png'
-import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
+import NoOffendingPipeline from '@Images/no-offending-pipeline.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { ClusterDetailBaseParams } from '../Types'
@@ -61,7 +61,7 @@ const ClusterUpgradeCompatibilityInfo = ({
 }: ClusterUpgradeCompatibilityInfoProps) => {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
 
     const {
@@ -138,7 +138,7 @@ const ClusterUpgradeCompatibilityInfo = ({
             <ErrorScreenManager
                 code={compatibilityError.code}
                 reload={refetchCompatibilityList}
-                redirectURL={URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
+                redirectURL={ROUTER_URLS.RESOURCE_BROWSER.ROOT}
             />
         )
     }
@@ -161,7 +161,7 @@ const ClusterUpgradeCompatibilityInfo = ({
     const clearFilters = () => {
         const searchParams = new URLSearchParams(location.search)
         searchParams.delete(URL_FILTER_KEYS.SEARCH_KEY)
-        push({ search: searchParams.toString() })
+        navigate({ search: searchParams.toString() })
     }
 
     return (

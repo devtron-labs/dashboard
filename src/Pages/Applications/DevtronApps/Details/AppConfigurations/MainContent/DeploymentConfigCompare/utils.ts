@@ -295,7 +295,7 @@ export const getManifestRequestValues = (config: AppEnvDeploymentConfigDTO): { d
         null
 
     return {
-        data: _data ? YAMLStringify(_data) ?? '' : '',
+        data: _data ? (YAMLStringify(_data) ?? '') : '',
         chartRefId: getDraftConfigChartRefId(config),
     }
 }
@@ -339,8 +339,8 @@ export const getIdentifierIdBasedOnConfiguration = ({
     previousDeployments,
 }: SetIdentifierIdBasedOnConfigurationProps) => {
     const _identifierId = isManifestView
-        ? previousDeployments.find((prev) => prev.wfrId === identifierId)?.deploymentTemplateHistoryId ?? null
-        : previousDeployments.find((prev) => prev.deploymentTemplateHistoryId === identifierId)?.wfrId ?? null
+        ? (previousDeployments.find((prev) => prev.wfrId === identifierId)?.deploymentTemplateHistoryId ?? null)
+        : (previousDeployments.find((prev) => prev.deploymentTemplateHistoryId === identifierId)?.wfrId ?? null)
 
     return String(_identifierId)
 }

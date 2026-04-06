@@ -24,8 +24,8 @@ import {
     SelectPicker,
     ButtonVariantType,
     ButtonComponentType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../config'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -114,7 +114,7 @@ export default function CIContainerRegistryConfig({
                                               component: ButtonComponentType.link,
                                               dataTestId: 'add-container-registry-button',
                                               linkProps: {
-                                                  to: URLS.GLOBAL_CONFIG_DOCKER,
+                                                  to: ROUTER_URLS.GLOBAL_CONFIG_DOCKER,
                                               },
                                               startIcon: <Icon name="ic-add" color={null} />,
                                           },

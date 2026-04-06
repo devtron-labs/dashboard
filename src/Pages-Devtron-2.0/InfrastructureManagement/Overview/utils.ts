@@ -2,7 +2,7 @@ import {
     ClusterFiltersType,
     getUrlWithSearchParams,
     MetricsInfoCardProps,
-    URLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AUTOSCALER_TYPE_LABELS, NODE_ERRORS_LABEL_MAP } from './ClusterAndNodes/constants'
@@ -30,10 +30,10 @@ export const getInfraGlanceConfig = (result: InfraOverviewDTO) =>
     Object.entries(INFRA_OVERVIEW_CARDS_CONFIG).map(([key, config]: [GlanceMetricsKeys, MetricsInfoCardProps]) => ({
         ...config,
         dataTestId: key,
-        redirectionLink: URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
+        redirectionLink: ROUTER_URLS.RESOURCE_BROWSER.ROOT,
         metricValue: (key === GlanceMetricsKeys.REACHABLE_CLUSTERS
             ? getReachableClusterCount(result)
-            : result?.[key]?.value ?? 0
+            : (result?.[key]?.value ?? 0)
         ).toLocaleString(),
         metricUnit: key === GlanceMetricsKeys.REACHABLE_CLUSTERS ? undefined : result?.[key]?.unit,
         valueOutOf:
@@ -100,6 +100,6 @@ export const getNodeListDataForExport = (groupBy: NodeViewGroupType, nodeList: N
     })
 
 export const getClusterListingUrl = (clusterFilter?: ClusterFiltersType) =>
-    getUrlWithSearchParams(URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER, {
+    getUrlWithSearchParams(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_LIST, {
         clusterFilter: clusterFilter ?? ClusterFiltersType.ALL_CLUSTERS,
     })

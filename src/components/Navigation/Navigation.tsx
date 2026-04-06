@@ -26,8 +26,8 @@ import {
     ModuleStatus,
     motion,
     NavigationGroupType,
+    ROUTER_URLS,
     SearchBar,
-    URLS,
     useMainContext,
     useQuery,
     UseRegisterShortcutProvider,
@@ -263,7 +263,7 @@ export const Navigation = ({
                         <NavGroup
                             title="Stack Manager"
                             icon="ic-stack"
-                            to={URLS.STACK_MANAGER_ABOUT}
+                            to={ROUTER_URLS.STACK_MANAGER.ABOUT}
                             isExpanded={isExpanded}
                             onHover={handleCloseExpandedNavigation(true)}
                             showTooltip

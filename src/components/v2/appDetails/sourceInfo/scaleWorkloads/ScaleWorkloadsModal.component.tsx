@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type JSX } from 'react'
 import {
     showError,
     Progressing,
@@ -26,10 +26,10 @@ import {
     getIsRequestAborted,
     abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'
-import { ReactComponent as Restore } from '../../../../../assets/icons/ic-restore.svg'
+import Info from '../../../../../assets/icons/ic-info-filled.svg?react'
+import Close from '../../../../../assets/icons/ic-close.svg?react'
+import ScaleDown from '../../../../../assets/icons/ic-scale-down.svg?react'
+import Restore from '../../../../../assets/icons/ic-restore.svg?react'
 import {
     HibernateRequest,
     LoadingText,

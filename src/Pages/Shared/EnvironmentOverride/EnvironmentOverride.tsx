@@ -15,15 +15,16 @@
  */
 
 import { useEffect } from 'react'
-import { generatePath, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
     CMSecretComponentType,
     getIsApprovalPolicyConfigured,
+    mapByKey,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ErrorBoundary, mapByKey, useAppContext } from '@Components/common'
+import { ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/index'
 import { DeploymentTemplate } from '@Pages/Applications'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
@@ -44,11 +45,11 @@ const EnvironmentOverride = ({
     fetchEnvConfig,
     appOrEnvIdToResourceApprovalConfigurationMap,
     isTemplateView,
+    routePath,
 }: EnvironmentOverrideComponentProps) => {
     const isAppGroupView = !!envName
     const params = useParams<{ appId: string; envId: string }>()
-    const { path, url } = useRouteMatch()
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
     const environmentsMap = mapByKey(environments || [], 'environmentId')
@@ -69,11 +70,11 @@ const EnvironmentOverride = ({
             return
         }
         if (environmentsMap.has(environmentId)) {
-            const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
-            push(newUrl)
+            const newUrl = generatePath(routePath, { appId: params.appId, envId: String(environmentId) })
+            navigate(newUrl)
         } else {
             const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, null, isTemplateView)
-            push(workflowUrl)
+            navigate(workflowUrl)
         }
     }, [])
 
@@ -82,11 +83,11 @@ const EnvironmentOverride = ({
     }
 
     if (params.envId && !environmentsMap.has(+params.envId) && environments.length) {
-        const newUrl = url.replace(
+        const newUrl = location.pathname.replace(
             `${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}`,
             `${URLS.APP_ENV_OVERRIDE_CONFIG}/${environments[0].environmentId}`,
         )
-        push(newUrl)
+        navigate(newUrl)
     }
 
     const getParentName = (): string => {
@@ -124,65 +125,79 @@ const EnvironmentOverride = ({
     return (
         <ErrorBoundary>
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
-                <Switch>
-                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                        <DeploymentTemplate
-                            key={`deployment-${params.appId}-${params.envId}`}
-                            environmentName={getEnvName()}
-                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                approvalConfigMap?.[ApprovalConfigDataKindType.deploymentTemplate],
-                            )}
-                            reloadEnvironments={reloadEnvironments}
-                            clusterId={clusterId}
-                            fetchEnvConfig={fetchEnvConfig}
-                            isExceptionUser={
-                                approvalConfigMap?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
-                            }
-                            isTemplateView={isTemplateView}
-                        />
-                    </Route>
-                    <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretWrapper
-                            key={`configmap-${params.appId}-${params.envId}`}
-                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                approvalConfigMap?.[ApprovalConfigDataKindType.configMap],
-                            )}
-                            parentName={getParentName()}
-                            clusterId={clusterId}
-                            envConfig={envConfig}
-                            fetchEnvConfig={fetchEnvConfig}
-                            onErrorRedirectURL={onErrorRedirectURL}
-                            reloadEnvironments={reloadEnvironments}
-                            isJob={isJob}
-                            appName={getAppName()}
-                            envName={getEnvName()}
-                            isExceptionUser={approvalConfigMap?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
-                            isTemplateView={isTemplateView}
-                        />
-                    </Route>
-                    <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <ConfigMapSecretWrapper
-                            key={`secret-${params.appId}-${params.envId}`}
-                            isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
-                                approvalConfigMap?.[ApprovalConfigDataKindType.configSecret],
-                            )}
-                            parentName={getParentName()}
-                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
-                            componentType={CMSecretComponentType.Secret}
-                            envConfig={envConfig}
-                            fetchEnvConfig={fetchEnvConfig}
-                            onErrorRedirectURL={onErrorRedirectURL}
-                            reloadEnvironments={reloadEnvironments}
-                            isJob={isJob}
-                            appName={getAppName()}
-                            envName={getEnvName()}
-                            isExceptionUser={
-                                approvalConfigMap?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
-                            }
-                            isTemplateView={isTemplateView}
-                        />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route
+                        path={URLS.APP_DEPLOYMENT_CONFIG}
+                        element={
+                            <DeploymentTemplate
+                                key={`deployment-${params.appId}-${params.envId}`}
+                                environmentName={getEnvName()}
+                                isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                                    approvalConfigMap?.[ApprovalConfigDataKindType.deploymentTemplate],
+                                )}
+                                reloadEnvironments={reloadEnvironments}
+                                clusterId={clusterId}
+                                fetchEnvConfig={fetchEnvConfig}
+                                isExceptionUser={
+                                    approvalConfigMap?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
+                                }
+                                isTemplateView={isTemplateView}
+                            />
+                        }
+                    />
+                    <Route
+                        path={`${URLS.APP_CM_CONFIG}/:name?`}
+                        element={
+                            <ConfigMapSecretWrapper
+                                key={`configmap-${params.appId}-${params.envId}`}
+                                isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                                    approvalConfigMap?.[ApprovalConfigDataKindType.configMap],
+                                )}
+                                parentName={getParentName()}
+                                clusterId={clusterId}
+                                envConfig={envConfig}
+                                fetchEnvConfig={fetchEnvConfig}
+                                onErrorRedirectURL={onErrorRedirectURL}
+                                reloadEnvironments={reloadEnvironments}
+                                isJob={isJob}
+                                appName={getAppName()}
+                                envName={getEnvName()}
+                                isExceptionUser={
+                                    approvalConfigMap?.[ApprovalConfigDataKindType.configMap].isExceptionUser
+                                }
+                                isTemplateView={isTemplateView}
+                                routePath={`${routePath}/${URLS.APP_CM_CONFIG}/:name?`}
+                            />
+                        }
+                    />
+                    <Route
+                        path={`${URLS.APP_CS_CONFIG}/:name?`}
+                        element={
+                            <ConfigMapSecretWrapper
+                                key={`secret-${params.appId}-${params.envId}`}
+                                isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
+                                    approvalConfigMap?.[ApprovalConfigDataKindType.configSecret],
+                                )}
+                                parentName={getParentName()}
+                                clusterId={clusterId}
+                                componentType={CMSecretComponentType.Secret}
+                                envConfig={envConfig}
+                                fetchEnvConfig={fetchEnvConfig}
+                                onErrorRedirectURL={onErrorRedirectURL}
+                                reloadEnvironments={reloadEnvironments}
+                                isJob={isJob}
+                                appName={getAppName()}
+                                envName={getEnvName()}
+                                isExceptionUser={
+                                    approvalConfigMap?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
+                                }
+                                isTemplateView={isTemplateView}
+                                routePath={`${routePath}/${URLS.APP_CS_CONFIG}/:name?`}
+                            />
+                        }
+                    />
+                    <Route path="*" element={<Navigate to={URLS.APP_DEPLOYMENT_CONFIG} />} />
+                </Routes>
             </div>
         </ErrorBoundary>
     )

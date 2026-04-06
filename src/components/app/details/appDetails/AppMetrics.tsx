@@ -21,6 +21,7 @@ import {
     DocLink,
     not,
     Progressing,
+    ROUTER_URLS,
     ToastManager,
     ToastVariantType,
     UpdateDateRangeType,
@@ -50,15 +51,15 @@ import {
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
 import { InValidHostUrlWarningBlock } from '../../../common'
-import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
-import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
+import GraphIcon from '../../../../assets/icons/ic-graph.svg?react'
+import Fullscreen from '../../../../assets/icons/ic-fullscreen-2.svg?react'
+import OpenInNew from '../../../../assets/icons/ic-open-in-new.svg?react'
 import { getAppComposeURL, APP_COMPOSE_STAGE, DEFAULTK8SVERSION, ModuleNameMap, URLS } from '../../../../config'
 import { getDataSourceDetailsFromEnvironment, isDatasourceHealthy } from './appDetails.service'
 import { getHostURLConfiguration } from '../../../../services/service'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
+import DropDownIcon from '../../../../assets/icons/appstatus/ic-chevron-down.svg?react'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
@@ -539,7 +540,7 @@ const MonitoringModuleNotInstalled = ({ addSpace }: { addSpace: string }) => {
                     View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
                     app.&nbsp;
                     <NavLink
-                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
+                        to={`${ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
                         className="cb-5 fs-13 fw-6 anchor w-auto dc__no-decor flex"
                         target="_blank"
                     >
@@ -610,7 +611,7 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
                                     />
                                     &nbsp;
                                     <Link
-                                        to={URLS.GLOBAL_CONFIG_CLUSTER}
+                                        to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}
                                         className="cta small text"
                                         style={{ paddingLeft: '0' }}
                                     >

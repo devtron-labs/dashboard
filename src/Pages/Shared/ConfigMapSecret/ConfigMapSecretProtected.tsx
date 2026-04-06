@@ -67,6 +67,7 @@ export const ConfigMapSecretProtected = ({
     isExpressEditComparisonView,
     handleMergeStrategyChange,
     handleNoPublishedStateRedirectClick,
+    routePath,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { data: formData } = useFormProps
@@ -299,7 +300,7 @@ export const ConfigMapSecretProtected = ({
                 }
 
                 if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED) {
-                    return <ConfigMapSecretNullState nullStateType="NOT_OVERRIDDEN" />
+                    return <ConfigMapSecretNullState nullStateType="NOT_OVERRIDDEN" routePath={routePath} />
                 }
 
                 return (
@@ -315,9 +316,13 @@ export const ConfigMapSecretProtected = ({
             case ProtectConfigTabsType.EDIT_DRAFT:
                 if (draftData.action === DraftAction.Delete) {
                     return cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN ? (
-                        <ConfigMapSecretNullState nullStateType="DELETE_OVERRIDE" />
+                        <ConfigMapSecretNullState nullStateType="DELETE_OVERRIDE" routePath={routePath} />
                     ) : (
-                        <ConfigMapSecretNullState nullStateType="DELETE" componentName={componentName} />
+                        <ConfigMapSecretNullState
+                            nullStateType="DELETE"
+                            componentName={componentName}
+                            routePath={routePath}
+                        />
                     )
                 }
 

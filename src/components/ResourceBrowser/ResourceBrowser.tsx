@@ -26,6 +26,7 @@ import {
     ErrorScreenManager,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
+    ROUTER_URLS,
     useAsync,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -51,6 +52,7 @@ const ResourceBrowser: React.FC = () => {
 
     const { pathname } = useLocation()
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.RESOURCE_BROWSER.ROOT,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
@@ -105,7 +107,7 @@ const ResourceBrowser: React.FC = () => {
         return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
     }
 
-    const renderBreadcrumb = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumb = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.RESOURCE_BROWSER.ROOT} />
 
     return (
         <div className="flexbox-col h-100 bg__primary" ref={parentRef}>

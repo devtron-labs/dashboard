@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { type JSX } from 'react'
 
 import { GenericModalProps } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -53,11 +53,10 @@ export interface TokenListType extends Pick<TokenResponseType, 'token' | 'userId
     updatedAt?: string
 }
 
-export interface EditDataType
-    extends Pick<
-        TokenListType,
-        'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier' | 'hideApiToken'
-    > {}
+export interface EditDataType extends Pick<
+    TokenListType,
+    'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier' | 'hideApiToken'
+> {}
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     showRegeneratedModal: boolean
@@ -89,7 +88,7 @@ export interface GenerateTokenModalType {
 
 export interface APITokenListType {
     tokenList: TokenListType[]
-    renderSearchToken: () => void
+    renderSearchToken: () => JSX.Element
     reload: () => void
 }
 

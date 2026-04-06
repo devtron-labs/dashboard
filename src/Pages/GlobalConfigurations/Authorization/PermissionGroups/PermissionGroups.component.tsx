@@ -15,29 +15,24 @@
  */
 
 import { lazy } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 const PermissionGroupList = lazy(() => import('./List'))
 const PermissionGroupAddEdit = lazy(() => import('./AddEdit'))
 
-const PermissionGroups = () => {
-    const { path } = useRouteMatch()
-
-    return (
-        <Switch>
-            <Route path={path} component={PermissionGroupList} exact />
-            <Route
-                path={`${path}/:groupId`}
-                render={({ match }) => (
-                    <section className="flexbox-col flex-grow-1 h-100">
-                        {/* Passing the groupId as key to re-mount the component on its change */}
-                        <PermissionGroupAddEdit key={match.params.groupId} />
-                    </section>
-                )}
-            />
-            <Redirect to={path} />
-        </Switch>
-    )
-}
+const PermissionGroups = () => (
+    <Routes>
+        <Route index element={<PermissionGroupList />} />
+        <Route
+            path=":groupId/*"
+            element={
+                <section className="flexbox-col flex-grow-1 h-100">
+                    <PermissionGroupAddEdit />
+                </section>
+            }
+        />
+        <Route path="*" element={<Navigate to="" replace />} />
+    </Routes>
+)
 
 export default PermissionGroups

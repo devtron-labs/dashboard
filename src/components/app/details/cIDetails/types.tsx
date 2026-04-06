@@ -39,20 +39,19 @@ export interface BuildDetails {
     scrollToBottom: ReturnType<typeof useScrollable>[2]
 }
 
-export interface HistoryLogsType
-    extends Pick<
-        BuildDetails,
-        | 'scrollToTop'
-        | 'scrollToBottom'
-        | 'isBlobStorageConfigured'
-        | 'isJobView'
-        | 'isJobCI'
-        | 'appIdFromParent'
-        | 'appReleaseTags'
-        | 'tagsEditable'
-        | 'hideImageTaggingHardDelete'
-        | 'fullScreenView'
-    > {
+export interface HistoryLogsType extends Pick<
+    BuildDetails,
+    | 'scrollToTop'
+    | 'scrollToBottom'
+    | 'isBlobStorageConfigured'
+    | 'isJobView'
+    | 'isJobCI'
+    | 'appIdFromParent'
+    | 'appReleaseTags'
+    | 'tagsEditable'
+    | 'hideImageTaggingHardDelete'
+    | 'fullScreenView'
+> {
     triggerDetails: History
 }
 

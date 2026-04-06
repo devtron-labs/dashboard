@@ -20,14 +20,14 @@ export const getCVEListFilters = async (): Promise<CVEListFilterData> => {
     }
 
     return {
-        application: (appListResponse.status === 'fulfilled' ? appListResponse?.value?.result ?? [] : [])
+        application: (appListResponse.status === 'fulfilled' ? (appListResponse?.value?.result ?? []) : [])
             .map((app) => ({
                 label: app.name,
                 value: `${app.id}`,
             }))
             .sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
         ...(filtersResponse.status === 'fulfilled'
-            ? filtersResponse?.value ?? emptyFiltersResponse
+            ? (filtersResponse?.value ?? emptyFiltersResponse)
             : emptyFiltersResponse),
         ageOfDiscovery: DISCOVERY_AGE_FILTER_OPTIONS,
         fixAvailability: FIX_AVAILABLE_FILTER_OPTIONS,

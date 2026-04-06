@@ -16,7 +16,7 @@
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useMemo, useState } from 'react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
 import moment from 'moment'
 
@@ -85,8 +85,7 @@ const EditAPIToken = ({
         allowManageAllAccess,
     } = usePermissionConfiguration()
 
-    const history = useHistory()
-    const match = useRouteMatch()
+    const navigate = useNavigate()
     const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
 
@@ -99,7 +98,7 @@ const EditAPIToken = ({
     }
 
     const redirectToTokenList = () => {
-        history.push(`${match.path.split('edit')[0]}list`)
+        navigate('../list')
     }
 
     const handleDeleteButton = () => {

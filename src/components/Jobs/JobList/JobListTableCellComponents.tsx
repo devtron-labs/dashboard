@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 
-import { AppStatus, FiltersTypeEnum, TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, FiltersTypeEnum, ROUTER_URLS, TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '../../../config'
 import { JobTableAdditionalProps, JobTableRowData } from './types'
 
 // Name Cell Component with Job Icon
@@ -32,7 +31,7 @@ export const JobNameCellComponent = ({
     }
 
     // For main rows, show job name with icon
-    const redirectToJobOverview = `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${data.id}/${URLS.APP_OVERVIEW}`
+    const redirectToJobOverview = generatePath(ROUTER_URLS.JOB_DETAIL.OVERVIEW, { appId: String(data.id) })
 
     return (
         <Link to={redirectToJobOverview} className="cb-5 dc__truncate-text lh-20 fs-13 flex left">

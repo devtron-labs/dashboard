@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react'
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import {
@@ -31,7 +31,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import Error from '../../../../assets/icons/ic-warning.svg?react'
 import { importComponentFromFELibrary } from '../../../../components/common'
 import { REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -72,8 +72,7 @@ const CreateAPIToken = ({
     selectedExpirationDate,
     reload,
 }: GenerateTokenType) => {
-    const history = useHistory()
-    const match = useRouteMatch()
+    const navigate = useNavigate()
     const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
     const [formData, setFormData] = useState<FormType>({
@@ -165,7 +164,7 @@ const CreateAPIToken = ({
     }
 
     const redirectToTokenList = () => {
-        history.push(`${match.path.split('create')[0]}list`)
+        navigate('../list')
     }
 
     const onChangeSelectFormData = (selectedOption: ExpirationDateSelectOptionType) => {

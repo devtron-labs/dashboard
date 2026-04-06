@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -41,7 +41,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const { setAIAgentContext } = useMainContext()
 
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState(true)
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
@@ -72,7 +72,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
         if (checkIfToRefetchData(location)) {
             timer = setTimeout(() => {
                 _getAndSetAppDetail()
-                deleteRefetchDataFromUrl(history, location)
+                deleteRefetchDataFromUrl(navigate, location)
             }, 2000)
         }
 

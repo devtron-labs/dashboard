@@ -28,8 +28,6 @@ import { MigrateToDevtronFormState } from './cdPipeline.types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
 export interface CDPipelineProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
-    match: any
-    location: any
     appName: any
     close: any
     getWorkflows: any
@@ -72,15 +70,14 @@ export interface PullImageDigestToggleType {
     setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
 }
 
-export interface BuildCDProps
-    extends Pick<
-        CDPipelineProps,
-        | 'envIds'
-        | 'isGitOpsRepoNotConfigured'
-        | 'noGitOpsModuleInstalledAndConfigured'
-        | 'isGitOpsInstalledButNotConfigured'
-        | 'isTemplateView'
-    > {
+export interface BuildCDProps extends Pick<
+    CDPipelineProps,
+    | 'envIds'
+    | 'isGitOpsRepoNotConfigured'
+    | 'noGitOpsModuleInstalledAndConfigured'
+    | 'isGitOpsInstalledButNotConfigured'
+    | 'isTemplateView'
+> {
     isAdvanced: boolean
     setIsVirtualEnvironment: Dispatch<SetStateAction<boolean>>
     noStrategyAvailable: MutableRefObject<boolean>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Switch, Route, Redirect, NavLink, useRouteMatch } from 'react-router-dom'
+import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
 
 import {
     BreadCrumb,
@@ -22,19 +22,18 @@ import {
     DOCUMENTATION,
     getSecurityCenterBreadcrumb,
     PageHeader,
+    ROUTER_URLS,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
-import { SecurityPolicyCluster } from './SecurityPolicyCluster'
-import { SecurityPolicyApp } from './SecurityPolicyApp'
-import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment'
 import { VulnerabilityExposure } from './AddCVEPolicy'
+import SecurityPolicyAppWithParams from './SecurityPolicyApp'
+import SecurityPolicyClusterWithParams from './SecurityPolicyCluster'
+import SecurityPolicyEnvironmentWithParams from './SecurityPolicyEnvironment'
+import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 
 export const SecurityPoliciesTab = () => {
-    const { path } = useRouteMatch()
-
-    const { breadcrumbs } = useBreadcrumb({
+    const { breadcrumbs } = useBreadcrumb(ROUTER_URLS.SECURITY_CENTER_POLICIES, {
         alias: {
             ...getSecurityCenterBreadcrumb(),
             policies: {
@@ -43,20 +42,18 @@ export const SecurityPoliciesTab = () => {
         },
     })
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.SECURITY_CENTER_POLICIES} />
 
-    const renderRouter = () => {
-        return (
-            <Switch>
-                <Route path={`${path}/global`} component={SecurityPolicyGlobal} />
-                <Route path={`${path}/clusters/:clusterId?`} component={SecurityPolicyCluster} />
-                <Route path={`${path}/environments/:envId?`} component={SecurityPolicyEnvironment} />
-                <Route path={`${path}/apps/:appId?`} component={SecurityPolicyApp} />
-                <Route path={`${path}/vulnerability`} component={VulnerabilityExposure} />
-                <Redirect to={`${path}/global`} />
-            </Switch>
-        )
-    }
+    const renderRouter = () => (
+        <Routes>
+            <Route path="global" element={<SecurityPolicyGlobal />} />
+            <Route path="clusters/:clusterId?" element={<SecurityPolicyClusterWithParams />} />
+            <Route path="environments/:envId?" element={<SecurityPolicyEnvironmentWithParams />} />
+            <Route path="apps/:appId?" element={<SecurityPolicyAppWithParams />} />
+            <Route path="vulnerability" element={<VulnerabilityExposure />} />
+            <Route path="*" element={<Navigate to="global" replace />} />
+        </Routes>
+    )
 
     return (
         <div className="security-scan-container bg__primary flexbox-col min-h-100">
@@ -64,37 +61,25 @@ export const SecurityPoliciesTab = () => {
 
             <div className="security-policy flex-grow-1">
                 <div className="dc__secondary-nav">
-                    <NavLink
-                        to={`${path}/global`}
-                        className="dc__secondary-nav__item"
-                        data-testid="click-on-security-global"
-                    >
+                    <NavLink to="global" className="dc__secondary-nav__item" data-testid="click-on-security-global">
                         Global
                     </NavLink>
-                    <NavLink
-                        to={`${path}/clusters`}
-                        className="dc__secondary-nav__item"
-                        data-testid="click-on-security-clusters"
-                    >
+                    <NavLink to="clusters" className="dc__secondary-nav__item" data-testid="click-on-security-clusters">
                         Cluster
                     </NavLink>
                     <NavLink
-                        to={`${path}/environments`}
+                        to="environments"
                         className="dc__secondary-nav__item"
                         data-testid="click-on-security-environments"
                     >
                         Environments
                     </NavLink>
-                    <NavLink
-                        to={`${path}/apps`}
-                        className="dc__secondary-nav__item"
-                        data-testid="click-on-security-application"
-                    >
+                    <NavLink to="apps" className="dc__secondary-nav__item" data-testid="click-on-security-application">
                         Applications
                     </NavLink>
                     <hr className="mt-8 mb-8" />
                     <NavLink
-                        to={`${path}/vulnerability`}
+                        to="vulnerability"
                         className="dc__secondary-nav__item"
                         data-testid="click-on-security-vulnerability"
                     >

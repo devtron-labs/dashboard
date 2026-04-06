@@ -18,8 +18,8 @@ import React, { Component } from 'react'
 import { Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { CVE_ID_NOT_FOUND, ViewType } from '../../config'
 import { AddCveModalProps, AddCveModalState, ClusterEnvironment, VulnerabilityAction } from './security.types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
+import Info from '../../assets/icons/ic-info-outline.svg?react'
 export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
     constructor(props) {
         super(props)

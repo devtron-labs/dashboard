@@ -7,7 +7,7 @@ import {
     DTSwitch,
     Icon,
     InfoBlock,
-    URLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SSO_CONFIG } from './constants'
@@ -55,7 +55,7 @@ const AutoAssignToggleTile = ({ isSelected, onChange, ssoType }: AutoAssignToggl
                                     dataTestId="permission-groups-link"
                                     component={ButtonComponentType.link}
                                     linkProps={{
-                                        to: URLS.PERMISSION_GROUPS,
+                                        to: ROUTER_URLS.GLOBAL_CONFIG_AUTH.GROUPS,
                                         target: '_blank',
                                         rel: 'noreferrer noopener',
                                     }}

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useRef } from 'react'
+
 import { BulkEditVersion, OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 interface BaseOperationResponseType {
@@ -95,4 +97,5 @@ export interface OutputTabType {
 export interface BulkEditsProps {
     outputHeightMV: ReturnType<typeof useMotionValue<number>>
     gridTemplateRows: ReturnType<typeof useMotionValue<string>>
+    nodeRef: ReturnType<typeof useRef<HTMLDivElement>>
 }
