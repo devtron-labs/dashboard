@@ -683,7 +683,7 @@ export default function CIPipeline({
                 ...formData,
                 materials: _materials,
                 scanEnabled: !isJobCard && isSecurityModuleInstalled ? formData.scanEnabled : false,
-                dockerfileScanEnabled: !isJobCard && isSecurityModuleInstalled ? formData.dockerfileScanEnabled : false,
+                dockerfileScanEnabled: formData.dockerfileScanEnabled,
             },
             _ciPipeline,
             _materials,
