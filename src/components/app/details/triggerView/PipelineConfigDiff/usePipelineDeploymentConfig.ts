@@ -374,6 +374,7 @@ export const usePipelineDeploymentConfig = ({
         Awaited<ReturnType<typeof getManifestData>>,
         [string, string, typeof pipelineDeploymentConfigRes, number | undefined],
         false
+        // eslint-disable-next-line @tanstack/query/exhaustive-deps
     >({
         queryKey: ['getManifestData', selectedTab, pipelineDeploymentConfigRes, wfrId],
         queryFn: ({ signal }) => getManifestData(signal),

@@ -115,6 +115,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
         // Refetch resource tree to get latest data after app details fetch.
         // NOTE: dependency is appDetailsDataUpdatedAt (not appDetails) so this fires on every
         // successful poll even when data is structurally identical.
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         queryClient.refetchQueries({ queryKey: [resourceTreeQueryKey] })
     }, [appDetailsDataUpdatedAt])
 
@@ -153,6 +154,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
             AppType.DEVTRON_APP,
         )
 
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         queryClient.refetchQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
     }, [resourceTreeDataUpdatedAt])
 
