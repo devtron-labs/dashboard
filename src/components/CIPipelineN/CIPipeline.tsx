@@ -621,8 +621,7 @@ export default function CIPipeline({
             !isSecurityModuleInstalled ||
             formData.scanEnabled ||
             formData.dockerfileScanEnabled ||
-            !window._env_.FORCE_SECURITY_SCANNING ||
-            !window._env_.FORCE_DOCKERFILE_SCAN
+            !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
             ToastManager.showToast({

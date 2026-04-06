@@ -257,7 +257,6 @@ export const Build = ({
                     </p>
                 </div>
                 <DTSwitch
-                    isDisabled={window._env_.FORCE_DOCKERFILE_SCAN && formData.dockerfileScanEnabled}
                     ariaLabel="Toggle scan for security vulnerabilities"
                     isChecked={formData.dockerfileScanEnabled}
                     onChange={handleDockerfileScanToggle}

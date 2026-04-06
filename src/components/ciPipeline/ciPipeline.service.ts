@@ -84,8 +84,6 @@ export function getInitData(
         ]) => {
             const scanEnabled =
                 window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING)
-            const dockerfileScanEnabled =
-                window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_DOCKERFILE_SCAN)
             return {
                 result: {
                     form: {
@@ -104,7 +102,7 @@ export function getInitData(
                         preBuildStage: emptyStepsData(),
                         postBuildStage: emptyStepsData(),
                         scanEnabled,
-                        dockerfileScanEnabled: dockerfileScanEnabled,
+                        dockerfileScanEnabled: false,
                         ciPipelineEditable: true,
                         workflowCacheConfig: pipelineMetaConfig.result.workflowCacheConfig ?? null,
                     },
