@@ -23,6 +23,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    DATE_TIME_FORMATS,
     FeatureTitleWithInfo,
     GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -30,7 +31,7 @@ import {
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import { HEADER_TEXT, MomentDateFormat } from '../../../../config'
+import { HEADER_TEXT } from '../../../../config'
 import { APITokenListType, TokenListType } from './apiToken.type'
 import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
@@ -126,7 +127,9 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                   </div>
                                   <div className="dc__ellipsis-right">
                                       {list.lastUsedAt
-                                          ? moment(list.lastUsedAt).format(MomentDateFormat)
+                                          ? moment(list.lastUsedAt).format(
+                                                DATE_TIME_FORMATS.WEEKDAY_WITH_DATE_MONTH_AND_YEAR,
+                                            )
                                           : 'Never used'}
                                   </div>
                                   <div>{list.lastUsedByIp ? list.lastUsedByIp : '-'}</div>
@@ -136,7 +139,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                       ) : (
                                           <>
                                               {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
-                                              {moment(list.expireAtInMs).format(MomentDateFormat)}
+                                              {moment(list.expireAtInMs).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
                                           </>
                                       )}
                                   </div>

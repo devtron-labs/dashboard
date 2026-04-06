@@ -15,13 +15,22 @@
  */
 
 import { Component } from 'react'
-import { Moment } from 'moment'
+import moment, { Moment } from 'moment'
+import { DateTimePicker, UpdateDateRangeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type'
-import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect, AppInfo } from './utils'
+import {
+    getIframeSrc,
+    isK8sVersionValid,
+    ThroughputSelect,
+    LatencySelect,
+    AppInfo,
+    getAppMetricsPresetOptions,
+} from './utils'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
-import { DatePickerRangeController } from '@devtron-labs/devtron-fe-common-lib'
+import { GrafanaPresetOptionHandlerType } from './types'
 
 export const ChartNames = {
     cpu: 'CPU Usage',
@@ -49,7 +58,7 @@ export interface GraphModalProps extends Pick<AppInfo, 'dataSourceName'> {
     ) => ReturnType<typeof getIframeSrc>
 }
 
-interface GraphModalState {
+interface GraphModalState extends Pick<GraphModalProps, 'calendar'> {
     tab: AppMetricsTabType
     cpu: string
     ram: string
@@ -60,12 +69,6 @@ interface GraphModalState {
     status5xx: string
     statusCode: StatusTypes
     mainChartUrl: string
-    focusedInput: 'startDate' | 'endDate'
-    calendarValue: string
-    calendar: {
-        startDate
-        endDate
-    }
     calendarInputs: {
         startDate: string
         endDate: string
@@ -87,8 +90,6 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             status4xx: '',
             status5xx: '',
             statusCode: StatusType.status5xx,
-            focusedInput: 'startDate',
-            calendarValue: '',
             mainChartUrl: '',
             calendar: { ...this.props.calendar },
             calendarInputs: { ...this.props.calendarInputs },
@@ -98,7 +99,6 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         this.handleTabChange = this.handleTabChange.bind(this)
         this.handleStatusChange = this.handleStatusChange.bind(this)
         this.handleChartChange = this.handleChartChange.bind(this)
-        this.handlePredefinedRange = this.handlePredefinedRange.bind(this)
         this.handleLatencyChange = this.handleLatencyChange.bind(this)
     }
 
@@ -106,7 +106,6 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         const { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } = this.getNewGraphs(
             this.state.tab,
         )
-        const str: string = getCalendarValue(this.state.calendarInputs.startDate, this.state.calendarInputs.endDate)
         this.setState({
             cpu,
             ram,
@@ -116,7 +115,6 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             status4xx,
             status5xx,
             mainChartUrl,
-            calendarValue: str,
         })
     }
 
@@ -201,52 +199,17 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         return { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl }
     }
 
-    handleDatesChange = ({ startDate, endDate }) => {
-        const start = startDate
-        const end = endDate
-        this.setState({
-            calendar: {
-                startDate: start,
-                endDate: end,
-            },
-            calendarInputs: {
-                startDate: start?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT),
-                endDate: end?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT) || '',
-            },
-        })
+    handleApply = () => {
+        const { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } = this.getNewGraphs(
+            this.state.tab,
+        )
+        this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl })
     }
 
-    handleFocusChange = (focusedInput: 'startDate' | 'endDate') => {
-        this.setState({ focusedInput: focusedInput || 'startDate' })
-    }
+    handleDatesChange: UpdateDateRangeType = ({ from: startDate, to: endDate }) => {
+        const start = moment(startDate).startOf('day')
+        const end = moment(endDate)
 
-    handleDateInput = (key, value: string) => {
-        const calendarInputs = { ...this.state.calendarInputs }
-        calendarInputs[key] = value
-        this.setState({ calendarInputs })
-    }
-
-    handleCalendarInputs = ({ startDate, endDate }): void => {
-        this.setState({
-            calendarInputs: {
-                startDate,
-                endDate,
-            },
-        })
-    }
-
-    handleApply = (): void => {
-        const str: string = getCalendarValue(this.state.calendarInputs.startDate, this.state.calendarInputs.endDate)
-        this.setState({ calendarValue: str }, () => {
-            const { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } = this.getNewGraphs(
-                this.state.tab,
-            )
-            this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl })
-        })
-    }
-
-    handlePredefinedRange(start: Moment, end: Moment, startStr: string): void {
-        const str: string = getCalendarValue(startStr, 'now')
         this.setState(
             {
                 calendar: {
@@ -254,16 +217,27 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                     endDate: end,
                 },
                 calendarInputs: {
+                    startDate: start?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT),
+                    endDate: end?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT) || '',
+                },
+            },
+            this.handleApply,
+        )
+    }
+
+    handlePredefinedRange: GrafanaPresetOptionHandlerType = (startStr, momentDiff) => {
+        this.setState(
+            {
+                calendar: {
+                    startDate: moment().subtract(momentDiff.magnitude, momentDiff.unit),
+                    endDate: moment(),
+                },
+                calendarInputs: {
                     startDate: startStr,
                     endDate: 'now',
                 },
-                calendarValue: str,
             },
-            () => {
-                const { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl } =
-                    this.getNewGraphs(this.state.tab)
-                this.setState({ cpu, ram, throughput, latency, status2xx, status4xx, status5xx, mainChartUrl })
-            },
+            this.handleApply,
         )
     }
 
@@ -331,6 +305,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             latency: selectedLatency,
         })
     }
+
+    isOutsideRange = (date: Date) => moment(date).isAfter(moment(), 'day')
 
     render() {
         const iframeClasses = 'app-details-graph__iframe app-details-graph__iframe--graph-modal pl-12'
@@ -464,16 +440,18 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                     <span className="dc__tertiary-tab">Per Pod</span>
                                 </label>
                             </div>
-                            <DatePickerRangeController
-                                calendar={this.state.calendar}
-                                calendarInputs={this.state.calendarInputs}
-                                focusedInput={this.state.focusedInput}
-                                calendarValue={this.state.calendarValue}
-                                handlePredefinedRange={this.handlePredefinedRange}
-                                handleDatesChange={this.handleDatesChange}
-                                handleFocusChange={this.handleFocusChange}
-                                handleDateInput={this.handleDateInput}
-                                handleApply={this.handleApply}
+                            <DateTimePicker
+                                id="date-range-picker-graph-modal"
+                                hideTimeSelect
+                                isRangePicker
+                                dateRange={{
+                                    from: this.state.calendar.startDate?.toDate(),
+                                    to: this.state.calendar.endDate?.toDate(),
+                                }}
+                                onChange={this.handleDatesChange}
+                                rangeShortcutOptions={getAppMetricsPresetOptions(this.handlePredefinedRange)}
+                                blockPreviousDates={false}
+                                isOutsideRange={this.isOutsideRange}
                             />
                         </div>
                     </div>
