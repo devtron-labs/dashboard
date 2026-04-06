@@ -40,16 +40,16 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
-import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
-import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
+import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
+import ICCheck from '@Icons/ic-check.svg?react'
+import ICPencil from '@Icons/ic-pencil.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import { K8sResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
 import { EDITOR_VIEW } from '@Config/constants'
 
-import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
+import DeleteIcon from '../../../../../assets/icons/ic-delete-interactive.svg?react'
+import EphemeralIcon from '../../../../../assets/icons/ic-ephemeral.svg?react'
 import { Nodes } from '../../../../app/types'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'

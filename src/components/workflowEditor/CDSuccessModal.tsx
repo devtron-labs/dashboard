@@ -18,9 +18,9 @@ import { generatePath, NavLink } from 'react-router-dom'
 
 import { AppConfigProps, ROUTER_URLS, URLS as CommonURLS, VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy.svg'
-import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride.svg'
-import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-with-light-background.svg'
+import GotToBuildDeploy from '../../assets/icons/go-to-buildanddeploy.svg?react'
+import GoToEnvOverride from '../../assets/icons/go-to-envoverride.svg?react'
+import SuccessIcon from '../../assets/icons/ic-success-with-light-background.svg?react'
 import { URLS } from '../../config'
 
 interface CDSuccessModalType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {

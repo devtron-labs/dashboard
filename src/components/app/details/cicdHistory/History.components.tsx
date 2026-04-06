@@ -16,8 +16,7 @@
 
 import { NavLink } from 'react-router-dom'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.svg'
+import OpenInNew from '../../../../assets/icons/ic-open-in-new.svg?react'
 import { EmptyViewType } from './types'
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText, rootClassName = 'w-300 dc__align-reload-center' }: EmptyViewType) => {
@@ -31,7 +30,7 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText, rootClassNa
     }
     return (
         <GenericEmptyState
-            image={imgSrc ?? AppNotDeployed}
+            image={imgSrc}
             classname={`${rootClassName} dc__text-center lh-1-4`}
             title={title}
             subTitle={subTitle}

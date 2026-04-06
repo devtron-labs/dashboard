@@ -36,12 +36,12 @@ import {
 import '../scaleWorkloads/scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
-import { ReactComponent as ICHelpOutline } from '../../../../../assets/icons/ic-help-outline.svg'
+import ICHelpOutline from '../../../../../assets/icons/ic-help-outline.svg?react'
 import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import RotateResponseModal from './RotateResponseModal'
 import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
-import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
+import Close from '../../../../../assets/icons/ic-close.svg?react'
+import RotateIcon from '../../../../../assets/icons/ic-arrows_clockwise.svg?react'
 
 import { importComponentFromFELibrary } from '../../../../common'
 

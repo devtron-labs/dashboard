@@ -26,9 +26,9 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
+import ErrorIcon from '@Icons/ic-warning.svg?react'
 
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
+import Help from '../../assets/icons/ic-help.svg?react'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import {
     ConfigurationFieldKeys,

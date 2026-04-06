@@ -25,9 +25,9 @@ import {
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ArrowLeft } from '../../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as AllResourcesIcon } from '../../../assets/icons/ic-resource.svg'
-import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
+import ArrowLeft from '../../../assets/icons/ic-arrow-left.svg?react'
+import AllResourcesIcon from '../../../assets/icons/ic-resource.svg?react'
+import TerminalIcon from '../../../assets/icons/ic-terminal-fill.svg?react'
 import { URLS } from '../../../config'
 import { NodeDetailTabs } from '../../app/types'
 import { ClusterMetaDataBarProps } from './types'

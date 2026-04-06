@@ -34,7 +34,7 @@ import {
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import Error from '@Icons/ic-error-exclamation.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 

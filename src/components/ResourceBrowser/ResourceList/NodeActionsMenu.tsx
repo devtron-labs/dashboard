@@ -28,7 +28,7 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
+import MenuDots from '@Icons/ic-more-vertical.svg?react'
 import { TaintType } from '@Components/ClusterNodes/types'
 
 import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'

@@ -95,11 +95,11 @@ import {
     getChartValuesList,
 } from '../common/chartValues.api'
 import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
-import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
+import Arrows from '../../../../assets/icons/ic-arrows-left-right.svg?react'
+import File from '../../../../assets/icons/ic-file-text.svg?react'
+import Close from '../../../../assets/icons/ic-close.svg?react'
+import LinkIcon from '../../../../assets/icons/ic-link.svg?react'
 import {
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,

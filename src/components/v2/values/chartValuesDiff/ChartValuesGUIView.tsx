@@ -26,7 +26,7 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICError } from '@Icons/ic-error-exclamation.svg'
+import ICError from '@Icons/ic-error-exclamation.svg?react'
 
 import { ChartValuesGUIFormProps } from './ChartValuesView.type'
 import { updateYamlDocument } from './ChartValuesView.utils'

@@ -28,14 +28,15 @@ import {
     ROUTER_URLS,
     Table,
     TableRowActionsOnHoverComponentProps,
+    TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
+import PlayMedia from '@Icons/ic-play-outline.svg?react'
 import ContentCard from '@Components/common/ContentCard/ContentCard'
 import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
 
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import ArrowRight from '../../../assets/icons/ic-arrow-right.svg?react'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../../config'
@@ -73,6 +74,49 @@ const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<
     )
 }
 
+const renderGuidedCards = () => (
+    <div className="devtron-app-guided-cards-container">
+        <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
+        <div className="devtron-app-guided-cards-wrapper">
+            <ContentCard
+                datatestid="deploy-basic-k8snode"
+                redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
+                isExternalRedirect
+                imgSrc={NodeAppThumbnail}
+                title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
+                linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
+                LinkIcon={PlayMedia}
+                linkIconClass="scb-5 mr-8"
+                linkIconPlacement={CardLinkIconPlacement.BeforeLink}
+            />
+            <ContentCard
+                datatestid="create-application"
+                redirectTo={ROUTER_URLS.CREATE_DEVTRON_APP}
+                rootClassName="ev-5"
+                imgSrc={DeployCICD}
+                title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
+                linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
+                LinkIcon={ArrowRight}
+                linkIconClass="scb-5"
+                linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+            />
+        </div>
+    </div>
+)
+
+const ViewWrapper = ({
+    children,
+    noRows,
+    isSearchOrFilterApplied,
+}: TableViewWrapperProps<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>) => {
+    if (noRows && !isSearchOrFilterApplied) {
+        return renderGuidedCards()
+    }
+
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    return <>{children}</>
+}
+
 const DevtronAppList = ({
     filterConfig,
     environmentList,
@@ -82,11 +126,12 @@ const DevtronAppList = ({
     clearAllFilters,
     isArgoInstalled,
     setAppCount,
+    appFiltersResponseLoading,
 }: DevtronAppListProps) => {
     const navigate = useNavigate()
     const [noRows, setNoRows] = useState<boolean>(false)
 
-    const { searchKey, appStatus, project, environment, namespace, cluster } = filterConfig
+    const { searchKey, appStatus, project, environment, namespace, cluster, labelSelectors } = filterConfig
 
     const isSearchOrFilterApplied = !!(
         searchKey ||
@@ -94,7 +139,8 @@ const DevtronAppList = ({
         project.length ||
         environment.length ||
         namespace.length ||
-        cluster.length
+        cluster.length ||
+        labelSelectors.length
     )
 
     const redirectToAppDetails = (app, envId: number): string => {
@@ -109,38 +155,15 @@ const DevtronAppList = ({
         })
     }
 
-    const renderGuidedCards = () => (
-        <div className="devtron-app-guided-cards-container">
-            <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
-            <div className="devtron-app-guided-cards-wrapper">
-                <ContentCard
-                    datatestid="deploy-basic-k8snode"
-                    redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
-                    isExternalRedirect
-                    imgSrc={NodeAppThumbnail}
-                    title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
-                    linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
-                    LinkIcon={PlayMedia}
-                    linkIconClass="scb-5 mr-8"
-                    linkIconPlacement={CardLinkIconPlacement.BeforeLink}
-                />
-                <ContentCard
-                    datatestid="create-application"
-                    redirectTo={ROUTER_URLS.CREATE_DEVTRON_APP}
-                    rootClassName="ev-5"
-                    imgSrc={DeployCICD}
-                    title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
-                    linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
-                    LinkIcon={ArrowRight}
-                    linkIconClass="scb-5"
-                    linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
-                />
-            </div>
-        </div>
-    )
-
     const getRows = useCallback(
         async (_, signal) => {
+            if (appFiltersResponseLoading) {
+                return {
+                    rows: [],
+                    totalRows: 0,
+                }
+            }
+
             updateDataSyncing(true)
             const data = await getAppList(getDevtronAppListPayload(filterConfig, environmentList, namespaceList), {
                 signal,
@@ -170,7 +193,7 @@ const DevtronAppList = ({
                 totalRows: totalCount,
             }
         },
-        [syncListData, filterConfig],
+        [syncListData, filterConfig, appFiltersResponseLoading],
     )
 
     const onClearFilters = () => {
@@ -194,14 +217,11 @@ const DevtronAppList = ({
 
     const columns = useMemo(() => getTableColumns(isArgoInstalled), [isArgoInstalled])
 
-    if (noRows && !isSearchOrFilterApplied) {
-        return renderGuidedCards()
-    }
-
     return (
         <Table<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>
             id="table__devtron-app-list"
             getRows={getRows}
+            loading={appFiltersResponseLoading}
             paginationVariant={PaginationEnum.PAGINATED}
             filtersVariant={FiltersTypeEnum.URL}
             columns={columns}
@@ -211,6 +231,8 @@ const DevtronAppList = ({
             }}
             additionalProps={{
                 filterConfig,
+                noRows,
+                isSearchOrFilterApplied,
             }}
             additionalFilterProps={{
                 initialSortKey: AppListSortableKeys.APP_NAME,
@@ -228,6 +250,7 @@ const DevtronAppList = ({
                 size: 18,
             }}
             onRowClick={onRowClick}
+            ViewWrapper={ViewWrapper}
         />
     )
 }

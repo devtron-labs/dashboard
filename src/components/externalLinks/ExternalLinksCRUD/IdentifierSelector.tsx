@@ -26,7 +26,7 @@ import {
     ReactSelectInputAction,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
-import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
+import AddIcon from '../../../assets/icons/ic-add.svg?react'
 import { IdentifierSelectStyles } from '../ExternalLinks.utils'
 
 export default function IdentifierSelector({

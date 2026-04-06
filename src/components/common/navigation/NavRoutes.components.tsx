@@ -64,7 +64,9 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }: { isFirstLoginUser:
     const redirectPath = getDefaultRedirectPath(isFirstLoginUser, serverMode)
 
     useEffect(() => {
-        Sentry.captureMessage(`redirecting to ${redirectPath} from ${pathname}`, 'warning')
+        if (pathname !== '/') {
+            Sentry.captureMessage(`redirecting to ${redirectPath} from ${pathname}`, 'warning')
+        }
     }, [])
 
     return <Navigate to={redirectPath} replace />

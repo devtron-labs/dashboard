@@ -30,7 +30,7 @@ import {
 import { URLS } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { ChartHeaderComponentType } from './appHeader.type'
 
 const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {

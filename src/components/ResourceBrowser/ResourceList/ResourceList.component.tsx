@@ -19,9 +19,9 @@ import { ClearIndicatorProps, components, ValueContainerProps } from 'react-sele
 
 import { Button, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
-import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
-import { ReactComponent as Warning } from '@Icons/ic-warning.svg'
+import ClearIcon from '@Icons/ic-error.svg?react'
+import SearchIcon from '@Icons/ic-search.svg?react'
+import Warning from '@Icons/ic-warning.svg?react'
 
 import { handleUTCTime } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'

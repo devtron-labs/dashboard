@@ -23,7 +23,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
+import PlusIcon from '../../../../../assets/icons/ic-add.svg?react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
 import { UserPermissionListHeaderProps } from './types'

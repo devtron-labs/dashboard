@@ -24,7 +24,7 @@ import {
 
 import nullStateImage from '@Images/empty-list.png'
 
-import { ReactComponent as AddIcon } from '../../../../../assets/icons/ic-add.svg'
+import AddIcon from '../../../../../assets/icons/ic-add.svg?react'
 import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 
 const renderAddUserButton = () => (

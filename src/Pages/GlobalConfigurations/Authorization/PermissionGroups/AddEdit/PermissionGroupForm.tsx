@@ -32,8 +32,8 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
+import ICDeleteInteractive from '@Icons/ic-delete-interactive.svg?react'
+import ICWarning from '@Icons/ic-warning.svg?react'
 
 import { deepEqual } from '../../../../../components/common'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'

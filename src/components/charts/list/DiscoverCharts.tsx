@@ -43,10 +43,10 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
+import Add from '../../../assets/icons/ic-add.svg?react'
+import WarningIcon from '../../../assets/icons/ic-alert-triangle.svg?react'
+import Next from '../../../assets/icons/ic-arrow-forward.svg?react'
+import BackIcon from '../../../assets/icons/ic-back.svg?react'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import { SERVER_MODE, URLS } from '../../../config'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'

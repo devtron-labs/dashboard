@@ -25,10 +25,10 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as SESEmpty } from '@Images/ses-empty.svg'
-import { ReactComponent as EmptySlack } from '@Images/slack-empty.svg'
-import { ReactComponent as SMTPEmpty } from '@Images/smtp-empty.svg'
-import { ReactComponent as WebhookEmpty } from '@Images/webhook-empty.svg'
+import SESEmpty from '@Images/ses-empty.svg?react'
+import EmptySlack from '@Images/slack-empty.svg?react'
+import SMTPEmpty from '@Images/smtp-empty.svg?react'
+import WebhookEmpty from '@Images/webhook-empty.svg?react'
 
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
 import { ConfigurationTables } from './ConfigurationTables'

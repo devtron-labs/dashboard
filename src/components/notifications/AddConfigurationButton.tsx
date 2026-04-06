@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { Button, ButtonVariantType, ComponentSizeType, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import Add from '@Icons/ic-add.svg?react'
 
 import { getTabText } from './notifications.util'
 import { AddConfigurationButtonProps } from './types'

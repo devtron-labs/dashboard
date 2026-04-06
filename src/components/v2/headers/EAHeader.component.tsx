@@ -28,7 +28,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { EAHeaderComponentType } from './appHeader.type'
 
 const EAHeaderComponent = ({

@@ -36,7 +36,7 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import Close from '../../../assets/icons/ic-close.svg?react'
 import { API_STATUS_CODES, SELECT_ALL_VALUE } from '../../../config'
 import { ALL_ENVIRONMENT_OPTION, SortableKeys } from './constants'
 import LinkedCIAppList from './LinkedCIAppList'

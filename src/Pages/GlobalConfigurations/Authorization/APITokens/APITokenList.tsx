@@ -28,9 +28,9 @@ import {
     GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
+import Trash from '../../../../assets/icons/ic-delete-interactive.svg?react'
+import Key from '../../../../assets/icons/ic-key-bulb.svg?react'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
 import { HEADER_TEXT } from '../../../../config'
 import { APITokenListType, TokenListType } from './apiToken.type'
 import { isTokenExpired } from './apiToken.utils'

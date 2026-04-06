@@ -26,8 +26,8 @@ import {
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
-import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
+import ICBookOpen from '@Icons/ic-book-open.svg?react'
+import ICPencil from '@Icons/ic-pencil.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { MERGE_STRATEGY_OPTIONS } from '../constants'

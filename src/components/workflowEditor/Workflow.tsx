@@ -47,10 +47,10 @@ import {
     highlightSearchText,
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
-import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
-import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
+import ICInput from '../../assets/icons/ic-input.svg?react'
+import ICMoreOption from '../../assets/icons/ic-more-option.svg?react'
+import ICDelete from '../../assets/icons/ic-delete-interactive.svg?react'
+import ICEdit from '../../assets/icons/ic-pencil.svg?react'
 import { WorkflowProps, WorkflowState } from './types'
 import { CHANGE_CI_TOOLTIP } from './constants'
 

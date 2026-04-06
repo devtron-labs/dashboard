@@ -38,8 +38,8 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as GridIcon } from '@Icons/ic-grid-view.svg'
-import { ReactComponent as GridIconBlue } from '@Icons/ic-grid-view-blue.svg'
+import GridIcon from '@Icons/ic-grid-view.svg?react'
+import GridIconBlue from '@Icons/ic-grid-view-blue.svg?react'
 import { renderCIListHeader } from '@Components/app/details/cdDetails/utils'
 import { getDeploymentStatus } from '@Components/ApplicationGroup/AppGroup.service'
 import {

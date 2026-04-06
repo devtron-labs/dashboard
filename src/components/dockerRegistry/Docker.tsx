@@ -78,12 +78,12 @@ import {
     PATTERNS,
     OCIRegistryStorageActionType,
 } from '../../config'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
+import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
+import Info from '../../assets/icons/ic-info-outlined.svg?react'
+import Error from '../../assets/icons/ic-warning.svg?react'
+import InfoFilled from '../../assets/icons/ic-info-filled.svg?react'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ManageRegistry from './ManageRegistry'
 import {
