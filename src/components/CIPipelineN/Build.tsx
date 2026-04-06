@@ -43,7 +43,7 @@ export const Build = ({
     appId,
     isTemplateView,
 }: BuildType) => {
-    const { isEnterprise } = useMainContext()
+    const { isEnterprise, forceDockerfileScan } = useMainContext()
 
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
@@ -261,10 +261,12 @@ export const Build = ({
                             </p>
                         </div>
                         <DTSwitch
+                            isDisabled={forceDockerfileScan}
                             ariaLabel="Toggle scan for security vulnerabilities"
-                            isChecked={formData.dockerfileScanEnabled}
+                            isChecked={!!forceDockerfileScan || !!formData.dockerfileScanEnabled }
                             onChange={handleDockerfileScanToggle}
-                            name="create-build-pipeline-scan-vulnerabilities-toggle"
+                            name="create-build-pipeline-dockerfile-scan-toggle"
+                            tooltipContent={forceDockerfileScan ? 'Dockerfile scanning is enforced across all pipelines in the organization.' : null}
                         />
                     </div>
                 </>
