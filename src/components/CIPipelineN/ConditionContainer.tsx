@@ -18,7 +18,7 @@ import { ChangeEvent, useContext, useEffect, useState } from 'react'
 
 import { ConditionType, PluginType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
 import { ConditionContainerType } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ConditionDataTable } from './ConditionDataTable/ConditionDataTable.component'

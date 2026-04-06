@@ -15,9 +15,9 @@
  */
 
 import { FunctionComponent, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
-import { ConfirmationModal, ConfirmationModalVariantType, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationModal, ConfirmationModalVariantType, Icon, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '../../config'
 import { getGitOpsRepoConfig } from '../../services/service'
@@ -55,7 +55,7 @@ const NoGitOpsRepoConfiguredWarning: FunctionComponent<NoGitOpsRepoConfiguredWar
 }: NoGitOpsRepoConfiguredWarningType) => {
     const [gitopsConflictLoading, setGitopsConflictLoading] = useState(false)
     const [reloadNoGitOpsRepoConfiguredModal, setReloadNoGitOpsRepoConfiguredModal] = useState(false)
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const closeReloadNoGitOpsRepoConfiguredModal = () => {
         setReloadNoGitOpsRepoConfiguredModal(false)
@@ -65,7 +65,9 @@ const NoGitOpsRepoConfiguredWarning: FunctionComponent<NoGitOpsRepoConfiguredWar
         setGitopsConflictLoading(true)
         getGitOpsRepoConfig(appId)
             .then(() => {
-                history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+                navigate(
+                    `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId: String(appId) })}/${URLS.APP_GITOPS_CONFIG}`,
+                )
             })
             .catch((err) => {
                 if (err.code === 409) {

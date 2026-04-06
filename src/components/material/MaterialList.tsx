@@ -25,9 +25,9 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Folder } from '@Icons/ic-folder-filled.svg'
-import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
-import { ReactComponent as GitHub } from '@Icons/ic-sample-app.svg'
+import Folder from '@Icons/ic-folder-filled.svg?react'
+import PlayMedia from '@Icons/ic-play-outline.svg?react'
+import GitHub from '@Icons/ic-sample-app.svg?react'
 import { GitAccountDTO } from '@Services/service.types'
 
 import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'

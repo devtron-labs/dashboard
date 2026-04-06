@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -97,7 +97,7 @@ const DeployImageContent = ({
     onImageSelection = noop,
 }: DeployImageContentProps) => {
     // WARNING: Pls try not to create a useState in this component, it is supposed to be a dumb component.
-    const history = useHistory()
+    const navigate = useNavigate()
     const { isSuperAdmin } = useMainContext()
 
     // Assumption: isExceptionUser is a global trait
@@ -243,7 +243,7 @@ const DeployImageContent = ({
 
     const viewAllImages = () => {
         if (isRedirectedFromAppDetails) {
-            history.push({
+            navigate({
                 search: `${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`,
             })
         } else {
@@ -253,7 +253,7 @@ const DeployImageContent = ({
                 cdNodeId: pipelineId,
                 fromAppGroup: isBulkTrigger,
             })
-            history.push({ search })
+            navigate({ search })
         }
     }
 

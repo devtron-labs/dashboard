@@ -31,9 +31,9 @@ import {
     AppEnvironment,
     SelectPickerOptionType,
     IconsProps,
-    DayPickerRangeControllerPresets,
+    DateTimePickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { GetIFrameSrcParamsType } from './types'
+import { GetIFrameSrcParamsType, GrafanaPresetOptionHandlerType } from './types'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -140,18 +140,15 @@ export const LatencySelect = (props) => {
     )
 }
 
-export function getCalendarValue(startDateStr: string, endDateStr: string): string {
-    let str: string = `${startDateStr} - ${endDateStr}`
-    if (endDateStr === 'now' && startDateStr.includes('now')) {
-        const range = DayPickerRangeControllerPresets.find((d) => d.endStr === startDateStr)
-        if (range) {
-            str = range.text
-        } else {
-            str = `${startDateStr} - ${endDateStr}`
-        }
-    }
-    return str
-}
+export const getAppMetricsPresetOptions = (onClick: GrafanaPresetOptionHandlerType): DateTimePickerProps['rangeShortcutOptions'] => [
+    { label: 'Last 5 minutes', onClick: () => onClick('now-5m', { magnitude: 5, unit: 'minutes' }) },
+    { label: 'Last 30 minutes', onClick: () => onClick('now-30m', { magnitude: 30, unit: 'minutes' }) },
+    { label: 'Last 1 hour', onClick: () => onClick('now-1h', { magnitude: 1, unit: 'hours' }) },
+    { label: 'Last 24 hours', onClick: () => onClick('now-24h', { magnitude: 24, unit: 'hours' }) },
+    { label: 'Last 7 days', onClick: () => onClick('now-7d', { magnitude: 7, unit: 'days' }) },
+    { label: 'Last 1 month', onClick: () => onClick('now-1M', { magnitude: 1, unit: 'months' }) },
+    { label: 'Last 6 months', onClick: () => onClick('now-6M', { magnitude: 6, unit: 'months' }) },
+]
 
 export function isK8sVersionValid(k8sVersion: string): boolean {
     if (!k8sVersion) {

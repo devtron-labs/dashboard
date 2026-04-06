@@ -15,14 +15,14 @@
  */
 
 import { useMemo, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import {
     EMPTY_STATE_STATUS,
     FiltersTypeEnum,
     PaginationEnum,
+    ROUTER_URLS,
     Table,
-    URLS,
     useAsync,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -45,7 +45,7 @@ import { getSecurityScansTableColumns, parseSearchParams } from './utils'
 import './styles.scss'
 
 const SecurityScansTab = () => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { scanStatus } = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
         parseSearchParams,
         initialSortKey: SecurityListSortableKeys.APP_NAME,
@@ -59,7 +59,9 @@ const SecurityScansTab = () => {
     const isNotScannedList = scanStatus === ScanTypeOptions.NOT_SCANNED
 
     const redirectToAppEnv = (appId: number, envId: number) => {
-        push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/details/${envId}`)
+        navigate(
+            generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, { appId: String(appId), envId: String(envId) }),
+        )
     }
 
     const handleRowClick = (row: { data: SecurityScanType; id: string }) => {

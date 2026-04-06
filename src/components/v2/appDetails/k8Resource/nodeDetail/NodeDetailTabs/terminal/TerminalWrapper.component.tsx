@@ -83,7 +83,7 @@ export default function TerminalWrapper({
                 </div>
             )}
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
-                ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())
+                ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView)
                 : renderTerminalView()}
         </div>
     )

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import { Link } from 'react-router-dom'
 
 import {
@@ -23,9 +24,8 @@ import {
     DocLink,
     Icon,
     InfoBlock,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { URLS } from '@Config/routes'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
 
@@ -35,7 +35,7 @@ export const renderESOInfo = (isESO: boolean) =>
             description={
                 <p className="m-0 cn-9 fs-13 fw-4 lh-20">
                     <Link
-                        to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}?appStoreName=external-secret`}
+                        to={`${ROUTER_URLS.CHART_STORE}?appStoreName=external-secret`}
                         className="anchor"
                         target="_blank"
                     >

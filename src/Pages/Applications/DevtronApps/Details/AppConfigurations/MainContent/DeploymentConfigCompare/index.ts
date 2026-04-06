@@ -15,3 +15,4 @@
  */
 
 export * from './DeploymentConfigCompare'
+export { default as DeploymentConfigCompareWrapper } from './DeploymentConfigCompareWrapper'

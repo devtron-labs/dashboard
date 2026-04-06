@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, useEffect, useMemo, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState, type JSX, useCallback, useRef } from 'react'
 import {
     TableProps,
     ErrorScreenManager,
@@ -26,14 +26,14 @@ import {
     ResponseType,
     showError,
     InfrastructureManagementAppListType,
-    URLS as CommonURLS,
+    ROUTER_URLS,
     Table,
     PaginationEnum,
     FiltersTypeEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory } from 'react-router-dom'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
 import { getArgoInstalledExternalApps } from './AppListService'
-import { Routes, URLS } from '../../../config'
+import { Routes } from '../../../config'
 import { AppListViewType } from '../config'
 import SelectClusterImage from '../../../assets/icons/ic-select-cluster.svg'
 import '../list/list.scss'
@@ -65,10 +65,10 @@ const GenericAppList = ({
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [appsList, setAppsList] = useState<GenericAppType[]>([])
-    const sseConnectionRef = useRef<EventSource>()
+    const sseConnectionRef = useRef<EventSource>(null)
     const { isSuperAdmin } = useMainContext()
 
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     const isArgoCDAppList = appType === InfrastructureManagementAppListType.ARGO_CD
     const isFluxCDAppList = appType === InfrastructureManagementAppListType.FLUX_CD
@@ -194,9 +194,18 @@ const GenericAppList = ({
 
     const buildAppDetailUrl = (app: GenericAppType): string => {
         if (isArgoCDAppList) {
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
+            return generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_ARGO_APP, {
+                clusterId: app.clusterId,
+                appName: app.appName,
+                namespace: app.namespace,
+            })
         }
-        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
+        return generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_FLUX_APP, {
+            clusterId: app.clusterId,
+            appName: app.appName,
+            namespace: app.namespace,
+            templateType: app.fluxAppDeploymentType,
+        })
     }
 
     const askToSelectClusterId = () => (
@@ -219,7 +228,7 @@ const GenericAppList = ({
     )
 
     const onRowClick = useCallback(({ data: app }) => {
-        push(buildAppDetailUrl(app.detail))
+        navigate(buildAppDetailUrl(app.detail))
     }, [])
 
     const filter = useCallback(({ data: app }) => {
@@ -252,7 +261,7 @@ const GenericAppList = ({
             isButtonAvailable: true,
             renderButton: () => {
                 return (
-                    <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
+                    <Link to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}>
                         <button type="button" className="cta flex">
                             {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
                         </button>

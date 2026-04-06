@@ -16,9 +16,9 @@
 
 import { CIBuildType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
-import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
+import AddIcon from '../../assets/icons/ic-add.svg?react'
+import BuildpackIcon from '../../assets/icons/ic-builpack.svg?react'
+import FileIcon from '../../assets/icons/ic-file-text.svg?react'
 import { CIBuildTypeOptionType } from './types'
 
 export const SelectorMessaging = {

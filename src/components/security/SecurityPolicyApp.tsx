@@ -15,14 +15,14 @@
  */
 
 import { Component } from 'react'
-import { RouteComponentProps, NavLink } from 'react-router-dom'
+import {  NavLink, useParams } from 'react-router-dom'
 import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getAppListMin } from '../../services/service'
 import { ViewType } from '../../config'
 import { SecurityPolicyAppState } from './security.types'
 
-export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: string }>, SecurityPolicyAppState> {
+class SecurityPolicyApp extends Component<{ params: ReturnType< typeof useParams<{ appId: string }>>}, SecurityPolicyAppState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -54,7 +54,6 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
     }
 
     renderList() {
-        const { url } = this.props.match
         if (this.state.view === ViewType.LOADING) {
             return (
                 <div style={{ height: '280px' }}>
@@ -92,7 +91,7 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
                                     data-testid="select-application-from-list"
                                 >
                                     <td className="pl-20 pr-20 pt-16 pb-16">
-                                        <NavLink to={`${url}/${app.id}`}>{app.name}</NavLink>
+                                        <NavLink to={`${app.id}`}>{app.name}</NavLink>
                                     </td>
                                 </tr>
                             )
@@ -103,12 +102,12 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
     }
 
     renderContent() {
-        if (this.props.match.params.appId) {
+        if (this.props.params.appId) {
             return (
                 <SecurityPolicyEdit
                     level="application"
-                    id={Number(`${this.props.match.params.appId}`)}
-                    key={`${this.props.match.params.appId}`}
+                    id={Number(`${this.props.params.appId}`)}
+                    key={`${this.props.params.appId}`}
                 />
             )
         }
@@ -130,3 +129,11 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
         return <>{this.renderContent()}</>
     }
 }
+
+const SecurityPolicyAppWithParams = () => {
+    const params = useParams<{ appId: string }>()
+
+    return <SecurityPolicyApp params={params} />
+}
+
+export default SecurityPolicyAppWithParams

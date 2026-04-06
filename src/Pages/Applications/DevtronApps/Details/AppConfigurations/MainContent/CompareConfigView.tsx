@@ -16,7 +16,7 @@
 
 import { DeploymentHistoryDiffView, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
+import ICFileEdit from '@Icons/ic-file-edit.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { CompareConfigViewProps } from './types'

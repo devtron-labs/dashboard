@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-declare module '*.svg' {
+declare module '*.svg?react' {
     import * as React from 'react'
 
-    export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
-
-    const src: string
-    export default src
+    const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    export default ReactComponent
 }
 
 declare module '*.png' {
@@ -31,4 +29,12 @@ declare module '*.png' {
 declare module '*.gif' {
     const src: string
     export default src
+}
+
+// react-select's PublicBaseSelectProps (used transitively by devtron-fe-common-lib's
+// SelectPicker) is defined as JSX.LibraryManagedAttributes<typeof Select, Props<...>>,
+// which requires a global namespace JSX with LibraryManagedAttributes.
+// Without this, SelectPickerProps resolves to Pick<any, ...> with all props required.
+declare namespace JSX {
+    type LibraryManagedAttributes<C, P> = import('react').JSX.LibraryManagedAttributes<C, P>
 }

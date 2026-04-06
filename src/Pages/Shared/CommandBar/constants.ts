@@ -40,5 +40,3 @@ export const NAV_SUB_ITEMS_ICON_MAPPING: Partial<Record<NavigationItemID, IconNa
     'application-management-policies': 'ic-gavel',
     'global-configuration-authorization': 'ic-key',
 }
-
-export const UPGRADE_DIALOG_LOCAL_STORAGE_KEY = 'command-bar-upgrade-dialog-closed'

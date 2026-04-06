@@ -26,7 +26,7 @@ import {
     useMainContext,
     MainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
+import ICHelpOutline from '../../../../assets/icons/ic-help-outline.svg?react'
 import { AppStatusCardType } from './appDetails.type'
 import './appDetails.scss'
 import { importComponentFromFELibrary } from '@Components/common'

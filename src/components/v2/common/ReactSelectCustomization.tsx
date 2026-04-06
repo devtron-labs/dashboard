@@ -16,9 +16,9 @@
 
 import React from 'react'
 import Select, { components } from 'react-select'
-import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-appstatus-cancelled.svg'
-import { ReactComponent as Check } from '../../../assets/icons/appstatus/ic-check.svg'
-import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg'
+import ClearIcon from '../../../assets/icons/ic-appstatus-cancelled.svg?react'
+import Check from '../../../assets/icons/appstatus/ic-check.svg?react'
+import RedWarning from '../../../assets/icons/ic-error-medium.svg?react'
 
 /**
  * @deprecated

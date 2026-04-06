@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom'
 
 import {
     AuthenticationType,
+    BASE_ROUTES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -36,7 +37,6 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
-    URLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -89,7 +89,7 @@ const ClusterForm = ({
     const location = useLocation()
 
     const [clusterConfigTab, setClusterConfigTab] = useState<ClusterConfigTabEnum>(
-        id && location.pathname.includes(URLS.COST_VISIBILITY)
+        id && location.pathname.includes(BASE_ROUTES.COST_VISIBILITY.ROOT)
             ? ClusterConfigTabEnum.COST_VISIBILITY
             : ClusterConfigTabEnum.CLUSTER_CONFIG,
     )

@@ -24,7 +24,7 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
+import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,

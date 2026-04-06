@@ -112,7 +112,6 @@ export interface JobListProps
     filterConfig: JobListFilterConfig
     filtersLoading: boolean
     jobListCount: number
-    openJobCreateModel: (event) => void
     setJobCount: React.Dispatch<React.SetStateAction<number>>
     getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => string
 }

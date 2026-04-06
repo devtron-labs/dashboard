@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import {
     CustomInput,
     Drawer,
@@ -40,7 +41,7 @@ import {
     EphemeralFormAdvancedType,
     ResponsePayload,
 } from './nodeDetail.type'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import Close from '../../../assets/icons/ic-close.svg?react'
 import {
     convertToOptionsList,
     filterImageList,

@@ -30,7 +30,7 @@ import {
     UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
+import ICDevtronLogo from '@Icons/ic-devtron.svg?react'
 
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
