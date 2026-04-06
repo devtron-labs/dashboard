@@ -106,7 +106,8 @@
         "path-to-regexp": "^1.9.0",
         "cross-spawn": "^7.0.5",
         "react": "^19.2.4",
-        "react-dom": "^19.2.4"
+        "react-dom": "^19.2.4",
+        "@emotion/react": "^11.14.0"
     },
     "packageManager": "yarn@4.9.2",
     "overrides": {
