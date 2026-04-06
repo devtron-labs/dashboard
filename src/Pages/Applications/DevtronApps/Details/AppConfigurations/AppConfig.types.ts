@@ -155,7 +155,8 @@ interface CommonAppConfigurationProps extends Required<Pick<AppConfigProps, 'isT
 }
 
 export interface AppConfigurationContextType
-    extends CommonAppConfigurationProps, Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
+    extends CommonAppConfigurationProps,
+        Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     isCiPipeline: boolean
@@ -229,10 +230,8 @@ export type EnvConfigRouteParams = {
     resourceType?: EnvResourceType
 }
 
-export interface ExtendedCollapsibleListItem extends Pick<
-    CollapsibleListItem<'navLink'>,
-    'title' | 'subtitle' | 'href' | 'iconConfig'
-> {
+export interface ExtendedCollapsibleListItem
+    extends Pick<CollapsibleListItem<'navLink'>, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
     configState: ResourceConfigState
 }
 

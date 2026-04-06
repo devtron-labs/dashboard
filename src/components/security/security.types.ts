@@ -207,7 +207,8 @@ export enum VulnerabilityExposureSearchParams {
 }
 
 export interface VulnerabilityExposureUrlFiltersType
-    extends Record<VulnerabilityExposureFilterKeys, string[]>, Record<VulnerabilityExposureSearchParams, string> {}
+    extends Record<VulnerabilityExposureFilterKeys, string[]>,
+        Record<VulnerabilityExposureSearchParams, string> {}
 
 export interface ExposureListContainerProps {
     urlFilters: UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>
@@ -233,10 +234,11 @@ export interface CVEControlListPayload {
     envIds: number[]
 }
 
-export interface ExposureListProps extends Pick<
-    UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>,
-    'offset' | 'pageSize' | 'changePage' | 'changePageSize'
-> {
+export interface ExposureListProps
+    extends Pick<
+        UseUrlFiltersReturnType<never, VulnerabilityExposureUrlFiltersType>,
+        'offset' | 'pageSize' | 'changePage' | 'changePageSize'
+    > {
     appListResponse: ResponseType<CVEControlList>
     areFiltersApplied: boolean
     clearExposureListFilters: () => void

@@ -82,10 +82,8 @@ export interface DeploymentTemplateChartStateType {
     latestAppChartRef: number
 }
 
-export interface DeploymentTemplateEditorDataStateType extends Omit<
-    DeploymentTemplateConfigState,
-    'editorTemplateWithoutLockedKeys'
-> {
+export interface DeploymentTemplateEditorDataStateType
+    extends Omit<DeploymentTemplateConfigState, 'editorTemplateWithoutLockedKeys'> {
     parsingError: string
     removedPatches: Operation[]
     originalTemplateState: DeploymentTemplateConfigState
@@ -211,15 +209,13 @@ export interface DeploymentTemplateStateType {
     showExpressEditPromptTooltip: boolean
 }
 
-export interface HandleFetchDeploymentTemplateReturnType extends Partial<
-    Pick<DeploymentTemplateStateType, 'migratedFrom'>
-> {
+export interface HandleFetchDeploymentTemplateReturnType
+    extends Partial<Pick<DeploymentTemplateStateType, 'migratedFrom'>> {
     deploymentTemplateConfigState: DeploymentTemplateConfigState
 }
 
 export interface DeploymentTemplateOptionsHeaderProps
-    extends
-        Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart'>,
+    extends Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart'>,
         Pick<DeploymentTemplateStateType, 'showReadMe' | 'editMode' | 'chartDetails'> {
     disableVersionSelect: boolean
     handleChangeToGUIMode: () => void
@@ -236,8 +232,7 @@ export interface DeploymentTemplateOptionsHeaderProps
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
 export interface DeploymentTemplateFormProps
-    extends
-        Pick<DeploymentTemplateProps, 'environmentName'>,
+    extends Pick<DeploymentTemplateProps, 'environmentName'>,
         Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema' | 'mergeStrategy'>,
         Pick<DeploymentTemplateEditorDataStateType, 'latestDraft' | 'isAppMetricsEnabled'>,
         Pick<
@@ -265,8 +260,7 @@ export interface DeploymentTemplateFormProps
 }
 
 export interface DeploymentTemplateGUIViewProps
-    extends
-        Pick<
+    extends Pick<
             DeploymentTemplateFormProps,
             | 'editorOnChange'
             | 'lockedConfigKeysWithLockType'
@@ -288,8 +282,7 @@ export interface ResolvedEditorTemplateType {
 }
 
 export interface DeploymentTemplateCTAProps
-    extends
-        Pick<DeploymentTemplateProps, 'isCiPipeline'>,
+    extends Pick<DeploymentTemplateProps, 'isCiPipeline'>,
         Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart' | 'isAppMetricsEnabled'> {
     isLoading: boolean
     isDisabled: boolean
@@ -309,8 +302,7 @@ export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps,
 }
 
 export interface DTChartSelectorProps
-    extends
-        Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
+    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
         Pick<
             DeploymentTemplateOptionsHeaderProps,
             | 'isUnSet'
@@ -326,8 +318,7 @@ export interface DTChartSelectorProps
 }
 
 export interface ChartSelectorDropdownProps
-    extends
-        Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
+    extends Pick<DeploymentTemplateChartStateType, 'charts' | 'chartsMetadata'>,
         Pick<DTChartSelectorProps, 'areChartsLoading'>,
         Pick<DeploymentTemplateConfigState, 'selectedChart'> {
     selectedChartRefId: number
@@ -412,26 +403,21 @@ export interface DeploymentTemplateConfigDTO {
     guiSchema: string
 }
 
-export interface GetPublishedAndBaseDeploymentTemplateReturnType extends Pick<
-    HandleFetchDeploymentTemplateReturnType,
-    'migratedFrom'
-> {
+export interface GetPublishedAndBaseDeploymentTemplateReturnType
+    extends Pick<HandleFetchDeploymentTemplateReturnType, 'migratedFrom'> {
     publishedTemplateState: DeploymentTemplateConfigState
     baseDeploymentTemplateState: DeploymentTemplateConfigState
 }
 
 export interface GetChartListReturnType
-    extends
-        SelectedChartDetailsType,
+    extends SelectedChartDetailsType,
         Pick<
             DeploymentTemplateChartStateType,
             'charts' | 'chartsMetadata' | 'globalChartDetails' | 'latestAppChartRef'
         > {}
 
-export interface HandleInitializeTemplatesWithoutDraftParamsType extends Pick<
-    DeploymentTemplateStateType,
-    'migratedFrom'
-> {
+export interface HandleInitializeTemplatesWithoutDraftParamsType
+    extends Pick<DeploymentTemplateStateType, 'migratedFrom'> {
     baseDeploymentTemplateState: DeploymentTemplateStateType['baseDeploymentTemplateData']
     publishedTemplateState: DeploymentTemplateStateType['publishedTemplateData']
     chartDetailsState: DeploymentTemplateStateType['chartDetails']
@@ -448,21 +434,20 @@ export interface GetCurrentEditorStateProps {
     showApprovalPendingEditorInCompareView: boolean
 }
 
-export interface GetDryRunViewEditorStateProps extends Pick<
-    GetCurrentEditorStateProps,
-    'state' | 'isPublishedConfigPresent' | 'isDeleteOverrideDraft'
-> {}
+export interface GetDryRunViewEditorStateProps
+    extends Pick<GetCurrentEditorStateProps, 'state' | 'isPublishedConfigPresent' | 'isDeleteOverrideDraft'> {}
 
-export interface GetCurrentEditorPayloadForScopedVariablesProps extends Pick<
-    GetCurrentEditorStateProps,
-    | 'isInheritedView'
-    | 'isPublishedValuesView'
-    | 'showApprovalPendingEditorInCompareView'
-    | 'isPublishedConfigPresent'
-    | 'isDryRunView'
-    | 'isDeleteOverrideDraft'
-    | 'state'
-> {
+export interface GetCurrentEditorPayloadForScopedVariablesProps
+    extends Pick<
+        GetCurrentEditorStateProps,
+        | 'isInheritedView'
+        | 'isPublishedValuesView'
+        | 'showApprovalPendingEditorInCompareView'
+        | 'isPublishedConfigPresent'
+        | 'isDryRunView'
+        | 'isDeleteOverrideDraft'
+        | 'state'
+    > {
     shouldUseMergedTemplate: boolean
 }
 
@@ -495,7 +480,8 @@ export type UpdateEnvironmentDTPayloadType = UpdateDTCommonPayloadType &
     }
 
 export interface UpdateBaseDTPayloadType
-    extends UpdateDTCommonPayloadType, Partial<Pick<DeploymentTemplateEditorDataStateType, 'chartConfig'>> {
+    extends UpdateDTCommonPayloadType,
+        Partial<Pick<DeploymentTemplateEditorDataStateType, 'chartConfig'>> {
     appId: number
     defaultAppOverride: Record<string, string>
     id?: number

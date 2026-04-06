@@ -38,7 +38,7 @@ export const CellComponent = ({
     }
 
     if (field === APP_LIST_HEADERS.Cluster) {
-        const clusterName = isExpandedRow ? env.clusterName : (app.defaultEnv?.clusterName ?? '')
+        const clusterName = isExpandedRow ? env.clusterName : app.defaultEnv?.clusterName ?? ''
 
         return (
             <div className="flex left">
@@ -50,7 +50,7 @@ export const CellComponent = ({
     }
 
     if (field === APP_LIST_HEADERS.Namespace) {
-        const namespace = isExpandedRow ? env.namespace : (app.defaultEnv?.namespace ?? '')
+        const namespace = isExpandedRow ? env.namespace : app.defaultEnv?.namespace ?? ''
         return (
             <div className="flex left">
                 <p data-testid={`${namespace}-namespace`} className="dc__truncate-text  m-0">

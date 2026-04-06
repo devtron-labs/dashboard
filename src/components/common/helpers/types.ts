@@ -40,10 +40,11 @@ export enum URL_PARAM_MODE_TYPE {
     LIST = 'list',
 }
 
-export interface GetAndSetAppGroupFiltersParamsType extends Pick<
-    GroupFilterType,
-    'appListOptions' | 'groupFilterOptions' | 'setSelectedAppList' | 'setSelectedGroupFilter'
-> {
+export interface GetAndSetAppGroupFiltersParamsType
+    extends Pick<
+        GroupFilterType,
+        'appListOptions' | 'groupFilterOptions' | 'setSelectedAppList' | 'setSelectedGroupFilter'
+    > {
     filterParentType: FilterParentType
     resourceId: string
 }

@@ -122,8 +122,7 @@ interface InputMaterials {
 }
 
 export interface TriggerCDNodeProps
-    extends
-        RouterV5Props<{ appId: string; envId: string }>,
+    extends RouterV5Props<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
         Pick<WorkflowProps, 'reloadTriggerView'> {
     x: number
@@ -165,8 +164,7 @@ export interface TriggerCDNodeState {
 }
 
 export interface TriggerPrePostCDNodeProps
-    extends
-        RouterV5Props<{ appId: string; envId: string }>,
+    extends RouterV5Props<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
         Pick<TriggerCDNodeProps, 'reloadTriggerView' | 'onClickCDMaterial'> {
     x: number
@@ -202,7 +200,8 @@ export interface TriggerEdgeType {
 }
 
 export interface WorkflowProps
-    extends RouterV5Props<{ appId: string; envId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
+    extends RouterV5Props<{ appId: string; envId: string }>,
+        Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number

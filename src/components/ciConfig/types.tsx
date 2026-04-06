@@ -101,7 +101,8 @@ export interface LoadingState {
 }
 
 export interface CIConfigProps
-    extends Pick<CIContainerRegistryConfigProps, 'isCreateAppView'>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    extends Pick<CIContainerRegistryConfigProps, 'isCreateAppView'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     respondOnSuccess: (redirection?: boolean) => void
     configOverrideView?: boolean
     allowOverride?: boolean
@@ -147,8 +148,7 @@ export interface SourceConfigType {
     material: SelectedGitMaterialType[]
 }
 export interface CIConfigFormProps
-    extends
-        Required<Pick<CIConfigProps, 'isCreateAppView' | 'parentState' | 'setParentState'>>,
+    extends Required<Pick<CIConfigProps, 'isCreateAppView' | 'parentState' | 'setParentState'>>,
         Pick<CIConfigProps, 'isTemplateView'> {
     parentReloading: boolean
     dockerRegistries: any
@@ -168,7 +168,8 @@ export interface CIConfigFormProps
 }
 
 export interface AdvancedConfigOptionsProps
-    extends Pick<CIConfigProps, 'appId'>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    extends Pick<CIConfigProps, 'appId'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     ciPipeline: CIPipelineDataType
 }
 

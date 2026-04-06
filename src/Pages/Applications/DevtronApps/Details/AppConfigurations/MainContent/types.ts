@@ -54,10 +54,11 @@ export interface ConfigHeaderProps {
     hideTabs?: Partial<Record<ConfigHeaderTabType, boolean>>
 }
 
-export interface ConfigHeaderTabProps extends Pick<
-    ConfigHeaderProps,
-    'handleTabChange' | 'isDisabled' | 'areChangesPresent' | 'isOverridable' | 'showNoOverride'
-> {
+export interface ConfigHeaderTabProps
+    extends Pick<
+        ConfigHeaderProps,
+        'handleTabChange' | 'isDisabled' | 'areChangesPresent' | 'isOverridable' | 'showNoOverride'
+    > {
     tab: ConfigHeaderTabType
     activeTabIndex: number
     currentTabIndex: number

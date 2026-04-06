@@ -291,8 +291,7 @@ export interface MigrateToDevtronBaseFormStateType {
 }
 
 export interface MigrateArgoAppToCDPipelineRequiredBasePayloadType
-    extends
-        Pick<MigrateToDevtronFormState, 'triggerType'>,
+    extends Pick<MigrateToDevtronFormState, 'triggerType'>,
         Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'> {
     deploymentAppName: ValidateMigrateToDevtronPayloadType['deploymentAppName']
 }

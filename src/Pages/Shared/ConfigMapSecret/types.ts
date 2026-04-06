@@ -47,8 +47,7 @@ export interface CMSecretDraftPayloadType {
 }
 
 export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
-    extends
-        Pick<ConfigMapSecretContainerProps, 'appName' | 'envName' | 'componentType'>,
+    extends Pick<ConfigMapSecretContainerProps, 'appName' | 'envName' | 'componentType'>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
     envId: number
     appId: number
@@ -68,10 +67,11 @@ export interface CMSecretDraftData extends Omit<DraftMetadataDTO, 'data'> {
     parsedData: ConfigMapSecretDataType
 }
 
-export interface CMSecretWrapperProps extends Pick<
-    EnvironmentOverrideComponentProps,
-    'reloadEnvironments' | 'envConfig' | 'fetchEnvConfig' | 'isJob' | 'onErrorRedirectURL'
-> {
+export interface CMSecretWrapperProps
+    extends Pick<
+        EnvironmentOverrideComponentProps,
+        'reloadEnvironments' | 'envConfig' | 'fetchEnvConfig' | 'isJob' | 'onErrorRedirectURL'
+    > {
     componentType?: CMSecretComponentType
     parentName?: string
     clusterId?: string
@@ -133,15 +133,16 @@ export type ConfigMapSecretFormProps = Required<
         handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
     }
 
-export interface ConfigMapSecretDataProps extends Pick<
-    ConfigMapSecretFormProps,
-    | 'useFormProps'
-    | 'isExpressEditView'
-    | 'isExpressEditComparisonView'
-    | 'draftData'
-    | 'publishedConfigMapSecretData'
-    | 'handleMergeStrategyChange'
-> {
+export interface ConfigMapSecretDataProps
+    extends Pick<
+        ConfigMapSecretFormProps,
+        | 'useFormProps'
+        | 'isExpressEditView'
+        | 'isExpressEditComparisonView'
+        | 'draftData'
+        | 'publishedConfigMapSecretData'
+        | 'handleMergeStrategyChange'
+    > {
     isESO: boolean
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
@@ -154,8 +155,7 @@ export interface ConfigMapSecretDataProps extends Pick<
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal' | 'expressDeleteDraft'
 
 export interface ConfigMapSecretDeleteModalProps
-    extends
-        Pick<ConfigMapSecretFormProps, 'componentType' | 'cmSecretStateLabel'>,
+    extends Pick<ConfigMapSecretFormProps, 'componentType' | 'cmSecretStateLabel'>,
         Pick<ConfigMapSecretContainerProps, 'isTemplateView' | 'isExceptionUser'> {
     appId: number
     envId: number
@@ -261,25 +261,22 @@ export interface ConfigMapSecretCommonAPIProps {
     signal?: AbortSignal
 }
 
-export interface UpdateConfigMapSecretProps extends Pick<
-    ConfigMapSecretCommonAPIProps,
-    'appId' | 'id' | 'payload' | 'signal'
-> {
+export interface UpdateConfigMapSecretProps
+    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'id' | 'payload' | 'signal'> {
     isTemplateView: AppConfigProps['isTemplateView']
     isExpressEdit: boolean
 }
 
 export interface DeleteConfigMapSecretProps
-    extends
-        Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name'>,
+    extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name'>,
         Pick<UpdateConfigMapSecretProps, 'isTemplateView' | 'isExpressEdit'> {}
 
 export interface DeleteEnvConfigMapSecretProps
-    extends DeleteConfigMapSecretProps, Pick<ConfigMapSecretCommonAPIProps, 'envId'> {}
+    extends DeleteConfigMapSecretProps,
+        Pick<ConfigMapSecretCommonAPIProps, 'envId'> {}
 
 export interface OverrideConfigMapSecretProps
-    extends
-        Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'>,
+    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'>,
         Pick<UpdateConfigMapSecretProps, 'isTemplateView' | 'isExpressEdit'> {}
 
 export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name' | 'signal'> {

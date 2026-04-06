@@ -54,10 +54,8 @@ export interface Environment {
     isVirtualEnvironment?: boolean
 }
 
-export interface DevtronAppListProps extends Pick<
-    UseUrlFiltersReturnType<AppListSortableKeys>,
-    'changePage' | 'changePageSize' | 'handleSorting'
-> {
+export interface DevtronAppListProps
+    extends Pick<UseUrlFiltersReturnType<AppListSortableKeys>, 'changePage' | 'changePageSize' | 'handleSorting'> {
     filterConfig: AppListFilterConfig
     appFiltersResponseLoading: boolean
     environmentList: EnvListMinDTO[]

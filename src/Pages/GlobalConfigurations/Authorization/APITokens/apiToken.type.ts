@@ -53,10 +53,11 @@ export interface TokenListType extends Pick<TokenResponseType, 'token' | 'userId
     updatedAt?: string
 }
 
-export interface EditDataType extends Pick<
-    TokenListType,
-    'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier' | 'hideApiToken'
-> {}
+export interface EditDataType
+    extends Pick<
+        TokenListType,
+        'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier' | 'hideApiToken'
+    > {}
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     showRegeneratedModal: boolean

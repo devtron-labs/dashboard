@@ -33,7 +33,7 @@ export const getInfraGlanceConfig = (result: InfraOverviewDTO) =>
         redirectionLink: ROUTER_URLS.RESOURCE_BROWSER.ROOT,
         metricValue: (key === GlanceMetricsKeys.REACHABLE_CLUSTERS
             ? getReachableClusterCount(result)
-            : (result?.[key]?.value ?? 0)
+            : result?.[key]?.value ?? 0
         ).toLocaleString(),
         metricUnit: key === GlanceMetricsKeys.REACHABLE_CLUSTERS ? undefined : result?.[key]?.unit,
         valueOutOf:

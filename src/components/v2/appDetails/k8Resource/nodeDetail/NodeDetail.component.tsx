@@ -169,7 +169,7 @@ const NodeDetailComponent = ({
         (currentResource as unknown as Node)?.health?.status === 'Missing'
 
     const [containers, setContainers] = useState<Options[]>(
-        (isResourceBrowserView ? (selectedResource?.containers ?? []) : getContainersData(podMetaData)) as Options[],
+        (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
     const [startTerminal, setStartTerminal] = useState<boolean>(false)
 

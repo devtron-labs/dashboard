@@ -91,8 +91,7 @@ export interface ClusterOptionType extends OptionType {
 }
 
 export interface ResourceFilterOptionsProps
-    extends
-        Pick<
+    extends Pick<
             TableViewWrapperProps<K8sResourceDetailDataType, FiltersTypeEnum.URL>,
             'updateSearchParams' | 'filteredRows'
         >,
@@ -126,8 +125,7 @@ export interface ResourceFilterOptionsProps
 }
 
 export interface K8SResourceListType
-    extends
-        Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType' | 'filteredRows'>,
+    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType' | 'filteredRows'>,
         Pick<SidebarType, 'updateK8sResourceTab'> {
     addTab: UseTabsReturnType['addTab']
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
@@ -152,15 +150,16 @@ export interface ResourceBrowserActionMenuType {
     hideDeleteResource?: boolean
 }
 
-export interface DeleteResourcePopupType extends Pick<
-    ResourceBrowserActionMenuType,
-    | 'clusterId'
-    | 'resourceData'
-    | 'selectedResource'
-    | 'getResourceListData'
-    | 'removeTabByIdentifier'
-    | 'handleClearBulkSelection'
-> {
+export interface DeleteResourcePopupType
+    extends Pick<
+        ResourceBrowserActionMenuType,
+        | 'clusterId'
+        | 'resourceData'
+        | 'selectedResource'
+        | 'getResourceListData'
+        | 'removeTabByIdentifier'
+        | 'handleClearBulkSelection'
+    > {
     toggleDeleteDialog: () => void
 }
 
@@ -195,8 +194,7 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8SResourceTabComponentProps
-    extends
-        Pick<SidebarType, 'updateK8sResourceTab' | 'updateTabLastSyncMoment'>,
+    extends Pick<SidebarType, 'updateK8sResourceTab' | 'updateTabLastSyncMoment'>,
         Pick<K8SResourceListType, 'clusterName' | 'lowercaseKindToResourceGroupMap'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
@@ -251,10 +249,11 @@ export interface NodeRowDetail {
     age: string
 }
 
-export interface NodeListSearchFilterType extends Pick<
-    TableViewWrapperProps<K8sResourceDetailDataType, FiltersTypeEnum.URL>,
-    'visibleColumns' | 'setVisibleColumns' | 'allColumns' | 'rows' | 'handleSearch' | 'searchKey'
-> {
+export interface NodeListSearchFilterType
+    extends Pick<
+        TableViewWrapperProps<K8sResourceDetailDataType, FiltersTypeEnum.URL>,
+        'visibleColumns' | 'setVisibleColumns' | 'allColumns' | 'rows' | 'handleSearch' | 'searchKey'
+    > {
     searchParams: Record<string, any>
 }
 
@@ -263,10 +262,8 @@ export enum NODE_SEARCH_KEYS {
     NODE_GROUP = 'nodeGroup',
 }
 
-export interface ColumnSelectorType extends Pick<
-    NodeListSearchFilterType,
-    'visibleColumns' | 'setVisibleColumns' | 'allColumns'
-> {}
+export interface ColumnSelectorType
+    extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns' | 'allColumns'> {}
 
 export interface NodeActionsMenuProps {
     addTab: UseTabsReturnType['addTab']
