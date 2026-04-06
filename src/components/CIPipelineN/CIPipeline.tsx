@@ -620,7 +620,6 @@ export default function CIPipeline({
             isJobCard ||
             !isSecurityModuleInstalled ||
             formData.scanEnabled ||
-            formData.dockerfileScanEnabled ||
             !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
