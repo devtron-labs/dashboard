@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { DevtronAppExpandedState } from './types'
+import { TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 
-export const INITIAL_EXPANDED_STATE: DevtronAppExpandedState = {
-    expandedRow: {},
-    isAllExpanded: false,
-    isAllExpandable: false,
-}
+import { SecurityScanType } from '../security.types'
+import { getSeverityWithCount } from './utils'
+
+export const SeverityCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) =>
+    getSeverityWithCount(row.data.severityCount)

@@ -18,7 +18,7 @@ import { generatePath, useParams } from 'react-router-dom'
 
 import { Button, ButtonComponentType, GenericEmptyState, ImageType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import ICAdd from '@Icons/ic-add.svg?react'
 import EmptyStateImg from '@Images/cm-cs-empty-state.png'
 import EmptyFolder from '@Images/empty-folder.webp'
 

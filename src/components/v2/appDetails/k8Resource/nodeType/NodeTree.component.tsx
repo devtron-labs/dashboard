@@ -16,13 +16,13 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useNavigate, useLocation, NavLink } from 'react-router-dom'
-import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
+import ICExpand from '@Icons/ic-expand.svg?react'
 import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import IndexStore from '../../index.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import { AggregationKeys, getAggregator, NodeType, iNode, iNodes, NodeStatus } from '../../appDetails.type'
 import { URLS } from '../../../../../config'
-import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg'
+import ErrorImage from '../../../../../assets/icons/misc/errorInfo.svg?react'
 
 const NodeTreeComponent = ({
     clickedNodes,

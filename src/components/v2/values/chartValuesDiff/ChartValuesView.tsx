@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useReducer, useRef } from 'react'
+import { useState, useEffect, useReducer, useRef, type JSX } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
@@ -48,6 +48,7 @@ import {
     ComponentSizeType,
     SegmentType,
     ROUTER_URLS,
+    validateAppName,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -94,11 +95,11 @@ import {
     getChartValuesList,
 } from '../common/chartValues.api'
 import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
-import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
+import Arrows from '../../../../assets/icons/ic-arrows-left-right.svg?react'
+import File from '../../../../assets/icons/ic-file-text.svg?react'
+import Close from '../../../../assets/icons/ic-close.svg?react'
+import LinkIcon from '../../../../assets/icons/ic-link.svg?react'
 import {
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,
@@ -138,7 +139,6 @@ import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
-import { validateAppName } from '@Pages/App/CreateAppModal/utils'
 import { DeleteChartDialog } from './DeleteChartDialog'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')

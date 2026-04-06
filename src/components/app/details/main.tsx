@@ -58,30 +58,11 @@ const CIDetails = lazy(() => import('./cIDetails/CIDetails'))
 const AppDetails = lazy(() => import('./appDetails/AppDetails'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 
-const AIAgentContextSetterWrapper = ({ children, appName }: PropsWithChildren<{ appName: string }>) => {
-    const { setAIAgentContext } = useMainContext()
-    const params = useParams()
-
-    useEffect(() => {
-        const contextData: Record<string, string> = {
-            ...params,
-        }
-        if (contextData.buildId) {
-            // For build history page
-            contextData['Workflow_id'] = contextData.buildId
-            delete contextData.buildId
-        }
-        setAIAgentContext({ path: '', context: { appName, ...contextData } })
-    }, [])
-
-    return <>{children}</>
-}
-
 const APP_DETAILS_ROUTES = BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.DETAIL
 
 export default function AppDetailsPage() {
     const { appId } = useParams<{ appId: string }>()
-    const { setIntelligenceConfig, setAIAgentContext } = useMainContext()
+    const { setIntelligenceConfig } = useMainContext()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -157,7 +138,6 @@ export default function AppDetailsPage() {
             setSelectedGroupFilter([])
             setAppListOptions([])
             setIntelligenceConfig(null)
-            setAIAgentContext(null)
         }
     }, [appId])
 
@@ -427,19 +407,11 @@ export default function AppDetailsPage() {
                         />
                         <Route
                             path={`${APP_DETAILS_ROUTES.TRIGGER}/*`}
-                            element={
-                                <AIAgentContextSetterWrapper appName={appName}>
-                                    <TriggerView filteredEnvIds={_filteredEnvIds} />
-                                </AIAgentContextSetterWrapper>
-                            }
+                            element={<TriggerView filteredEnvIds={_filteredEnvIds} />}
                         />
                         <Route
                             path={`${APP_DETAILS_ROUTES.CI_DETAILS}/:pipelineId?/:buildId?/*`}
-                            element={
-                                <AIAgentContextSetterWrapper appName={appName}>
-                                    <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
-                                </AIAgentContextSetterWrapper>
-                            }
+                            element={<CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />}
                         />
                         <Route
                             path={`${APP_DETAILS_ROUTES.DEPLOYMENT_METRICS}/:envId?`}
@@ -447,11 +419,7 @@ export default function AppDetailsPage() {
                         />
                         <Route
                             path={`${APP_DETAILS_ROUTES.CD_DETAILS}/:envId?/:pipelineId?/:triggerId?/*`}
-                            element={
-                                <AIAgentContextSetterWrapper appName={appName}>
-                                    <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
-                                </AIAgentContextSetterWrapper>
-                            }
+                            element={<CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />}
                         />
                         <Route
                             path={`${APP_DETAILS_ROUTES.CONFIGURATIONS}/*`}

@@ -26,19 +26,17 @@ import {
     TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES } from '../../../../../config'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import BulkSelectionActionWidget from '../../Shared/components/BulkSelection/BulkSelectionActionWidget'
 import BulkSelectionModal from '../../Shared/components/BulkSelection/BulkSelectionModal'
 import { BulkSelectionEntityTypes } from '../../Shared/components/BulkSelection/constants'
+import { PermissionGroupInfoBar } from '../../SSOLoginServices/AutoAssign'
 import NoPermissionGroups from './NoPermissionGroups'
 import PermissionGroupListHeader from './PermissionGroupListHeader'
 import PermissionGroupTable from './PermissionGroupTable'
 import { PermissionGroupContainerProps } from './types'
-
-const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
 
 const PermissionGroupContainer = ({
     error,
@@ -57,7 +55,7 @@ const PermissionGroupContainer = ({
 
     const { searchKey, handleSearch: _handleSearch, clearFilters } = urlFilters
 
-    const draggableRef = useRef<HTMLDivElement>()
+    const draggableRef = useRef<HTMLDivElement | null>(null)
     const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
     const selectedUsersCount = isBulkSelectionApplied ? totalCount : getSelectedIdentifiersCount()

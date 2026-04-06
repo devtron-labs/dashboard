@@ -34,7 +34,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
+import MenuDots from '@Icons/ic-more-vertical.svg?react'
 import {
     getManifestResource,
     updateManifestResourceHelmApps,

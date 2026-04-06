@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react'
+import React, { type JSX, lazy, Suspense } from 'react'
 import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
@@ -26,7 +26,7 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
+import Next from '@Icons/ic-arrow-forward.svg?react'
 import { ErrorBoundary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '@Config/index'

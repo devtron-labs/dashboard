@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, type JSX } from 'react'
 import {
     showError,
     Progressing,
@@ -66,8 +66,8 @@ import {
     processVirtualEnvironmentDeploymentData,
     renderDeploymentApprovalInfo,
 } from '../../app/details/cdDetails/utils'
-import { ReactComponent as Rocket } from '@Icons/ic-nav-rocket.svg'
-import { ReactComponent as ICLines } from '@Icons/ic-lines.svg'
+import Rocket from '@Icons/ic-nav-rocket.svg?react'
+import ICLines from '@Icons/ic-lines.svg?react'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')

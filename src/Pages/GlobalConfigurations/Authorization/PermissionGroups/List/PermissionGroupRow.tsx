@@ -29,8 +29,8 @@ import {
     getRandomColor,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 import { deletePermissionGroup } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'

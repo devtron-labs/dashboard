@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { Route, Navigate, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import {
     ErrorScreenNotAuthorized,
     FeatureTitleWithInfo,
@@ -27,23 +27,37 @@ import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
 import { HEADER_TEXT } from '../../config'
 import './notifications.scss'
+import { NotificationsProps, NotificationsState } from './types'
+import { AddNotificationButton } from './AddNotificationButton'
+export default class Notifications extends Component<NotificationsProps, NotificationsState> {
 
-interface NotificationsProps extends RouterV5Props<{}> {
-    isSuperAdmin: boolean
-}
+    constructor(props) {
+        super(props)
+        this.state = {
+            disableEdit: false,
+        }
+    }
 
-export default class Notifications extends Component<NotificationsProps, {}> {
+    toggleDisableEdit = (disableEdit: boolean) => {
+        this.setState({ disableEdit })
+    }
+
     renderNotificationHeader() {
         return (
             <div className="notification-page bg__primary flexbox-col h-100">
                 <div className="notification-page__header">
-                    <FeatureTitleWithInfo
-                        title={HEADER_TEXT.NOTIFICATIONS.title}
-                        renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
-                        docLink="GLOBAL_CONFIG_NOTIFICATION"
-                        showInfoIconTippy
-                        dataTestId="notifications-feature-title"
-                    />
+                    <div className="flex dc__content-space">
+                        <FeatureTitleWithInfo
+                            title={HEADER_TEXT.NOTIFICATIONS.title}
+                            renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
+                            docLink="GLOBAL_CONFIG_NOTIFICATION"
+                            showInfoIconTippy
+                            dataTestId="notifications-feature-title"
+                        />
+                        <div className="flex right">
+                            <AddNotificationButton disableEdit={this.state.disableEdit} />
+                        </div>
+                    </div>
                     <TabGroup
                         tabs={[
                             {
@@ -76,6 +90,8 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                                     location={this.props.location}
                                     navigate={this.props.navigate}
                                     params={this.props.params}
+                                    disableEdit={this.state.disableEdit}
+                                    toggleDisableEdit={this.toggleDisableEdit}
                                 />
                             }
                         />

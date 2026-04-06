@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { HibernateResponseRowType, HibernateStatusRowType } from '../../AppGroup.types'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
-import { ReactComponent as Skipped } from '../../../../assets/icons/ic-info-filled.svg'
+import type { JSX } from 'react'
+import { HibernateStatusRowType } from '../../AppGroup.types'
+import Error from '../../../../assets/icons/ic-error-exclamation.svg?react'
+import Success from '../../../../assets/icons/appstatus/healthy.svg?react'
+import UnAuthorized from '../../../../assets/icons/ic-locked.svg?react'
+import Skipped from '../../../../assets/icons/ic-info-filled.svg?react'
 import { ACTION_STATE, DEPLOYMENT_WINDOW_TYPE } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../common'
 

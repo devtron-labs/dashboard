@@ -18,7 +18,7 @@ import { useParams } from 'react-router-dom'
 
 import { IndexStore, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '@Icons/ic-cross.svg'
+import Close from '@Icons/ic-cross.svg?react'
 
 import { deleteEphemeralUrl } from './nodeDetail.api'
 import { DeleteEphemeralButtonType, ParamsType, ResponsePayload } from './nodeDetail.type'

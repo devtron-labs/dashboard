@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import {
     AppStatus,
     showError,
@@ -39,19 +39,19 @@ import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
 import { LazyImage } from '../../common'
-import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
-import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
+import ICHelpOutline from '../../../assets/icons/ic-help-outline.svg?react'
 import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
-import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg'
-import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import InfoFillPurple from '../../../assets/icons/ic-info-filled-purple.svg?react'
+import ErrorExclamationIcon from '../../../assets/icons/ic-error-exclamation.svg?react'
+import CloseIcon from '../../../assets/icons/ic-close.svg?react'
+import AlertTriangleIcon from '../../../assets/icons/ic-alert-triangle.svg?react'
+import ArrowRight from '../../../assets/icons/ic-arrow-right.svg?react'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
@@ -365,7 +365,7 @@ const HelmAppList = ({
                         <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
                     </div>
                 )}
-                <div className="app-list__cell app-list__cell--env">
+                <div className="app-list__cell app-list__cell--env flex left">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy
                         className="default-tt"
@@ -425,7 +425,7 @@ const HelmAppList = ({
                 />
             </div>
             <div className="app-list__cell app-list__cell--name flex column left">
-                <div className="dc__truncate-text  m-0 value">{app.appName}</div>
+                <div className="dc__truncate-text  m-0 value cb-5">{app.appName}</div>
                 <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
             </div>
             {isArgoInstalled && (

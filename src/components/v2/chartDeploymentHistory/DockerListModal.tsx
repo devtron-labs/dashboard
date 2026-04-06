@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../assets/icons/ic-close.svg'
+import Close from '../assets/icons/ic-close.svg?react'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { useKeyDown } from '../../common'
 

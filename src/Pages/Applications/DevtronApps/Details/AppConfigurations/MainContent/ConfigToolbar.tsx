@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react'
+import { Fragment, type JSX } from 'react'
 import ReactGA from 'react-ga4'
 import { useParams } from 'react-router-dom'
 
@@ -32,9 +32,9 @@ import {
     ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
-import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
+import ICBookOpen from '@Icons/ic-book-open.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
+import ICMore from '@Icons/ic-more-option.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import BaseConfigurationNavigation from './BaseConfigurationNavigation'

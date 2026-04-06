@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useState, type JSX } from 'react'
 import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
@@ -48,10 +48,10 @@ import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImage
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
-import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
+import Dropdown from '../../../../assets/icons/ic-chevron-down.svg?react'
+import Close from '../../../../assets/icons/ic-cross.svg?react'
+import DeployIcon from '../../../../assets/icons/ic-nav-rocket.svg?react'
+import Pencil from '../../../../assets/icons/ic-pencil.svg?react'
 import { ViewType } from '../../../../config'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
@@ -403,7 +403,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             })
     }
 
-    const closeApprovalModal = (e: React.MouseEvent): void => {
+    const closeApprovalModal = (e: MouseEvent): void => {
         e.stopPropagation()
         navigate({
             search: '',

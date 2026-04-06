@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
@@ -35,7 +35,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyCustomChart from '@Images/empty-noresult@2x.png'
-import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
+import NoOffendingPipeline from '@Images/no-offending-pipeline.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { ClusterDetailBaseParams } from '../Types'
@@ -105,6 +105,20 @@ const ClusterUpgradeCompatibilityInfo = ({
         [resourceListForCurrentData],
     )
 
+    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = useCallback((row, filterData) => {
+        const lowercasedSearchKey = filterData.searchKey?.toLowerCase()
+        return (
+            !filterData.searchKey ||
+            Object.entries(row.data).some(
+                ([key, value]) =>
+                    key !== 'id' &&
+                    value !== null &&
+                    value !== undefined &&
+                    String(value).toLowerCase().includes(lowercasedSearchKey),
+            )
+        )
+    }, [])
+
     if (isLoading) {
         return (
             <div className="flex column h-100">
@@ -143,16 +157,6 @@ const ClusterUpgradeCompatibilityInfo = ({
             />
         )
     }
-
-    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = (row, filterData) =>
-        !filterData.searchKey ||
-        Object.entries(row.data).some(
-            ([key, value]) =>
-                key !== 'id' &&
-                value !== null &&
-                value !== undefined &&
-                String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-        )
 
     const clearFilters = () => {
         const searchParams = new URLSearchParams(location.search)

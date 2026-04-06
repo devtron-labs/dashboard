@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react'
+import { Fragment, type JSX } from 'react'
 
 import {
     Button,
@@ -26,7 +26,7 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import Edit from '@Icons/ic-pencil.svg?react'
 import { Trash } from '@Components/common'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Reducer, SyntheticEvent, useEffect, useMemo, useReducer, useRef } from 'react'
+import { SyntheticEvent, useEffect, useMemo, useReducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
 import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -67,8 +67,8 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
@@ -90,7 +90,6 @@ import DeploymentTemplateCTA from './DeploymentTemplateCTA'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import {
-    DeploymentTemplateActionState,
     DeploymentTemplateActionType,
     deploymentTemplateReducer,
     getDeploymentTemplateInitialState,
@@ -109,7 +108,6 @@ import {
     ConfigEditorStatesType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateProps,
-    DeploymentTemplateStateType,
     DeploymentTemplateURLConfigType,
     GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
@@ -174,7 +172,7 @@ const DeploymentTemplate = ({
     const { appId, envId } = useParams<BaseURLParams>()
     const { isSuperAdmin } = useMainContext()
 
-    const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
+    const [state, dispatch] = useReducer(
         deploymentTemplateReducer,
         getDeploymentTemplateInitialState({ isSuperAdmin, isExceptionUser }),
     )

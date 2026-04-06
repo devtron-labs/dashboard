@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import ReactGA from 'react-ga4'
 import { Link, useParams } from 'react-router-dom'
 import moment from 'moment'
@@ -38,10 +38,10 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
-import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
-import { ReactComponent as LinkIcon } from '@Icons/ic-link.svg'
-import { ReactComponent as ICRollback } from '@Icons/ic-rollback.svg'
+import ICCamera from '@Icons/ic-camera.svg?react'
+import Trash from '@Icons/ic-delete-dots.svg?react'
+import LinkIcon from '@Icons/ic-link.svg?react'
+import ICRollback from '@Icons/ic-rollback.svg?react'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '../../../../config'
@@ -327,40 +327,37 @@ export const SourceInfo = ({
                                                     <div className="divider__secondary" />
                                                 </>
                                             )}
-
-                                            {window._env_.ENABLE_RESTART_WORKLOAD &&
-                                                !isVirtualEnvironment &&
-                                                setRotateModal && (
-                                                    <>
-                                                        <Button
-                                                            dataTestId="app-details-rotate-pods-modal-button"
-                                                            size={ComponentSizeType.medium}
-                                                            variant={ButtonVariantType.secondary}
-                                                            onClick={() => setRotateModal(true)}
-                                                            disabled={isApprovalConfigured}
-                                                            icon={<Icon name="ic-arrows-clockwise" color={null} />}
-                                                            style={ButtonStyleType.neutral}
-                                                            showTooltip
-                                                            tooltipProps={{
-                                                                content: isApprovalConfigured ? (
-                                                                    <div className="flexbox-col">
-                                                                        <span className="fw-6">
-                                                                            Cannot restart workloads
-                                                                        </span>
-                                                                        <span className="fw-4 dc__word-break">
-                                                                            {ACTION_DISABLED_TEXT}
-                                                                        </span>
-                                                                    </div>
-                                                                ) : (
-                                                                    'Restart workloads'
-                                                                ),
-                                                                placement: 'top',
-                                                            }}
-                                                            ariaLabel="restart workloads"
-                                                        />
-                                                        <div className="divider__secondary" />
-                                                    </>
-                                                )}
+                                            {!isVirtualEnvironment && setRotateModal && (
+                                                <>
+                                                    <Button
+                                                        dataTestId="app-details-rotate-pods-modal-button"
+                                                        size={ComponentSizeType.medium}
+                                                        variant={ButtonVariantType.secondary}
+                                                        onClick={() => setRotateModal(true)}
+                                                        disabled={isApprovalConfigured}
+                                                        icon={<Icon name="ic-arrows-clockwise" color={null} />}
+                                                        style={ButtonStyleType.neutral}
+                                                        showTooltip
+                                                        tooltipProps={{
+                                                            content: isApprovalConfigured ? (
+                                                                <div className="flexbox-col">
+                                                                    <span className="fw-6">
+                                                                        Cannot restart workloads
+                                                                    </span>
+                                                                    <span className="fw-4 dc__word-break">
+                                                                        {ACTION_DISABLED_TEXT}
+                                                                    </span>
+                                                                </div>
+                                                            ) : (
+                                                                'Restart workloads'
+                                                            ),
+                                                            placement: 'top',
+                                                        }}
+                                                        ariaLabel="restart workloads"
+                                                    />
+                                                    <div className="divider__secondary" />
+                                                </>
+                                            )}
 
                                             {renderRollbackButton(true)}
                                         </div>
@@ -430,7 +427,8 @@ export const SourceInfo = ({
             {renderDevtronAppsEnvironmentSelector()}
             {loadingDetails
                 ? shimmerLoaderBlocks()
-                : (isPipelineTriggered || isExternalLinkedApp) && !isdeploymentAppDeleting &&
+                : (isPipelineTriggered || isExternalLinkedApp) &&
+                  !isdeploymentAppDeleting &&
                   environment && (
                       <div className="app-details-info-card-container flex left w-100 dc__gap-12 pb-16 dc__overflow-auto pt-4">
                           {status && (

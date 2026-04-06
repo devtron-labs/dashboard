@@ -23,7 +23,7 @@ import {
     EMPTY_STATE_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import Close from '../../../assets/icons/ic-close.svg?react'
 import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import { sortCallback, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
+import GitLab from '../../../assets/icons/git/gitlab.svg?react'
+import Git from '../../../assets/icons/git/git.svg?react'
+import GitHub from '../../../assets/icons/git/github.svg?react'
+import BitBucket from '../../../assets/icons/git/bitbucket.svg?react'
 
 export function subtractArray(a: any[], b: any[], key: string): any[] {
     if (!(a && a.length && a.length > 0)) {

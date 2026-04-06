@@ -17,7 +17,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { ACCESS_TYPE_MAP, Button, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
+import AddIcon from '../../../../../../assets/icons/ic-add.svg?react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import DirectPermission from './DirectPermission'

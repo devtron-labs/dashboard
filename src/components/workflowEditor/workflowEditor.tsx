@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, createContext } from 'react'
+import { Component, createContext, type JSX } from 'react'
 import { Route, Routes, generatePath } from 'react-router-dom'
 import {
     showError,
@@ -63,8 +63,8 @@ import CIPipeline from '../CIPipelineN/CIPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
-import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
-import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
+import ICHelpOutline from '../../assets/img/ic-help-outline.svg?react'
+import ICClose from '../../assets/icons/ic-close.svg?react'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
 import CDSuccessModal from './CDSuccessModal'

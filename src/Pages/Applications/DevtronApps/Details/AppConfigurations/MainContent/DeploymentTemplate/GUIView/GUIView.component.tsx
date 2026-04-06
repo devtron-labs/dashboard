@@ -31,8 +31,8 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
-import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
+import ICArrow from '@Icons/ic-arrow-forward.svg?react'
+import ICWarningY5 from '@Icons/ic-warning-y5.svg?react'
 import EmptyFolderImage from '@Images/empty-folder.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 

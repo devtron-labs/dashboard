@@ -21,6 +21,7 @@ import {
     RegistryCredentialsType,
     DOCUMENTATION,
     SegmentType,
+    PATTERNS as COMMON_PATTERNS,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -103,7 +104,6 @@ export const Routes = {
     PROJECT_LIST_MIN: 'team/autocomplete',
     TEAM_USER: 'team/app/user', // TODO: PROJECT_USER
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
-    DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
     GITOPS_DEVTRON_APP: `app/template/gitops/config`,
     GITOPS_VALIDATE: 'gitops/validate',
@@ -113,7 +113,6 @@ export const Routes = {
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
     CHART_LIST_SUBPATH_MIN: 'list/min',
-    GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
     DB_MIGRATION_CONFIGURATION: 'config/db-migration-config',
@@ -278,6 +277,7 @@ export const Routes = {
     SECURITY_VULNERABILITY_TREND: 'overview/security/vulnerability-trend',
     SECURITY_DEPLOYMENT_STATUS: 'overview/security/deployment-security-status',
     SECURITY_BLOCKED_DEPLOYMENTS_TREND: 'overview/security/blocked-deployments-trend',
+    AUTHORISATION_GLOBAL_CONFIG: 'authorisation/global-config',
 }
 
 export enum ViewType {
@@ -302,7 +302,7 @@ export const AppConfigStatus = {
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
-    APP_NAME: '^[a-z][a-z0-9-]*[a-z0-9]$/*',
+    APP_NAME: COMMON_PATTERNS.APP_NAME,
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     APP_LABEL_CHIP: /^.+:.+$/,
     VARIABLE: /^[A-z0-9-_]+$/,

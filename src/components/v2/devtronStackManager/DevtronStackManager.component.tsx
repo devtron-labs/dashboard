@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, type JSX } from 'react'
 import { generatePath, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import {
@@ -41,20 +41,20 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as SuccessIcon } from '@Icons/appstatus/healthy.svg'
-import { ReactComponent as RetryInstallIcon } from '@Icons/ic-arrow-clockwise.svg'
-import { ReactComponent as InstallIcon } from '@Icons/ic-arrow-forward.svg'
-import { ReactComponent as UpToDateIcon } from '@Icons/ic-celebration.svg'
-import { ReactComponent as Chat } from '@Icons/ic-chat-circle-dots.svg'
-import { ReactComponent as InstalledIcon } from '@Icons/ic-check.svg'
-import { ReactComponent as ICTrivy } from '@Icons/ic-clair-to-trivy.svg'
-import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
-import { ReactComponent as DiscoverIcon } from '@Icons/ic-compass.svg'
-import { ReactComponent as ErrorIcon } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as Note } from '@Icons/ic-note.svg'
-import { ReactComponent as ICClair } from '@Icons/ic-trivy-to-clair.svg'
-import { ReactComponent as Warning } from '@Icons/ic-warning.svg'
-import { ReactComponent as Info } from '@Icons/info-filled.svg'
+import SuccessIcon from '@Icons/appstatus/healthy.svg?react'
+import RetryInstallIcon from '@Icons/ic-arrow-clockwise.svg?react'
+import InstallIcon from '@Icons/ic-arrow-forward.svg?react'
+import UpToDateIcon from '@Icons/ic-celebration.svg?react'
+import Chat from '@Icons/ic-chat-circle-dots.svg?react'
+import InstalledIcon from '@Icons/ic-check.svg?react'
+import ICTrivy from '@Icons/ic-clair-to-trivy.svg?react'
+import CloseIcon from '@Icons/ic-close.svg?react'
+import DiscoverIcon from '@Icons/ic-compass.svg?react'
+import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
+import Note from '@Icons/ic-note.svg?react'
+import ICClair from '@Icons/ic-trivy-to-clair.svg?react'
+import Warning from '@Icons/ic-warning.svg?react'
+import Info from '@Icons/info-filled.svg?react'
 
 import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'

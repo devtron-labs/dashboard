@@ -15,8 +15,8 @@
  */
 
 import { useState } from 'react'
-import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import PluginIcon from '../../assets/icons/ic-plugin.svg?react'
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
 import { CIAdvancedConfigProps } from './types'
 import TargetPlatformSelector from './TargetPlatformSelector'
 import DockerArgs from '../CIPipelineN/DockerArgs'

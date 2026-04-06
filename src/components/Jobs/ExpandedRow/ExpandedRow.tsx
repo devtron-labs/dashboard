@@ -15,8 +15,8 @@
  */
 
 import { generatePath, Link } from 'react-router-dom'
-import { ReactComponent as Expand } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import Expand from '../../../assets/icons/ic-dropdown-filled.svg?react'
+import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { ExpandedRowProps, Job, JobCIPipeline } from '../Types'
 import './ExpandedRow.scss'
 import { environmentName } from '../Utils'

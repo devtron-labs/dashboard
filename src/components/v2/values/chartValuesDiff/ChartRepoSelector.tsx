@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { getChartsByKeyword } from '../../../charts/charts.service'
 import { ChartRepoDetailsType, ChartRepoOptions, ChartRepoSelectorType } from './ChartValuesView.type'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
+import Error from '../../../../assets/icons/ic-warning.svg?react'
+import Refetch from '../../../../assets/icons/ic-restore.svg?react'
 import { getCommonSelectStyle } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
 import { getNoMatchingResultText, InfoBlock, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'

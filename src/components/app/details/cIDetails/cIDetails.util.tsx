@@ -15,8 +15,8 @@
  */
 
 import { GenericEmptyState, EMPTY_STATE_STATUS } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ScannedDisabled } from '@Images/ic-empty-scanner-disabled.svg'
-import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
+import ScannedDisabled from '@Images/ic-empty-scanner-disabled.svg?react'
+import MechanicalOperation from '@Images/ic-mechanical-operation.svg?react'
 
 export const ImageNotScannedView = () => {
     return (

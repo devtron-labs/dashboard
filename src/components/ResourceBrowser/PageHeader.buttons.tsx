@@ -21,7 +21,7 @@ import { Button, ComponentSizeType, handleAnalyticsEvent, useMainContext } from 
 import { CreateClusterProps } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 import { AddClusterButton } from '@Pages/Shared/AddEditCluster'
 
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Add from '../../assets/icons/ic-add.svg?react'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
 

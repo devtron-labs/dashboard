@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-@import './modal.scss';
-@import './whiteCard.scss';
-@import './workflow.scss';
-@import './icons.scss';
-@import './triggerView.scss';
+@use './modal.scss';
+@use './whiteCard.scss';
+@use './workflow.scss';
+@use './icons.scss';
+@use './triggerView.scss';
 
 :root {
     --modal-index: 20;
@@ -878,12 +878,6 @@ button.anchor {
     color: var(--N700);
     margin: 0px;
     margin-bottom: 20px;
-}
-
-.dc__devtron-tag__container {
-    padding: 6px 0px;
-    display: flex;
-    flex-wrap: wrap;
 }
 
 .dc__devtron-tag {
@@ -3437,6 +3431,10 @@ button.anchor {
     height: 300px !important;
 }
 
+.h-360 {
+    height: 360px !important;
+}
+
 .h-365 {
     height: 365px !important;
 }
@@ -3469,6 +3467,10 @@ button.anchor {
 
 .mh-40 {
     min-height: 40px;
+}
+
+.mh-44 {
+    min-height: 44px;
 }
 
 .mh-48 {
@@ -3581,6 +3583,10 @@ button.anchor {
 
 .mxh-300-imp {
     max-height: 300px !important;
+}
+
+.mxh-320 {
+    max-height: 320px;
 }
 
 .mxh-350 {

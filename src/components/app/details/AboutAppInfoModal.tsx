@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 
 import {
     ComponentSizeType,
@@ -28,7 +28,7 @@ import {
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
+import Close from '../../../assets/icons/ic-cross.svg?react'
 import { editApp } from '../service'
 import { AboutAppInfoModalProps } from '../types'
 import { projectChangeMessage } from './utils'

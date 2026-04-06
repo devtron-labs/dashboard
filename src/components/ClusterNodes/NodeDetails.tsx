@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { type JSX, useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
     Progressing,
@@ -51,13 +51,13 @@ import { useParams, useLocation, generatePath, useNavigate, Routes, Route, Navig
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
-import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
-import { ReactComponent as Storage } from '@Icons/ic-storage.svg'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
-import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
-import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
+import Info from '@Icons/ic-info-filled.svg?react'
+import Error from '@Icons/ic-error-exclamation.svg?react'
+import AlertTriangle from '@Icons/ic-alert-triangle.svg?react'
+import Storage from '@Icons/ic-storage.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
+import Dropdown from '@Icons/ic-chevron-down.svg?react'
+import Success from '@Icons/appstatus/healthy.svg?react'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,

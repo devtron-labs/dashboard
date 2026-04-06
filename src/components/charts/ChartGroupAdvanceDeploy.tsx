@@ -38,7 +38,7 @@ import useChartGroup from './useChartGroup'
 import { Select, mapByKey } from '../common'
 import AdvancedConfig from './AdvancedConfig'
 import { deployChartGroup } from './charts.service'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
+import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useState } from 'react'
+import { type JSX, Fragment, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -44,10 +44,10 @@ import {
     OptionTypeWithIcon,
 } from '../ExternalLinks.type'
 import { availableVariables, sortByUpdatedOn } from '../ExternalLinks.utils'
-import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as ICOpenBook } from '@Icons/ic-book-open.svg'
+import AddIcon from '../../../assets/icons/ic-add.svg?react'
+import Close from '../../../assets/icons/ic-close.svg?react'
+import Help from '../../../assets/icons/ic-help.svg?react'
+import ICOpenBook from '@Icons/ic-book-open.svg?react'
 import './AddExternalLink.scss'
 
 export default function AddExternalLink({

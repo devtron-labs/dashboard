@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { type JSX, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
@@ -37,10 +37,10 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clockwise.svg'
-import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
+import Retry from '../../../../assets/icons/ic-arrow-clockwise.svg?react'
+import DropdownIcon from '../../../../assets/icons/ic-arrow-left.svg?react'
+import RotateIcon from '../../../../assets/icons/ic-arrows_clockwise.svg?react'
+import MechanicalIcon from '../../../../assets/img/ic-mechanical-operation.svg?react'
 import { importComponentFromFELibrary } from '../../../common'
 import {
     AppInfoMetaDataDTO,

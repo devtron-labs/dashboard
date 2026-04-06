@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { type JSX, Fragment, useEffect, useState } from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
-import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
+import LinkIcon from '../../assets/icons/ic-link.svg?react'
 import {
     AppLevelExternalLinksType,
     ExternalLink,
@@ -47,7 +47,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
-import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
+import ICArrowOut from '@Icons/ic-arrow-square-out.svg?react'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'

@@ -36,8 +36,8 @@ import {
     UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
+import PlusIcon from '../../../../../assets/icons/ic-delete-interactive.svg?react'
+import Error from '../../../../../assets/icons/ic-warning.svg?react'
 import { deepEqual, importComponentFromFELibrary, validateEmail } from '../../../../../components/common'
 import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING } from '../../../../../config'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
@@ -48,12 +48,11 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
+import { UserAutoAssignedRoleGroupsTable, UserPermissionsInfoBar } from '../../SSOLoginServices/AutoAssign'
 import { User } from '../../types'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../../utils'
 import { DeleteUserPermission } from '../DeleteUserPermission'
 
-const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
-const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 const UserGroupSelector = importComponentFromFELibrary('UserGroupSelector', null, 'function')
 
