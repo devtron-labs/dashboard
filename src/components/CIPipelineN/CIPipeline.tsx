@@ -48,6 +48,7 @@ import {
     GenericModal,
     Button,
     handleAnalyticsEvent,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -122,13 +123,15 @@ export default function CIPipeline({
     const [environments, setEnvironments] = useState<EnvironmentWithSelectPickerType[]>([])
     // NOTE: don't want to show the warning until fetch; therefore true by default
     const [isBlobStorageConfigured, setIsBlobStorageConfigured] = useState(true)
+
+    const { forceDockerfileScan } = useMainContext()
     const [formData, setFormData] = useState<PipelineFormType>({
         name: '',
         args: [],
         materials: [],
         triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
-        dockerfileScanEnabled: false,
+        dockerfileScanEnabled: forceDockerfileScan || false,
         gitHost: undefined,
         webhookEvents: [],
         ciPipelineSourceTypeOptions: [],
