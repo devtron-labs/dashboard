@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react'
 
 import {
+    API_STATUS_CODES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -27,7 +28,11 @@ import {
     GenericEmptyState,
     handleAnalyticsEvent,
     InfoBlock,
+    ServerErrors,
     showError,
+    TOAST_ACCESS_DENIED,
+    ToastManager,
+    ToastVariantType,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -89,7 +94,14 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                 setNeedsUpdate(true)
             }
         } catch (err) {
-            showError(err)
+            if ((err as ServerErrors).code === API_STATUS_CODES.PERMISSION_DENIED) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.notAuthorized,
+                    description: (err as ServerErrors).errors?.[0]?.userMessage || TOAST_ACCESS_DENIED.SUBTITLE,
+                })
+            } else {
+                showError(err)
+            }
         } finally {
             setLoader(false)
         }
