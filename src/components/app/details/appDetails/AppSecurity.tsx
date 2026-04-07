@@ -61,7 +61,7 @@ export const useGetAppSecurityDetailsRecommendations = ({
     const isDockerfileScanEnabled = scanRecommendationsResultResponse?.result?.scanEnabled
 
     useEffect(() => {
-        if (!appId || !buildId || !isDockerfileScanEnabled || recommendationStatus === 3) {
+        if (!appId || !buildId || !isDockerfileScanEnabled || ![0, 1].includes(recommendationStatus)) {
             return undefined
         }
 
