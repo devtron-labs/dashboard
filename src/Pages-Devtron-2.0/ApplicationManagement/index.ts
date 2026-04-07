@@ -1,1 +1,1 @@
-export { Configurations as ApplicationManagementConfigurationsRouter } from './Configurations'
+export { default as ApplicationManagementRouter } from './ApplicationManagementRouter'

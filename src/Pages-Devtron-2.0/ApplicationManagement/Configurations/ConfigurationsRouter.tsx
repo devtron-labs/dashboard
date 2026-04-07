@@ -1,26 +1,26 @@
 import { lazy } from 'react'
-import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
+    BASE_ROUTES,
     BreadCrumb,
     DOCUMENTATION,
     getApplicationManagementBreadcrumb,
     noop,
     PageHeader,
+    ROUTER_URLS,
     SERVER_MODE,
     SideNavigation,
-    URLS as COMMON_URLS,
     useBreadcrumb,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import GitOpsConfiguration from '@Components/gitOps/GitOpsConfiguration'
 import { APPLICATION_MANAGEMENT_CONFIGURATIONS } from '@Components/Navigation'
 import { AddNotification } from '@Components/notifications/AddNotification'
-import { URLS } from '@Config/routes'
 
 import './styles.scss'
 
-const GitOpsConfiguration = lazy(() => import('@Components/gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('@Components/gitProvider/GitProvider'))
 
 const DeploymentChartsRouter = lazy(() => import('@Pages/GlobalConfigurations/DeploymentCharts'))
@@ -31,18 +31,20 @@ const BuildInfra = lazy(() =>
 )
 
 export const Configurations = () => {
-    const { pathname } = useLocation()
+    const location = useLocation()
+    const navigate = useNavigate()
     const { featureGitOpsFlags: isFeatureGitOpsEnabled, serverMode, isSuperAdmin } = useMainContext()
 
     const getDefaultRoute = () => {
         if (isFeatureGitOpsEnabled) {
-            return URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS
+            return BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.GITOPS
         }
 
-        return URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS
+        return BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.GIT_ACCOUNTS
     }
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.ROOT,
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
@@ -51,10 +53,12 @@ export const Configurations = () => {
                 },
             },
         },
-        [pathname],
+        [],
     )
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => (
+        <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.ROOT} />
+    )
 
     return (
         <>
@@ -64,56 +68,57 @@ export const Configurations = () => {
                     <SideNavigation list={APPLICATION_MANAGEMENT_CONFIGURATIONS} />
                 </div>
                 <div className="bg__secondary dc__overflow-auto">
-                    <Switch>
+                    <Routes>
                         {isFeatureGitOpsEnabled && (
                             <Route
-                                key={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS}
-                                path={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS}
-                            >
-                                {(props) => <GitOpsConfiguration handleChecklistUpdate={noop} {...props} />}
-                            </Route>
+                                key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.GITOPS}
+                                path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.GITOPS}
+                                element={<GitOpsConfiguration handleChecklistUpdate={noop} />}
+                            />
                         )}
                         <Route
-                            key={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS}
-                            path={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS}
-                            render={(props) => <GitProvider {...props} isSuperAdmin={isSuperAdmin} />}
+                            key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.GIT_ACCOUNTS}
+                            path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.GIT_ACCOUNTS}
+                            element={<GitProvider isSuperAdmin={isSuperAdmin} />}
                         />
                         <Route
-                            key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS}
-                            path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS}
-                        >
-                            <DeploymentChartsRouter />
-                        </Route>
+                            key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.DEPLOYMENT_CHARTS.ROOT}
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.DEPLOYMENT_CHARTS.ROOT}/*`}
+                            element={<DeploymentChartsRouter />}
+                        />
                         <Route
-                            key={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW}
-                            path={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW}
-                        >
-                            {(props) => <AddNotification {...props} />}
-                        </Route>
+                            key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS_ADD_NEW}
+                            path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS_ADD_NEW}
+                            element={<AddNotification navigate={navigate} params={{}} location={location} />}
+                        />
                         <Route
-                            key={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}
-                            path={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}
-                        >
-                            {(props) => <Notifications {...props} isSuperAdmin={isSuperAdmin} />}
-                        </Route>
-                        {...serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES
+                            key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS}
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS}/*`}
+                            element={
+                                <Notifications
+                                    isSuperAdmin={isSuperAdmin}
+                                    location={location}
+                                    navigate={navigate}
+                                    params={{}}
+                                />
+                            }
+                        />
+                        {...serverMode === SERVER_MODE.FULL && window._env_.ENABLE_SCOPED_VARIABLES
                             ? [
                                   <Route
-                                      key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}
-                                      path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}
-                                  >
-                                      <ScopedVariables isSuperAdmin={isSuperAdmin} />
-                                  </Route>,
-                                  <Route
-                                      key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_BUILD_INFRA}
-                                      path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_BUILD_INFRA}
-                                  >
-                                      <BuildInfra isSuperAdmin={isSuperAdmin} />
-                                  </Route>,
+                                      key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.SCOPED_VARIABLES.ROOT}
+                                      path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.SCOPED_VARIABLES.ROOT}/*`}
+                                      element={<ScopedVariables isSuperAdmin={isSuperAdmin} />}
+                                  />,
                               ]
                             : []}
-                        <Redirect to={getDefaultRoute()} />
-                    </Switch>
+                        <Route
+                            key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.BUILD_INFRA.ROOT}
+                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.BUILD_INFRA.ROOT}/*`}
+                            element={<BuildInfra isSuperAdmin={isSuperAdmin} />}
+                        />
+                        <Route path="*" element={<Navigate to={getDefaultRoute()} replace />} />
+                    </Routes>
                 </div>
             </div>
         </>

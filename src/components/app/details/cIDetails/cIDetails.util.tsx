@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
+import { GenericEmptyState, EMPTY_STATE_STATUS } from '@devtron-labs/devtron-fe-common-lib'
+import MechanicalOperation from '@Images/ic-mechanical-operation.svg?react'
 
 
 export const CIRunningView = (props) => {

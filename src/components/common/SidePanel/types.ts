@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FunctionComponent } from 'react'
+import { FunctionComponent, PropsWithChildren } from 'react'
 
 import { IconName, MainContext, SidePanelTab, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -23,7 +23,7 @@ export interface SidePanelProps {
 }
 
 export interface SidePanelContentBaseProps {
-    SidePanelHeaderActions: FunctionComponent
+    SidePanelHeaderActions: FunctionComponent<PropsWithChildren<{}>>
 }
 
 export interface SidePanelContentProps extends Pick<MainContext, 'sidePanelConfig' | 'setSidePanelConfig'> {

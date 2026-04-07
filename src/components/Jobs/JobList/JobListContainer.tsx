@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
-import { FilterChips } from '@devtron-labs/devtron-fe-common-lib'
-
-import { URLS } from '@Config/routes'
+import { FilterChips, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { JobListProps, JobListUrlFiltersType } from '../Types'
 import JobListFilters from './JobListFilters'
@@ -37,12 +35,12 @@ const JobListContainer = ({
     updateSearchParams,
     getLabelFromValue,
 }: JobListProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const { searchKey, status, environment, project } = filterConfig
 
     const handleEditJob = (jobId: number): void => {
-        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${jobId}/edit`)
+        navigate(generatePath(ROUTER_URLS.JOB_DETAIL.CONFIGURATIONS, { appId: String(jobId) }))
     }
 
     return (

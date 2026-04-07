@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -47,7 +47,7 @@ let initTimer = null
 
 const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
     
     const { setAIAgentContext } = useMainContext()
 
@@ -84,7 +84,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         if (checkIfToRefetchData(location)) {
             timer = setTimeout(() => {
                 _getAndSetAppDetail()
-                deleteRefetchDataFromUrl(history, location)
+                deleteRefetchDataFromUrl(navigate, location)
             }, 2000)
         }
 

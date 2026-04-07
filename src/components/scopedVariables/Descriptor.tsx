@@ -20,7 +20,7 @@ import { validator } from './utils'
 import { DescriptorProps } from './types'
 import { importComponentFromFELibrary, HiddenInput } from '../common'
 import { ReadFileAs } from '../common/hooks/types'
-import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
+import ICUpload from '../../assets/icons/ic-upload-blue.svg?react'
 import { HEADER_TEXT } from '@Config/constants'
 
 export default function Descriptor({ children, showUploadButton, readFile, searchKey, onSearch }: DescriptorProps) {

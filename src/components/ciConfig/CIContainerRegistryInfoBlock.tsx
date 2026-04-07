@@ -16,11 +16,9 @@
 
 import { generatePath, Link } from 'react-router-dom'
 
-import { Button, ButtonVariantType, InfoBlock, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonVariantType, InfoBlock, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '@Config/constants'
-
-import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
+import ArrowIcon from '../../assets/icons/ic-arrow-left.svg?react'
 import { CIContainerRegistryInfoBlockProps } from './types'
 
 export const CIContainerRegistryInfoBlock = ({
@@ -55,13 +53,14 @@ export const CIContainerRegistryInfoBlock = ({
                         &nbsp;
                         {isCDPipeline && (
                             <Link
-                                to={`${
+                                to={generatePath(
                                     isTemplateView
-                                        ? generatePath(URLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
-                                              appId,
-                                          })
-                                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}`
-                                }/${Routes.WORKFLOW_EDITOR}`}
+                                        ? `${ROUTER_URLS.APP_TEMPLATE_DETAIL}/edit`
+                                        : ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS,
+                                    {
+                                        appId,
+                                    },
+                                )}
                                 onClick={onClickRedirectLink}
                             >
                                 Take me there

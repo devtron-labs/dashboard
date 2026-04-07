@@ -27,8 +27,8 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
+import AddIcon from '../../../../../../assets/icons/ic-add.svg?react'
+import Close from '../../../../../../assets/icons/ic-close.svg?react'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8sPermissionActionType } from './constants'
 import K8sListItemCard from './K8sListItemCard'
@@ -149,7 +149,7 @@ const K8sPermissionModal = ({
     }
 
     return (
-        <Drawer avoidFocusTrap onEscape={close} position="right" width="800px">
+        <Drawer onEscape={close} position="right" width="800px">
             <div onClick={stopPropagation} className="h-100 h-100 flexbox-col flex-grow-1 dc__content-space">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bg__primary dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>

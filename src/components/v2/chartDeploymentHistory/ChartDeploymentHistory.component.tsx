@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, type JSX } from 'react'
 import {
     showError,
     Progressing,
@@ -39,7 +39,7 @@ import {
     MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import docker from '@Icons/misc/docker.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
@@ -66,8 +66,8 @@ import {
     processVirtualEnvironmentDeploymentData,
     renderDeploymentApprovalInfo,
 } from '../../app/details/cdDetails/utils'
-import { ReactComponent as Rocket } from '@Icons/ic-nav-rocket.svg'
-import { ReactComponent as ICLines } from '@Icons/ic-lines.svg'
+import Rocket from '@Icons/ic-nav-rocket.svg?react'
+import ICLines from '@Icons/ic-lines.svg?react'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
@@ -104,8 +104,7 @@ const ChartDeploymentHistory = ({
     const [deploying, setDeploying] = useState(false)
     const [showDockerInfo, setShowDockerInfo] = useState(false)
     const [showReleaseNotFound, setReleaseNotFound] = useState<boolean>(false)
-    const history = useHistory()
-    const { url } = useRouteMatch()
+    const navigate = useNavigate()
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
     let initTimer = null
     // Checking if deployment app type is argocd only then show steps tab
@@ -717,7 +716,7 @@ const ChartDeploymentHistory = ({
                     variant: ToastVariantType.success,
                     description: 'Deployment initiated',
                 })
-                history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+                navigate(`../${URLS.APP_DETAILS}?refetchData=true`)
             } else if (errors) {
                 showError(errors)
             } else {

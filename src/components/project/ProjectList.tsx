@@ -27,7 +27,7 @@ import { ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
 import { Project } from './Project'
 import { ProjectListState, ProjectType, ProjectListProps } from './types'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Add from '../../assets/icons/ic-add.svg?react'
 import './project.scss'
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 

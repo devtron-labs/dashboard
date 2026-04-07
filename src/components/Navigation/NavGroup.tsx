@@ -46,8 +46,7 @@ export const NavGroup = ({
                 {shouldRenderNavLink ? (
                     <NavLink
                         to={to}
-                        className={className}
-                        activeClassName="is-selected"
+                        className={({ isActive }) => `${className} ${isActive ? 'is-selected' : ''}`}
                         aria-disabled={disabled}
                         onClick={handleNavLinkClick}
                     >

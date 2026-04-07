@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import Select, { components } from 'react-select'
-import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
+import DropDownIcon from '../../assets/icons/appstatus/ic-chevron-down.svg?react'
 import { CredentialType, ManageRegistryType } from './dockerType'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
+import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
 import {
     ClearIndicator,
     multiSelectStyles,

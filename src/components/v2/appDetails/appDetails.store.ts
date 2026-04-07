@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InitTabType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, InitTabType, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 
@@ -57,3 +57,18 @@ export const getInitialTabs = (
 }
 
 export const APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX = 0
+
+export const getRoutePatternForNodeTree = (appType: AppType) => {
+    switch (appType) {
+        case AppType.DEVTRON_HELM_CHART:
+            return `${ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART}${URLS.DETAILS}`
+        case AppType.EXTERNAL_HELM_CHART:
+            return `${ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP}${URLS.DETAILS}`
+        case AppType.EXTERNAL_ARGO_APP:
+            return `${ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_ARGO_APP}${URLS.DETAILS}`
+        case AppType.EXTERNAL_FLUX_APP:
+            return `${ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_FLUX_APP}${URLS.DETAILS}`
+        default:
+            return ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS
+    }
+}

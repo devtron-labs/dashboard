@@ -15,7 +15,7 @@
  */
 
 import { MouseEvent, useCallback, useMemo, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -25,21 +25,21 @@ import {
     FiltersTypeEnum,
     Icon,
     PaginationEnum,
+    ROUTER_URLS,
     Table,
     TableRowActionsOnHoverComponentProps,
     TableViewWrapperProps,
-    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
+import PlayMedia from '@Icons/ic-play-outline.svg?react'
 import ContentCard from '@Components/common/ContentCard/ContentCard'
 import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
 
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import ArrowRight from '../../../assets/icons/ic-arrow-right.svg?react'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
-import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
+import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../../config'
 import { AppListSortableKeys } from '../list-new/AppListType'
 import { getAppList } from '../service'
 import { appListModal, getDevtronAppListPayload } from './appList.modal'
@@ -49,13 +49,13 @@ import { getTableColumns } from './utils'
 import './list.scss'
 
 const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<App | Environment>) => {
-    const { push } = useHistory()
     const app = data as App
+    const navigate = useNavigate()
 
     const handleEditAppClick = (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
-        const url = `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${Routes.EDIT}`
-        push(url)
+        const url = generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId: String(app.id) })
+        navigate(url)
     }
 
     return (
@@ -91,7 +91,7 @@ const renderGuidedCards = () => (
             />
             <ContentCard
                 datatestid="create-application"
-                redirectTo={CommonURLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP}
+                redirectTo={ROUTER_URLS.CREATE_DEVTRON_APP}
                 rootClassName="ev-5"
                 imgSrc={DeployCICD}
                 title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
@@ -128,11 +128,10 @@ const DevtronAppList = ({
     setAppCount,
     appFiltersResponseLoading,
 }: DevtronAppListProps) => {
+    const navigate = useNavigate()
     const [noRows, setNoRows] = useState<boolean>(false)
 
     const { searchKey, appStatus, project, environment, namespace, cluster, labelSelectors } = filterConfig
-
-    const { push } = useHistory()
 
     const isSearchOrFilterApplied = !!(
         searchKey ||
@@ -146,10 +145,14 @@ const DevtronAppList = ({
 
     const redirectToAppDetails = (app, envId: number): string => {
         if (envId) {
-            return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/details/${envId}`
+            return generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+                appId: String(app.id),
+                envId: String(envId),
+            })
         }
-
-        return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/trigger`
+        return generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER, {
+            appId: String(app.id),
+        })
     }
 
     const getRows = useCallback(
@@ -202,14 +205,14 @@ const DevtronAppList = ({
         if (!isExpandedRow) {
             const app = data as App
 
-            push(redirectToAppDetails(app, app.defaultEnv.id))
+            navigate(redirectToAppDetails(app, app.defaultEnv.id))
 
             return
         }
 
         const { app, id } = data as Environment & { app: App }
 
-        push(redirectToAppDetails(app, id))
+        navigate(redirectToAppDetails(app, id))
     }, [])
 
     const columns = useMemo(() => getTableColumns(isArgoInstalled), [isArgoInstalled])

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { type JSX, Fragment, MouseEvent, useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -42,11 +42,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
+import Close from '../../../assets/icons/ic-close.svg?react'
+import Help from '../../../assets/icons/ic-help.svg?react'
+import ICHelpOutline from '../../../assets/icons/ic-help-outline.svg?react'
+import Add from '../../../assets/icons/ic-add.svg?react'
+import Tag from '../../../assets/icons/ic-tag.svg?react'
 import './webhookDetails.scss'
 import { getUserRole, createOrUpdateUser } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
@@ -386,7 +386,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         )
     }
 
-    const handleCopyToClipboard = async ({ e, token }: { e: React.MouseEvent; token: string }) => {
+    const handleCopyToClipboard = async ({ e, token }: { e: MouseEvent; token: string }) => {
         stopPropagation(e)
         setCopyToClipboardPromise(copyToClipboard(token))
     }
@@ -543,7 +543,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
         return (
             <div
-                ref={(el) => (schemaRef.current[schemaName] = el)}
+                ref={(el) => { schemaRef.current[schemaName] = el }}
                 className={`dc__border-top ${selectedSchema === schemaName ? 'bcy-1' : ''}`}
             >
                 <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">

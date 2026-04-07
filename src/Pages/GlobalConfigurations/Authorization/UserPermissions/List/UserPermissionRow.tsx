@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { Link, useRouteMatch } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 
@@ -33,9 +33,9 @@ import {
     handleUTCTime,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Lock from '@Icons/ic-locked.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
@@ -64,7 +64,6 @@ const UserPermissionRow = ({
     showCheckbox,
     userGroups,
 }: UserPermissionRowProps) => {
-    const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const { handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
@@ -137,7 +136,7 @@ const UserPermissionRow = ({
                     </span>
                 ) : (
                     <span className="dc__ellipsis-right">
-                        <Link className="anchor dc__ellipsis-right" to={`${path}/${id}`}>
+                        <Link className="anchor dc__ellipsis-right" to={`${id}`}>
                             {emailId}
                         </Link>
                     </span>
@@ -185,7 +184,7 @@ const UserPermissionRow = ({
                             showAriaLabelInTippy={false}
                             dataTestId={`user-permission__edit-button-${index}`}
                             linkProps={{
-                                to: `${path}/${id}`,
+                                to: `${id}`,
                             }}
                             isOpacityHoverChild
                             size={ComponentSizeType.xs}

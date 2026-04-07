@@ -20,7 +20,7 @@ import {
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CleanBrush } from '@Icons/ic-clean-brush-medium.svg'
+import CleanBrush from '@Icons/ic-clean-brush-medium.svg?react'
 
 import { BulkSelectionModalTypes } from './constants'
 import { BulkSelectionClearConfirmationModalProps } from './types'

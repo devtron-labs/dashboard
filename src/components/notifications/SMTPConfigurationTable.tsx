@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,7 +29,7 @@ import { ConfigurationTableProps, SMTPConfigurationTableRowType } from './types'
 export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { smtpConfigurationList } = state
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onClickEditRow = (id: number) => () => {
         const newParams = {
@@ -37,7 +37,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
             configId: id.toString(),
             modal: ConfigurationsTabTypes.SMTP,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }
