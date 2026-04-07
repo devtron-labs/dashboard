@@ -359,8 +359,8 @@ const NodeComponent = ({
                 return _classname
             }
 
-            const initChildren = (node.childNodes || []).filter((c) => c.isInitContainer)
-            const regularChildren = (node.childNodes || []).filter((c) => !c.isInitContainer)
+            const initChildren = (node.childNodes || []).filter((child) => child.isInitContainer)
+            const regularChildren = (node.childNodes || []).filter((child) => !child.isInitContainer)
 
             const intelligenceConfig: MainContext['intelligenceConfig'] = {
                 metadata: {
