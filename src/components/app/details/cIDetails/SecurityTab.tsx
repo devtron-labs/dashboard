@@ -57,7 +57,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
             )
         }
 
-        if (scanRecommendationsResultLoading) {
+        if (scanRecommendationsResultLoading || scanRecommendationsResultResponse?.result?.scanEnabled) {
             return (
                 <div className="flexbox-col h-150">
                     <Progressing />
