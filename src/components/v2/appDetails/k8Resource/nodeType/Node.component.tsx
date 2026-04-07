@@ -577,14 +577,14 @@ const NodeComponent = ({
                         <div className="ml-17 indent-line">
                             {initChildren.length > 0 ? (
                                 <>
-                                    {renderGroupHeader('Init Containers', containerLevelExternalLinks.length > 0)}
-                                    {makeNodeTree(initChildren, false)}
                                     {regularChildren.length > 0 && (
                                         <>
                                             {renderGroupHeader('Containers', containerLevelExternalLinks.length > 0)}
                                             {makeNodeTree(regularChildren, false)}
                                         </>
                                     )}
+                                    {renderGroupHeader('Init Containers', containerLevelExternalLinks.length > 0)}
+                                    {makeNodeTree(initChildren, false)}
                                 </>
                             ) : (
                                 makeNodeTree(node.childNodes, true)
