@@ -58,6 +58,16 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
             )
         }
 
+        if (scanResult?.status === 3) {
+            return (
+                <ReportTabEmptyState
+                    title="Failed to scan dockerfile"
+                    subtitle="Dockerfile scanning failed for this pipeline execution"
+                    icon="ic-error"
+                />
+            )
+        }
+
         if ((scanRecommendationsResultLoading || scanResult?.scanEnabled) && !scanResult?.results) {
             return (
                 <div className="flexbox-col h-150">
@@ -75,7 +85,6 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     const renderDockerfileScanRecommendation = () => (
         <div className="flexbox-col dc__gap-16 ">
             {!!getSecurityScanRecommendationTitle && getSecurityScanRecommendationTitle()}
-
             <div className="en-2 bw-1 br-8 cn-9">{renderDockerfileScannerContent()}</div>
         </div>
     )

@@ -24,7 +24,7 @@ import {
     UseSecurityRecommendationReturnType,
 } from './appDetails.type'
 
-const SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL = 10000
+const SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL = 5000
 
 export const useGetAppSecurityDetails = ({
     appId,
@@ -57,8 +57,17 @@ export const useGetAppSecurityDetailsRecommendations = ({
         reloadScanRecommendationsResult,
     ] = useAsync(() => getSecurityScanRecommendations({ appId, buildId }), [appId, buildId], !!appId && !!buildId)
 
+    const recommendationStatus = scanRecommendationsResultResponse?.result?.status
+    const isDockerfileScanEnabled = scanRecommendationsResultResponse?.result?.scanEnabled
+
     useEffect(() => {
-        if (!appId || !buildId || !scanRecommendationsResultResponse?.result?.scanEnabled) {
+        if (
+            !appId ||
+            !buildId ||
+            !isDockerfileScanEnabled ||
+            recommendationStatus === 3 ||
+            recommendationStatus !== 0
+        ) {
             return undefined
         }
 
@@ -69,7 +78,7 @@ export const useGetAppSecurityDetailsRecommendations = ({
         return () => {
             window.clearTimeout(timeoutId)
         }
-    }, [appId, buildId, reloadScanRecommendationsResult, scanRecommendationsResultResponse?.result?.status])
+    }, [appId, buildId, isDockerfileScanEnabled, recommendationStatus, reloadScanRecommendationsResult])
 
     return {
         scanRecommendationsResultLoading,
