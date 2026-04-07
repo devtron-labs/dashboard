@@ -19,6 +19,7 @@ import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-
 import { followCursor } from 'tippy.js'
 
 import {
+    Badge,
     ClipboardButton,
     ComponentSizeType,
     getAIAnalyticsEvents,
@@ -371,6 +372,23 @@ const NodeComponent = ({
                   } as MainContext['debugAgentContext'])
                 : null
 
+            const initContainerNodes: iNode[] =
+                node.kind === NodeType.Pod
+                    ? (podMetaData?.find((p) => p.name === node.name)?.initContainers || []).map(
+                          (containerName: string): iNode => {
+                              // Same pattern used in the common lib to build lightweight
+                              // display-only child nodes (see IndexStore) in common-lib: src/Shared/Store/IndexStore.tsx
+                              const initNode = {} as iNode
+                              initNode.kind = NodeType.Containers
+                              initNode.name = containerName
+                              initNode.pNode = node
+                              initNode.isInitContainer = true
+                              return initNode
+                          },
+                      )
+                    : []
+            const expandedChildNodes = [...initContainerNodes, ...(node.childNodes || [])]
+
             return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Fragment key={`grt${index}`}>
@@ -388,7 +406,7 @@ const NodeComponent = ({
                         </div>
                     )}
                     <div
-                        className={`node-row dc__align-items-center resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier} ${showAIButton ? 'explain-ai-button' : ''}`}
+                        className={`node-row dc__align-items-center resource-row dc__hover-icon py-8 pr-16 ${expandedChildNodes.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier} ${showAIButton ? 'explain-ai-button' : ''}`}
                     >
                         <div
                             className="flex left dc__gap-8"
@@ -396,7 +414,7 @@ const NodeComponent = ({
                                 markNodeSelected(selectedNodes, node.name)
                             }}
                         >
-                            {node.childNodes?.length > 0 && (
+                            {expandedChildNodes.length > 0 && (
                                 <ICExpand
                                     data-testid="resource-child-nodes-dropdown"
                                     className="rotate icon-dim-20 pointer dc__no-shrink fcn-6"
@@ -459,6 +477,9 @@ const NodeComponent = ({
                                     </div>
                                 </div>
                                 <div className="flex left dc__gap-4">
+                                    {(node as any).isInitContainer && (
+                                        <Badge label="Init Container" variant="neutral" size={ComponentSizeType.xxs} />
+                                    )}
                                     {nodeStatus && (
                                         <span
                                             data-testid="node-resource-status"
@@ -564,9 +585,9 @@ const NodeComponent = ({
                                 />
                             )}
                     </div>
-                    {node.childNodes?.length > 0 && _isSelected && (
+                    {expandedChildNodes.length > 0 && _isSelected && (
                         <div className="ml-17 indent-line">
-                            <div>{makeNodeTree(node.childNodes, true)}</div>
+                            <div>{makeNodeTree(expandedChildNodes, true)}</div>
                         </div>
                     )}
                 </Fragment>
