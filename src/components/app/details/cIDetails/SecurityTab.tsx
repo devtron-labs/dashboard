@@ -46,6 +46,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
     })
 
     const renderDockerfileScannerContent = () => {
+        const scanResult = scanRecommendationsResultResponse?.result
         if (scanRecommendationsResultError) {
             return (
                 <div className="p-20">
@@ -57,14 +58,14 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
             )
         }
 
-        if (scanRecommendationsResultLoading || scanRecommendationsResultResponse?.result?.scanEnabled) {
+        if ((scanRecommendationsResultLoading || scanResult?.scanEnabled) && !scanResult?.results) {
             return (
                 <div className="flexbox-col h-150">
                     <Progressing />
                 </div>
             )
         }
-        if (!forceDockerfileScan && !scanRecommendationsResultResponse?.result?.results) {
+        if (!forceDockerfileScan && !scanResult?.results) {
             return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
         }
 
