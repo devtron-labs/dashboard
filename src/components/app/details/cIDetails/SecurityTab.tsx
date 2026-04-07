@@ -7,7 +7,6 @@ import {
     Progressing,
     ReportTabEmptyState,
     SecurityDetailsCards,
-    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -26,7 +25,6 @@ const getSecurityScanRecommendationTitle = importComponentFromFELibrary(
 
 export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId, buildId } = useParams<{ appId: string; buildId: string }>()
-    const { forceDockerfileScan } = useMainContext()
 
     const computedAppId = appId ?? appIdFromParent
 
@@ -75,7 +73,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
                 </div>
             )
         }
-        if (!forceDockerfileScan && !scanResult?.results) {
+        if (!scanResult?.scanEnabled && !scanResult?.results) {
             return <ReportTabEmptyState title="Dockerfile scan was disabled" subtitle="" />
         }
 
