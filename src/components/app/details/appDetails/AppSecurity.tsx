@@ -24,7 +24,7 @@ import {
     UseSecurityRecommendationReturnType,
 } from './appDetails.type'
 
-const SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL = 3000
+const SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL = 10000
 
 export const useGetAppSecurityDetails = ({
     appId,
@@ -58,7 +58,7 @@ export const useGetAppSecurityDetailsRecommendations = ({
     ] = useAsync(() => getSecurityScanRecommendations({ appId, buildId }), [appId, buildId], !!appId && !!buildId)
 
     useEffect(() => {
-        if (!appId || !buildId || scanRecommendationsResultResponse?.result?.status !== 0) {
+        if (!appId || !buildId || !scanRecommendationsResultResponse?.result?.scanEnabled) {
             return undefined
         }
 

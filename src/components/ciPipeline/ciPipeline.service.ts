@@ -33,7 +33,6 @@ import {
     getTemplateAPIRoute,
     SourceTypeMap,
     ModuleStatus,
-    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -66,9 +65,9 @@ export function getInitData(
     includeWebhookData: boolean = false,
     isJobCard: boolean,
     isTemplateView: AppConfigProps['isTemplateView'],
+    forceDockerfileScan: boolean
 ): Promise<CIPipelineInitData> {
 
-    const { forceDockerfileScan } = useMainContext()
     return Promise.all([
         getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),

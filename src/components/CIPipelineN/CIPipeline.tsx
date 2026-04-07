@@ -472,7 +472,7 @@ export default function CIPipeline({
                     setIsAdvanced(true)
                 }
             } else {
-                const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView)
+                const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView, forceDockerfileScan)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
                     setSecurityModuleInstalled(ciPipelineResponse.result.isSecurityModuleInstalled)
