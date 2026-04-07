@@ -80,6 +80,7 @@ import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
 import {
+    CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP,
     CM_SECRET_COMPONENT_NAME,
     CONFIG_MAP_SECRET_DATA_KEYS,
     CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
@@ -1292,15 +1293,13 @@ export const ConfigMapSecretContainer = ({
                     />
                 )}
                 {window._env_.ENABLE_SCOPED_VARIABLES && (
-                    <div className="app-config-variable-widget-position">
-                        <FloatingVariablesSuggestions
-                            zIndex={100}
-                            appId={appId}
-                            envId={envId}
-                            clusterId={clusterId}
-                            isTemplateView={isTemplateView}
-                        />
-                    </div>
+                    <FloatingVariablesSuggestions
+                        appId={appId}
+                        envId={envId}
+                        clusterId={clusterId}
+                        isTemplateView={isTemplateView}
+                        boundaryGap={CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP}
+                    />
                 )}
             </div>
         </>

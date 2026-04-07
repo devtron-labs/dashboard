@@ -16,13 +16,11 @@
 
 import React, { ImgHTMLAttributes, ReactElement, ReactNode } from 'react'
 
-import { AppDetails as CommonAppDetails, ResponseType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
+import { AppDetails, ResponseType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
 
-import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
-import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
 
 export interface OptionTypeWithIcon {
     label: string
@@ -145,14 +143,14 @@ export interface AppliedFilterChipsType extends AppliedClustersType, AppliedAppl
 
 export interface AppLevelExternalLinksType extends Pick<AddExternalLinkType, 'monitoringTools'> {
     appDetails?: AppDetails
-    helmAppDetails?: HelmAppDetails
+    helmAppDetails?: AppDetails
     externalLinks: ExternalLink[]
     isOverviewPage?: boolean
 }
 
 export interface NodeLevelExternalLinksType {
     appDetails?: AppDetails
-    helmAppDetails?: HelmAppDetails
+    helmAppDetails?: AppDetails
     nodeLevelExternalLinks: OptionTypeWithIcon[]
     podName?: string
     containerName?: string
@@ -160,7 +158,6 @@ export interface NodeLevelExternalLinksType {
 }
 
 export interface ExternalLinksAndToolsType extends Pick<AddExternalLinkType, 'monitoringTools'> {
-    fetchingExternalLinks?: boolean
     externalLinks: ExternalLink[]
 }
 
@@ -220,7 +217,7 @@ export interface ExternalLinkFallbackImageProps extends Pick<ImgHTMLAttributes<H
 export interface ExternalLinkChipProps {
     linkOption: OptionTypeWithIcon
     idx: number
-    details: AppDetails | CommonAppDetails
+    details: AppDetails
     handleOpenModal: (linkOption: OptionTypeWithIcon, externalLinkURL: string) => void
     isOverviewPage: boolean
 }

@@ -41,14 +41,12 @@ declare global {
         Worker: any
         __BASE_URL__: string
         __ORCHESTRATOR_ROOT__: string
-        __GRAFANA_ORG_ID__: number
     }
 }
 
 if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
     window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
     window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
-    window.__GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
 }
 
 const root = document.getElementById('root')
@@ -133,7 +131,6 @@ if (!window || !window._env_) {
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: true,
         CLAIR_TOOL_VERSION: 'V4',
-        ENABLE_RESTART_WORKLOAD: true,
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
@@ -173,7 +170,6 @@ if (!window || !window._env_) {
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
         FEATURE_AI_INTEGRATION_ENABLE: true,
         LOGIN_PAGE_IMAGE: '',
-        FEATURE_ASK_DEVTRON_EXPERT: false,
         FEATURE_MANAGE_TRAFFIC_ENABLE: true,
         FEATURE_REDFISH_NODE_ENABLE: false,
         FEATURE_INFRA_PROVISION_INFO_BLOCK_HIDE: false,
@@ -182,6 +178,8 @@ if (!window || !window._env_) {
         FEATURE_CANARY_ROLLOUT_PROGRESS_ENABLE: true,
         COMMAND_BAR_REFETCH_INTERVAL: 3600,
         FEATURE_STORAGE_ENABLE: true,
+        FEATURE_ATHENA_DEBUG_MODE_ENABLE: false,
+        GRAFANA_ORG_ID: 2,
     }
 }
 

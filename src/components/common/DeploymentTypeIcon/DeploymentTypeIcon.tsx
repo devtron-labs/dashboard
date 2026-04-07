@@ -52,7 +52,7 @@ const getDeploymentTypeIcon = ({ deploymentAppType, iconSize = 32 }: DeploymentT
     }
 }
 
-const DeploymentTypeIcon = ({ deploymentAppType, iconSize }: DeploymentTypeIconProps): JSX.Element => {
+const DeploymentTypeIcon = ({ deploymentAppType, iconSize = 32 }: DeploymentTypeIconProps): JSX.Element => {
     switch (deploymentAppType) {
         case DeploymentAppTypes.MANIFEST_DOWNLOAD:
         case DeploymentAppTypes.MANIFEST_PUSH:
@@ -65,7 +65,9 @@ const DeploymentTypeIcon = ({ deploymentAppType, iconSize }: DeploymentTypeIconP
                     alwaysShowTippyOnHover
                     content={`Deployed Using ${DEPLOYMENT_TYPE_TO_TEXT_MAP[deploymentAppType]}`}
                 >
-                    <div>{getDeploymentTypeIcon({ deploymentAppType, iconSize })}</div>
+                    <div className={`icon-dim-${iconSize}`}>
+                        {getDeploymentTypeIcon({ deploymentAppType, iconSize })}
+                    </div>
                 </Tooltip>
             )
         default:

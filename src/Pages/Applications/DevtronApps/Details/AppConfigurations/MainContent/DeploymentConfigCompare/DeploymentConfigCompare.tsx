@@ -37,6 +37,7 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { deploymentConfigDiffTabs, getDeploymentConfigDiffTabs } from '@Pages/Shared'
 import { getChartReferencesForAppAndEnv, getTemplateOptions } from '@Services/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
@@ -49,12 +50,10 @@ import {
 import { getDeploymentTemplateData, getManifestData } from './service.utils'
 import { DeploymentConfigComparisonDataType } from './types'
 import {
-    deploymentConfigDiffTabs,
     getAppAndEnvIds,
     getAppEnvDeploymentConfigPayload,
     getCompareEnvironmentSelectorOptions,
     getConfigChartRefId,
-    getDeploymentConfigDiffTabs,
     getEnvironmentConfigTypeOptions,
     getIdentifierIdBasedOnConfiguration,
     getManifestRequestValues,

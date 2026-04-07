@@ -358,7 +358,7 @@ const HelmAppList = ({
                         <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
                     </div>
                 )}
-                <div className="app-list__cell app-list__cell--env">
+                <div className="app-list__cell app-list__cell--env flex left">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy
                         className="default-tt"
@@ -418,7 +418,7 @@ const HelmAppList = ({
                 />
             </div>
             <div className="app-list__cell app-list__cell--name flex column left">
-                <div className="dc__truncate-text  m-0 value">{app.appName}</div>
+                <div className="dc__truncate-text  m-0 value cb-5">{app.appName}</div>
                 <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
             </div>
             {isArgoInstalled && (

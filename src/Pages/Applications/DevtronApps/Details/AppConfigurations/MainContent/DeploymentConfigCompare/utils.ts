@@ -20,7 +20,6 @@ import moment from 'moment'
 import {
     AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
-    DeploymentConfigDiffProps,
     SelectPickerOptionType,
     TemplateListDTO,
     YAMLStringify,
@@ -262,14 +261,6 @@ export const getEnvironmentConfigTypeOptions = (
         ),
     },
 ]
-
-export const deploymentConfigDiffTabs = {
-    CONFIGURATION: 'Configuration',
-    MANIFEST: 'Manifest Output',
-}
-
-export const getDeploymentConfigDiffTabs = (): DeploymentConfigDiffProps['tabConfig']['tabs'] =>
-    Object.values(deploymentConfigDiffTabs)
 
 export const getConfigChartRefId = (data: any) =>
     data.latestEnvChartRef || data.latestAppChartRef || data.latestChartRef

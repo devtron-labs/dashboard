@@ -25,6 +25,8 @@ import {
     getIsRequestAborted,
     abortPreviousRequests,
     API_STATUS_CODES,
+    useMainContext,
+    AIAgentContextSourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
@@ -36,6 +38,8 @@ import { ExternalArgoAppDetailType } from './externalArgoApp.type'
 let initTimer = null
 
 const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }: ExternalArgoAppDetailType) => {
+    const { setAIAgentContext } = useMainContext()
+
     const location = useLocation()
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
@@ -58,6 +62,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 clearTimeout(initTimer)
             }
             IndexStore.clearAppDetails() // Cleared out the data on unmount
+            setAIAgentContext(null)
         }
     }, [])
 
@@ -107,6 +112,16 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                     ...appDetailResponse.result,
                     deploymentAppType: DeploymentAppTypes.ARGO,
                 }
+
+                setAIAgentContext({
+                    source: AIAgentContextSourceType.APP_DETAILS,
+                    data: {
+                        appType: 'externalArgoApp',
+                        appName: genericAppDetail.appName,
+                        clusterId: genericAppDetail.clusterId,
+                        namespace: genericAppDetail.namespace,
+                    }
+                })
 
                 isAPICallInProgress = false
                 handleInitiatePolling()

@@ -19,16 +19,18 @@ import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMa
 
 import {
     abortPreviousRequests,
+    AIAgentContextSourceType,
     API_STATUS_CODES,
     DetailsProgressing,
     ErrorScreenManager,
+    GenericEmptyState,
     getIsRequestAborted,
     showError,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
-import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
@@ -41,6 +43,7 @@ import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHist
 import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
 import ValuesComponent from './values/ChartValues.component'
+import { ERROR_EMPTY_SCREEN } from '@Config/constantMessaging'
 
 let initTimer = null
 
@@ -49,6 +52,8 @@ const RouterComponent = () => {
     const { path } = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+    const { setAIAgentContext } = useMainContext()
+
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
@@ -86,6 +91,7 @@ const RouterComponent = () => {
 
     useEffect(
         () => () => {
+            setAIAgentContext(null)
             abortControllerRef.current.abort()
         },
         [],
@@ -143,6 +149,20 @@ const RouterComponent = () => {
             ...response.result,
             helmReleaseStatus: response.result?.releaseStatus || appDetailsRef.current?.helmReleaseStatus,
         }
+
+        // There is no env change so can handle AIAgentContext here directly instead of useEffect
+        setAIAgentContext({
+            source: AIAgentContextSourceType.APP_DETAILS,
+            data: {
+                appId: +params.appId,
+                envId: +params.envId,
+                clusterId: appDetailsRef.current.clusterId,
+                appName: appDetailsRef.current.appName,
+                envName: appDetailsRef.current.environmentName,
+                appType: 'devtronHelmChart'
+            }
+        })
+
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
         setErrorResponseCode(undefined)
     }
@@ -168,7 +188,7 @@ const RouterComponent = () => {
             setLoadingDetails(false)
         } catch (error) {
             const isAborted = getIsRequestAborted(error)
-            
+
             if (!isAborted) {
                 handleAppDetailsCallError(error)
             }
@@ -201,17 +221,16 @@ const RouterComponent = () => {
 
     const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
         // Intentionally not setting await since it was not awaited earlier when in thens as well
-        Promise.allSettled([
-            handleFetchAppDetails(fetchExternalLinks),
-            handleFetchResourceTree(),
-        ]).then((results) => {
-            const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
-            if (!isAborted) {
-                handleInitiatePolling()
-            }
-        }).finally(() => {
-            handledFirstCall.current = true
-        })
+        Promise.allSettled([handleFetchAppDetails(fetchExternalLinks), handleFetchResourceTree()])
+            .then((results) => {
+                const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
+                if (!isAborted) {
+                    handleInitiatePolling()
+                }
+            })
+            .finally(() => {
+                handledFirstCall.current = true
+            })
     }
 
     const handleReloadResourceTree = () => {
@@ -257,7 +276,12 @@ const RouterComponent = () => {
             return (
                 <div className="h-100">
                     <ChartHeaderComponent errorResponseCode={errorResponseCode} />
-                    <AppDetailsEmptyState envType={EnvType.CHART} />
+                    <GenericEmptyState
+                        imgName="img-no-result"
+                        classname="w-100 dc__text-center"
+                        title={ERROR_EMPTY_SCREEN.APP_NOT_AVAILABLE}
+                        subTitle={ERROR_EMPTY_SCREEN.DEPLOYMENT_NOT_EXIST}
+                    />
                 </div>
             )
         }

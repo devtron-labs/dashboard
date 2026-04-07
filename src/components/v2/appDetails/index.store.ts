@@ -16,18 +16,10 @@
 
 import {
     getiNodesByKindWithChildNodes,
-    getiNodesByRootNodeWithChildNodes,
-    getPodsForRootNodeName,
     getPodsRootParentNameAndStatus,
     IndexStore,
     reduceKindStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export default IndexStore
-export {
-    getiNodesByKindWithChildNodes,
-    getiNodesByRootNodeWithChildNodes,
-    getPodsForRootNodeName,
-    getPodsRootParentNameAndStatus,
-    reduceKindStatus,
-}
+export { getiNodesByKindWithChildNodes, getPodsRootParentNameAndStatus, reduceKindStatus }

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { generatePath, Link, useHistory } from 'react-router-dom'
 
 import {
@@ -237,46 +237,49 @@ const NodeViewGroupListWrapper = ({
 
 const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewGroupType }) => {
     const { push } = useHistory()
-    const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = async (
-        {
-            searchKey,
-            offset,
-            pageSize,
-            sortBy,
-            sortOrder,
-            errorType,
-            autoscalerType,
-            schedulableType,
-        }: Record<NodeViewGroupListFiltersTypeEnum, string> & Parameters<TableProps['getRows']>[0],
-        abortSignal,
-    ) => {
-        const response = await getNodeViewGroupList({
-            searchKey,
-            groupBy: nodeViewGroupType,
-            offset,
-            pageSize,
-            sortBy,
-            sortOrder,
-            ...(nodeViewGroupType === NodeViewGroupType.NODE_ERRORS && errorType !== 'ALL'
-                ? { errorType: errorType as NodeErrorsKeys }
-                : {}),
-            ...(nodeViewGroupType === NodeViewGroupType.AUTOSCALER_MANAGED && autoscalerType !== 'ALL'
-                ? { autoscalerType: autoscalerType as AutoscalerTypes }
-                : {}),
-            ...(nodeViewGroupType === NodeViewGroupType.NODE_SCHEDULING && schedulableType !== 'ALL'
-                ? { schedulableType: schedulableType as NodeSchedulingKeys }
-                : {}),
+    const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = useCallback(
+        async (
+            {
+                searchKey,
+                offset,
+                pageSize,
+                sortBy,
+                sortOrder,
+                errorType,
+                autoscalerType,
+                schedulableType,
+            }: Record<NodeViewGroupListFiltersTypeEnum, string> & Parameters<TableProps['getRows']>[0],
             abortSignal,
-        })
+        ) => {
+            const response = await getNodeViewGroupList({
+                searchKey,
+                groupBy: nodeViewGroupType,
+                offset,
+                pageSize,
+                sortBy,
+                sortOrder,
+                ...(nodeViewGroupType === NodeViewGroupType.NODE_ERRORS && errorType !== 'ALL'
+                    ? { errorType: errorType as NodeErrorsKeys }
+                    : {}),
+                ...(nodeViewGroupType === NodeViewGroupType.AUTOSCALER_MANAGED && autoscalerType !== 'ALL'
+                    ? { autoscalerType: autoscalerType as AutoscalerTypes }
+                    : {}),
+                ...(nodeViewGroupType === NodeViewGroupType.NODE_SCHEDULING && schedulableType !== 'ALL'
+                    ? { schedulableType: schedulableType as NodeSchedulingKeys }
+                    : {}),
+                abortSignal,
+            })
 
-        return {
-            rows: (response.result?.nodeList || []).map((node) => ({
-                id: `${node.nodeName}-${node.clusterName}`,
-                data: node,
-            })),
-            totalRows: response.result?.totalCount || 0,
-        }
-    }
+            return {
+                rows: (response.result?.nodeList || []).map((node) => ({
+                    id: `${node.nodeName}-${node.clusterName}`,
+                    data: node,
+                })),
+                totalRows: response.result?.totalCount || 0,
+            }
+        },
+        [],
+    )
 
     const clearFilters = () => {
         push({ search: '' })
@@ -311,7 +314,7 @@ const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewG
             }}
             paginationVariant={PaginationEnum.PAGINATED}
             filtersVariant={FiltersTypeEnum.URL}
-            filter={() => true}
+            filter={null}
             additionalFilterProps={{
                 initialSortKey: 'nodeName',
                 parseSearchParams: (searchParams) => ({

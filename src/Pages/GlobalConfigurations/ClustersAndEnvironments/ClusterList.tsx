@@ -333,7 +333,7 @@ const ClusterList = () => {
                         filtersVariant={FiltersTypeEnum.STATE}
                         paginationVariant={PaginationEnum.NOT_PAGINATED}
                         emptyStateConfig={null}
-                        filter={() => true}
+                        filter={null}
                         additionalFilterProps={{
                             initialSortKey: 'clusterName',
                         }}

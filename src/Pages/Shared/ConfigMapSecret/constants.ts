@@ -230,3 +230,5 @@ export const EXTERNAL_CODE_EDITOR_RADIO_STATE = Object.values(CODE_EDITOR_RADIO_
     label: value,
     value,
 }))
+
+export const CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP = { x: 32, y: 90 }
