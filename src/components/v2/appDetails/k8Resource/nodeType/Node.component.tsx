@@ -19,7 +19,6 @@ import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-
 import { followCursor } from 'tippy.js'
 
 import {
-    Badge,
     ClipboardButton,
     ComponentSizeType,
     getAIAnalyticsEvents,
@@ -249,6 +248,19 @@ const NodeComponent = ({
             .catch(noop)
     }
 
+    const renderGroupHeader = (title: string, showLinksHeader: boolean = false) => (
+        <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
+            <div className="fw-6">
+                <SortableTableHeaderCell isSortable={false} title={title} />
+            </div>
+            {showLinksHeader && (
+                <div className="fw-6">
+                    <SortableTableHeaderCell isSortable={false} title="Links" />
+                </div>
+            )}
+        </div>
+    )
+
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
             const portList = [...new Set(node?.port)]
@@ -347,6 +359,9 @@ const NodeComponent = ({
                 return _classname
             }
 
+            const initChildren = (node.childNodes || []).filter((c) => c.isInitContainer)
+            const regularChildren = (node.childNodes || []).filter((c) => !c.isInitContainer)
+
             const intelligenceConfig: MainContext['intelligenceConfig'] = {
                 metadata: {
                     object: `${node.kind}/${node.name}`,
@@ -375,19 +390,12 @@ const NodeComponent = ({
             return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Fragment key={`grt${index}`}>
-                    {showNodeHeader && (
-                        <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
-                            <div className="fw-6">
-                                <SortableTableHeaderCell isSortable={false} title={node.kind} />
-                            </div>
-                            {((node.kind === NodeType.Pod && podLevelExternalLinks.length > 0) ||
-                                (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0)) && (
-                                <div className="fw-6">
-                                    <SortableTableHeaderCell isSortable={false} title="Links" />
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    {showNodeHeader &&
+                        renderGroupHeader(
+                            node.kind,
+                            (node.kind === NodeType.Pod && podLevelExternalLinks.length > 0) ||
+                                (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0),
+                        )}
                     <div
                         className={`node-row dc__align-items-center resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier} ${showAIButton ? 'explain-ai-button' : ''}`}
                     >
@@ -460,9 +468,6 @@ const NodeComponent = ({
                                     </div>
                                 </div>
                                 <div className="flex left dc__gap-4">
-                                    {node.isInitContainer && (
-                                        <Badge label="Init Container" variant="neutral" size={ComponentSizeType.xxs} />
-                                    )}
                                     {nodeStatus && (
                                         <span
                                             data-testid="node-resource-status"
@@ -570,7 +575,20 @@ const NodeComponent = ({
                     </div>
                     {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-17 indent-line">
-                            <div>{makeNodeTree(node.childNodes, true)}</div>
+                            {initChildren.length > 0 ? (
+                                <>
+                                    {renderGroupHeader('Init Containers', containerLevelExternalLinks.length > 0)}
+                                    {makeNodeTree(initChildren, false)}
+                                    {regularChildren.length > 0 && (
+                                        <>
+                                            {renderGroupHeader('Containers', containerLevelExternalLinks.length > 0)}
+                                            {makeNodeTree(regularChildren, false)}
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                makeNodeTree(node.childNodes, true)
+                            )}
                         </div>
                     )}
                 </Fragment>
