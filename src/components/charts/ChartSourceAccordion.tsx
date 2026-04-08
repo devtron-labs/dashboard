@@ -18,7 +18,7 @@ import { useState } from 'react'
 
 import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
+import Dropdown from '@Icons/ic-chevron-down.svg?react'
 import AddChartSource from '@Components/charts/list/AddChartSource'
 
 import { ChartSourceAccordionProps, SelectedChartRepositoryType } from './charts.types'

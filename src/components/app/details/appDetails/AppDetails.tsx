@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { SyntheticEvent, useEffect, useMemo, useState } from 'react'
-import { generatePath, Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import React, { type JSX, SyntheticEvent, useEffect, useMemo, useState } from 'react'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ACTION_STATE,
@@ -38,16 +38,16 @@ import {
     noop,
     Progressing,
     ReleaseMode,
+    ROUTER_URLS,
     showError,
     stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
-    URLS,
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
+import ForwardArrow from '@Icons/ic-arrow-forward.svg?react'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
 import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
@@ -114,7 +114,12 @@ export const AppNotConfigured = ({
                 endIcon={<ForwardArrow />}
                 component={ButtonComponentType.link}
                 linkProps={{
-                    to: `${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`,
+                    to: generatePath(
+                        isJobView
+                            ? ROUTER_URLS.JOB_DETAIL.CONFIGURATIONS
+                            : ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS,
+                        { appId },
+                    ),
                 }}
             />
         )
@@ -151,8 +156,7 @@ const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
-    const { replace, push } = useHistory()
-    const { url } = useRouteMatch()
+    const navigate = useNavigate()
 
     const { setAIAgentContext } = useMainContext()
 
@@ -187,7 +191,7 @@ const Details: React.FC<DetailsType> = ({
         return () => {
             setAIAgentContext(null)
         }
-    }, [appDetails?.environmentName, appDetails?.appName, appDetails?.clusterId, url])
+    }, [appDetails?.environmentName, appDetails?.appName, appDetails?.clusterId, params.appId, params.envId])
 
     const [showCommitInfo, setShowCommitInfo] = useState<boolean>(false)
     const [showAppStatusModal, setShowAppStatusModal] = useState<boolean>(false)
@@ -225,13 +229,13 @@ const Details: React.FC<DetailsType> = ({
     )
 
     const showAppDetailsLoading =
-        appDetailsQueryStatus === 'loading' ||
+        appDetailsQueryStatus === 'pending' ||
         (appDetailsQueryStatus === 'error' && !appDetails && isFetchingAppDetails)
 
     const showLoadingResourceTree =
         showAppDetailsLoading ||
         (appDetails?.isPipelineTriggered || appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS
-            ? resourceTreeQueryStatus === 'loading' ||
+            ? resourceTreeQueryStatus === 'pending' ||
               (resourceTreeQueryStatus === 'error' && !appDetails?.resourceTree && isFetchingResourceTree)
             : false)
 
@@ -268,9 +272,14 @@ const Details: React.FC<DetailsType> = ({
         }
 
         if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
-            replace({
-                search: '',
-            })
+            navigate(
+                {
+                    search: '',
+                },
+                {
+                    replace: true,
+                },
+            )
         }
     }
 
@@ -279,7 +288,7 @@ const Details: React.FC<DetailsType> = ({
     }
 
     const handleOpenCDModal = (isForRollback?: boolean) => () => {
-        push({
+        navigate({
             search: new URLSearchParams({
                 mode: URL_PARAM_MODE_TYPE.LIST,
             }).toString(),
@@ -301,7 +310,7 @@ const Details: React.FC<DetailsType> = ({
 
     const handleCloseCDModal = () => {
         setCDModalMaterialType(null)
-        push({ search: '' })
+        navigate({ search: '' })
     }
 
     const renderSelectImageButton = () => (
@@ -361,7 +370,13 @@ const Details: React.FC<DetailsType> = ({
 
         const showResourceTreeError = resourceTreeQueryStatus === 'error' && !appDetails?.resourceTree
         if (showResourceTreeError) {
-            return <GenericSectionErrorState title="Unable to fetch" reload={refetchResourceTree} />
+            return (
+                <GenericSectionErrorState
+                    title="Unable to fetch"
+                    reload={refetchResourceTree}
+                    rootClassName="flex-grow-1"
+                />
+            )
         }
 
         if (!appDetails.resourceTree && appDetails.isVirtualEnvironment && VirtualAppDetailsEmptyState) {
@@ -542,9 +557,8 @@ const Details: React.FC<DetailsType> = ({
 }
 
 const AppDetail = ({ detailsType, filteredResourceIds, resourceList, setSelectedResourceList }: AppDetailProps) => {
+    const navigate = useNavigate()
     const params = useParams<{ appId: string; envId: string }>()
-    const { replace } = useHistory()
-    const { path } = useRouteMatch()
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
 
     const isAppView = detailsType === 'app'
@@ -561,7 +575,9 @@ const AppDetail = ({ detailsType, filteredResourceIds, resourceList, setSelected
         !!params.envId && !isAppView,
     )
 
-    const filteredEntityMap = filteredResourceIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+    const filteredEntityMap = filteredResourceIds
+        ?.split(',')
+        .reduce((agg, curr) => agg.set(+curr, true), new Map<number, boolean>())
 
     const envList = useMemo(
         () =>
@@ -597,7 +613,7 @@ const AppDetail = ({ detailsType, filteredResourceIds, resourceList, setSelected
 
             if (envList.length && selectedEnvId && selectedEnvId !== +params.envId) {
                 const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
-                replace(newUrl)
+                navigate(newUrl, { replace: true })
                 return
             }
             return
@@ -611,8 +627,11 @@ const AppDetail = ({ detailsType, filteredResourceIds, resourceList, setSelected
             +params.appId && appList.some((app) => app.appId === +params.appId) ? +params.appId : appList[0]?.appId
 
         if (appList.length && selectedAppId !== +params.appId) {
-            const newUrl = generatePath(path, { appId: selectedAppId, envId: params.envId })
-            replace(newUrl)
+            const newUrl = generatePath(ROUTER_URLS.APP_GROUP_DETAILS.APP_DETAILS, {
+                appId: `${selectedAppId}`,
+                envId: params.envId,
+            })
+            navigate(newUrl, { replace: true })
         }
     }, [filteredResourceIds, otherEnvsResult, otherAppsResult])
 
@@ -663,7 +682,8 @@ const AppDetail = ({ detailsType, filteredResourceIds, resourceList, setSelected
         }
 
         return (
-            <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
+            !!params.envId &&
+            !!params.appId && (
                 <Details
                     key={`${params.appId}-${params.envId}`}
                     environment={environment}
@@ -672,7 +692,7 @@ const AppDetail = ({ detailsType, filteredResourceIds, resourceList, setSelected
                     isAppView={isAppView}
                     appDetailsQueryData={appDetailsQueryData}
                 />
-            </Route>
+            )
         )
     }
 

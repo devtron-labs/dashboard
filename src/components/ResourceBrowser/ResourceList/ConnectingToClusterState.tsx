@@ -15,9 +15,9 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.svg'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
@@ -31,7 +31,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     handleRetry,
     requestAbortController,
 }) => {
-    const { replace } = useHistory()
+    const navigate = useNavigate()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
@@ -76,8 +76,8 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     const handleCancelClick = () => {
         requestAbortController?.abort()
         resetStates()
-        replace({
-            pathname: URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
+        navigate({
+            pathname: ROUTER_URLS.RESOURCE_BROWSER.ROOT,
         })
     }
 

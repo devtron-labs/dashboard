@@ -14,36 +14,39 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    GenericEmptyState,
-    DeploymentAppTypes,
-    useAsync,
-    Sidebar,
-    TriggerOutput,
-    ModuleNameMap,
-    useInterval,
-    mapByKey,
     asyncWrap,
     CICDSidebarFilterOptionType,
+    DeploymentAppTypes,
+    EMPTY_STATE_STATUS,
+    FetchIdDataStatus,
+    GenericEmptyState,
+    getTriggerHistory,
     History,
     HistoryComponentType,
-    FetchIdDataStatus,
     LogResizeButton,
-    getTriggerHistory,
-    useScrollable,
+    mapByKey,
+    ModuleNameMap,
+    Progressing,
+    showError,
+    Sidebar,
     TRIGGER_STATUS_PROGRESSING,
     AppEnvironment,
+    TriggerOutput,
+    useAsync,
+    useInterval,
+    useScrollable,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
+
 import { useAppContext } from '@Components/common'
+
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import './cdDetail.scss'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import {
     getUpdatedTriggerId,
     processVirtualEnvironmentDeploymentData,
@@ -54,6 +57,8 @@ import {
     renderRunSourceInDropdown,
     renderVirtualHistoryArtifacts,
 } from './utils'
+
+import './cdDetail.scss'
 
 export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }) {
     const location = useLocation()
@@ -89,8 +94,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     const [envOptions, setEnvOptions] = useState<CICDSidebarFilterOptionType[]>([])
     const [selectedEnv, setSelectedEnv] = useState<AppEnvironment>(null)
     const [deploymentAppType, setDeploymentAppType] = useState<DeploymentAppTypes>(null)
-    const { path } = useRouteMatch()
-    const { replace } = useHistory()
+    const navigate = useNavigate()
     useInterval(pollHistory, 30000)
     const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
 
@@ -135,13 +139,16 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         setHideImageTaggingHardDelete(deploymentHistoryResult?.result?.hideImageTaggingHardDelete || false)
 
         if (!triggerId && envId && pipelineId && deploymentHistoryResult.result?.cdWorkflows?.length) {
-            replace(
-                generatePath(path, {
+            navigate(
+                generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS}/:envId/:pipelineId/:triggerId`, {
                     appId,
                     envId,
                     pipelineId,
-                    triggerId: _triggerId,
+                    triggerId: String(_triggerId),
                 }),
+                {
+                    replace: true,
+                },
             )
         }
 
@@ -157,7 +164,13 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     //Result Typing to be fixed here
     useEffect(() => {
         if (!envId && environmentId) {
-            replace(generatePath(path, { envId: environmentId, appId }))
+            navigate(
+                generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS}/:envId`, {
+                    envId: String(environmentId),
+                    appId,
+                }),
+                { replace: true },
+            )
             return
         }
         if (result) {
@@ -170,12 +183,8 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             if (result[0]) {
                 const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
                 const _selectedEnvironment = (result[0]['value']?.result || [])
-                    .filter((env) => {
-                        return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
-                    })
-                    .find((envData) => {
-                        return +envId === envData.environmentId
-                    })
+                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                    .find((envData) => +envId === envData.environmentId)
                 setSelectedEnv(_selectedEnvironment)
             }
             setEnvironmentId(+envId)
@@ -201,9 +210,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             let isEnvDeleted = false
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || [])
-                .filter((env) => {
-                    return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
-                })
+                .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
                 .map((envData) => {
                     if (envData.environmentId === +envId) {
                         _selectedEnvironment = envData
@@ -224,16 +231,24 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 (envId && envOptions.length && !_selectedEnvironment)
             ) {
                 setEnvironmentId(+envOptions[0].value)
-                replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
+                navigate(
+                    generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS}/:envId/:pipelineId`, {
+                        appId,
+                        envId: envOptions[0].value,
+                        pipelineId: String(envOptions[0].pipelineId),
+                    }),
+                    { replace: true },
+                )
             } else if (envId && !pipelineId && _selectedEnvironment) {
                 // Update the pipeline id when the selected environment is available and pipeline id is not available
                 setEnvironmentId(_selectedEnvironment.environmentId)
-                replace(
-                    generatePath(path, {
+                navigate(
+                    generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS}/:envId/:pipelineId`, {
                         appId,
                         envId: _selectedEnvironment.environmentId,
                         pipelineId: cdPipelinesMap.get(_selectedEnvironment.environmentId)?.id,
                     }),
+                    { replace: true },
                 )
             }
             setEnvOptions(envOptions)
@@ -272,13 +287,14 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
         }
         setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
-        replace(
-            generatePath(path, {
+        navigate(
+            generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS}/:envId/:pipelineId/:triggerId`, {
                 appId,
                 envId,
                 pipelineId,
-                triggerId: deploymentHistoryResult.result?.cdWorkflows?.[0]?.id,
+                triggerId: String(deploymentHistoryResult.result?.cdWorkflows?.[0]?.id),
             }),
+            { replace: true },
         )
     }
 
@@ -305,17 +321,15 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                         fetchIdData={fetchTriggerIdData}
                         handleViewAllHistory={handleViewAllHistory}
                         renderRunSource={renderRunSource}
+                        path={`${ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS}/:envId?/:pipelineId?/:triggerId?`}
                     />
                 </div>
             )}
             <div className="ci-details__body">
                 <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100" ref={scrollableRef}>
                     {triggerHistory.size > 0 || fetchTriggerIdData ? (
-                        <Route
-                            path={`${path
-                                .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
-                        >
+                        envId &&
+                        pipelineId && (
                             <TriggerOutput
                                 fullScreenView={fullScreenView}
                                 triggerHistory={triggerHistory}
@@ -339,8 +353,9 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                                 scrollToTop={scrollToTop}
                                 scrollToBottom={scrollToBottom}
                                 appName={currentAppName}
+                                pathPattern={`${ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS}/:envId/:pipelineId/:triggerId?`}
                             />
-                        </Route>
+                        )
                     ) : !envId ? (
                         <GenericEmptyState
                             title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}

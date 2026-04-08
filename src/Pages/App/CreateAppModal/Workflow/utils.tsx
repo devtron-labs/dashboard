@@ -26,15 +26,15 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCD } from '@Icons/ic-CD.svg'
-import { ReactComponent as ICCi } from '@Icons/ic-CI.svg'
-import { ReactComponent as ICCIWebhook } from '@Icons/ic-CIWebhook.svg'
-import { ReactComponent as ICError } from '@Icons/ic-error.svg'
-import { ReactComponent as ICJobNode } from '@Icons/ic-job-node.svg'
-import { ReactComponent as ICLinkedCD } from '@Icons/ic-linked-cd.svg'
-import { ReactComponent as ICNodeBuildLinked } from '@Icons/ic-node-build-linked.svg'
-import { ReactComponent as ICPaperRocket } from '@Icons/ic-paper-rocket.svg'
-import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
+import ICCD from '@Icons/ic-CD.svg?react'
+import ICCi from '@Icons/ic-CI.svg?react'
+import ICCIWebhook from '@Icons/ic-CIWebhook.svg?react'
+import ICError from '@Icons/ic-error.svg?react'
+import ICJobNode from '@Icons/ic-job-node.svg?react'
+import ICLinkedCD from '@Icons/ic-linked-cd.svg?react'
+import ICNodeBuildLinked from '@Icons/ic-node-build-linked.svg?react'
+import ICPaperRocket from '@Icons/ic-paper-rocket.svg?react'
+import ICWarning from '@Icons/ic-warning.svg?react'
 import { createClusterEnvGroup } from '@Components/common'
 
 import {

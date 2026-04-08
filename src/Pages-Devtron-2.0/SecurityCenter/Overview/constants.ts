@@ -4,9 +4,9 @@ import {
     getUrlWithSearchParams,
     MetricsInfoCardProps,
     ProdNonProdSelectValueTypes,
+    ROUTER_URLS,
     SelectPickerOptionType,
     Severity,
-    URLS,
     VulnerabilityDiscoveryAgeOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -21,14 +21,14 @@ export const SECURITY_AT_A_GLANCE_CARDS_CONFIG: Record<
         dataTestId: SecurityGlanceMetricKeys.TOTAL_VULNERABILITIES,
         iconName: 'ic-security-vulnerability',
         tooltipContent: 'Total number of vulnerabilities found across currently active deployments',
-        redirectionLink: URLS.SECURITY_CENTER_VULNERABILITY_CVES,
+        redirectionLink: ROUTER_URLS.SECURITY_CENTER_VULNERABILITY_CVES,
     },
     [SecurityGlanceMetricKeys.FIXABLE_VULNERABILITIES]: {
         metricTitle: 'Fixable Vulnerabilities',
         dataTestId: SecurityGlanceMetricKeys.FIXABLE_VULNERABILITIES,
         iconName: 'ic-security-fixable',
         tooltipContent: 'Discovered vulnerabilities on currently active deployments whose fix is available',
-        redirectionLink: getUrlWithSearchParams(URLS.SECURITY_CENTER_VULNERABILITY_CVES, {
+        redirectionLink: getUrlWithSearchParams(ROUTER_URLS.SECURITY_CENTER_VULNERABILITY_CVES, {
             fixAvailability: FixAvailabilityOptions.FIX_AVAILABLE,
         }),
     },
@@ -37,7 +37,7 @@ export const SECURITY_AT_A_GLANCE_CARDS_CONFIG: Record<
         dataTestId: SecurityGlanceMetricKeys.ZERO_DAY_VULNERABILITIES,
         iconName: 'ic-security-not-fixable',
         tooltipContent: 'Discovered vulnerabilities on currently active deployments whose fix is not available',
-        redirectionLink: getUrlWithSearchParams(URLS.SECURITY_CENTER_VULNERABILITY_CVES, {
+        redirectionLink: getUrlWithSearchParams(ROUTER_URLS.SECURITY_CENTER_VULNERABILITY_CVES, {
             fixAvailability: FixAvailabilityOptions.FIX_NOT_AVAILABLE,
         }),
     },

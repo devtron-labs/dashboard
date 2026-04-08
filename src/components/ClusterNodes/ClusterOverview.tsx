@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
-import { generatePath, useHistory, useParams } from 'react-router-dom'
+import React, { type JSX, useEffect, useRef, useState } from 'react'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
 import {
     EditableTextArea,
     ErrorScreenManager,
+    GenericDescription,
     getRandomColor,
     getUrlWithSearchParams,
     Icon,
     InfoIconTippy,
     InstallationClusterConfigType,
     noop,
-    RESOURCE_BROWSER_ROUTES,
     ResourceKindType,
+    ROUTER_URLS,
     showError,
     StatusComponent,
     StatusType,
@@ -39,14 +40,14 @@ import {
 import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
 import { getAvailableCharts } from '@Services/service'
 
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import Error from '../../assets/icons/ic-error-exclamation.svg?react'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
-import GenericDescription from '../common/Description/GenericDescription'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import {
     getClusterOverviewClusterCapacity,
     getClusterOverviewDetails,
+    patchClusterNote,
     updateClusterShortDescription,
 } from './clusterNodes.service'
 import {
@@ -61,6 +62,8 @@ const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'funct
 const ClusterAddOns = importComponentFromFELibrary('ClusterAddOns', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
 const getInstallationClusterConfig = importComponentFromFELibrary('getInstallationClusterConfig', null, 'function')
+
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 /* TODO: move into utils */
 const metricsApiTippyContent = () => (
@@ -115,7 +118,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
 
     const { isSuperAdmin } = useMainContext()
 
-    const history = useHistory()
+    const navigate = useNavigate()
     const [clusterConfig, setClusterConfig] = useState<InstallationClusterConfigType | null>(null)
 
     const requestAbortControllerRef = useRef(new AbortController())
@@ -149,24 +152,37 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
         clusterNodeDetailsResponse ?? {}
 
     const handleUpdateClusterDescription = async (description: string): Promise<void> => {
-        const requestPayload = {
-            id: Number(clusterId),
-            description,
-        }
         try {
-            const response = await updateClusterShortDescription(requestPayload)
+            const response = await updateClusterShortDescription({ id: Number(clusterId), description })
             if (response.result) {
                 setClusterNodeDetails({
                     ...clusterNodeDetailsResponse,
-                    clusterDetails: {
-                        ...clusterDetails,
-                        shortDescription: description,
-                    },
+                    clusterDetails: { ...clusterDetails, shortDescription: description },
                 })
             }
         } catch (error) {
             showError(error)
             throw error
+        }
+    }
+
+    const handleUpdateClusterNote = async (description: string): Promise<void> => {
+        const response = await patchClusterNote({
+            id: descriptionData.descriptionId,
+            identifier: Number(clusterId),
+            description,
+        })
+        if (response.result) {
+            setClusterNodeDetails({
+                ...clusterNodeDetailsResponse,
+                descriptionData: {
+                    ...descriptionData,
+                    descriptionText: response.result.description,
+                    descriptionId: response.result.id,
+                    descriptionUpdatedBy: response.result.updatedBy,
+                    descriptionUpdatedOn: response.result.updatedOn,
+                },
+            })
         }
     }
 
@@ -211,7 +227,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
             kind: 'node',
             group: K8S_EMPTY_GROUP,
         })}?${queryParam}=${encodeURIComponent(filterText)}`
-        history.push(newUrl)
+        navigate(newUrl)
     }
 
     const renderClusterError = (): JSX.Element => {
@@ -338,7 +354,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
             [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion,
         })
 
-        history.push(URL)
+        navigate(URL)
     }
 
     const creationPrefix = clusterConfig ? 'Created' : 'Added'
@@ -465,13 +481,11 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
                     {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
-                        isClusterTerminal
-                        clusterId={clusterId}
-                        descriptionId={descriptionData.descriptionId}
-                        initialDescriptionText={descriptionData.descriptionText}
-                        initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
-                        initialDescriptionUpdatedOn={descriptionData.descriptionUpdatedOn}
-                        initialEditDescriptionView
+                        text={descriptionData.descriptionText}
+                        updatedBy={descriptionData.descriptionUpdatedBy}
+                        updatedOn={descriptionData.descriptionUpdatedOn}
+                        updateDescription={handleUpdateClusterNote}
+                        title="Readme"
                     />
                 </div>
             </div>

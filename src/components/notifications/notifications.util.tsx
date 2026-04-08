@@ -15,14 +15,14 @@
  */
 
 import { components } from 'react-select'
-import { ReactComponent as ArrowDown } from '@Icons/ic-chevron-down.svg'
-import { ReactComponent as Email } from '@Icons/ic-mail.svg'
-import { ReactComponent as RedWarning } from '@Icons/ic-error-medium.svg'
-import { ReactComponent as CI } from '@Icons/ic-CI.svg'
-import { ReactComponent as CD } from '@Icons/ic-CD.svg'
-import { ReactComponent as Rocket } from '@Icons/ic-paper-rocket.svg'
-import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
-import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
+import ArrowDown from '@Icons/ic-chevron-down.svg?react'
+import Email from '@Icons/ic-mail.svg?react'
+import RedWarning from '@Icons/ic-error-medium.svg?react'
+import CI from '@Icons/ic-CI.svg?react'
+import CD from '@Icons/ic-CD.svg?react'
+import Rocket from '@Icons/ic-paper-rocket.svg?react'
+import Slack from '@Icons/slack-logo.svg?react'
+import Webhook from '@Icons/ic-CIWebhook.svg?react'
 import {
     commonSelectStyles,
     DynamicDataTableHeaderType,

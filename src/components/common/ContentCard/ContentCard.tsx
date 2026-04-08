@@ -101,8 +101,9 @@ export default function ContentCard({
             ) : (
                 <NavLink
                     to={redirectTo}
-                    className={`dc__no-decor fw-6 cursor cn-9 ${direction || CardContentDirection.Vertical}`}
-                    activeClassName="active"
+                    className={({ isActive }) =>
+                        `dc__no-decor fw-6 cursor cn-9 ${direction || CardContentDirection.Vertical} ${isActive ? 'active' : ''}`
+                    }
                     onClick={onClick || noop}
                 >
                     {getContent()}

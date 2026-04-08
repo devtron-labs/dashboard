@@ -22,12 +22,13 @@ import {
     GenericEmptyState,
     Progressing,
     Reload,
+    ROUTER_URLS,
     TOAST_ACCESS_DENIED,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import { API_STATUS_CODES, URLS } from '../../../../../config'
+import { API_STATUS_CODES } from '../../../../../config'
 import { getUserById } from '../../authorization.service'
 import { PermissionConfigurationFormProvider } from '../../Shared/components/PermissionConfigurationForm'
 import { getIsAdminOrSystemUser } from '../utils'
@@ -47,7 +48,7 @@ const UserPermissionAddEdit = () => {
 
     if ((error && error.code === API_STATUS_CODES.NOT_FOUND) || getIsAdminOrSystemUser(user?.emailId)) {
         const renderNullStateButton = () => (
-            <Link to={URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION} className="cta flex h-32 anchor">
+            <Link to={ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS} className="cta flex h-32 anchor">
                 Go to User Permissions
             </Link>
         )
@@ -80,4 +81,10 @@ const UserPermissionAddEdit = () => {
     )
 }
 
-export default UserPermissionAddEdit
+const UserPermissionAddEditWithKey = () => {
+    const { userId } = useParams<{ userId: string }>()
+
+    return <UserPermissionAddEdit key={userId} />
+}
+
+export default UserPermissionAddEditWithKey

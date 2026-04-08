@@ -15,7 +15,6 @@
  */
 
 export * from './Contexts'
-export * from './DatePickers/Calender'
 export { default as RectangularEdge } from './edge/rectangularEdge'
 export { default as ErrorBoundary } from './errorBoundary'
 export * from './formFields/Typeahead'

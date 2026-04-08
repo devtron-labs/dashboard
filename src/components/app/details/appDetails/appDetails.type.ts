@@ -50,17 +50,11 @@ export enum StatusType {
     Throughput = 'Throughput',
 }
 
-export enum CalendarFocusInput {
-    StartDate = 'startDate',
-    EndDate = 'endDate',
-}
-
 export type AppMetricsTabType = 'aggregate' | 'pod'
 export type ChartTypes = 'cpu' | 'ram' | 'status' | 'latency'
 export type StatusTypes = '5xx' | '4xx' | '2xx' | 'Throughput'
-export type CalendarFocusInputType = 'startDate' | 'endDate'
 
-export interface AppDetailsPathParams {
+export type AppDetailsPathParams = {
     appId: string
     envId?: string
 }

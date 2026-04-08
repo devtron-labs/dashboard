@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { cloneElement, MouseEventHandler, RefCallback, useMemo, useRef } from 'react'
-import { useHistory } from 'react-router-dom'
+import React, { cloneElement, type JSX, MouseEventHandler, ReactElement, RefCallback, useMemo, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
 
@@ -32,7 +32,7 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
+import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
 
 import Timer from './DynamicTabs.timer'
 import DynamicTabsSelect from './DynamicTabsSelect'
@@ -68,7 +68,7 @@ const DynamicTabs = ({
     iconsConfig = {},
     backgroundColorToken,
 }: DynamicTabsProps) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     const dynamicTabsContainerRef = useRef<HTMLDivElement>(null)
 
@@ -86,7 +86,7 @@ const DynamicTabs = ({
         markTabActiveById(tab.id)
             .then((isFound) => {
                 if (isFound) {
-                    push(tab.url)
+                    navigate(tab.url)
                     return
                 }
 
@@ -112,8 +112,8 @@ const DynamicTabs = ({
             >
                 <div className={`px-12 dc__ellipsis-right flex dc__gap-8 ${!shouldRenderTitle ? 'py-10' : 'py-8'}`}>
                     {iconsConfig[tab.id] &&
-                        cloneElement(iconsConfig[tab.id], {
-                            className: `icon-dim-16 ${iconsConfig[tab.id].props.className}`,
+                        cloneElement(iconsConfig[tab.id] as ReactElement<{ className?: string }>, {
+                            className: `icon-dim-16 ${(iconsConfig[tab.id].props as { className?: string })?.className ?? ''}`,
                         })}
                     {shouldRenderTitle && (
                         <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
@@ -132,14 +132,14 @@ const DynamicTabs = ({
     const handleTabCloseAction: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation()
         removeTabByIdentifier(event.currentTarget.dataset.id)
-            .then((url) => url && push(url))
+            .then((url) => url && navigate(url))
             .catch(noop)
     }
 
     const handleTabStopAction = (e) => {
         e.stopPropagation()
         stopTabByIdentifier(e.currentTarget.dataset.id)
-            .then((url) => url && push(url))
+            .then((url) => url && navigate(url))
             .catch(noop)
     }
 

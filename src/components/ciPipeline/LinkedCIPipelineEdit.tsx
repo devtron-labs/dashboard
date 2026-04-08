@@ -30,19 +30,19 @@ import {
 import AsyncSelect from 'react-select/async'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
 import { ViewType } from '../../config'
-import { CIPipelineBuildType, CIPipelineProps, LinkedCIPipelineState } from './types'
+import { CIPipelineBuildType, LinkedCIPipelineEditProps, LinkedCIPipelineState } from './types'
 import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
 import { ValidationRules } from './validationRules'
 import { Info } from '../common/icons/Icons'
 import { getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
 import './ciPipeline.scss'
 import { appListOptions } from '../AppSelector/AppSelectorUtil'
-import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
+import Warning from '../../assets/icons/ic-warning.svg?react'
 import { DUPLICATE_PIPELINE_NAME_VALIDATION, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
-export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedCIPipelineState> {
+export default class LinkedCIPipeline extends Component<LinkedCIPipelineEditProps, LinkedCIPipelineState> {
     validationRules
 
     urlRef
@@ -122,7 +122,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         const { form, isValid } = { ...this.state }
         form.name = event.target.value
         const isFound = !!this.state.ciPipelines.find((pipeline) => pipeline.name === form.name)
-        isValid.name = +this.props.match.params.appId === this.state.form.parentAppId ? !isFound : true
+        isValid.name = +this.props.params.appId === this.state.form.parentAppId ? !isFound : true
         this.setState({ form, isValid })
     }
 
@@ -132,7 +132,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         form.parentCIPipelineId = pipeline.id
         form.name = pipelines[0].name
         isValid.parentCIPipelineId = true
-        isValid.name = !(+this.props.match.params.appId === this.state.form.parentAppId)
+        isValid.name = !(+this.props.params.appId === this.state.form.parentAppId)
         this.setState({ form, isValid, showPluginWarning: pipeline.isOffendingMandatoryPlugin })
     }
 
@@ -145,8 +145,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         const parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
         parentCIPipeline.pipelineType = CIPipelineBuildType.CI_LINKED
         const params = {
-            appId: +this.props.match.params.appId,
-            workflowId: +this.props.match.params.workflowId,
+            appId: +this.props.params.appId,
+            workflowId: +this.props.params.workflowId,
             name: this.state.form.name,
             isTemplateView: this.props.isTemplateView,
         }

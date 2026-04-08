@@ -31,8 +31,8 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
-import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
+import ICArrow from '@Icons/ic-arrow-forward.svg?react'
+import ICWarningY5 from '@Icons/ic-warning-y5.svg?react'
 import EmptyFolderImage from '@Images/empty-folder.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -59,13 +59,13 @@ const GUIView = ({
     mergeStrategy,
 }: GUIViewProps) => {
     const [formData, setFormData] = useState(null)
-    const [configurableGUIViewUISchema, setConfigurableGUIViewUISchema] = useState<object>({})
+    const [configurableGUIViewUISchema, setConfigurableGUIViewUISchema] = useState<FormProps['uiSchema']>({})
     const [invalidGUISchemaError, setInvalidGUISchemaError] = useState<GUIViewError | null>(null)
     const modelRef = useRef<typeof ConfigurableGUIViewModel>(null)
 
     // NOTE: need this ref since we need the updated formData on unmount;
     // if we directly use formData in cleanup function of unmount; we will have a stale reference of formData
-    const formDataRef = useRef<object>(null)
+    const formDataRef = useRef<FormProps['formData']>(null)
 
     useEffect(() => {
         try {

@@ -28,7 +28,7 @@ import {
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface CreatePluginModalURLParamsType {
+export type CreatePluginModalURLParamsType = {
     appId: string
 }
 

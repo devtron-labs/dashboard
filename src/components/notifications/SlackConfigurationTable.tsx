@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,7 +29,7 @@ import './notifications.scss'
 
 const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
     const { slackConfigurationList } = state
 
     const onClickEditRow = (id: number) => () => {
@@ -38,7 +38,7 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
             configId: id.toString(),
             modal: ConfigurationsTabTypes.SLACK,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

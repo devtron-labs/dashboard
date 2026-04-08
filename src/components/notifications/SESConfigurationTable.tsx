@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     FiltersTypeEnum,
@@ -34,7 +34,7 @@ import './notifications.scss'
 
 const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onClickEditRow = (id: number) => () => {
         const newParams = {
@@ -42,7 +42,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
             configId: id.toString(),
             modal: ConfigurationsTabTypes.SES,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

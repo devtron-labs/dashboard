@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import {
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
+import ArrowDown from '../assets/icons/ic-chevron-down.svg?react'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
 /**

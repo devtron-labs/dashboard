@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
+
 export interface ChartHeaderComponentType {
     errorResponseCode?: number
 }
@@ -23,4 +25,5 @@ export interface EAHeaderComponentType {
     redirectURL: string
     showAppDetailsOnly?: boolean
     breadCrumbConfig?: Record<string, null | string | JSX.Element>
+    breadcrumbPathPattern: string
 }

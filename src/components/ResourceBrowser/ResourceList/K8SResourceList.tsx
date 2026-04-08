@@ -28,10 +28,10 @@ import {
     LARGE_PAGE_SIZE_OPTIONS,
     Nodes,
     PaginationEnum,
+    ROUTER_URLS,
     SelectAllDialogStatus,
     ServerErrors,
     Table,
-    URLS,
     useAsync,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -274,7 +274,7 @@ export const K8SResourceList = ({
                     <ErrorScreenManager
                         code={(resourceListError as ServerErrors).code}
                         reload={reloadResourceList}
-                        redirectURL={URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
+                        redirectURL={ROUTER_URLS.RESOURCE_BROWSER.ROOT}
                     />
                 )}
             </div>

@@ -22,10 +22,10 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrowSquareIn } from '@Icons/ic-arrow-square-in.svg'
-import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
+import ICArrowSquareIn from '@Icons/ic-arrow-square-in.svg?react'
+import ICDeleteInteractive from '@Icons/ic-delete-interactive.svg?react'
+import ICFileCode from '@Icons/ic-file-code.svg?react'
+import ICFilePlay from '@Icons/ic-file-play.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import {

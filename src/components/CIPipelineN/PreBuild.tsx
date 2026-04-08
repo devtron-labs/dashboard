@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useContext } from 'react'
+import React, { type JSX, useEffect, useContext } from 'react'
 import {
     PluginType,
     ScriptType,
@@ -31,7 +31,7 @@ import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
 import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
 import CustomScriptCard from './CustomScriptCard'
 import { BuildStageVariable, ViewType } from '../../config'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Add from '../../assets/icons/ic-add.svg?react'
 import { TaskDetailComponent } from './TaskDetailComponent'
 import nojobs from '../../assets/img/empty-joblist.webp'
 import { pipelineContext } from '../workflowEditor/workflowEditor'

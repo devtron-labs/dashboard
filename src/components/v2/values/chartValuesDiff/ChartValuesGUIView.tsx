@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState } from 'react'
+import React, { type JSX, useMemo, useState } from 'react'
 import { compare as JSONPatchCompare } from 'fast-json-patch'
 
 import {
@@ -26,7 +26,7 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICError } from '@Icons/ic-error-exclamation.svg'
+import ICError from '@Icons/ic-error-exclamation.svg?react'
 
 import { ChartValuesGUIFormProps } from './ChartValuesView.type'
 import { updateYamlDocument } from './ChartValuesView.utils'

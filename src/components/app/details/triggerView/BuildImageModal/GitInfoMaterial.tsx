@@ -18,6 +18,7 @@ import {
     Icon,
     MaterialHistory,
     OptionType,
+    ROUTER_URLS,
     SearchBar,
     showError,
     SourceTypeMap,
@@ -621,7 +622,7 @@ const GitInfoMaterial = ({
                         imgSrc={linkedCiImg}
                         title={`${selectedApp.name} ${BULK_CI_MESSAGING.emptyLinkedCI.title}`}
                         subTitle={BULK_CI_MESSAGING.emptyLinkedCI.subTitle}
-                        link={`${URLS.APPLICATION_MANAGEMENT_APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
+                        link={`${ROUTER_URLS.DEVTRON_APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
                         linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
                         rootClassName="bg__tertiary"
                     />

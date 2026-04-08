@@ -15,7 +15,7 @@
  */
 
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useParams } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 
 import {
@@ -31,14 +31,14 @@ import {
     MainContext,
     Nodes,
     noop,
-    RESOURCE_BROWSER_ROUTES,
     ResourceBrowserActionMenuEnum,
+    ROUTER_URLS,
     TableSignalEnum,
     Tooltip,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import ICErrorExclamation from '@Icons/ic-error-exclamation.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
@@ -56,6 +56,8 @@ import { getClassNameForColumn, getFirstResourceFromKindResourceMap, getShowAIBu
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
+
 const K8sResourceListTableCellComponent = ({
     field: columnName,
     row: { id, data: resourceData },
@@ -67,7 +69,7 @@ const K8sResourceListTableCellComponent = ({
     isEventListing,
     lowercaseKindToResourceGroupMap,
 }: K8sResourceListTableCellComponentProps) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const isNodeListing = selectedResource?.gvk.Kind === Nodes.Node
     const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
@@ -109,14 +111,14 @@ const K8sResourceListTableCellComponent = ({
             group: _group || K8S_EMPTY_GROUP,
         })
 
-        push(`${url}/${tab}`)
+        navigate(`${url}/${tab}`)
     }
 
     const handleNodeClick = async (e: MouseEvent<HTMLButtonElement>) => {
         const { name } = e.currentTarget.dataset
         const _url = generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })
         await addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
-        push(_url)
+        navigate(_url)
     }
 
     useEffect(() => {
@@ -163,7 +165,7 @@ const K8sResourceListTableCellComponent = ({
         const group =
             getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, kind)?.gvk?.Group || K8S_EMPTY_GROUP
 
-        push(
+        navigate(
             generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
                 clusterId,
                 namespace: resourceData.namespace as string,
@@ -286,7 +288,7 @@ const K8sResourceListTableCellComponent = ({
                     data-testid="created-resource-name"
                 >
                     <div className="flex left dc__gap-4">
-                        <Tooltip content={resourceData.name}>
+                        <Tooltip content={`${resourceData.name}`}>
                             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                             <button
                                 type="button"
