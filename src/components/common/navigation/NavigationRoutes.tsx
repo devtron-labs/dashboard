@@ -412,6 +412,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
                 featureAskDevtronExpert:
                     result.featureAskDevtronExpert ?? ENVIRONMENT_DATA_FALLBACK.featureAskDevtronExpert,
+                forceDockerfileScan: result.forceDockerfileScan ?? ENVIRONMENT_DATA_FALLBACK.forceDockerfileScan,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -442,6 +443,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
                 featureAskDevtronExpert: environmentDataResponse.featureAskDevtronExpert,
+                forceDockerfileScan: environmentDataResponse.forceDockerfileScan,
             })
 
             setServerMode(serverModeResponse)
@@ -780,6 +782,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 AskDevtronButton,
                 showUpgradeToOSSPlusDialog,
                 setShowUpgradeToOSSPlusDialog,
+                forceDockerfileScan: environmentDataState.forceDockerfileScan,
             }}
         >
             <ConfirmationModalProvider>

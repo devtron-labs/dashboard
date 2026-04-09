@@ -32,6 +32,7 @@ const COMMON_ENV_FALLBACK: Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'>
     devtronManagedLicensingEnabled: false,
     isResourceRecommendationEnabled: false,
     featureAskDevtronExpert: false,
+    forceDockerfileScan: false,
 }
 
 export const ENVIRONMENT_DATA_FALLBACK: EnvironmentDataValuesDTO = {
