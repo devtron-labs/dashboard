@@ -28,7 +28,6 @@ export interface ScaleWorkloadsType extends HibernateTargetObject, WorkloadCheck
 export interface ScaleWorkloadsModalProps {
     appId: string
     onClose: () => void
-    history: any
 }
 
 export interface HibernateTargetObject {
