@@ -1777,9 +1777,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.23.5-pre-1":
-  version: 1.23.5-pre-1
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.23.5-pre-1"
+"@devtron-labs/devtron-fe-common-lib@npm:1.23.5-beta-0":
+  version: 1.23.5-beta-0
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.23.5-beta-0"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1824,15 +1824,15 @@ __metadata:
     tslib: "npm:2.7.0"
   peerDependencies:
     "@typeform/embed-react": 2.20.0
-    dompurify: ^3.2.4
+    dompurify: ^3.3.3
     patch-package: ^8.0.0
     react: ^19.2.4
     react-dom: ^19.2.4
     react-router-dom: ^6.30.3
     react-select: 5.8.0
     rxjs: ^7.8.1
-    yaml: ^2.4.1
-  checksum: 10c0/13fb40331814ccd6897908e0743c5e90f071501d81eca91dbff06c380200e914b36b53551060d063845fcf0ff4878a1c9076d8d7c276760b3fd133ce126af91d
+    yaml: ^2.8.3
+  checksum: 10c0/1a4bc067ad02c234244fdffedda7b048c3370a6b0be4b850970881b97f23cb5b8144f3e94ee02d53c42292d8954696234333b2d2b8073f890f47e3bf01d6b8e8
   languageName: node
   linkType: hard
 
@@ -5544,7 +5544,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.23.5-pre-1"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.23.5-beta-0"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@sentry/browser": "npm:7.119.1"
@@ -5565,7 +5565,7 @@ __metadata:
     command-line-parser: "npm:^0.2.10"
     compute-histogram: "npm:^0.9.11"
     dayjs: "npm:^1.11.13"
-    dompurify: "npm:^3.2.4"
+    dompurify: "npm:^3.3.3"
     env-cmd: "npm:10.1.0"
     eslint: "npm:^8.57.1"
     eslint-config-airbnb: "npm:^19.0.4"
@@ -5614,7 +5614,7 @@ __metadata:
     xterm-addon-fit: "npm:^0.5.0"
     xterm-addon-search: "npm:^0.9.0"
     xterm-webfont: "npm:^2.0.0"
-    yaml: "npm:^2.4.1"
+    yaml: "npm:^2.8.3"
   languageName: unknown
   linkType: soft
 
@@ -5891,15 +5891,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^3.2.4":
-  version: 3.2.4
-  resolution: "dompurify@npm:3.2.4"
+"dompurify@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "dompurify@npm:3.3.3"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10c0/6be56810fb7ad2776155c8fc2967af5056783c030094362c7d0cf1ad13f2129cf922d8eefab528a34bdebfb98e2f44b306a983ab93aefb9d6f24c18a3d027a05
+  checksum: 10c0/097c14a21a3f6cb95beded9ecd255f7c3512c42767b048390c747b0fe35736f6a71e02320fc50a9ac2be645834b463e4760915d595d502a56452daf339d0ea9c
   languageName: node
   linkType: hard
 
@@ -13646,12 +13646,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.4.1":
-  version: 2.4.5
-  resolution: "yaml@npm:2.4.5"
+"yaml@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "yaml@npm:2.8.3"
   bin:
     yaml: bin.mjs
-  checksum: 10c0/e1ee78b381e5c710f715cc4082fd10fc82f7f5c92bd6f075771d20559e175616f56abf1c411f545ea0e9e16e4f84a83a50b42764af5f16ec006328ba9476bb31
+  checksum: 10c0/ddff0e11c1b467728d7eb4633db61c5f5de3d8e9373cf84d08fb0cdee03e1f58f02b9f1c51a4a8a865751695addbd465a77f73f1079be91fe5493b29c305fd77
   languageName: node
   linkType: hard
 
