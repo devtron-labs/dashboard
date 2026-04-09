@@ -94,7 +94,7 @@
         "svgo": "^3.3.2",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
-        "vite": "8.0.0",
+        "vite": "8.0.8",
         "vite-plugin-compression2": "2.4.0",
         "vite-plugin-pwa": "1.2.0",
         "vite-plugin-require-transform": "1.0.21",
@@ -112,7 +112,7 @@
     "packageManager": "yarn@4.9.2",
     "overrides": {
         "vite-plugin-svgr": {
-            "vite": "8.0.0"
+            "vite": "8.0.8"
         }
     }
 }
