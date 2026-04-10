@@ -40,14 +40,12 @@ src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
 src/components/ClusterNodes/NodeDetails.tsx
-src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
 src/components/Jobs/JobsEmptyState.tsx
 src/components/Jobs/Service.ts
 src/components/Jobs/Utils.ts
 src/components/LogViewer/LogViewer.tsx
-src/components/__mocks__/xterm-webfont.js
 src/components/app/LogFilter.ts
 src/components/app/Overview/EnvironmentList.tsx
 src/components/app/Overview/Overview.tsx
