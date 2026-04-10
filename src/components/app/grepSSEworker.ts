@@ -34,7 +34,7 @@ export default () => {
         eventListener(ev) {
             let log
             try {
-                log = JSON.parse(ev.data).result.content
+                log = JSON.parse(ev.data).result.content ?? ev.data
             } catch (e) {
                 log = ev.data
             }
