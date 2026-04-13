@@ -36,8 +36,8 @@ import {
     UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
+import PlusIcon from '../../../../../assets/icons/ic-delete-interactive.svg?react'
+import Error from '../../../../../assets/icons/ic-warning.svg?react'
 import { deepEqual, importComponentFromFELibrary, validateEmail } from '../../../../../components/common'
 import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING } from '../../../../../config'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'

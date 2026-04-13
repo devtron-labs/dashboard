@@ -169,7 +169,8 @@ export interface NodeActionModalPropType extends NodeActionRequest {
 }
 
 export interface DeleteNodeModalProps
-    extends NodeActionModalPropType, Pick<ResourceBrowserActionMenuType, 'handleClearBulkSelection'> {}
+    extends NodeActionModalPropType,
+        Pick<ResourceBrowserActionMenuType, 'handleClearBulkSelection'> {}
 
 export interface CordonNodeModalType extends NodeActionModalPropType {
     unschedulable: boolean

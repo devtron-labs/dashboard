@@ -36,10 +36,8 @@ export interface CreatePluginModalProps {
     handleClose: () => void
 }
 
-export interface ParentPluginListItemType extends Pick<
-    PluginDataStoreType['parentPluginStore'][0],
-    'id' | 'name' | 'icon'
-> {}
+export interface ParentPluginListItemType
+    extends Pick<PluginDataStoreType['parentPluginStore'][0], 'id' | 'name' | 'icon'> {}
 
 export enum CreatePluginFormViewType {
     NEW_PLUGIN = 'New plugin',
@@ -47,8 +45,7 @@ export enum CreatePluginFormViewType {
 }
 
 export interface CreatePluginFormType
-    extends
-        ParentPluginListItemType,
+    extends ParentPluginListItemType,
         Pick<PluginDataStoreType['parentPluginStore'][0], 'pluginIdentifier'>,
         Pick<PluginDetailType, 'description' | 'docLink' | 'tags' | 'inputVariables' | 'pluginVersion'> {
     shouldReplaceCustomTask: boolean
@@ -189,8 +186,7 @@ export interface CreatePluginInputVariableContainerProps extends Pick<CreatePlug
 }
 
 export interface InputVariableItemProps
-    extends
-        Pick<CreatePluginInputVariableContainerProps, 'handleChange'>,
+    extends Pick<CreatePluginInputVariableContainerProps, 'handleChange'>,
         Pick<VariableType, 'name' | 'allowEmptyValue'> {
     index: number
 }
@@ -202,10 +198,8 @@ export interface CreatePluginServiceParamsType {
     availableTags?: string[]
 }
 
-export interface GetCreatePluginPayloadParamsType extends Pick<
-    CreatePluginServiceParamsType,
-    'stepData' | 'pluginForm' | 'availableTags'
-> {}
+export interface GetCreatePluginPayloadParamsType
+    extends Pick<CreatePluginServiceParamsType, 'stepData' | 'pluginForm' | 'availableTags'> {}
 
 export enum PathPortMappingType {
     PORT = 'PORT',
@@ -224,18 +218,19 @@ type CreatePluginPayloadPathArgPortMappingDTO =
           typeOfMapping: PathPortMappingType.DOCKER_ARG
       } & InlineStepDetailType['commandArgsMap'][0])
 
-export interface CreatePluginPayloadPipelineScriptDTO extends Pick<
-    InlineStepDetailType,
-    | 'script'
-    | 'storeScriptAt'
-    | 'dockerFileExists'
-    | 'mountPath'
-    | 'mountCodeToContainer'
-    | 'mountCodeToContainerPath'
-    | 'mountDirectoryFromHost'
-    | 'containerImagePath'
-    | 'imagePullSecret'
-> {
+export interface CreatePluginPayloadPipelineScriptDTO
+    extends Pick<
+        InlineStepDetailType,
+        | 'script'
+        | 'storeScriptAt'
+        | 'dockerFileExists'
+        | 'mountPath'
+        | 'mountCodeToContainer'
+        | 'mountCodeToContainerPath'
+        | 'mountDirectoryFromHost'
+        | 'containerImagePath'
+        | 'imagePullSecret'
+    > {
     type: InlineStepDetailType['scriptType']
     pathArgPortMapping: CreatePluginPayloadPathArgPortMappingDTO[]
 }
@@ -245,10 +240,11 @@ export enum CreatePluginVariableType {
     OUTPUT = 'OUTPUT',
 }
 
-export interface CreatePluginPayloadPluginStepVariableItemType extends Pick<
-    VariableType,
-    'id' | 'name' | 'format' | 'description' | 'allowEmptyValue' | 'defaultValue' | 'value'
-> {
+export interface CreatePluginPayloadPluginStepVariableItemType
+    extends Pick<
+        VariableType,
+        'id' | 'name' | 'format' | 'description' | 'allowEmptyValue' | 'defaultValue' | 'value'
+    > {
     variableType: CreatePluginVariableType
     valueType: VariableType['variableType']
     referenceVariableName: VariableType['refVariableName']
@@ -260,10 +256,8 @@ interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirect
     pluginPipelineScript: CreatePluginPayloadPipelineScriptDTO
 }
 
-interface CreatePluginDetailedPluginVersionDataItemDTO extends Pick<
-    PluginDetailType,
-    'tags' | 'description' | 'docLink' | 'pluginVersion'
-> {
+interface CreatePluginDetailedPluginVersionDataItemDTO
+    extends Pick<PluginDetailType, 'tags' | 'description' | 'docLink' | 'pluginVersion'> {
     areNewTagsPresent: boolean
     pluginSteps: [CreatePluginPayloadPluginStepsDTO]
 }

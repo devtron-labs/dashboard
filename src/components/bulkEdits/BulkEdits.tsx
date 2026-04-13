@@ -594,8 +594,10 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 
     // eslint-disable-next-line class-methods-use-this
     renderBreadcrumbs = () => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const { pathname } = useLocation()
 
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const { breadcrumbs } = useBreadcrumb(
             ROUTER_URLS.BULK_EDIT,
             {

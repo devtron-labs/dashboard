@@ -40,11 +40,11 @@ import {
     SecurityPolicyEditState,
 } from './security.types'
 import { AddCveModal } from './AddCveModal'
-import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Arrow from '../../assets/icons/ic-chevron-down.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
 import { getVulnerabilities, savePolicy, updatePolicy } from './security.service'
 import { ViewType } from '../../config'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
+import Delete from '../../assets/icons/ic-delete.svg?react'
 
 export class SecurityPolicyEdit extends Component<
     FetchPolicyQueryParams,

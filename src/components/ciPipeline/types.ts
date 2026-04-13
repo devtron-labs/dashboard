@@ -294,6 +294,7 @@ export interface CIPipelineDataType {
     name: string
     linkedCount: number
     scanEnabled?: boolean
+    dockerfileScanEnabled?: boolean
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
     environmentId?: any
@@ -341,7 +342,8 @@ export interface LinkedCIPipelineViewProps extends Required<Pick<AppConfigProps,
 }
 
 export interface LinkedCIPipelineEditProps
-    extends RouterV5Props<{ appId: string; workflowId: string }>, LinkedCIPipelineViewProps {
+    extends RouterV5Props<{ appId: string; workflowId: string }>,
+        LinkedCIPipelineViewProps {
     appName: string
     changeCIPayload: ChangeCIPayloadType
 }
@@ -388,7 +390,8 @@ export interface WebhookCIProps {
 }
 
 export interface BuildType
-    extends Pick<AdvancedConfigOptionsProps, 'appId'>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    extends Pick<AdvancedConfigOptionsProps, 'appId'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     isAdvanced: boolean
     ciPipeline: CIPipelineDataType
     pageState: string

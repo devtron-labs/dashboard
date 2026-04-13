@@ -130,21 +130,22 @@ export interface ClusterTerminalParamsType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
-export interface EditClusterDrawerContentProps extends Pick<
-    ClusterDetailListType,
-    | 'sshTunnelConfig'
-    | 'insecureSkipTlsVerify'
-    | 'category'
-    | 'isProd'
-    | 'installationId'
-    | 'toConnectWithSSHTunnel'
-    | 'proxyUrl'
-    | 'prometheusUrl'
-    | 'serverUrl'
-    | 'clusterName'
-    | 'clusterId'
-    | 'costModuleConfig'
-> {
+export interface EditClusterDrawerContentProps
+    extends Pick<
+        ClusterDetailListType,
+        | 'sshTunnelConfig'
+        | 'insecureSkipTlsVerify'
+        | 'category'
+        | 'isProd'
+        | 'installationId'
+        | 'toConnectWithSSHTunnel'
+        | 'proxyUrl'
+        | 'prometheusUrl'
+        | 'serverUrl'
+        | 'clusterName'
+        | 'clusterId'
+        | 'costModuleConfig'
+    > {
     reload: () => void
     handleModalClose: () => void
 }
@@ -224,10 +225,11 @@ export interface EnvironmentDTO {
     category: ClusterEnvironmentCategoryType
 }
 
-export interface Environment extends Omit<
-    EnvironmentDTO,
-    'environment_name' | 'cluster_id' | 'prometheus_endpoint' | 'default' | 'cluster_name'
-> {
+export interface Environment
+    extends Omit<
+        EnvironmentDTO,
+        'environment_name' | 'cluster_id' | 'prometheus_endpoint' | 'default' | 'cluster_name'
+    > {
     environmentName: EnvironmentDTO['environment_name']
     clusterId: EnvironmentDTO['cluster_id']
     prometheusEndpoint: EnvironmentDTO['prometheus_endpoint']
@@ -235,10 +237,8 @@ export interface Environment extends Omit<
     clusterName: EnvironmentDTO['cluster_name']
 }
 
-export interface ClusterRowData extends Pick<
-    ClusterDetailListType,
-    'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'
-> {
+export interface ClusterRowData
+    extends Pick<ClusterDetailListType, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
     envCount: number
     clusterType: string
     clusterCategory: string
@@ -301,10 +301,8 @@ export type DeleteEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId
 
 export type EditEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'> & { isVirtualCluster: boolean }
 
-export interface ClusterEnvListProps extends Pick<
-    EnvironmentListProps,
-    'filterConfig' | 'showUnmappedEnvs' | 'filterClusterId'
-> {
+export interface ClusterEnvListProps
+    extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs' | 'filterClusterId'> {
     clusterDetails: ClusterDetailListType
     environments: Environment[]
     setDeleteEnvConfig: Dispatch<SetStateAction<DeleteEnvConfigType>>

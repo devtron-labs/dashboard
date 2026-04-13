@@ -81,10 +81,8 @@ export interface RuntimeParamsSidebarProps {
     appName: string
 }
 
-export interface GetMaterialResponseListProps extends Pick<
-    DeployImageModalProps,
-    'pipelineId' | 'stageType' | 'materialType' | 'appId' | 'envId'
-> {
+export interface GetMaterialResponseListProps
+    extends Pick<DeployImageModalProps, 'pipelineId' | 'stageType' | 'materialType' | 'appId' | 'envId'> {
     initialSearch: string
 }
 
@@ -95,7 +93,8 @@ export interface HelmManifestErrorHandlerProps {
 }
 
 export interface GetTriggerArtifactInfoPropsType
-    extends Pick<DeployImageModalProps, 'appId' | 'pipelineId'>, Pick<CDMaterialResponseType, 'requestedUserId'> {
+    extends Pick<DeployImageModalProps, 'appId' | 'pipelineId'>,
+        Pick<CDMaterialResponseType, 'requestedUserId'> {
     material: CDMaterialType
     showApprovalInfoTippy: boolean
     isRollbackTrigger: boolean
@@ -197,29 +196,28 @@ export interface ImageSelectionCTAProps extends Pick<DeployImageModalProps, 'app
     handleImageSelection: (index: number) => void
 }
 
-export interface GetSequentialCDCardTitlePropsType extends Pick<
-    DeployImageModalProps,
-    'envName' | 'parentEnvironmentName' | 'stageType' | 'isVirtualEnvironment'
-> {
+export interface GetSequentialCDCardTitlePropsType
+    extends Pick<DeployImageModalProps, 'envName' | 'parentEnvironmentName' | 'stageType' | 'isVirtualEnvironment'> {
     material: CDMaterialType
     isRollbackTrigger: boolean
     isSearchApplied: boolean
 }
 
-export interface MaterialListEmptyStateProps extends Pick<
-    DeployImageContentProps,
-    | 'isRollbackTrigger'
-    | 'stageType'
-    | 'appId'
-    | 'policyConsequences'
-    | 'isTriggerBlockedDueToPlugin'
-    | 'configurePluginURL'
-    | 'envName'
-    | 'materialResponse'
-    | 'triggerType'
-    | 'loadOlderImages'
-    | 'onSearchApply'
-> {
+export interface MaterialListEmptyStateProps
+    extends Pick<
+        DeployImageContentProps,
+        | 'isRollbackTrigger'
+        | 'stageType'
+        | 'appId'
+        | 'policyConsequences'
+        | 'isTriggerBlockedDueToPlugin'
+        | 'configurePluginURL'
+        | 'envName'
+        | 'materialResponse'
+        | 'triggerType'
+        | 'loadOlderImages'
+        | 'onSearchApply'
+    > {
     isExceptionUser: boolean
     isConsumedImagePresent: boolean
     isLoadingMore: boolean
@@ -269,8 +267,7 @@ export interface HandleDeploymentProps {
 }
 
 export interface BulkTriggerSidebarProps
-    extends
-        Required<
+    extends Required<
             Pick<
                 DeployImageContentProps,
                 'appId' | 'stageType' | 'appInfoMap' | 'selectedTagName' | 'handleTagChange' | 'changeApp'
@@ -280,10 +277,11 @@ export interface BulkTriggerSidebarProps
     handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange']
 }
 
-export interface BulkDeployEmptyStateProps extends Pick<
-    DeployImageContentProps,
-    'stageType' | 'appId' | 'isTriggerBlockedDueToPlugin' | 'handleClose' | 'reloadMaterials'
-> {
+export interface BulkDeployEmptyStateProps
+    extends Pick<
+        DeployImageContentProps,
+        'stageType' | 'appId' | 'isTriggerBlockedDueToPlugin' | 'handleClose' | 'reloadMaterials'
+    > {
     selectedApp: BulkCDDetailType
 }
 

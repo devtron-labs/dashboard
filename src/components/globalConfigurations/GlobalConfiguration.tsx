@@ -29,7 +29,7 @@ import {
     BASE_ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import arrowTriangle from '../../assets/icons/ic-chevron-down.svg?react'
 import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
 import './globalConfigurations.scss'
 import {

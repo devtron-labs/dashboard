@@ -42,7 +42,7 @@ import {
     UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getClusterListing } from '@Components/ResourceBrowser/ResourceBrowser.service'
 import { getNamespaceFromLocalStorage } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'

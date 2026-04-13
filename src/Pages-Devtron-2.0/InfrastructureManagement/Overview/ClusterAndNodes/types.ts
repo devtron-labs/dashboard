@@ -9,9 +9,8 @@ import {
     PropsTypeWithInfraQueryState,
 } from '../types'
 
-export interface InfraOverviewClusterAndNodesProps extends PropsTypeWithInfraQueryState<
-    Pick<InfraOverview, 'clusterNodeConfig'>
-> {}
+export interface InfraOverviewClusterAndNodesProps
+    extends PropsTypeWithInfraQueryState<Pick<InfraOverview, 'clusterNodeConfig'>> {}
 
 export interface ClusterNodeHealthProps extends Pick<InfraOverview['clusterNodeConfig'], 'clusterNodeHealth'> {}
 
@@ -25,10 +24,8 @@ export interface ClusterCountsProps extends Pick<InfraOverview['clusterNodeConfi
 
 export interface NodeCountsProps extends Pick<InfraOverview['clusterNodeConfig'], 'nodeDistribution'> {}
 
-export interface ClusterCapacityDistributionProps extends Pick<
-    InfraOverview['clusterNodeConfig'],
-    'clusterCapacityDistribution'
-> {}
+export interface ClusterCapacityDistributionProps
+    extends Pick<InfraOverview['clusterNodeConfig'], 'clusterCapacityDistribution'> {}
 
 type ClusterNodeCountSortKeys = 'name' | 'count'
 

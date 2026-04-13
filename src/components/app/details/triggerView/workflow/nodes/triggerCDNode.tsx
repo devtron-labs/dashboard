@@ -28,7 +28,7 @@ import {
     statusIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
-import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
+import Rollback from '../../../../../../assets/icons/ic-rollback.svg?react'
 import { DEFAULT_STATUS } from '../../../../../../config'
 import { envDescriptionTippy, getNodeSideHeadingAndClass } from './workflow.utils'
 import NoGitOpsRepoConfiguredWarning, {

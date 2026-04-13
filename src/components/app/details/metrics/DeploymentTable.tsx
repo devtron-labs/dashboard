@@ -17,12 +17,12 @@
 import { Component } from 'react'
 import { Progressing, DEFAULT_BASE_PAGE_SIZE, Pagination } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { ReactComponent as Sort } from '../../../../assets/icons/ic-sort.svg'
-import { ReactComponent as SortUp } from '../../../../assets/icons/ic-sort-up.svg'
-import { ReactComponent as SortDown } from '../../../../assets/icons/ic-sort-down.svg'
-import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as Help } from '../../../../assets/icons/ic-info-outline.svg'
-import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
+import Sort from '../../../../assets/icons/ic-sort.svg?react'
+import SortUp from '../../../../assets/icons/ic-sort-up.svg?react'
+import SortDown from '../../../../assets/icons/ic-sort-down.svg?react'
+import Success from '../../../../assets/icons/appstatus/healthy.svg?react'
+import Help from '../../../../assets/icons/ic-info-outline.svg?react'
+import Fail from '../../../../assets/icons/ic-error-exclamation.svg?react'
 import { ViewType } from '../../../../config'
 
 export interface DeploymentTableCellType {

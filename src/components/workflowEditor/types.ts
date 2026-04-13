@@ -87,8 +87,7 @@ export interface WorkflowEditState {
 }
 
 export interface WorkflowEditProps
-    extends
-        RouterV5Props<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }>,
+    extends RouterV5Props<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
     configStatus: number
     isCDPipeline: boolean
@@ -144,8 +143,7 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     reload: () => void
 }
 export interface CDNodeProps
-    extends
-        RouterV5Props<{}>,
+    extends RouterV5Props<{}>,
         Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
         Pick<CommonNodeAttr, 'showPluginWarning'>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
@@ -347,8 +345,7 @@ export interface ToggleCDSelectButtonProps extends Required<Pick<AppConfigProps,
 }
 
 export interface WorkflowProps
-    extends
-        RouterV5Props<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
+    extends RouterV5Props<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
     nodes: CommonNodeAttr[]
     id: number

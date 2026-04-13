@@ -44,14 +44,15 @@ import {
     getEditorTemplateAndLockedKeys,
 } from './utils'
 
-interface InitializeStateBasePayloadType extends Pick<
-    DeploymentTemplateStateType,
-    | ConfigEditorStatesType.BASE_EDITOR
-    | ConfigEditorStatesType.PUBLISHED_EDITOR
-    | 'chartDetails'
-    | 'lockedConfigKeysWithLockType'
-    | 'migratedFrom'
-> {}
+interface InitializeStateBasePayloadType
+    extends Pick<
+        DeploymentTemplateStateType,
+        | ConfigEditorStatesType.BASE_EDITOR
+        | ConfigEditorStatesType.PUBLISHED_EDITOR
+        | 'chartDetails'
+        | 'lockedConfigKeysWithLockType'
+        | 'migratedFrom'
+    > {}
 
 interface GetDeploymentTemplateInitialStateParamsType {
     isSuperAdmin: boolean

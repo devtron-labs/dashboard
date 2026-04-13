@@ -21,11 +21,11 @@ import { AppDetails, EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs
 
 import CloudwatchlIcon from '@Icons/ic-cloudwatch.png'
 import CoralogixlIcon from '@Icons/ic-coralogix.png'
-import DatadogIcon from '@Icons/ic-datadog.svg'
+import DatadogIcon from '@Icons/ic-datadog.svg?react'
 import GrafanaIcon from '@Icons/ic-grafana.png'
 import KibanaIcon from '@Icons/ic-kibana.png'
 import LokiIcon from '@Icons/ic-loki.png'
-import NewrelicIcon from '@Icons/ic-newrelic.svg'
+import NewrelicIcon from '@Icons/ic-newrelic.svg?react'
 import AlertsIcon from '@Icons/tools/ic-link-alerts.png'
 import BugsIcon from '@Icons/tools/ic-link-bugs.png'
 import ChatIcon from '@Icons/tools/ic-link-chat.png'

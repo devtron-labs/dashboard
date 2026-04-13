@@ -30,7 +30,7 @@ import {
     UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
+import TrashIcon from '../../../../../../assets/icons/ic-delete-interactive.svg?react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'

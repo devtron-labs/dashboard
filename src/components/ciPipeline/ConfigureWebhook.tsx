@@ -15,9 +15,9 @@
  */
 
 import { useState } from 'react'
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Webhook from '../../assets/icons/ic-CIWebhook.svg?react'
+import Info from '../../assets/icons/ic-info-filled-purple.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
 import { WebhookSelectorCondition } from './WebhookSelectorCondition'
 import { ClipboardButton, copyToClipboard, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
 

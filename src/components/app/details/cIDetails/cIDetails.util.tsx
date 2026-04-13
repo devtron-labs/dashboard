@@ -15,25 +15,17 @@
  */
 
 import { GenericEmptyState, EMPTY_STATE_STATUS } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ScannedDisabled } from '@Images/ic-empty-scanner-disabled.svg'
-import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
+import MechanicalOperation from '@Images/ic-mechanical-operation.svg?react'
 
-export const ImageNotScannedView = () => {
-    return (
-        <GenericEmptyState
-            SvgImage={ScannedDisabled}
-            title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
-            subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.SUBTITLE}
-        />
-    )
-}
 
 export const CIRunningView = (props) => {
     return (
+        <div className="flexbox-col p-16 bg__primary flex-grow-1 en-2 bw-1 br-8">
         <GenericEmptyState
             SvgImage={MechanicalOperation}
             title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
             subTitle={props.isSecurityTab ? null : EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
         />
+        </div>
     )
 }

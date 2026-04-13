@@ -234,10 +234,8 @@ export interface ApplicationRouteType {
     appIdToAppApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 
-export interface AppGroupFilterConfig extends Pick<
-    UseUrlFiltersReturnType<never>,
-    'searchKey' | 'offset' | 'pageSize'
-> {
+export interface AppGroupFilterConfig
+    extends Pick<UseUrlFiltersReturnType<never>, 'searchKey' | 'offset' | 'pageSize'> {
     cluster: string[]
 }
 
@@ -247,9 +245,8 @@ export interface GetEnvAppListParamsType extends Pick<AppGroupFilterConfig, 'off
     clusterIds: string
 }
 
-export interface EnvironmentsListViewType extends Partial<
-    Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'>
-> {
+export interface EnvironmentsListViewType
+    extends Partial<Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'>> {
     isSuperAdmin: boolean
     filterConfig?: AppGroupFilterConfig
     appListResponse: EnvAppType

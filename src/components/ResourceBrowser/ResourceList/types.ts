@@ -44,7 +44,8 @@ import {
 } from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<ClusterListType, 'updateTabUrl'>, Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
+    extends Pick<ClusterListType, 'updateTabUrl'>,
+        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
     clusterName: string
 }
 
@@ -64,8 +65,7 @@ export type K8sResourceDetailURLParams = K8sResourceListURLParams & {
 }
 
 export interface NodeDetailComponentWrapperProps
-    extends
-        Pick<UseTabsReturnType, 'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId'>,
+    extends Pick<UseTabsReturnType, 'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId'>,
         Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
     clusterName: string
 }
@@ -73,19 +73,15 @@ export type NodeDetailURLParams = {
     name: string
 }
 
-export interface K8sResourceListFilterType extends Record<
-    (typeof NODE_SEARCH_KEYS)[keyof typeof NODE_SEARCH_KEYS],
-    string
-> {
+export interface K8sResourceListFilterType
+    extends Record<(typeof NODE_SEARCH_KEYS)[keyof typeof NODE_SEARCH_KEYS], string> {
     selectedNamespace?: string
     [NODE_K8S_VERSION_FILTER_KEY]?: string
     eventType: 'warning' | 'normal'
 }
 
-export interface AdminTerminalDummyProps extends Pick<
-    UseTabsReturnType,
-    'markTabActiveById' | 'updateTabUrl' | 'getTabById'
-> {
+export interface AdminTerminalDummyProps
+    extends Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'getTabById'> {
     clusterName: string
 }
 
@@ -130,15 +126,16 @@ export type ClusterUpgradeCompatibilityInfoTableCellComponentProps = TableCellCo
 // <--------- CLUSTER UPGRADE COMPATIBILITY INFO TABLE PROPS
 
 // K8s RESOURCE LIST TABLE PROPS --------->
-export interface K8sResourceListTableAdditionalProps extends Pick<
-    K8SResourceListType,
-    | 'selectedCluster'
-    | 'selectedResource'
-    | 'addTab'
-    | 'lowercaseKindToResourceGroupMap'
-    | 'clusterName'
-    | 'renderRefreshBar'
-> {
+export interface K8sResourceListTableAdditionalProps
+    extends Pick<
+        K8SResourceListType,
+        | 'selectedCluster'
+        | 'selectedResource'
+        | 'addTab'
+        | 'lowercaseKindToResourceGroupMap'
+        | 'clusterName'
+        | 'renderRefreshBar'
+    > {
     reloadResourceListData: () => void
     isNodeListing: boolean
     isEventListing: boolean
@@ -173,14 +170,15 @@ export type DynamicTabComponentWrapperProps = Pick<
         path: string
     }
 
-export interface ResourceRecommenderTableViewWrapperProps extends TableViewWrapperProps<
-    K8sResourceDetailDataType,
-    FiltersTypeEnum.URL,
-    ResourceFilterOptionsProps & {
-        resourceListError: ServerErrors
-        reloadResourceListData: () => void
-    }
-> {}
+export interface ResourceRecommenderTableViewWrapperProps
+    extends TableViewWrapperProps<
+        K8sResourceDetailDataType,
+        FiltersTypeEnum.URL,
+        ResourceFilterOptionsProps & {
+            resourceListError: ServerErrors
+            reloadResourceListData: () => void
+        }
+    > {}
 
 export interface NodeSearchListOptionType extends SelectPickerOptionType<string> {
     identifier: NODE_SEARCH_KEYS

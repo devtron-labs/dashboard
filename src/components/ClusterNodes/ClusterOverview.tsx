@@ -40,7 +40,7 @@ import {
 import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
 import { getAvailableCharts } from '@Services/service'
 
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import Error from '../../assets/icons/ic-error-exclamation.svg?react'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'

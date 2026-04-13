@@ -34,11 +34,11 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
-import { ReactComponent as ICChartLineUp } from '@Icons/ic-chart-line-up.svg'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
-import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
-import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg?react'
+import ICChartLineUp from '@Icons/ic-chart-line-up.svg?react'
+import ICObject from '@Icons/ic-object.svg?react'
+import ICTerminalFill from '@Icons/ic-terminal-fill.svg?react'
+import ICWorldBlack from '@Icons/ic-world-black.svg?react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'

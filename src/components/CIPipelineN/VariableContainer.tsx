@@ -15,7 +15,7 @@
  */
 
 import { useState, useContext, useEffect } from 'react'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
 import { PluginVariableType } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { VariableDataTable } from './VariableDataTable'

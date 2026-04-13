@@ -47,7 +47,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
+import ForwardArrow from '@Icons/ic-arrow-forward.svg?react'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
 import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'

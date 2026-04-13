@@ -98,10 +98,8 @@ export type CreateCICDPipelineFormError = {
     cd: { environment?: string | null }
 }
 
-export interface ConfigureWebhookWrapperProps extends Pick<
-    CreateCICDPipelineData['ci'],
-    'gitHost' | 'webhookConditionList' | 'ciPipelineEditable'
-> {
+export interface ConfigureWebhookWrapperProps
+    extends Pick<CreateCICDPipelineData['ci'], 'gitHost' | 'webhookConditionList' | 'ciPipelineEditable'> {
     selectedWebhookEvent: CreateCICDPipelineData['ci']['webhookEvents'][number]
     setCiCdPipeline: Dispatch<SetStateAction<CreateCICDPipelineData>>
 }
@@ -118,8 +116,7 @@ interface CommonStepperContentProps {
 export interface CIStepperContentProps extends CommonStepperContentProps {}
 
 export interface CDStepperContentProps
-    extends
-        CommonStepperContentProps,
+    extends CommonStepperContentProps,
         Pick<
             CreateCICDPipelineProps,
             | 'appId'

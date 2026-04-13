@@ -29,6 +29,7 @@ import { Cluster } from '@Services/service.types'
 
 import { DevtronAppListProps } from '../list/types'
 import { APP_LIST_HEADERS } from './Constants'
+import { AppListFilterLabelOperatorType, AppListFilterLabelType } from './types'
 
 export enum FluxCDTemplateType {
     KUSTOMIZATION = 'Kustomization',
@@ -102,18 +103,6 @@ export interface HelmAppListResponse extends ResponseType {
     result?: HelmAppsListResult
 }
 
-export interface AppListPayloadType {
-    environments: number[]
-    teams: number[]
-    namespaces: string[]
-    appNameSearch: string
-    appStatuses: string[]
-    sortBy: AppListSortableKeys
-    sortOrder: SortingOrder
-    offset: number
-    size: number
-}
-
 export enum AppListSortableKeys {
     APP_NAME = 'appNameSort',
     LAST_DEPLOYED = 'lastDeployedSort',
@@ -126,28 +115,56 @@ export enum AppListUrlFilters {
     namespace = 'namespace',
     cluster = 'cluster',
     templateType = 'templateType',
+    labelSelector = 'labelSelector',
 }
 
-export interface AppListUrlFiltersType extends Record<AppListUrlFilters, string[]> {}
+export type AppListFilterKey = AppListUrlFilters
+
+export interface AppListUrlFiltersType
+    extends Omit<Record<AppListUrlFilters, string[]>, AppListUrlFilters.labelSelector> {
+    [AppListUrlFilters.labelSelector]: string
+}
+
+export interface LabelSelectorPayloadType {
+    key: string
+    operator: AppListFilterLabelOperatorType
+    value?: string
+}
+
+export interface AppListPayloadType {
+    environments: number[]
+    teams: number[]
+    namespaces: string[]
+    appNameSearch: string
+    appStatuses: string[]
+    sortBy: AppListSortableKeys
+    sortOrder: SortingOrder
+    offset: number
+    size: number
+    tagFilters: LabelSelectorPayloadType[]
+}
 
 export interface AppListFilterConfig
-    extends AppListUrlFiltersType, Pick<AppListPayloadType, 'sortBy' | 'sortOrder' | 'offset'> {
+    extends AppListUrlFiltersType,
+        Pick<AppListPayloadType, 'sortBy' | 'sortOrder' | 'offset'> {
     pageSize: number
     searchKey: string
+    labelSelectors: AppListFilterLabelType[]
 }
 
-export interface HelmAppListProps extends Pick<
-    DevtronAppListProps,
-    | 'filterConfig'
-    | 'clearAllFilters'
-    | 'handleSorting'
-    | 'changePage'
-    | 'changePageSize'
-    | 'isArgoInstalled'
-    | 'syncListData'
-    | 'updateDataSyncing'
-    | 'appListContainerRef'
-> {
+export interface HelmAppListProps
+    extends Pick<
+        DevtronAppListProps,
+        | 'filterConfig'
+        | 'clearAllFilters'
+        | 'handleSorting'
+        | 'changePage'
+        | 'changePageSize'
+        | 'isArgoInstalled'
+        | 'syncListData'
+        | 'updateDataSyncing'
+        | 'appListContainerRef'
+    > {
     clusterIdsCsv: string
     serverMode: SERVER_MODE
     fetchingExternalApps: boolean
@@ -157,8 +174,7 @@ export interface HelmAppListProps extends Pick<
 }
 
 export interface GenericAppListProps
-    extends
-        Pick<
+    extends Pick<
             DevtronAppListProps,
             | 'filterConfig'
             | 'clearAllFilters'
@@ -173,8 +189,7 @@ export interface GenericAppListProps
 }
 
 export interface AppListFiltersProps
-    extends
-        Pick<DevtronAppListProps, 'filterConfig' | 'isArgoInstalled'>,
+    extends Pick<DevtronAppListProps, 'filterConfig' | 'isArgoInstalled'>,
         Pick<
             UseUrlFiltersReturnType<AppListSortableKeys, AppListUrlFiltersType>,
             'updateSearchParams' | 'handleSearch'
@@ -197,12 +212,20 @@ export interface AppListFiltersProps
     lastSyncTimeString?: string
     isDataSyncing: boolean
     showExportCsvButton: boolean
+    isDevtronAppList: boolean
+    labelSelectors: AppListFilterLabelType[]
+    handleApplyLabelSelectors: (selectors: AppListFilterLabelType[]) => void
 }
 
-export interface useFilterOptionsProps extends Pick<
-    AppListFiltersProps,
-    'appListFiltersResponse' | 'namespaceListResponse' | 'getFormattedFilterValue' | 'isExternalArgo' | 'isExternalFlux'
-> {}
+export interface useFilterOptionsProps
+    extends Pick<
+        AppListFiltersProps,
+        | 'appListFiltersResponse'
+        | 'namespaceListResponse'
+        | 'getFormattedFilterValue'
+        | 'isExternalArgo'
+        | 'isExternalFlux'
+    > {}
 
 export interface GetDevtronHelmAppListParamsType {
     appStatuses: string
@@ -214,7 +237,7 @@ export interface AskToClearFiltersProps extends Pick<DevtronAppListProps, 'clear
 }
 
 export type AppListFilterMenuItemType =
-    GroupedFilterSelectPickerProps<AppListUrlFilters>['options'][number]['items'][number]
+    GroupedFilterSelectPickerProps<AppListFilterKey>['options'][number]['items'][number]
 
 export interface GetAppListFiltersParams {
     clusterIdsCsv: string
@@ -223,6 +246,7 @@ export interface GetAppListFiltersParams {
     isArgoInstalled: boolean
     serverMode: SERVER_MODE
     selectedEnvironments: { label: string; value: string }[]
+    isDevtronAppList: boolean
 }
 
 export interface ExportAppListDataType {

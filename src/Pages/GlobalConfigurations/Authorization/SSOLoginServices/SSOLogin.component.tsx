@@ -53,9 +53,9 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
+import InfoIcon from '@Icons/ic-info-warn.svg?react'
 import Check from '@Icons/ic-selected-corner.png'
-import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
+import UsersIcon from '@Icons/ic-users.svg?react'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
 import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, ViewType } from '../../../../config'

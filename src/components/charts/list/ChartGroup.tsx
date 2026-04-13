@@ -33,7 +33,7 @@ import CreateChartGroup from '../modal/CreateChartGroup'
 import ChartGroupUpdate from '../ChartGroupUpdate'
 import ChartGroupDetails from '../ChartGroupDetails'
 import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import Add from '../../../assets/icons/ic-add.svg?react'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group`
 

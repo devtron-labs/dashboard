@@ -40,7 +40,7 @@ import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
-import { ReactComponent as Pencil } from '@Icons/ic-pencil.svg'
+import Pencil from '@Icons/ic-pencil.svg?react'
 import {
     deployChartGroup,
     getChartGroupInstallationDetails,

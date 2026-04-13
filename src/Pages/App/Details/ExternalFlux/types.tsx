@@ -29,8 +29,7 @@ export enum EXTERNAL_FLUX_APP_STATUS {
 }
 
 export interface GetExternalFluxCDAppDetailsParamsType
-    extends
-        Pick<ExternalFluxAppDetailParams, 'clusterId' | 'namespace' | 'appName'>,
+    extends Pick<ExternalFluxAppDetailParams, 'clusterId' | 'namespace' | 'appName'>,
         Pick<APIOptions, 'abortControllerRef'> {
     isKustomization: boolean
 }

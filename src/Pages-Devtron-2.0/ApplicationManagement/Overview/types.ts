@@ -88,10 +88,8 @@ export type AppOverviewDoraMetricsDTO = Record<AppOverviewDoraMetricsKeys, AppOv
     prodDeploymentPipelineCount: number
 }
 
-export interface DoraMetricsChartCardProps extends Pick<
-    AppOverviewDoraMetric,
-    'comparisonValue' | 'comparisonUnit' | 'performanceLevelCount'
-> {
+export interface DoraMetricsChartCardProps
+    extends Pick<AppOverviewDoraMetric, 'comparisonValue' | 'comparisonUnit' | 'performanceLevelCount'> {
     metricKey: AppOverviewDoraMetricsKeys
     value: string
     /**
@@ -116,10 +114,8 @@ export enum PipelineType {
     DEPLOYMENT = 'deploymentPipelines',
 }
 
-export interface UseGetPipelineInsightsParams extends Pick<
-    UseStateFiltersReturnType<never>,
-    'offset' | 'pageSize' | 'sortOrder'
-> {
+export interface UseGetPipelineInsightsParams
+    extends Pick<UseStateFiltersReturnType<never>, 'offset' | 'pageSize' | 'sortOrder'> {
     timeWindow: TIME_WINDOW
     pipelineType: PipelineType
 }

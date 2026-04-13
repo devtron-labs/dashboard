@@ -30,7 +30,7 @@ export const CellComponent = ({
         return (
             <div className="flex left" data-testid="devtron-app-status">
                 <AppStatus
-                    status={isExpandedRow ? env.status : app.defaultEnv.appStatus}
+                    status={isExpandedRow ? env.appStatus : app.defaultEnv.appStatus}
                     isVirtualEnv={isExpandedRow ? env.isVirtualEnvironment : app.defaultEnv.isVirtualEnvironment}
                 />
             </div>
@@ -38,7 +38,7 @@ export const CellComponent = ({
     }
 
     if (field === APP_LIST_HEADERS.Cluster) {
-        const clusterName = isExpandedRow ? env.clusterName : (app.defaultEnv?.clusterName ?? '')
+        const clusterName = isExpandedRow ? env.clusterName : app.defaultEnv?.clusterName ?? ''
 
         return (
             <div className="flex left">
@@ -50,7 +50,7 @@ export const CellComponent = ({
     }
 
     if (field === APP_LIST_HEADERS.Namespace) {
-        const namespace = isExpandedRow ? env.namespace : (app.defaultEnv?.namespace ?? '')
+        const namespace = isExpandedRow ? env.namespace : app.defaultEnv?.namespace ?? ''
         return (
             <div className="flex left">
                 <p data-testid={`${namespace}-namespace`} className="dc__truncate-text  m-0">

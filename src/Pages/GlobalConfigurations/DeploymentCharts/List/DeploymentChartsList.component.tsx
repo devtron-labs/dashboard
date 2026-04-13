@@ -32,8 +32,8 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
-import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
+import ICDevtronApp from '@Icons/ic-devtron-app.svg?react'
+import ICFolderZip from '@Icons/ic-folder-zip.svg?react'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 

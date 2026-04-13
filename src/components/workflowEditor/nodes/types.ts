@@ -21,7 +21,8 @@ export interface StaticNodeProps {
 }
 
 export interface CINodeProps
-    extends RouterV5Props<{}>, Pick<WorkflowProps, 'isOffendingPipelineView' | 'isTemplateView'> {
+    extends RouterV5Props<{}>,
+        Pick<WorkflowProps, 'isOffendingPipelineView' | 'isTemplateView'> {
     x: number
     y: number
     width: number

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '../v2/appDetails/k8Resource/k8resources.scss';
+@use '../v2/appDetails/k8Resource/k8resources.scss';
 
 .resource-browser-container {
     .k8s-object-kind-search {

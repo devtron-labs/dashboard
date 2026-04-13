@@ -14,7 +14,7 @@ import {
     YAMLtoJSON,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
+import ErrorIcon from '@Icons/ic-warning-y6.svg?react'
 
 import { saveClusters, validateCluster } from '../cluster.service'
 import { DataListType, SaveClusterPayloadType, UserDetails } from '../cluster.type'

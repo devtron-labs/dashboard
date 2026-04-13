@@ -18,7 +18,7 @@ import { ChangeEvent } from 'react'
 
 import { CustomInput, TagsContainer, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.svg'
+import ICCaretLeftSmall from '@Icons/ic-caret-left-small.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
 import { getAppIconWithBackground } from '@Config/utils'

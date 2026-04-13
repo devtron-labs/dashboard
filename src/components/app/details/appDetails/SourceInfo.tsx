@@ -38,10 +38,10 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
-import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
-import { ReactComponent as LinkIcon } from '@Icons/ic-link.svg'
-import { ReactComponent as ICRollback } from '@Icons/ic-rollback.svg'
+import ICCamera from '@Icons/ic-camera.svg?react'
+import Trash from '@Icons/ic-delete-dots.svg?react'
+import LinkIcon from '@Icons/ic-link.svg?react'
+import ICRollback from '@Icons/ic-rollback.svg?react'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '../../../../config'

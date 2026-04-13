@@ -20,8 +20,8 @@ import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, usePar
 
 import { noop, smoothScrollToTop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import ICLogs from '@Icons/ic-logs.svg?react'
+import ICObject from '@Icons/ic-object.svg?react'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
 

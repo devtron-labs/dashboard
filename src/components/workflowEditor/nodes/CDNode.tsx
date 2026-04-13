@@ -34,7 +34,7 @@ import {
     WorkflowNodeType,
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
+import ICWarning from '@Icons/ic-warning.svg?react'
 import { CDNodeProps, CDNodeState } from '../types'
 import {
     BUTTON_TEXT,

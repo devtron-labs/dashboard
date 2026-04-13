@@ -20,9 +20,9 @@ import Tippy from '@tippyjs/react'
 
 import { LoadingCard, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as DefaultChart } from '@Icons/ic-default-chart.svg'
-import { ReactComponent as File } from '@Icons/ic-file.svg'
-import { ReactComponent as QuestionIcon } from '@Icons/ic-question.svg'
+import DefaultChart from '@Icons/ic-default-chart.svg?react'
+import File from '@Icons/ic-file.svg?react'
+import QuestionIcon from '@Icons/ic-question.svg?react'
 
 import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
 import { getUsedChartContent } from '../utils'

@@ -16,8 +16,8 @@
 
 import React, { SyntheticEvent, useEffect, useState } from 'react'
 import { VisibleModal, stopPropagation, MODAL_TYPE, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
-import { ReactComponent as ICUnHibernate } from '../../../../assets/icons/ic-medium-unhibernate.svg'
+import HibernateModalIcon from '../../../../assets/icons/ic-medium-hibernate.svg?react'
+import ICUnHibernate from '../../../../assets/icons/ic-medium-unhibernate.svg?react'
 import { manageApps } from './service'
 import { importComponentFromFELibrary } from '../../../common'
 import { HibernateModalProps } from '../../AppGroup.types'

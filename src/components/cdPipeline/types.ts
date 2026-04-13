@@ -70,14 +70,15 @@ export interface PullImageDigestToggleType {
     setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
 }
 
-export interface BuildCDProps extends Pick<
-    CDPipelineProps,
-    | 'envIds'
-    | 'isGitOpsRepoNotConfigured'
-    | 'noGitOpsModuleInstalledAndConfigured'
-    | 'isGitOpsInstalledButNotConfigured'
-    | 'isTemplateView'
-> {
+export interface BuildCDProps
+    extends Pick<
+        CDPipelineProps,
+        | 'envIds'
+        | 'isGitOpsRepoNotConfigured'
+        | 'noGitOpsModuleInstalledAndConfigured'
+        | 'isGitOpsInstalledButNotConfigured'
+        | 'isTemplateView'
+    > {
     isAdvanced: boolean
     setIsVirtualEnvironment: Dispatch<SetStateAction<boolean>>
     noStrategyAvailable: MutableRefObject<boolean>
