@@ -4167,6 +4167,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xterm/addon-fit@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@xterm/addon-fit@npm:0.11.0"
+  checksum: 10c0/c0ce94f7e877d07e7197d15d041cc629ce2e853016400aadddc9810838ea8a26e836f87f325eba36df88c03feb72d9f13cd8c3bb41ee31e701f1058edb8553c3
+  languageName: node
+  linkType: hard
+
+"@xterm/xterm@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@xterm/xterm@npm:6.0.0"
+  checksum: 10c0/b99122553f323a65b708e5eba9903d4c5a1bcb59fe576d29d6e91a33002bccfd1b99403e1e839e1942f4952039db6d3d74ca9d65ed0399b4e9a0a5f35b8c12d9
+  languageName: node
+  linkType: hard
+
 "@xyflow/react@npm:12.4.2":
   version: 12.4.2
   resolution: "@xyflow/react@npm:12.4.2"
@@ -5513,6 +5527,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.3.0"
     "@typescript-eslint/parser": "npm:8.3.0"
     "@vitejs/plugin-react": "npm:6.0.1"
+    "@xterm/addon-fit": "npm:^0.11.0"
+    "@xterm/xterm": "npm:^6.0.0"
     command-line-parser: "npm:^0.2.10"
     compute-histogram: "npm:^0.9.11"
     dayjs: "npm:^1.11.13"
@@ -5561,10 +5577,6 @@ __metadata:
     vite-plugin-pwa: "npm:1.2.0"
     vite-plugin-require-transform: "npm:1.0.21"
     vite-plugin-svgr: "npm:4.5.0"
-    xterm: "npm:^4.19.0"
-    xterm-addon-fit: "npm:^0.5.0"
-    xterm-addon-search: "npm:^0.9.0"
-    xterm-webfont: "npm:^2.0.0"
     yaml: "npm:^2.8.3"
   languageName: unknown
   linkType: soft
@@ -6869,13 +6881,6 @@ __metadata:
   dependencies:
     tabbable: "npm:^6.2.0"
   checksum: 10c0/36cac0d9b05fe5824733675bb49792842dae4704286ef7e17c736ee0c9c14701e874e6821449e78b70c17e42ba1b2c98ef10434bfe644b9d7654d8ef7f1c8faf
-  languageName: node
-  linkType: hard
-
-"fontfaceobserver@npm:2.*":
-  version: 2.3.0
-  resolution: "fontfaceobserver@npm:2.3.0"
-  checksum: 10c0/9b539d5021757d3ed73c355bdb839296d6654de473a992aa98993ef46d951f0361545323de68f6d70c5334d7e3e9f409c1ae7a03c168b00cb0f6c5dea6c77bfa
   languageName: node
   linkType: hard
 
@@ -13466,40 +13471,6 @@ __metadata:
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
   checksum: 10c0/56fece1a4018c6a6c8e28fbc88c87e0fbf4ea8fd64fc6c63b18f4acc4bd13e0ad2515189786dd2c30d3eec9663d70f4ecf699330002f8ccb547e4a18231fc9f0
-  languageName: node
-  linkType: hard
-
-"xterm-addon-fit@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "xterm-addon-fit@npm:0.5.0"
-  peerDependencies:
-    xterm: ^4.0.0
-  checksum: 10c0/17a08fe935c4b435fd912ba373a065c86c6ca804dcc5475136894944c2faebd438ee26e1edb75e4ae3dcd140f4fe4509f6f125a798e06c0e9678c446100e8fb4
-  languageName: node
-  linkType: hard
-
-"xterm-addon-search@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "xterm-addon-search@npm:0.9.0"
-  peerDependencies:
-    xterm: ^4.0.0
-  checksum: 10c0/a3219e37697f75b2fe126b645e1f2999716f19db6d6b41765a8dc04ec6e9d59a442a0a717468c0b707678b753178620e1183d762b78286d75de6da05b9714246
-  languageName: node
-  linkType: hard
-
-"xterm-webfont@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "xterm-webfont@npm:2.0.0"
-  dependencies:
-    fontfaceobserver: "npm:2.*"
-  checksum: 10c0/409db911d778c3f1778b6229a8b963d7a606e641fdce700f62f06edd3208b40cadca07804537f3a1995da2e9bbfa9df9000e64c1d72f51d03a59163afddb2b09
-  languageName: node
-  linkType: hard
-
-"xterm@npm:^4.19.0":
-  version: 4.19.0
-  resolution: "xterm@npm:4.19.0"
-  checksum: 10c0/539f422321f3b3cc4ea5d228f576f79cfc70968a261605c9c9c2decddb6b15043530f9500bafc860d5734ad0e0d93c59af259d4883f3381506611f6523747b5b
   languageName: node
   linkType: hard
 
