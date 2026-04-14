@@ -42,6 +42,12 @@ const COST_VISIBILITY_NAV_GROUP: NavigationGroupType = importComponentFromFELibr
 
 const SDH_NAV_GROUP: NavigationGroupType = importComponentFromFELibrary('SDH_NAV_GROUP', null, 'function')
 
+const GLOBAL_CONFIG_AUTH_USER_GROUPS_NAV_ITEM: NavigationItemType['subItems'][number] = importComponentFromFELibrary(
+    'GLOBAL_CONFIG_AUTH_USER_GROUPS_NAV_ITEM',
+    null,
+    'function',
+)
+
 export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
         title: 'GitOps',
@@ -103,6 +109,7 @@ const GLOBAL_CONFIGURATION_AUTHORIZATION: NavigationItemType['subItems'] = [
         href: ROUTER_URLS.GLOBAL_CONFIG_AUTH.GROUPS,
         isAvailableInEA: true,
     },
+    ...(GLOBAL_CONFIG_AUTH_USER_GROUPS_NAV_ITEM ? [GLOBAL_CONFIG_AUTH_USER_GROUPS_NAV_ITEM] : []),
     {
         title: 'API Tokens',
         dataTestId: 'authorization-api-tokens',
