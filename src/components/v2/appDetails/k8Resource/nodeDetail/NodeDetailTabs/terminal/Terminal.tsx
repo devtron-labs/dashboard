@@ -111,6 +111,7 @@ const TerminalView = ({
         if (typeof registerLinkMatcher === 'function') {
             registerLinkMatcher(terminalRef.current)
         }
+
         terminalRef.current.open(document.getElementById('terminal-id'))
         fitAddon.current?.fit()
         terminalRef.current.reset()
