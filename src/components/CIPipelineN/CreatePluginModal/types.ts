@@ -15,6 +15,7 @@
  */
 
 import {
+    ConditionDetails,
     CustomInputProps,
     EditImageFormFieldProps,
     InlineStepDetailType,
@@ -25,6 +26,7 @@ import {
     SelectPickerOptionType,
     ServerErrors,
     StepType,
+    ValueConstraintType,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -240,6 +242,10 @@ export enum CreatePluginVariableType {
     OUTPUT = 'OUTPUT',
 }
 
+interface CreatePluginStepConditionPayload extends Pick<ConditionDetails, 'conditionType' | 'conditionalValue'> {
+    conditionalOperator: ConditionDetails['conditionOperator']
+}
+
 export interface CreatePluginPayloadPluginStepVariableItemType
     extends Pick<
         VariableType,
@@ -249,6 +255,8 @@ export interface CreatePluginPayloadPluginStepVariableItemType
     valueType: VariableType['variableType']
     referenceVariableName: VariableType['refVariableName']
     isExposed: true
+    pluginStepCondition?: CreatePluginStepConditionPayload[]
+    valueConstraint?: ValueConstraintType
 }
 
 interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath' | 'name' | 'description'> {

@@ -15,6 +15,7 @@
  */
 
 import {
+    ConditionDetails,
     InlineStepDetailType,
     PluginImageContainer,
     SelectPickerOptionType,
@@ -22,6 +23,8 @@ import {
     ValidationResponseType,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getInputOutputConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
 
 import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 import {
@@ -107,22 +110,37 @@ const getCreatePluginPayloadPathArgPortMapping = (
 const parseInputVariablesIntoCreatePluginPayload = (
     variableList: VariableType[],
     variableType: CreatePluginVariableType,
+    conditionDetailsList: ConditionDetails[],
 ): CreatePluginPayloadPluginStepVariableItemType[] =>
-    variableList?.map((variable) => ({
-        id: variable.id,
-        name: variable.name,
-        format: variable.format,
-        description: variable.description,
-        allowEmptyValue: variable.allowEmptyValue,
-        defaultValue: variable.defaultValue,
-        value: variable.value,
-        variableType,
-        valueType: variable.variableType,
-        referenceVariableName: variable.refVariableName,
-        isExposed: true,
-        fileMountDir: variable.fileMountDir,
-        fileReferenceId: variable.fileReferenceId,
-    })) || []
+    variableList?.map<CreatePluginPayloadPluginStepVariableItemType>((variable) => {
+        const variableConditionDetails: CreatePluginPayloadPluginStepVariableItemType['pluginStepCondition'] = (
+            conditionDetailsList || []
+        )
+            .filter((condition) => condition.conditionOnVariable === variable.name)
+            .map((condition) => ({
+                conditionType: condition.conditionType,
+                conditionalValue: condition.conditionalValue,
+                conditionalOperator: condition.conditionOperator,
+            }))
+
+        return {
+            id: variable.id,
+            name: variable.name,
+            format: variable.format,
+            description: variable.description,
+            allowEmptyValue: variable.allowEmptyValue,
+            defaultValue: variable.defaultValue,
+            value: variable.value,
+            variableType,
+            valueType: variable.variableType,
+            referenceVariableName: variable.refVariableName,
+            isExposed: true,
+            fileMountDir: variable.fileMountDir,
+            fileReferenceId: variable.fileReferenceId,
+            ...(variableConditionDetails.length > 0 ? { pluginStepCondition: variableConditionDetails } : {}),
+            ...(variable.valueConstraint ? { valueConstraint: variable.valueConstraint } : {}),
+        }
+    }) || []
 
 export const getCreatePluginPayload = ({
     stepData,
@@ -140,13 +158,19 @@ export const getCreatePluginPayload = ({
 
     const inlineStepDetail: InlineStepDetailType = stepData.inlineStepDetail || ({} as InlineStepDetailType)
 
+    const { inputConditionDetails, outputConditionDetails } = getInputOutputConditionDetails(
+        inlineStepDetail.conditionDetails || [],
+    )
+
     const pluginInputVariables = parseInputVariablesIntoCreatePluginPayload(
         pluginForm.inputVariables,
         CreatePluginVariableType.INPUT,
+        inputConditionDetails,
     )
     const pluginOutputVariables = parseInputVariablesIntoCreatePluginPayload(
         inlineStepDetail.outputVariables,
         CreatePluginVariableType.OUTPUT,
+        outputConditionDetails,
     )
 
     return {
