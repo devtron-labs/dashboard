@@ -104,7 +104,6 @@ const LogsComponent = ({
     const { isDownloading, handleDownload } = useDownload()
     const [logsPaused, setLogsPaused] = useState(false)
     const [tempSearch, setTempSearch] = useState<string>('')
-    const [highlightString, setHighlightString] = useState('')
     const [logsCleared, setLogsCleared] = useState(false)
     const [readyState, setReadyState] = useState(null)
     const showStreamErrorRef = useRef(false)
@@ -401,8 +400,6 @@ const LogsComponent = ({
         setTempSearch(_searchText)
         const str = replaceLastOddBackslash(_searchText)
         handleSearchTextChange(str)
-        const { length, [length - 1]: highlightStringLocal } = str.split(' ')
-        setHighlightString(highlightStringLocal)
         handleCurrentSearchTerm(str)
     }
 
@@ -458,8 +455,6 @@ const LogsComponent = ({
             if (currentSearchTerm) {
                 setTempSearch(currentSearchTerm)
                 handleSearchTextChange(currentSearchTerm)
-                const { length, [length - 1]: highlightStringLocal } = currentSearchTerm.split(' ')
-                setHighlightString(highlightStringLocal)
             }
         }
         // TODO: reset pauseLog and grepToken
@@ -822,11 +817,7 @@ const LogsComponent = ({
                                 className={`flexbox-col flex-grow-1 w-100 h-100 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                             >
                                 <div className="log-viewer">
-                                    <LogViewerComponent
-                                        subject={subject}
-                                        highlightString={highlightString}
-                                        reset={logsCleared}
-                                    />
+                                    <LogViewerComponent subject={subject} reset={logsCleared} />
                                 </div>
                             </div>
                         )}
