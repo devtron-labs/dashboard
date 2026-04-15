@@ -25,6 +25,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getInputOutputConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 import {
@@ -38,6 +39,8 @@ import {
     ParentPluginListItemType,
     PathPortMappingType,
 } from './types'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const getDefaultPluginFormData = (currentInputVariables: VariableType[]): CreatePluginFormType => ({
     ...structuredClone(CREATE_PLUGIN_DEFAULT_FORM),
@@ -138,7 +141,9 @@ const parseInputVariablesIntoCreatePluginPayload = (
             fileMountDir: variable.fileMountDir,
             fileReferenceId: variable.fileReferenceId,
             ...(variableConditionDetails.length > 0 ? { pluginStepCondition: variableConditionDetails } : {}),
-            ...(variable.valueConstraint ? { valueConstraint: variable.valueConstraint } : {}),
+            ...(isFELibAvailable
+                ? { valueConstraint: variable.valueConstraint, isRuntimeArg: variable.isRuntimeArg }
+                : {}),
         }
     }) || []
 

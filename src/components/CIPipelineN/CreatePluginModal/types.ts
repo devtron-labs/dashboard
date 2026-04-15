@@ -257,6 +257,7 @@ export interface CreatePluginPayloadPluginStepVariableItemType
     isExposed: true
     pluginStepCondition?: CreatePluginStepConditionPayload[]
     valueConstraint?: ValueConstraintType
+    isRuntimeArg?: VariableType['isRuntimeArg']
 }
 
 interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath' | 'name' | 'description'> {
