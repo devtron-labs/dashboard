@@ -30,6 +30,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { saveCIPipeline } from '@Components/ciPipeline/ciPipeline.service'
@@ -90,9 +91,11 @@ export const CreateCICDPipeline = ({
     // REFS
     const ciPipelineResRef = useRef<{ appWorkflowId: number; id: number } | null>(null)
 
+    const { forceDockerfileScan } = useMainContext()
+
     // ASYNC CALLS
     const [isCiCdPipelineLoading, ciCdPipelineRes, ciCdPipelineErr, reloadCiCdPipeline, setter] = useAsync(
-        () => getCICDPipelineInitData(appId, isTemplateView),
+        () => getCICDPipelineInitData(appId, isTemplateView, forceDockerfileScan),
         [open, isTemplateView],
         open,
     )

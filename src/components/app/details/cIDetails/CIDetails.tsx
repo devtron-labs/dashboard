@@ -37,19 +37,14 @@ import {
     Reload,
     sanitizeTargetPlatforms,
     Scroller,
-    SecurityDetailsCards,
     showError,
     Sidebar,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
-    TriggerDetails,
-    useAsync,
-    useInterval,
-    useScrollable,
-    ROUTER_URLS,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { importComponentFromFELibrary } from '@Components/common'
+import './ciDetails.scss'
+import { TriggerDetails, useAsync, useInterval, useScrollable, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes as ROUTES } from '../../../../config'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
@@ -63,14 +58,12 @@ import {
     getTriggerHistory,
 } from '../../service'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { useGetAppSecurityDetails } from '../appDetails/AppSecurity'
+import { SecurityTab } from './SecurityTab'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
-import { CIRunningView, ImageNotScannedView } from './cIDetails.util'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 
 import './ciDetails.scss'
 
-const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
 
@@ -253,11 +246,13 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
         navigate(generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS}/logs`, { appId: pipeline.parentAppId }))
     }
 
-    const renderSourcePipelineButton = () => (
-        <button className="flex cta h-32" onClick={redirectToArtifactLogs}>
-            View Source Pipeline
-        </button>
-    )
+    const renderSourcePipelineButton = () => {
+        return (
+            <button className="flex cta h-32" onClick={redirectToArtifactLogs}>
+                View Source Pipeline
+            </button>
+        )
+    }
     return (
         <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
             {!fullScreenView && (
@@ -270,7 +265,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                         setPagination={setPagination}
                         fetchIdData={fetchBuildIdData}
                         handleViewAllHistory={handleViewAllHistory}
-                        path={`${isJobView ? ROUTER_URLS.JOB_DETAIL.CI_DETAILS :  ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS}/:pipelineId?/:buildId?`}
+                        path={`${isJobView ? ROUTER_URLS.JOB_DETAIL.CI_DETAILS : ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS}/:pipelineId?/:buildId?`}
                     />
                 </div>
             )}
@@ -513,7 +508,7 @@ export const Details = ({
                                     ? [
                                           {
                                               id: 'security-tab',
-                                              label: 'Security',
+                                              label: 'Reports',
                                               tabType: 'navLink' as const,
                                               props: {
                                                   to: 'security',
@@ -686,50 +681,6 @@ const HistoryLogs = ({
                     }
                 />
             </Routes>
-        </div>
-    )
-}
-
-const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) => {
-    const { appId } = useParams<{ appId: string }>()
-
-    const computedAppId = appId ?? appIdFromParent
-
-    const { scanResultLoading, scanResultResponse, scanResultError, reloadScanResult } = useGetAppSecurityDetails({
-        appId: +computedAppId,
-        artifactId,
-    })
-
-    if (['starting', 'running'].includes(status.toLowerCase())) {
-        return <CIRunningView isSecurityTab />
-    }
-
-    if (!artifactId) {
-        return (
-            <GenericEmptyState
-                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
-                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
-            />
-        )
-    }
-
-    if (scanResultLoading) {
-        return (
-            <div className="bg__primary flex-grow-1">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
-    if (scanResultError) {
-        return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
-    }
-    if (!scanResultResponse?.result.scanned) {
-        return <ImageNotScannedView />
-    }
-
-    return (
-        <div className="p-20 bg__primary flex-grow-1">
-            <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
         </div>
     )
 }

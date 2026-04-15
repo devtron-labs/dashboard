@@ -18,7 +18,7 @@ import { copyToClipboard, noop } from '@devtron-labs/devtron-fe-common-lib'
 
 import CheckIcon from '../../../../assets/icons/ic-check.svg?react'
 
-import 'xterm/css/xterm.css'
+import '@xterm/xterm/css/xterm.css'
 import './nodeDetailTab.scss'
 
 interface toastType {
