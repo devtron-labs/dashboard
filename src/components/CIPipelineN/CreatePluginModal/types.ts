@@ -15,13 +15,13 @@
  */
 
 import {
-    ConditionDetails,
     CustomInputProps,
     EditImageFormFieldProps,
     InlineStepDetailType,
     ParentPluginDTO,
     PluginDataStoreType,
     PluginDetailType,
+    PluginStepConditionDTO,
     PortMapType,
     SelectPickerOptionType,
     ServerErrors,
@@ -242,10 +242,6 @@ export enum CreatePluginVariableType {
     OUTPUT = 'OUTPUT',
 }
 
-interface CreatePluginStepConditionPayload extends Pick<ConditionDetails, 'conditionType' | 'conditionalValue'> {
-    conditionalOperator: ConditionDetails['conditionOperator']
-}
-
 export interface CreatePluginPayloadPluginStepVariableItemType
     extends Pick<
         VariableType,
@@ -255,9 +251,9 @@ export interface CreatePluginPayloadPluginStepVariableItemType
     valueType: VariableType['variableType']
     referenceVariableName: VariableType['refVariableName']
     isExposed: true
-    pluginStepCondition?: CreatePluginStepConditionPayload[]
     valueConstraint?: ValueConstraintType
     isRuntimeArg?: VariableType['isRuntimeArg']
+    pluginStepCondition?: Omit<PluginStepConditionDTO, 'id'>[]
 }
 
 interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath' | 'name' | 'description'> {

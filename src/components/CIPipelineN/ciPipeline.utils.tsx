@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OptionType, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionDetails,
+    DetailedPluginVersionType,
+    OptionType,
+    SourceTypeMap,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const CiPipelineSourceTypeBaseOptions = [
     {
@@ -61,4 +67,26 @@ export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType 
         stageTypeSelectorValue = { label: StageTypeMap.PRE_CD, value: StageTypeEnums.PRE_CD }
     }
     return stageTypeSelectorValue
+}
+
+export const getConditionDetailsAndVariablesFromPlugin = (variables: DetailedPluginVersionType['inputVariables']) => {
+    const pluginConditionDetails: ConditionDetails[] = []
+    const pluginVariables = (variables || []).map<VariableType>((variable) => {
+        const { pluginStepCondition, ...rest } = variable
+        if (pluginStepCondition) {
+            ;(pluginStepCondition || []).forEach((condition) => {
+                pluginConditionDetails.push({
+                    conditionOnVariable: variable.name,
+                    conditionalValue: condition.conditionalValue,
+                    conditionOperator: condition.conditionalOperator,
+                    conditionType: condition.conditionType,
+                    id: condition.id,
+                })
+            })
+        }
+
+        return rest
+    })
+
+    return { pluginConditionDetails, pluginVariables }
 }

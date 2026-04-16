@@ -23,6 +23,8 @@ import {
     Progressing,
     CDEmptyState,
     PluginListContainer,
+    ConditionDetails,
+    DetailedPluginVersionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -35,6 +37,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
 import nojobs from '../../assets/img/empty-joblist.webp'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { getConditionDetailsAndVariablesFromPlugin } from './ciPipeline.utils'
 
 export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     const {
@@ -77,6 +80,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
         pluginDescription?: string,
         inputVariables?: VariableType[],
         outputVariables?: VariableType[],
+        conditionDetails?: ConditionDetails[],
     ): void {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
@@ -109,7 +113,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId,
-                conditionDetails: [],
+                conditionDetails: conditionDetails ?? [],
                 inputVariables: inputVariables.map(setVariableStepIndexInPlugin),
                 outputVariables: outputVariables.map(setVariableStepIndexInPlugin),
             }
@@ -132,13 +136,22 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     const handlePluginSelection = (parentPluginId: number) => {
         const latestVersionPluginId = pluginDataStore.parentPluginStore[parentPluginId].latestVersionId
         const pluginDetails = pluginDataStore.pluginVersionStore[latestVersionPluginId]
+
+        const { pluginVariables: pluginInputVariables, pluginConditionDetails: pluginInputConditionDetails } =
+            getConditionDetailsAndVariablesFromPlugin(pluginDetails.inputVariables)
+        const { pluginVariables: pluginOutputVariables, pluginConditionDetails: pluginOutputConditionDetails } =
+            getConditionDetailsAndVariablesFromPlugin(pluginDetails.outputVariables)
+
+        const pluginConditionDetails = [...pluginInputConditionDetails, ...pluginOutputConditionDetails]
+
         setPluginType(
             PluginType.PLUGIN_REF,
             pluginDetails.id,
             pluginDetails.name,
             pluginDetails.description,
-            pluginDetails.inputVariables ?? [],
-            pluginDetails.outputVariables ?? [],
+            pluginInputVariables,
+            pluginOutputVariables,
+            pluginConditionDetails,
         )
     }
 
