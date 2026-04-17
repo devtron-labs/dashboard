@@ -24,7 +24,6 @@ import {
     CDEmptyState,
     PluginListContainer,
     ConditionDetails,
-    DetailedPluginVersionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
