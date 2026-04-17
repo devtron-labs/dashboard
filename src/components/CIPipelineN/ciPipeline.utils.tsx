@@ -74,7 +74,7 @@ export const getConditionDetailsAndVariablesFromPlugin = (variables: DetailedPlu
     const pluginVariables = (variables || []).map<VariableType>((variable) => {
         const { pluginStepCondition, ...rest } = variable
         if (pluginStepCondition) {
-            ;(pluginStepCondition || []).forEach((condition) => {
+            ;(pluginStepCondition).forEach((condition) => {
                 pluginConditionDetails.push({
                     conditionOnVariable: variable.name,
                     conditionalValue: condition.conditionalValue,
