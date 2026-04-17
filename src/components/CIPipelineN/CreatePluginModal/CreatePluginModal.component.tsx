@@ -50,6 +50,7 @@ import {
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
+import { getConditionDetailsAndVariablesFromPlugin } from '../ciPipeline.utils'
 import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
 import CreatePluginFormContent from './CreatePluginFormContent'
 import { createPlugin, getParentPluginList } from './service'
@@ -324,6 +325,13 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         )
         const { inputVariables, outputVariables } = updatedPluginDataStore.pluginVersionStore[pluginVersionId]
 
+        const { pluginVariables: pluginInputVariables, pluginConditionDetails: pluginInputConditionDetails } =
+            getConditionDetailsAndVariablesFromPlugin(inputVariables)
+        const { pluginVariables: pluginOutputVariables, pluginConditionDetails: pluginOutputConditionDetails } =
+            getConditionDetailsAndVariablesFromPlugin(outputVariables)
+
+        const pluginConditionDetails = [...pluginInputConditionDetails, ...pluginOutputConditionDetails]
+
         const selectedTask: StepType = clonedFormData[activeStageName].steps[selectedTaskIndex]
         selectedTask.name = pluginForm.name
         selectedTask.description = pluginForm.description
@@ -334,13 +342,13 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             id: 0,
             pluginId: pluginVersionId,
             inputVariables:
-                inputVariables?.map((inputVariable) => ({
+                pluginInputVariables?.map((inputVariable) => ({
                     ...inputVariable,
                     variableType: RefVariableType.NEW,
                     value: pluginFormInputVariableMap[inputVariable.name] || '',
                 })) || [],
-            outputVariables: outputVariables || [],
-            conditionDetails: [],
+            outputVariables: pluginOutputVariables || [],
+            conditionDetails: pluginConditionDetails,
         }
         calculateLastStepDetail(false, clonedFormData, activeStageName)
         validateStage(BuildStageVariable.PreBuild, clonedFormData, undefined, updatedPluginDataStore)
