@@ -131,7 +131,7 @@ export const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTab
 
     const renderSecurityDetailsCards = () => (
         <div className="flexbox-col dc__gap-16">
-            {renderHeader()}
+            {!scanResultResponse?.result && renderHeader()}
             {renderSecurityScanContent()}
         </div>
     )
