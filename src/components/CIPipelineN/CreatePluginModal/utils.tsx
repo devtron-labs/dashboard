@@ -140,7 +140,9 @@ const parseInputVariablesIntoCreatePluginPayload = (
             isExposed: true,
             fileMountDir: variable.fileMountDir,
             fileReferenceId: variable.fileReferenceId,
-            ...(variableConditionDetails.length > 0 ? { pluginStepCondition: variableConditionDetails } : {}),
+            ...(isFELibAvailable && variableConditionDetails.length > 0
+                ? { pluginStepCondition: variableConditionDetails }
+                : {}),
             ...(isFELibAvailable
                 ? { valueConstraint: variable.valueConstraint, isRuntimeArg: variable.isRuntimeArg }
                 : {}),
