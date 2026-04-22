@@ -15,7 +15,8 @@ export enum AuditLogSortableKeys {
     ACTION = 'action',
     TYPE = 'type',
     USER = 'user',
-    RESOURCE = 'resource',
+    RESOURCE_NAME = 'resourceName',
+    RESOURCE_TYPE = 'resourceType',
     MODULE = 'module',
 }
 
@@ -26,11 +27,12 @@ export type AuditLogFiltersType = {
 
 export interface AuditLogRowType {
     auditLogId: number
-    timestamp: string
+    timeStamp: string
     action: string
-    type: string
+    requestMethod: string
     user: string
-    resource: string
+    resourceName: string
+    resourceType: string
     module: string
 }
 
@@ -38,7 +40,11 @@ export interface AuditLogDetailType extends AuditLogRowType {
     payload: Record<string, unknown>
 }
 
-export interface AuditLogParamsType extends Record<'auditLogId', string> {}
+export interface AuditLogApiResponse {
+    auditLogs: {
+        data: AuditLogDetailType[]
+    }
+}
 
 export type AuditLogFilterOptionsType = {
     typeOptions: SelectPickerOptionType<string>[]
@@ -47,6 +53,7 @@ export type AuditLogFilterOptionsType = {
 
 export type AuditLogTableAdditionalProps = {
     filterOptions: AuditLogFilterOptionsType
+    onSelectAuditLog: (auditLog: AuditLogDetailType) => void
 }
 
 export type AuditLogsTableProps = TableProps<AuditLogRowType, FiltersTypeEnum.URL, AuditLogTableAdditionalProps>

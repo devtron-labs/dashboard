@@ -1,23 +1,22 @@
-import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useCallback, useMemo, useState } from 'react'
 
 import {
     BreadCrumb,
-    ErrorScreenManager,
     FiltersTypeEnum,
     PageHeader,
     PaginationEnum,
-    Progressing,
     ROUTER_URLS,
     Table,
+    TableProps,
     useBreadcrumb,
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import AuditLogDetail from './AuditLogDetail'
 import AuditLogsTableWrapper from './AuditLogsTableWrapper'
 import { getAuditLogFilterOptions, getAuditLogList } from './service'
-import { AuditLogRowType, AuditLogTableAdditionalProps } from './types'
-import { getAuditLogColumns, parseAuditLogURLParams, useGetAuditLogDetailsResponse } from './utils'
+import { AuditLogDetailType, AuditLogRowType, AuditLogTableAdditionalProps } from './types'
+import { getAuditLogColumns, parseAuditLogURLParams } from './utils'
 
 const EMPTY_FILTER_OPTIONS: AuditLogTableAdditionalProps['filterOptions'] = {
     typeOptions: [],
@@ -26,9 +25,7 @@ const EMPTY_FILTER_OPTIONS: AuditLogTableAdditionalProps['filterOptions'] = {
 
 const AuditLogsList = () => {
     const columns = useMemo(() => getAuditLogColumns(), [])
-    const { auditLogId } = useParams()
-
-    const { auditLogLoading, auditLogError, reloadAuditLog } = useGetAuditLogDetailsResponse(auditLogId)
+    const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLogDetailType | null>(null)
 
     const { breadcrumbs } = useBreadcrumb(ROUTER_URLS.AUDIT_LOGS, {
         alias: {
@@ -50,17 +47,17 @@ const AuditLogsList = () => {
         select: (data) => data,
     })
 
-    if (auditLogLoading) {
-        return (
-            <div className="flex-grow-1 bg__primary">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
+    const handleSelectAuditLog = useCallback((auditLog: AuditLogDetailType) => {
+        setSelectedAuditLog(auditLog)
+    }, [])
 
-    if (auditLogError) {
-        return <ErrorScreenManager code={auditLogError.code} reload={reloadAuditLog} />
-    }
+    const handleCloseDetail = useCallback(() => {
+        setSelectedAuditLog(null)
+    }, [])
+
+    const handleRowClick = useCallback<
+        NonNullable<TableProps<AuditLogRowType, FiltersTypeEnum.URL, AuditLogTableAdditionalProps>['onRowClick']>
+    >((row) => handleSelectAuditLog(row.data as AuditLogDetailType), [handleSelectAuditLog])
 
     const auditLogBreadcrumb = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.AUDIT_LOGS} />
 
@@ -80,6 +77,7 @@ const AuditLogsList = () => {
                 }}
                 paginationVariant={PaginationEnum.PAGINATED}
                 getRows={getAuditLogList}
+                onRowClick={handleRowClick}
                 emptyStateConfig={{
                     noRowsConfig: {
                         title: 'No audit logs found',
@@ -88,8 +86,10 @@ const AuditLogsList = () => {
                     },
                 }}
                 filter={null}
-                additionalProps={{ filterOptions }}
+                additionalProps={{ filterOptions, onSelectAuditLog: handleSelectAuditLog }}
             />
+
+            {selectedAuditLog && <AuditLogDetail auditLog={selectedAuditLog} onClose={handleCloseDetail} />}
         </div>
     )
 }

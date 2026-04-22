@@ -1,36 +1,27 @@
-import { generatePath, NavLink } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import {
+    capitalizeFirstLetter,
     DATE_TIME_FORMATS,
     FiltersTypeEnum,
     getAlphabetIcon,
-    ROUTER_URLS,
     TableCellComponentProps,
-    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getAuditLogDetail } from './service'
 import { AuditLogFilterKeys, AuditLogFiltersType, AuditLogRowType, AuditLogsTableProps } from './types'
 
 const TimestampCellComponent = ({ value }: TableCellComponentProps<AuditLogRowType, FiltersTypeEnum.URL>) => (
     <div className="flex left py-12">
         <span className="fs-13 fw-4 cn-9 lh-20">
-            {value ? dayjs(String(value)).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT) : '-'}
+            {value ? dayjs(String(value)).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT) : 'test'}
         </span>
     </div>
 )
 
 const ActionCellComponent = ({ row }: TableCellComponentProps<AuditLogRowType, FiltersTypeEnum.URL>) => (
-    <NavLink
-        type="button"
-        className="dc__unset-button-styles flex left"
-        to={generatePath(ROUTER_URLS.AUDIT_LOGS_DETAIL, {
-            auditLogId: String(row.data.auditLogId),
-        })}
-    >
-        <span className="dc__link fs-13 lh-20 dc__truncate">{row.data.action}</span>
-    </NavLink>
+    <div className="flex left py-12">
+        <span className="dc__link fs-13 lh-20 dc__truncate">{`${capitalizeFirstLetter(row.data.action)}ed ${row.data.resourceName} ${row.data.resourceType} `}</span>
+    </div>
 )
 
 const UserCellComponent = ({ row }: TableCellComponentProps<AuditLogRowType, FiltersTypeEnum.URL>) => (
@@ -42,9 +33,21 @@ const UserCellComponent = ({ row }: TableCellComponentProps<AuditLogRowType, Fil
     </div>
 )
 
+const ModuleCellComponent = ({ row }: TableCellComponentProps<AuditLogRowType, FiltersTypeEnum.URL>) => (
+    <div className="flex left py-12">
+        <span className="flex dc__gap-6 fs-13 fw-4 cn-9 lh-20">{capitalizeFirstLetter(row.data.module)}</span>
+    </div>
+)
+
+const TypeCellComponent = ({ row }: TableCellComponentProps<AuditLogRowType, FiltersTypeEnum.URL>) => (
+    <div className="flex left py-12">
+        <span className="flex dc__gap-6 fs-13 fw-4 cn-9 lh-20">{capitalizeFirstLetter(row.data.requestMethod)}</span>
+    </div>
+)
+
 export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
     {
-        field: 'timestamp',
+        field: 'timeStamp',
         label: 'Timestamp',
         size: { fixed: 220 },
         isSortable: true,
@@ -58,10 +61,11 @@ export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
         CellComponent: ActionCellComponent,
     },
     {
-        field: 'type',
+        field: 'requestMethod',
         label: 'Type',
         size: { fixed: 130 },
         isSortable: true,
+        CellComponent: TypeCellComponent,
     },
     {
         field: 'user',
@@ -71,9 +75,15 @@ export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
         CellComponent: UserCellComponent,
     },
     {
-        field: 'resource',
-        label: 'Resource',
+        field: 'resourceType',
+        label: 'Resource Type',
         size: { fixed: 180 },
+        isSortable: true,
+    },
+    {
+        field: 'resourceName',
+        label: 'Resource Name',
+        size: { fixed: 200 },
         isSortable: true,
     },
     {
@@ -81,6 +91,7 @@ export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
         label: 'Module',
         size: { fixed: 190 },
         isSortable: true,
+        CellComponent: ModuleCellComponent,
     },
 ]
 
@@ -98,9 +109,4 @@ export const getAuditLogFilterLabel = (filterKey: string) => {
         default:
             return filterKey
     }
-}
-
-export const useGetAuditLogDetailsResponse = (auditLogId) => {
-    const [auditLogLoading, auditLog, auditLogError, reloadAuditLog] = useAsync(() => getAuditLogDetail(auditLogId), [])
-    return { auditLogLoading, auditLog, auditLogError, reloadAuditLog }
 }
