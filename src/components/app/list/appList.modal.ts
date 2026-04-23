@@ -130,8 +130,20 @@ export const getDevtronAppListPayload = (
     environmentList: EnvListMinDTO[],
     namespaceList: EnvironmentListHelmResult[],
 ): AppListPayloadType => {
-    const { searchKey, offset, pageSize, sortBy, sortOrder, appStatus, environment, cluster, namespace, project } =
-        filterConfig
+    const {
+        searchKey,
+        offset,
+        pageSize,
+        sortBy,
+        sortOrder,
+        appStatus,
+        environment,
+        cluster,
+        namespace,
+        project,
+        labelSelectors,
+    } = filterConfig
+
     return {
         appNameSearch: searchKey.toLowerCase(),
         offset,
@@ -150,5 +162,12 @@ export const getDevtronAppListPayload = (
               }),
         teams: project.map((team) => +team),
         namespaces: namespace,
+        tagFilters: labelSelectors
+            .filter((s) => s.key?.trim())
+            .map((s) => ({
+                key: s.key.trim(),
+                operator: s.operator,
+                ...(s.value?.trim() ? { value: s.value.trim() } : {}),
+            })),
     }
 }

@@ -29,12 +29,12 @@ import {
     ConditionalWrap,
     Icon,
     InstallationClusterStatus,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     Tooltip,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import Error from '@Icons/ic-error-exclamation.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 
@@ -113,8 +113,8 @@ const ClusterListRow = ({
                                     variant={ButtonVariantType.borderLess}
                                     component={ButtonComponentType.link}
                                     linkProps={{
-                                        to: generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
-                                            clusterId: clusterData.id,
+                                        to: generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.TERMINAL, {
+                                            clusterId: String(clusterData.id),
                                         }),
                                     }}
                                 />

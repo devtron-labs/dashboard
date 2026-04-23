@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 import { components } from 'react-select'
 import {
     CIBuildType,
@@ -33,10 +33,10 @@ import {
     getCustomOptionSelectionStyle,
     Option,
 } from '../v2/common/ReactSelect.utils'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import GitLab from '../../assets/icons/git/gitlab.svg?react'
+import Git from '../../assets/icons/git/git.svg?react'
+import GitHub from '../../assets/icons/git/github.svg?react'
+import BitBucket from '../../assets/icons/git/bitbucket.svg?react'
 import { getAbsoluteProjectPath } from './CIConfig.utils'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {

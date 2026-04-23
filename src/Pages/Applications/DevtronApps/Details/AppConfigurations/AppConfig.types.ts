@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
+
 import {
     AppConfigProps,
     AppEnvDeploymentConfigType,
@@ -219,9 +221,10 @@ export interface EnvConfigurationsNavProps extends Required<Pick<AppConfigProps,
     hideEnvSelector?: boolean
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
     shouldSetEnvInContext?: boolean
+    path: string
 }
 
-export interface EnvConfigRouteParams {
+export type EnvConfigRouteParams = {
     appId: string
     envId: string
     resourceType?: EnvResourceType
@@ -233,7 +236,7 @@ export interface ExtendedCollapsibleListItem
 }
 
 // DEPLOYMENT CONFIG COMPARE INTERFACES & TYPES ------- START
-export interface DeploymentConfigParams {
+export type DeploymentConfigParams = {
     appId: string
     envId: string
     compareTo: string
@@ -247,6 +250,7 @@ export type DeploymentConfigCompareProps = {
     goBackURL?: string
     getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string
     overwriteNavHeading?: string
+    routePath: string
 } & (
     | {
           type: 'appGroup'

@@ -15,17 +15,17 @@
  */
 
 import { useMemo } from 'react'
-import { NavLink, useHistory } from 'react-router-dom'
+import { generatePath, NavLink, useNavigate } from 'react-router-dom'
 
 import {
     FiltersTypeEnum,
     PaginationEnum,
     preventDefault,
+    ROUTER_URLS,
     Table,
     TableCellComponentProps,
     ToastManager,
     ToastVariantType,
-    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useAppContext } from '../../common'
@@ -51,12 +51,12 @@ const EnvironmentNameCellComponent = ({ row, value }: TableCellComponentProps<En
         <div className="py-10">
             <NavLink
                 data-testid={`${namespace}-click-on-env`}
-                to={`${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${environmentId}`}
+                to={`../${environmentId}`}
                 data-noapp={!appCount}
                 onClick={handleOnLinkRedirection}
                 className="cb-5 dc__ellipsis-right dc__no-decor"
             >
-                {value}
+                {`${value}`}
             </NavLink>
         </div>
     )
@@ -66,7 +66,7 @@ const EnvironmentNameCellComponent = ({ row, value }: TableCellComponentProps<En
 const ApplicationCountCellComponent = ({ value }: TableCellComponentProps<EnvAppList, FiltersTypeEnum.URL>) => {
     const count = (value as number) || 0
     return (
-        <div>
+        <div className="py-10">
             {count}&nbsp;
             {count === 0 || count === 1 ? GROUP_LIST_HEADER.APPLICATION : GROUP_LIST_HEADER.APPLICATIONS}
         </div>
@@ -79,7 +79,7 @@ const EnvironmentsListView = ({
     appListLoading,
     appListResponse,
 }: EnvironmentsListViewType) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const { setCurrentEnvironmentName } = useAppContext()
 
     // Handle row click for navigation and toast notifications (also triggered by Enter key press)
@@ -102,7 +102,7 @@ const EnvironmentsListView = ({
         } else {
             // Navigate to the environment detail page
             setCurrentEnvironmentName(environmentName)
-            history.push(`${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${environmentId}`)
+            navigate(generatePath(ROUTER_URLS.APP_GROUP_DETAILS.ROOT, { envId: String(environmentId) }))
         }
     }
 

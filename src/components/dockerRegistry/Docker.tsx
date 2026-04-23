@@ -53,9 +53,11 @@ import {
     RegistryCredentialsType,
     RemoteConnectionType,
     AuthenticationType,
+    BASE_ROUTES,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary, Trash } from '../common'
 import {
     getClusterListMinWithoutAuth,
@@ -73,16 +75,15 @@ import {
     REGISTRY_TITLE_DESCRIPTION_CONTENT,
     RegistryType,
     EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
-    URLS,
     PATTERNS,
     OCIRegistryStorageActionType,
 } from '../../config'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
+import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
+import Info from '../../assets/icons/ic-info-outlined.svg?react'
+import Error from '../../assets/icons/ic-warning.svg?react'
+import InfoFilled from '../../assets/icons/ic-info-filled.svg?react'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ManageRegistry from './ManageRegistry'
 import {
@@ -233,6 +234,7 @@ const CollapsedList = ({
     awsAccessKeyId = '',
     awsSecretAccessKey = '',
     awsRegion = '',
+    assumeRoleArn = '',
     isDefault = false,
     active = true,
     username = '',
@@ -257,20 +259,19 @@ const CollapsedList = ({
     disabledFields = [],
     ociRegistryConfig,
     registryCredentialsType,
-    ...rest
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
-    const history = useHistory()
-    const { path } = useRouteMatch()
+    const navigate = useNavigate()
     const params = useParams<{ id: string }>()
 
     const setToggleCollapse = () => {
+        const DOCKER_ROUTE = BASE_ROUTES.GLOBAL_CONFIG.DOCKER
         if (id === null && params.id !== '0') {
-            history.push(`${path.replace(':id', '0')}`)
+            navigate(`../${DOCKER_ROUTE}/0`)
         } else if (id && params.id !== id) {
-            history.push(`${path.replace(':id', id)}`)
+            navigate(`../${DOCKER_ROUTE}/${id}`)
         } else {
-            history.push(`${path.replace('/:id', '')}`)
+            navigate(`../${DOCKER_ROUTE}`)
         }
     }
 
@@ -319,6 +320,7 @@ const CollapsedList = ({
                         awsAccessKeyId,
                         awsSecretAccessKey,
                         awsRegion,
+                        assumeRoleArn,
                         isDefault,
                         active,
                         username,
@@ -353,6 +355,7 @@ const DockerForm = ({
     awsAccessKeyId,
     awsSecretAccessKey,
     awsRegion,
+    assumeRoleArn,
     isDefault,
     active,
     username,
@@ -402,7 +405,7 @@ const DockerForm = ({
         },
         onValidation,
     )
-    const history = useHistory()
+    const navigate = useNavigate()
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
     const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false)
@@ -431,6 +434,7 @@ const DockerForm = ({
             value: id && !awsSecretAccessKey ? DEFAULT_SECRET_PLACEHOLDER : awsSecretAccessKey,
             error: '',
         },
+        assumeRoleArn: { value: assumeRoleArn, error: '' },
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
@@ -565,7 +569,7 @@ const DockerForm = ({
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
     const [repositoryError, setRepositoryError] = useState<string>('')
-    const ChartStoreRedirectionUrl: string = id ? `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}?registryId=${id}` : URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER
+    const ChartStoreRedirectionUrl: string = id ? `${ROUTER_URLS.CHART_STORE}?registryId=${id}` : ROUTER_URLS.CHART_STORE
 
     const customHandleChange = (e): void => {
         updateWithCustomStateValidation(e.target.name, e.target.value)
@@ -629,6 +633,7 @@ const DockerForm = ({
             password: { value: selectedRegistry.password.defaultValue, error: '' },
             awsAccessKeyId: { value: '', error: '' },
             awsSecretAccessKey: { value: '', error: '' },
+            assumeRoleArn: { value: '', error: '' },
         }))
     }
 
@@ -788,6 +793,7 @@ const DockerForm = ({
                       awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),
                       awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
                       awsRegion,
+                      assumeRoleArn: customState.assumeRoleArn.value?.trim(),
                   }
                 : {}),
             ...((selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY &&
@@ -1132,7 +1138,7 @@ const DockerForm = ({
         setManageModal(false)
     }
     const handleChartStoreRedirection = (): void => {
-        history.push(ChartStoreRedirectionUrl)
+        navigate(ChartStoreRedirectionUrl)
     }
 
     const handleContainerStoreUpdateAction = (isContainerStore: boolean): void => {
@@ -1619,6 +1625,16 @@ const DockerForm = ({
                                 </div>
                             </>
                         )}
+                        <div className="form__row">
+                            <CustomInput
+                                name="assumeRoleArn"
+                                value={customState.assumeRoleArn.value}
+                                error={customState.assumeRoleArn.error}
+                                onChange={customHandleChange}
+                                label="Assume Role ARN (cross-account)"
+                                placeholder="arn:aws:iam::123456789012:role/cross-account-ecr-role"
+                            />
+                        </div>
                     </>
                 )
             }

@@ -15,19 +15,12 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-    Redirect,
-    RedirectProps,
-    Route,
-    Switch,
-    useHistory,
-    useLocation,
-    useParams,
-    useRouteMatch,
-} from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     AppListConstants,
+    BASE_ROUTES,
+    Chip,
     FilterChips,
     getNamespaceListMin,
     handleUTCTime,
@@ -35,9 +28,9 @@ import {
     InfrastructureManagementAppListType,
     ModuleNameMap,
     Progressing,
+    ROUTER_URLS,
     TabGroup,
     TabProps,
-    URLS as COMMON_URLS,
     useAsync,
     useMainContext,
     useUrlFilters,
@@ -48,7 +41,7 @@ import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
 
-import { SERVER_MODE, URLS } from '../../../config'
+import { SERVER_MODE } from '../../../config'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import DevtronAppList from '../list/DevtronAppListContainer'
 import AppListFilters from './AppListFilters'
@@ -59,7 +52,13 @@ import {
     AppListUrlFiltersType,
     FluxCDTemplateType,
 } from './AppListType'
-import { APP_LIST_LOCAL_STORAGE_KEY, DEVTRON_APP_LIST_LOCAL_STORAGE_KEY, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import {
+    APP_LIST_LOCAL_STORAGE_KEY,
+    DEVTRON_APP_LIST_LOCAL_STORAGE_KEY,
+    FLUX_CD_HELM_RELEASE_LABEL,
+    LABEL_OPERATOR_DISPLAY_TEXT,
+    LABEL_OPERATORS_WITHOUT_VALUE,
+} from './Constants'
 import GenericAppList from './GenericAppList'
 import HelmAppList from './HelmAppList'
 import {
@@ -68,15 +67,15 @@ import {
     getFormattedFilterLabel,
     parseSearchParams,
 } from './list.utils'
+import { AppListFilterLabelType } from './types'
 
 import '../list/list.scss'
 
 let interval
 
 const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const { url } = useRouteMatch()
     const params = useParams<{ appType: InfrastructureManagementAppListType }>()
     const { serverMode, isSuperAdmin } = useMainContext()
 
@@ -121,6 +120,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
         cluster,
         project,
         templateType,
+        [AppListUrlFilters.labelSelector]: labelSelectorRaw,
         handleSorting,
         changePage,
         changePageSize,
@@ -128,6 +128,19 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
         handleSearch,
         updateSearchParams,
     } = urlFilters
+
+    const labelSelectors: AppListFilterLabelType[] = useMemo(() => {
+        if (!labelSelectorRaw) {
+            return []
+        }
+
+        try {
+            const parsed = JSON.parse(labelSelectorRaw)
+            return Array.isArray(parsed) ? parsed : []
+        } catch {
+            return []
+        }
+    }, [labelSelectorRaw])
 
     const filterConfig: AppListFilterConfig = useMemo(
         () => ({
@@ -142,6 +155,8 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             cluster,
             namespace,
             templateType,
+            [AppListUrlFilters.labelSelector]: labelSelectorRaw,
+            labelSelectors,
         }),
         [
             offset,
@@ -155,6 +170,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             JSON.stringify(cluster),
             JSON.stringify(namespace),
             JSON.stringify(templateType),
+            labelSelectorRaw,
         ],
     )
 
@@ -279,21 +295,63 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
         setFetchingExternalApps(fetching)
     }
 
-    const renderAppliedFilters = () =>
-        !appListFiltersLoading &&
-        !appListFiltersError && (
-            <FilterChips<Partial<AppListUrlFiltersType>>
-                filterConfig={getFilterChipConfig(
-                    { appStatus, project, environment, cluster, namespace, templateType },
-                    params.appType,
-                )}
-                onRemoveFilter={updateSearchParams}
-                clearFilters={clearFilters}
-                className="px-20"
-                getFormattedLabel={getFormattedFilterLabel}
-                getFormattedValue={getFormattedFilterValue}
-            />
+    const handleApplyLabelSelectors = (selectors: AppListFilterLabelType[]): void => {
+        const filtered = selectors.filter((s) => !!s.key.trim())
+        updateSearchParams({
+            [AppListUrlFilters.labelSelector]: filtered.length ? JSON.stringify(filtered) : '',
+        })
+    }
+
+    const getRemoveLabelSelectorHandler = (selectorId: string) => () => {
+        const updatedSelectors = labelSelectors.filter((s) => s.id !== selectorId)
+        updateSearchParams({
+            [AppListUrlFilters.labelSelector]: updatedSelectors.length ? JSON.stringify(updatedSelectors) : '',
+        })
+    }
+
+    const renderAppliedFilters = () => {
+        if (appListFiltersLoading || appListFiltersError) {
+            return null
+        }
+
+        const urlChipConfig = getFilterChipConfig(
+            {
+                appStatus,
+                project,
+                environment,
+                cluster,
+                namespace,
+                templateType,
+            },
+            params.appType,
         )
+
+        return (
+            <div className="flexbox flex-wrap dc__gap-8 px-20 dc__align-items-center">
+                {labelSelectors.map((selector) => (
+                    <Chip
+                        key={selector.id}
+                        label="Tags"
+                        value={
+                            LABEL_OPERATORS_WITHOUT_VALUE.includes(selector.operator)
+                                ? `${selector.key} ${LABEL_OPERATOR_DISPLAY_TEXT[selector.operator]}`
+                                : `${selector.key} ${LABEL_OPERATOR_DISPLAY_TEXT[selector.operator]} ${selector.value}`
+                        }
+                        onRemove={getRemoveLabelSelectorHandler(selector.id)}
+                    />
+                ))}
+
+                {/* FilterChips renders its own "Clear All" when URL chips are present */}
+                <FilterChips<Partial<AppListUrlFiltersType>>
+                    filterConfig={urlChipConfig}
+                    onRemoveFilter={updateSearchParams}
+                    clearFilters={clearFilters}
+                    getFormattedLabel={getFormattedFilterLabel}
+                    getFormattedValue={getFormattedFilterValue}
+                />
+            </div>
+        )
+    }
 
     const removePageNumber = (search: string) => {
         const searchParams = new URLSearchParams(search)
@@ -308,7 +366,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             tabType: 'navLink',
             props: {
                 to: {
-                    pathname: URLS.HELM_APP_LIST,
+                    pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM,
                     search: removePageNumber(location.search),
                 },
                 'data-testid': 'helm-app-list-button',
@@ -322,7 +380,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                       tabType: 'navLink' as const,
                       props: {
                           to: {
-                              pathname: URLS.ARGO_APP_LIST,
+                              pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.ARGO_CD,
                               search: removePageNumber(location.search),
                           },
                           'data-testid': 'argo-app-list-button',
@@ -338,7 +396,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                       tabType: 'navLink' as const,
                       props: {
                           to: {
-                              pathname: URLS.FLUX_APP_LIST,
+                              pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.FLUX_CD,
                               search: removePageNumber(location.search),
                           },
                           'data-testid': 'flux-app-list-button',
@@ -355,18 +413,20 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     )
 
     const closeDevtronAppCreateModal = () => {
-        history.push(`${url}${location.search}`)
+        navigate({
+            pathname: ROUTER_URLS.DEVTRON_APP_LIST,
+            search: location.search,
+        })
     }
 
     const renderAppCreateRouter = () => (
-        <Switch>
+        <Routes>
             <Route
-                path={COMMON_URLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP}
-                key={COMMON_URLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP}
-            >
-                <CreateAppModal handleClose={closeDevtronAppCreateModal} isJobView={false} />
-            </Route>
-        </Switch>
+                path={BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.LIST.CREATE_APP}
+                key={BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.LIST.CREATE_APP}
+                element={<CreateAppModal handleClose={closeDevtronAppCreateModal} isJobView={false} />}
+            />
+        </Routes>
     )
 
     return (
@@ -395,6 +455,9 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                 isDataSyncing={isDataSyncing}
                 lastSyncTimeString={lastDataSyncTimeString}
                 showExportCsvButton={isSuperAdmin && isDevtronAppList}
+                isDevtronAppList={isDevtronAppList}
+                labelSelectors={labelSelectors}
+                handleApplyLabelSelectors={handleApplyLabelSelectors}
             />
             {renderAppliedFilters()}
             {!isDevtronAppList && renderAppTabs()}
@@ -461,7 +524,12 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                         />
                     )}
                     {tabs.every((tab) => tab.id !== params.appType) && (
-                        <Redirect {...(tabs[0].props as RedirectProps)} />
+                        <Navigate
+                            to={{
+                                pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM,
+                                search: removePageNumber(location.search),
+                            }}
+                        />
                     )}
                 </>
             )}

@@ -16,33 +16,34 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment'
 
 import {
     Chart,
     ChartColorKey,
     ChartProps,
+    DateTimePicker,
     EMPTY_STATE_STATUS,
     ErrorScreenManager,
     GenericEmptyState,
     Progressing,
+    ROUTER_URLS,
     SelectPicker,
     showError,
     Tooltip,
-    URLS,
+    UpdateDateRangeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
-import { ReactComponent as Fail } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as Deploy } from '@Icons/ic-nav-rocket.svg'
-import AppNotDeployed from '@Images/app-not-deployed.svg'
+import Success from '@Icons/appstatus/healthy.svg?react'
+import Fail from '@Icons/ic-error-exclamation.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import Deploy from '@Icons/ic-nav-rocket.svg?react'
 import SelectEnvImage from '@Images/ic-empty-dep-metrics@2x.png'
 
 import { ViewType } from '../../../../config'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
-import { DatePicker, useAppContext } from '../../../common'
+import { useAppContext } from '../../../common'
 import { BenchmarkModal } from './BenchmarkModal'
 import { getDeploymentMetrics } from './deploymentMetrics.service'
 import {
@@ -61,6 +62,7 @@ import {
 } from './deploymentMetrics.util'
 import { DeploymentTable } from './DeploymentTable'
 import { DeploymentTableModal } from './DeploymentTableModal'
+import { getRangeShortcutOptions } from './utils'
 
 import './deploymentMetrics.scss'
 
@@ -219,7 +221,7 @@ const RecoveryAndLeadTimeGraphLegend = ({
 const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
 
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [state, setState] = useState<DeploymentMetricsState>({
         code: 0,
@@ -239,7 +241,6 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         benchmarkModalData: undefined,
         startDate: moment().set({ hour: 0, minute: 0, seconds: 0 }).subtract(6, 'months'),
         endDate: moment().set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
-        focusedInput: null,
         meanLeadTimeLabel: '',
         leadTimeBenchmark: undefined,
         meanRecoveryTimeLabel: '',
@@ -339,8 +340,11 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     }
 
     const handleEnvironmentChange = (selected): void => {
-        const URL = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/deployment-metrics/${selected.value}`
-        history.push(URL)
+        const URL = generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.DEPLOYMENT_METRICS}/:envId`, {
+            appId,
+            envId: selected.value,
+        })
+        navigate(URL)
         ReactGA.event({
             category: 'Deployment Metrics',
             action: 'Environment Selection Changed',
@@ -348,16 +352,12 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         })
     }
 
-    const handleDatesChange = ({ startDate: newStartDate, endDate: newEndDate }): void => {
+    const handleDatesChange: UpdateDateRangeType = ({ from: newStartDate, to: newEndDate }): void => {
         setState((prev) => ({
             ...prev,
-            startDate: newStartDate?.set({ hour: 0, minute: 0, seconds: 0 }),
-            endDate: newEndDate?.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
+            startDate: moment(newStartDate)?.set({ hour: 0, minute: 0, seconds: 0 }),
+            endDate: moment(newEndDate)?.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
         }))
-    }
-
-    const handleFocusChange = (focusedInput): void => {
-        setState((prev) => ({ ...prev, focusedInput }))
     }
 
     const handleTableFilter = (event): void => {
@@ -481,6 +481,8 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         handleEnvironmentChange(selected)
     }
 
+    const isOutsideRange = (date: Date) => moment(date).isAfter(moment(), 'day')
+
     const renderInputs = () => (
         <div className="deployment-metrics__inputs bg__primary">
             <div className="w-180" data-testid="select-environment">
@@ -494,14 +496,20 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                     options={state.environments}
                 />
             </div>
-            <div className="dc__align-right ">
+            <div className="dc__align-right">
                 {selectedEnvironment ? (
-                    <DatePicker
-                        startDate={state.startDate}
-                        endDate={state.endDate}
-                        focusedInput={state.focusedInput}
-                        handleDatesChange={handleDatesChange}
-                        handleFocusChange={handleFocusChange}
+                    <DateTimePicker
+                        id="deployment-metrics-date-range-picker"
+                        isRangePicker
+                        hideTimeSelect
+                        dateRange={{
+                            from: state.startDate?.toDate(),
+                            to: state.endDate?.toDate(),
+                        }}
+                        onChange={handleDatesChange}
+                        blockPreviousDates={false}
+                        isOutsideRange={isOutsideRange}
+                        rangeShortcutOptions={getRangeShortcutOptions()}
                     />
                 ) : null}
             </div>
@@ -708,7 +716,6 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                 {renderInputs()}
                 <div className="dc__position-rel bg__primary flex-grow-1">
                     <GenericEmptyState
-                        image={AppNotDeployed}
                         title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
                         subTitle={`There are no deployments in this period on '${envName}'.`}
                     />
@@ -862,15 +869,22 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
 const DeploymentMetrics = (props: DeploymentMetricsProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { environmentId, setEnvironmentId } = useAppContext()
-    const { path } = useRouteMatch()
-    const { replace } = useHistory()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (envId && +envId !== environmentId) {
             setEnvironmentId(+envId)
         }
         if (!envId && environmentId) {
-            replace(generatePath(path, { appId, envId: environmentId }))
+            navigate(
+                generatePath(`${ROUTER_URLS.DEVTRON_APP_DETAILS.DEPLOYMENT_METRICS}/:envId`, {
+                    appId,
+                    envId: String(environmentId),
+                }),
+                {
+                    replace: true,
+                },
+            )
         }
     }, [envId])
 

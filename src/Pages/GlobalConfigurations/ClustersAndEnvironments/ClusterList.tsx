@@ -15,11 +15,12 @@
  */
 
 import { useMemo, useState } from 'react'
-import { Route, useHistory, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     ActionMenu,
     ActionMenuItemType,
+    BASE_ROUTES,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -37,6 +38,7 @@ import {
     numberComparatorBySortOrder,
     OptionType,
     PaginationEnum,
+    ROUTER_URLS,
     SearchBar,
     SegmentedControl,
     SelectPicker,
@@ -44,7 +46,6 @@ import {
     stringComparatorBySortOrder,
     Table,
     TableColumnType,
-    URLS as COMMON_URLS,
     useAsync,
     useMainContext,
     useUrlFilters,
@@ -73,6 +74,8 @@ import {
     ClusterListCellComponent,
     DeleteCluster,
     EditCluster,
+    HibernationRulesModalWrapper,
+    PodSpreadModalWrapper,
 } from './ClusterList.components'
 import { ALL_CLUSTER_VALUE } from './constants'
 import EnvironmentList from './EnvironmentList'
@@ -86,7 +89,7 @@ const ClusterList = () => {
     const { isSuperAdmin } = useMainContext()
     const isK8sClient = window._env_.K8S_CLIENT
 
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { search } = useLocation()
 
     const {
@@ -284,7 +287,10 @@ const ClusterList = () => {
     }
 
     const handleRedirectToClusterList = () => {
-        push({ pathname: URLS.GLOBAL_CONFIG_CLUSTER, search })
+        navigate({
+            pathname: ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV,
+            search,
+        })
     }
 
     const renderList = () => {
@@ -408,7 +414,7 @@ const ClusterList = () => {
                                 dataTestId="add-environment-button"
                                 linkProps={{
                                     to: {
-                                        pathname: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}`,
+                                        pathname: `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}${URLS.CREATE_ENVIRONMENT}`,
                                         search,
                                     },
                                 }}
@@ -460,56 +466,68 @@ const ClusterList = () => {
                 {/* Body */}
                 {renderList()}
                 {/* Modals and Routes */}
-                {ManageCategories && <ManageCategories />}
-                <Route path={COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER}>
-                    <EditCluster
-                        clusterList={clusterListResult ?? []}
-                        reloadClusterList={reloadClusterList}
-                        handleClose={handleRedirectToClusterList}
-                    />
-                </Route>
-                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId?`}>
-                    <AddEnvironment reloadEnvironments={reloadEnvironments} handleClose={handleRedirectToClusterList} />
-                </Route>
-                {/* Below route is to maintain backward compatibility and redirection from various places in dashboard */}
-                {clusterListResult && (
-                    <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterName${URLS.CREATE_ENVIRONMENT}`}>
-                        <AddEnvironmentFromClusterName
-                            clusterList={clusterListResult ?? []}
-                            reloadEnvironments={reloadEnvironments}
-                            handleClose={handleRedirectToClusterList}
+                <Routes>
+                    {ManageCategories && (
+                        <Route
+                            path={BASE_ROUTES.GLOBAL_CONFIG.CLUSTER_ENV.MANAGE_CATEGORIES}
+                            element={<ManageCategories />}
                         />
-                    </Route>
-                )}
-                {PodSpreadModal && (
+                    )}
                     <Route
-                        path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.POD_SPREAD}/:clusterId`}
-                        render={({ match }) => (
-                            <PodSpreadModal
-                                clusterId={match.params.clusterId}
+                        path="edit/:clusterId"
+                        element={
+                            <EditCluster
+                                clusterList={clusterListResult ?? []}
+                                reloadClusterList={reloadClusterList}
                                 handleClose={handleRedirectToClusterList}
                             />
-                        )}
+                        }
                     />
-                )}
-                {HibernationRulesModal && (
                     <Route
-                        path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.HIBERNATION_RULES}/:clusterId`}
-                        render={({ match }) => (
-                            <HibernationRulesModal
-                                clusterId={match.params.clusterId}
+                        path={`${URLS.CREATE_ENVIRONMENT}/:clusterId?`}
+                        element={
+                            <AddEnvironment
+                                reloadEnvironments={reloadEnvironments}
                                 handleClose={handleRedirectToClusterList}
                             />
-                        )}
+                        }
                     />
-                )}
-                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.DELETE_CLUSTER}/:clusterId`}>
-                    <DeleteCluster
-                        clusterList={clusterListResult ?? []}
-                        reloadClusterList={reloadClusterList}
-                        handleClose={handleRedirectToClusterList}
+                    {/* Below route is to maintain backward compatibility and redirection from various places in dashboard */}
+                    {clusterListResult && (
+                        <Route
+                            path={`:clusterName${URLS.CREATE_ENVIRONMENT}`}
+                            element={
+                                <AddEnvironmentFromClusterName
+                                    clusterList={clusterListResult ?? []}
+                                    reloadEnvironments={reloadEnvironments}
+                                    handleClose={handleRedirectToClusterList}
+                                />
+                            }
+                        />
+                    )}
+                    {PodSpreadModal && (
+                        <Route
+                            path={`${URLS.POD_SPREAD}/:clusterId`}
+                            element={<PodSpreadModalWrapper handleClose={handleRedirectToClusterList} />}
+                        />
+                    )}
+                    {HibernationRulesModal && (
+                        <Route
+                            path={`${URLS.HIBERNATION_RULES}/:clusterId`}
+                            element={<HibernationRulesModalWrapper handleClose={handleRedirectToClusterList} />}
+                        />
+                    )}
+                    <Route
+                        path={`${URLS.DELETE_CLUSTER}/:clusterId`}
+                        element={
+                            <DeleteCluster
+                                clusterList={clusterListResult ?? []}
+                                reloadClusterList={reloadClusterList}
+                                handleClose={handleRedirectToClusterList}
+                            />
+                        }
                     />
-                </Route>
+                </Routes>
             </div>
         </div>
     )

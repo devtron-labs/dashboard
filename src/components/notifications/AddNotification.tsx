@@ -34,6 +34,7 @@ import {
     TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS,
     TYPE_TO_SEE_MATCHING_RESULTS,
     SourceTypeMap,
+    ROUTER_URLS,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -49,13 +50,13 @@ import CreatableSelect from 'react-select/creatable'
 import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
 import { Select, validateEmail, ErrorBoundary, importComponentFromFELibrary } from '../common'
-import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
-import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg'
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
+import Slack from '../../assets/icons/slack-logo.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
+import Filter from '../../assets/icons/ic-filter.svg?react'
+import Folder from '../../assets/icons/img-folder-empty.svg?react'
+import Webhook from '../../assets/icons/ic-CIWebhook.svg?react'
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service'
-import { ViewType, URLS } from '../../config'
+import { ViewType } from '../../config'
 import {
     multiSelectStyles,
     DropdownIndicator,
@@ -359,7 +360,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     handleBackClick = () => {
-        this.props.history.push(`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`)
+        this.props.navigate(`${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/channels`)
     }
 
     saveNotification = (): void => {
@@ -961,7 +962,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         style={ButtonStyleType.neutral}
                         component={ButtonComponentType.link}
                         linkProps={{
-                            to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS,
+                            to: `${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/channels`,
                         }}
                     />
                     <Button
@@ -1071,24 +1072,26 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         const breadcrumbs = [
             {
                 name: 'Notifications',
-                to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS,
+                to: `${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/channels`,
             },
             {
                 name: 'Add Notification',
                 to: '',
             },
         ]
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
+        return (
+            <BreadCrumb
+                path={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}
+                breadcrumbs={breadcrumbs}
+            />
+        )
     }
 
     render() {
         return (
             <ErrorBoundary>
                 <div className="flexbox-col bg__primary h-100 dc__gap-24 px-20 py-16">
-                    <div
-                        data-testid="add-notifications-heading-title"
-                        className="fs-16 fw-6 cn-9 flex left dc__gap-4"
-                    >
+                    <div data-testid="add-notifications-heading-title" className="fs-16 fw-6 cn-9 flex left dc__gap-4">
                         {this.renderBreadcrumbs()}
                     </div>
                     {this.renderAddCard()}

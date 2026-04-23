@@ -1,19 +1,18 @@
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     Button,
     ButtonVariantType,
     ComponentSizeType,
     Icon,
+    ROUTER_URLS,
     TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-
 export const AddNotificationButton = ({ disableEdit }: { disableEdit: boolean }) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const createNewNotification = () => {
         if (disableEdit) {
             ToastManager.showToast({
@@ -21,7 +20,7 @@ export const AddNotificationButton = ({ disableEdit }: { disableEdit: boolean })
                 description: TOAST_ACCESS_DENIED.SUBTITLE,
             })
         } else {
-            history.push(URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW)
+            navigate(`${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/new`)
         }
     }
 

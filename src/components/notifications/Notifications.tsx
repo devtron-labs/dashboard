@@ -15,10 +15,11 @@
  */
 
 import { Component } from 'react'
-import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import {
     ErrorScreenNotAuthorized,
     FeatureTitleWithInfo,
+    RouterV5Props,
     TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
@@ -28,7 +29,6 @@ import { HEADER_TEXT } from '../../config'
 import './notifications.scss'
 import { NotificationsProps, NotificationsState } from './types'
 import { AddNotificationButton } from './AddNotificationButton'
-
 export default class Notifications extends Component<NotificationsProps, NotificationsState> {
 
     constructor(props) {
@@ -65,7 +65,7 @@ export default class Notifications extends Component<NotificationsProps, Notific
                                 label: 'Notifications',
                                 tabType: 'navLink',
                                 props: {
-                                    to: `${this.props.match.path}/channels`,
+                                    to: 'channels',
                                     'data-testid': 'notifications-link-button',
                                 },
                             },
@@ -74,7 +74,7 @@ export default class Notifications extends Component<NotificationsProps, Notific
                                 label: 'Configurations',
                                 tabType: 'navLink',
                                 props: {
-                                    to: `${this.props.match.path}/configurations`,
+                                    to: 'configurations',
                                     'data-testid': 'configurations-link-button',
                                 },
                             },
@@ -82,19 +82,22 @@ export default class Notifications extends Component<NotificationsProps, Notific
                     />
                 </div>
                 <ErrorBoundary>
-                    <Switch>
+                    <Routes>
                         <Route
-                            path={`${this.props.match.url}/channels`}
-                            render={() => (
+                            path="channels"
+                            element={
                                 <NotificationTab
+                                    location={this.props.location}
+                                    navigate={this.props.navigate}
+                                    params={this.props.params}
                                     disableEdit={this.state.disableEdit}
                                     toggleDisableEdit={this.toggleDisableEdit}
                                 />
-                            )}
+                            }
                         />
-                        <Route path={`${this.props.match.url}/configurations`} component={ConfigurationTab} />
-                        <Redirect to={`${this.props.match.url}/channels`} />
-                    </Switch>
+                        <Route path="configurations" element={<ConfigurationTab />} />
+                        <Route path="*" element={<Navigate to="channels" />} />
+                    </Routes>
                 </ErrorBoundary>
             </div>
         )

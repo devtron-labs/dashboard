@@ -80,6 +80,7 @@ export interface CMSecretWrapperProps
     appName: string
     isExceptionUser: boolean
     isTemplateView: AppConfigProps['isTemplateView']
+    routePath: string
 }
 
 export interface ConfigMapSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {
@@ -167,7 +168,9 @@ export interface ConfigMapSecretDeleteModalProps
     handleError: (actionType: DraftAction, err: any, payloadData?: CMSecretPayloadType) => void
 }
 
-export type ConfigMapSecretNullStateProps =
+export type ConfigMapSecretNullStateProps = {
+    routePath: string
+} & (
     | {
           componentType?: never
           componentName: string
@@ -183,6 +186,7 @@ export type ConfigMapSecretNullStateProps =
           componentName?: never
           nullStateType: 'NO_CM_CS'
       }
+)
 
 export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 'parentName'> &
     Pick<
@@ -210,6 +214,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
     } & {
         shouldMergeTemplateWithPatches: boolean
         handleNoPublishedStateRedirectClick: () => void
+        routePath: string
     }
 
 export type ConfigMapSecretDryRunProps = Pick<
@@ -238,6 +243,7 @@ export type ConfigMapSecretDryRunProps = Pick<
         dryRunEditorMode: DryRunEditorMode
         handleChangeDryRunEditorMode: (mode: DryRunEditorMode) => void
         showCrudButtons: boolean
+        routePath: string
     }
 
 // DTO

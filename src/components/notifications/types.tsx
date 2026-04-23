@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
+import type { JSX } from 'react'
 
 import {
     CHECKBOX_VALUE,
@@ -22,6 +22,7 @@ import {
     GenericEmptyStateType,
     PaginationProps,
     ResponseType,
+    RouterV5Props,
     SelectPickerOptionType,
     ServerError,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -30,8 +31,6 @@ import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDat
 import { HostURLConfig } from '@Services/service.types'
 
 import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
-
-export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
 
 export interface NotifierState {
     code: number
@@ -368,7 +367,7 @@ export interface ModifyRecipientsModalState {
     recipientWithoutEmailAgent: boolean
 }
 
-export interface AddNotificationsProps extends RouteComponentProps<{}> {}
+export interface AddNotificationsProps extends RouterV5Props<{}> {}
 
 export enum FilterOptions {
     ENVIRONMENT = 'environment',
@@ -450,7 +449,7 @@ export interface ModifyRecipientPopUpType extends Pick<NotificationTabState, 'se
     onChangeCheckboxHandler: (e, value) => () => void
 }
 
-export interface NotificationsProps extends RouteComponentProps<{}> {
+export interface NotificationsProps extends RouterV5Props<{}> {
     isSuperAdmin: boolean
 }
 

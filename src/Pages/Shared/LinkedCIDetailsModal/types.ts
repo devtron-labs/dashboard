@@ -16,18 +16,17 @@
 
 import {
     BaseFilterQueryParams,
+    DEPLOYMENT_STATUS,
     StatusType,
     TriggerType,
     UseUrlFiltersReturnType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DEPLOYMENT_STATUS } from '../../../config'
 import { SortableKeys } from './constants'
 
 export interface LinkedCIDetailModalProps {
     workflows: WorkflowType[]
-    handleClose: () => void
 }
 
 export interface LinkedCIAppDto {

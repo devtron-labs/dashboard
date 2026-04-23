@@ -19,11 +19,10 @@ import { DTSwitch, DTSwitchProps, getUniqueId, noop } from '@devtron-labs/devtro
 import { Select, Pencil } from '../common'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
 import { ChartGroupEntry, ChartValuesNativeType, ChartVersionType, MultiChartSummaryProps } from './charts.types'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
-import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as EmptyFolder } from '../../assets/icons/img-folder-empty.svg'
-import DropDownFilled from '../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Trash from '../../assets/icons/ic-delete.svg?react'
+import EmptyFolder from '../../assets/icons/img-folder-empty.svg?react'
+import DropDownFilled from '../../assets/icons/ic-dropdown-filled.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
 
 const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
     charts,

@@ -28,7 +28,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICMaintenance } from '@Images/ic-maintenance.svg'
+import ICMaintenance from '@Images/ic-maintenance.svg?react'
 import EnterpriseTrialDialog from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/EnterpriseTrialDialog'
 
 import { importComponentFromFELibrary } from '../helpers/Helpers'

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, type JSX, SetStateAction } from 'react'
 
 import {
     ClusterType,
@@ -81,9 +81,4 @@ export interface CommandBarBackdropProps {
 export interface CommandBarProps {
     showCommandBar: boolean
     setShowCommandBar: Dispatch<SetStateAction<boolean>>
-}
-
-export interface NavigationUpgradedDialogProps {
-    isOpen: boolean
-    onClose: () => void
 }

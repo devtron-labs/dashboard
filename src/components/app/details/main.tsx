@@ -15,7 +15,7 @@
  */
 
 import { lazy, PropsWithChildren, Suspense, useEffect, useState } from 'react'
-import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
+import { Route, useParams, Navigate, Routes } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -25,11 +25,11 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
-    URLS as CommonURLS,
     DeleteConfirmationModal,
     API_STATUS_CODES,
     useUserPreferences,
     useMainContext,
+    BASE_ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -46,7 +46,6 @@ import Overview from '../Overview/Overview'
 import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
 import './app.scss'
-import { AppFilterTabs } from '../../ApplicationGroup/Constants'
 import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
@@ -59,8 +58,9 @@ const CIDetails = lazy(() => import('./cIDetails/CIDetails'))
 const AppDetails = lazy(() => import('./appDetails/AppDetails'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 
+const APP_DETAILS_ROUTES = BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.DETAIL
+
 export default function AppDetailsPage() {
-    const { path } = useRouteMatch()
     const { appId } = useParams<{ appId: string }>()
     const { setIntelligenceConfig } = useMainContext()
     const [appName, setAppName] = useState('')
@@ -382,50 +382,57 @@ export default function AppDetailsPage() {
 
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
-                    <Switch>
+                    <Routes>
                         <Route
-                            path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                            render={() => (
+                            path={`${URLS.APP_DETAILS}/:envId?/*`}
+                            element={
                                 <AppDetails
                                     detailsType="app"
                                     filteredResourceIds={_filteredEnvIds}
                                     resourceList={appListOptions}
                                     setSelectedResourceList={setSelectedAppList}
                                 />
-                            )}
+                            }
                         />
-                        <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview
-                                appType={APP_TYPE.DEVTRON_APPS}
-                                appMetaInfo={appMetaInfo}
-                                getAppMetaInfoRes={getAppMetaInfoRes}
-                                filteredEnvIds={_filteredEnvIds}
-                            />
-                        </Route>
                         <Route
-                            path={`${path}/${URLS.APP_TRIGGER}`}
-                            render={() => <TriggerView filteredEnvIds={_filteredEnvIds} />}
+                            path={APP_DETAILS_ROUTES.OVERVIEW}
+                            element={
+                                <Overview
+                                    appType={APP_TYPE.DEVTRON_APPS}
+                                    appMetaInfo={appMetaInfo}
+                                    getAppMetaInfoRes={getAppMetaInfoRes}
+                                    filteredEnvIds={_filteredEnvIds}
+                                />
+                            }
                         />
-                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}>
-                            <DeploymentMetrics filteredEnvIds={_filteredEnvIds} />
-                        </Route>
                         <Route
-                            path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
-                        >
-                            <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
-                        </Route>
-                        <Route path={`${path}/${CommonURLS.APP_CONFIG}`}>
-                            <AppConfig
-                                appName={appName}
-                                resourceKind={ResourceKindType.devtronApplication}
-                                filteredEnvIds={_filteredEnvIds}
-                            />
-                        </Route>
-                        <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
-                    </Switch>
+                            path={`${APP_DETAILS_ROUTES.TRIGGER}/*`}
+                            element={<TriggerView filteredEnvIds={_filteredEnvIds} />}
+                        />
+                        <Route
+                            path={`${APP_DETAILS_ROUTES.CI_DETAILS}/:pipelineId?/:buildId?/*`}
+                            element={<CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />}
+                        />
+                        <Route
+                            path={`${APP_DETAILS_ROUTES.DEPLOYMENT_METRICS}/:envId?`}
+                            element={<DeploymentMetrics filteredEnvIds={_filteredEnvIds} />}
+                        />
+                        <Route
+                            path={`${APP_DETAILS_ROUTES.CD_DETAILS}/:envId?/:pipelineId?/:triggerId?/*`}
+                            element={<CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />}
+                        />
+                        <Route
+                            path={`${APP_DETAILS_ROUTES.CONFIGURATIONS}/*`}
+                            element={
+                                <AppConfig
+                                    appName={appName}
+                                    resourceKind={ResourceKindType.devtronApplication}
+                                    filteredEnvIds={_filteredEnvIds}
+                                />
+                            }
+                        />
+                        <Route path="*" element={<Navigate to={APP_DETAILS_ROUTES.APP_DETAILS} />} />
+                    </Routes>
                 </Suspense>
             </ErrorBoundary>
 

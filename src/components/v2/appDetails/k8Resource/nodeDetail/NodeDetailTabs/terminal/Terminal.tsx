@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import React, { useEffect, useRef, useState } from 'react'
+import { FitAddon } from '@xterm/addon-fit'
+import { Terminal } from '@xterm/xterm'
 import moment from 'moment'
 import SockJS from 'sockjs-client'
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
-import * as XtermWebfont from 'xterm-webfont'
 
 import {
     AppThemeType,
@@ -30,7 +29,7 @@ import {
     UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
+import ICDevtronLogo from '@Icons/ic-devtron.svg?react'
 
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
@@ -39,6 +38,7 @@ import { TERMINAL_STATUS } from './constants'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
 
+import '@xterm/xterm/css/xterm.css'
 import './terminal.scss'
 
 const TerminalView = ({
@@ -61,7 +61,7 @@ const TerminalView = ({
     const [isReconnection, setIsReconnection] = useState(false)
     const [fullScreenView, setFullScreenView] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
-    const fitAddon = useRef(null)
+    const fitAddon = useRef<FitAddon | null>(null)
 
     const resizeSocket = () => {
         if (terminalRef.current && fitAddon.current && isTerminalTab) {
@@ -102,29 +102,24 @@ const TerminalView = ({
                 foreground: '#ffffff',
             },
         })
+
         handleSelectionChange(terminalRef.current, setPopupText)
+
         fitAddon.current = new FitAddon()
-        /**
-         * Adding default check due to vite build changing the export
-         * for production the value will be `webFontAddon.current = new XtermWebfont.default()`
-         * for local the value will be `webFontAddon.current = new XtermWebfont()`
-         */
-        // eslint-disable-next-line new-cap
-        const webFontAddon = XtermWebfont.default ? new XtermWebfont.default() : new XtermWebfont()
         terminalRef.current.loadAddon(fitAddon.current)
-        terminalRef.current.loadAddon(webFontAddon)
+
         if (typeof registerLinkMatcher === 'function') {
             registerLinkMatcher(terminalRef.current)
         }
-        terminalRef.current.loadWebfontAndOpen(document.getElementById('terminal-id'))
-        // terminalRef.current.open(document.getElementById('terminal-id'))
+
+        terminalRef.current.open(document.getElementById('terminal-id'))
         fitAddon.current?.fit()
         terminalRef.current.reset()
+
         terminalRef.current.attachCustomKeyEventHandler((event) => {
             if ((event.metaKey && event.key === 'k') || event.key === 'K') {
                 terminalRef.current?.clear()
             }
-
             return true
         })
     }
@@ -147,14 +142,14 @@ const TerminalView = ({
         const _fitAddon = fitAddon.current
 
         const disableInput = (): void => {
-            _terminal.setOption('cursorBlink', false)
-            _terminal.setOption('disableStdin', true)
+            _terminal.options.cursorBlink = false
+            _terminal.options.disableStdin = true
             setFirstMessageReceived(false)
         }
 
         const enableInput = (): void => {
-            _terminal.setOption('cursorBlink', true)
-            _terminal.setOption('disableStdin', false)
+            _terminal.options.cursorBlink = true
+            _terminal.options.disableStdin = false
         }
 
         _terminal.onData((data) => {
@@ -247,7 +242,8 @@ const TerminalView = ({
             if (isTerminalTab) {
                 fitAddon.current?.fit()
             }
-            terminalRef.current.setOption('cursorBlink', true)
+            // eslint-disable-next-line no-param-reassign
+            terminalRef.current.options.cursorBlink = true
             setSocketConnection(SocketConnectionType.CONNECTED)
         }
     }, [firstMessageReceived, isTerminalTab])
@@ -278,8 +274,6 @@ const TerminalView = ({
             socket.current?.close()
             terminalRef.current?.dispose()
             socket.current = undefined
-            // eslint-disable-next-line no-param-reassign
-            terminalRef.current = undefined
             // eslint-disable-next-line no-param-reassign
             terminalRef.current = undefined
             fitAddon.current = null

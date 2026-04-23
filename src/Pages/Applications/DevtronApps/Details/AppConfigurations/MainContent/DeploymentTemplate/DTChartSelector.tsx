@@ -32,7 +32,7 @@ import {
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
+import Dropdown from '@Icons/ic-chevron-down.svg?react'
 import { sortObjectArrayAlphabetically } from '@Components/common'
 import { DEPLOYMENT } from '@Config/constants'
 

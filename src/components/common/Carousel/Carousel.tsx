@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react'
-import { ReactComponent as ArrowIcon } from '../../../assets/icons/ic-arrow-left.svg'
+import ArrowIcon from '../../../assets/icons/ic-arrow-left.svg?react'
 import './Carousel.scss'
 
 export default function Carousel({ imageUrls, className }: { imageUrls: string[]; className?: string }) {

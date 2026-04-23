@@ -23,7 +23,7 @@ import {
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICUpdateAnimated } from '@Icons/ic-update-animated.svg'
+import ICUpdateAnimated from '@Icons/ic-update-animated.svg?react'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
 import { PluginVersionSelectOptionType, PluginVersionSelectProps } from '../types'

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
@@ -24,9 +24,9 @@ import {
     PROGRESSING_DEPLOYMENT_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CD } from '@Icons/ic-CD.svg'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as Rocket } from '@Icons/ic-paper-rocket.svg'
+import CD from '@Icons/ic-CD.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import Rocket from '@Icons/ic-paper-rocket.svg?react'
 
 import { DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'
@@ -38,11 +38,10 @@ const DeploymentStatusCard = ({
     hideDetails,
     isVirtualEnvironment,
 }: DeploymentStatusCardType) => {
-    const history = useHistory()
-
+    const navigate = useNavigate()
     const showDeploymentDetailedStatus = (e): void => {
         e.stopPropagation()
-        history.push({
+        navigate({
             search: DEPLOYMENT_STATUS_QUERY_PARAM,
         })
     }

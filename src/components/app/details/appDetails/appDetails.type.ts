@@ -24,6 +24,7 @@ import {
     EnvAppsMetaDTO,
     OptionType,
     ResponseType,
+    ScanRecommendationsDTO,
     ScanResultDTO,
     SelectPickerProps,
     ServerErrors,
@@ -50,17 +51,11 @@ export enum StatusType {
     Throughput = 'Throughput',
 }
 
-export enum CalendarFocusInput {
-    StartDate = 'startDate',
-    EndDate = 'endDate',
-}
-
 export type AppMetricsTabType = 'aggregate' | 'pod'
 export type ChartTypes = 'cpu' | 'ram' | 'status' | 'latency'
 export type StatusTypes = '5xx' | '4xx' | '2xx' | 'Throughput'
-export type CalendarFocusInputType = 'startDate' | 'endDate'
 
-export interface AppDetailsPathParams {
+export type AppDetailsPathParams = {
     appId: string
     envId?: string
 }
@@ -182,12 +177,19 @@ export interface UseGetAppSecurityDetailsProps {
     envId?: number
     installedAppId?: number
     artifactId?: number
+    buildId?: number
 }
 export interface UseGetAppSecurityDetailsReturnType {
     scanResultLoading: boolean
     scanResultResponse: ResponseType<ScanResultDTO>
     scanResultError: ServerErrors
     reloadScanResult: () => void
+}
+export interface UseSecurityRecommendationReturnType {
+    scanRecommendationsResultLoading: boolean
+    scanRecommendationsResultResponse: ResponseType<ScanRecommendationsDTO>
+    scanRecommendationsResultError: ServerErrors
+    reloadScanRecommendationsResult: () => void
 }
 
 export enum HibernationModalTypes {

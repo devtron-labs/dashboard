@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     Collapse,
@@ -28,9 +28,9 @@ import {
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
+import Edit from '../../assets/icons/ic-pencil.svg?react'
+import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
+import GeneratedImage from '../../assets/icons/ic-generated-image.svg?react'
 import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
 import '../ciPipeline/ciPipeline.scss'
 

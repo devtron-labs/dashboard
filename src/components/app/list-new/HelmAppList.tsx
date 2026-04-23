@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import {
     AppStatus,
     showError,
@@ -31,27 +31,27 @@ import {
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
     DocLink,
-    URLS as CommonURLS,
     ComponentSizeType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
 import { LazyImage } from '../../common'
-import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
-import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
+import ICHelpOutline from '../../../assets/icons/ic-help-outline.svg?react'
 import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
-import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg'
-import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import InfoFillPurple from '../../../assets/icons/ic-info-filled-purple.svg?react'
+import ErrorExclamationIcon from '../../../assets/icons/ic-error-exclamation.svg?react'
+import CloseIcon from '../../../assets/icons/ic-close.svg?react'
+import AlertTriangleIcon from '../../../assets/icons/ic-alert-triangle.svg?react'
+import ArrowRight from '../../../assets/icons/ic-arrow-right.svg?react'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
@@ -316,10 +316,17 @@ const HelmAppList = ({
     }
 
     function _buildAppDetailUrl(app: HelmApp) {
+        const APP_DETAIL_ROUTE = ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL
         if (app.isExternal) {
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
+            return generatePath(APP_DETAIL_ROUTE.EXTERNAL_HELM_APP, {
+                appId: app.appId,
+                appName: app.appName,
+            })
         }
-        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
+        return generatePath(APP_DETAIL_ROUTE.DEVTRON_CHART, {
+            appId: app.appId,
+            envId: `${app.environmentDetail.environmentId}`,
+        })
     }
 
     function _removeExternalAppFetchError(e) {
@@ -490,7 +497,7 @@ const HelmAppList = ({
                 {showGuidedContentCards && (
                     <div className="helm-app-guided-cards-wrapper">
                         <ContentCard
-                            redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
+                            redirectTo={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}
                             direction={CardContentDirection.Horizontal}
                             imgSrc={HelmCluster}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
@@ -500,7 +507,7 @@ const HelmAppList = ({
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
                         />
                         <ContentCard
-                            redirectTo={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
+                            redirectTo={`${ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
                             direction={CardContentDirection.Horizontal}
                             imgSrc={DeployCICD}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
@@ -544,7 +551,7 @@ const HelmAppList = ({
 
     function askToConnectAClusterForNoResult() {
         const handleButton = () => (
-            <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
+            <Link to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}>
                 <button type="button" className="cta flex">
                     {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
                 </button>

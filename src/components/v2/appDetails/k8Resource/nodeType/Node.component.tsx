@@ -15,7 +15,7 @@
  */
 
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { followCursor } from 'tippy.js'
 
 import {
@@ -32,7 +32,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
+import ICExpand from '@Icons/ic-expand.svg?react'
 
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
@@ -74,10 +74,9 @@ const NodeComponent = ({
     tabs,
     removeTabByIdentifier,
 }: NodeComponentProps) => {
+    const navigate = useNavigate()
     const { aiAgentContext } = useMainContext()
 
-    const { url } = useRouteMatch()
-    const history = useHistory()
     const location = useLocation()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
@@ -157,7 +156,7 @@ const NodeComponent = ({
             setTableHeader(tableHeaders)
 
             // splitting with /group as group is present in application-group url as well
-            let [, _selectedResource] = url.split('/group/')
+            let [, _selectedResource] = location.pathname.split('/group/')
             let _selectedNodes: Array<iNode>
             if (_selectedResource) {
                 _selectedResource = _selectedResource.replace(/\/$/, '')
@@ -184,7 +183,7 @@ const NodeComponent = ({
 
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
-    }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
+    }, [params.nodeType, podType, location.pathname, filteredNodes, podLevelExternalLinks])
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -225,7 +224,7 @@ const NodeComponent = ({
     }
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
-        let [_url] = url.split('/group/')
+        let [_url] = location.pathname.split('/group/')
         _url = `${_url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
             node.name
         }/${_tabName.toLowerCase()}`
@@ -243,7 +242,7 @@ const NodeComponent = ({
             url: _url,
         })
             .then(() => {
-                history.push({ pathname: _url, search: getSearchString() })
+                navigate({ pathname: _url, search: getSearchString() })
             })
             .catch(noop)
     }

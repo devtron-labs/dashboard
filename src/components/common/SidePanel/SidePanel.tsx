@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Draggable, { DraggableEventHandler } from 'react-draggable'
 
@@ -34,6 +34,7 @@ import { SidePanelProps } from './types'
 import './SidePanel.scss'
 
 export const SidePanel = ({ asideWidth }: SidePanelProps) => {
+    const nodeRef = useRef<HTMLDivElement | null>(null)
     // STATES
     const [contentOverlay, setContentOverlay] = useState(false)
 
@@ -87,6 +88,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                     className="flexbox h-100vh dc__overflow-hidden"
                 >
                     <Draggable
+                        nodeRef={nodeRef}
                         handle={`.${SIDE_PANEL_ASIDE_DRAG_HANDLE}`}
                         defaultClassNameDragging={`${SIDE_PANEL_ASIDE_DRAG_HANDLE}--dragging`}
                         axis="none"
@@ -102,7 +104,10 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                         onStart={handleDragStart}
                         onStop={handleDragStop}
                     >
-                        <div className={`${SIDE_PANEL_ASIDE_DRAG_HANDLE} flex px-5 dc__cursor-col-resize dc__zi-10`}>
+                        <div
+                            ref={nodeRef}
+                            className={`${SIDE_PANEL_ASIDE_DRAG_HANDLE} flex px-5 dc__cursor-col-resize dc__zi-10`}
+                        >
                             <div className="aside-drag__handle px-1 br-1" />
                         </div>
                     </Draggable>

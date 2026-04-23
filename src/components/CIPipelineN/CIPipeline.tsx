@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useParams, useLocation, useNavigate } from 'react-router-dom'
 import {
     ServerErrors,
     showError,
@@ -48,6 +48,7 @@ import {
     GenericModal,
     Button,
     handleAnalyticsEvent,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -60,11 +61,11 @@ import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } 
 import { getInitData, getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
-import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
+import Close from '../../assets/icons/ic-cross.svg?react'
 import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
-import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
+import WarningTriangle from '../../assets/icons/ic-warning.svg?react'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
@@ -96,8 +97,7 @@ export default function CIPipeline({
     } else if (location.pathname.indexOf('/post-build') >= 0) {
         activeStageName = BuildStageVariable.PostBuild
     }
-    const { path } = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [errorCode, setErrorCode] = useState<number>(null)
     const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
@@ -122,12 +122,15 @@ export default function CIPipeline({
     const [environments, setEnvironments] = useState<EnvironmentWithSelectPickerType[]>([])
     // NOTE: don't want to show the warning until fetch; therefore true by default
     const [isBlobStorageConfigured, setIsBlobStorageConfigured] = useState(true)
+
+    const { forceDockerfileScan } = useMainContext()
     const [formData, setFormData] = useState<PipelineFormType>({
         name: '',
         args: [],
         materials: [],
         triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
+        dockerfileScanEnabled: forceDockerfileScan || false,
         gitHost: undefined,
         webhookEvents: [],
         ciPipelineSourceTypeOptions: [],
@@ -468,7 +471,7 @@ export default function CIPipeline({
                     setIsAdvanced(true)
                 }
             } else {
-                const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView)
+                const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView, forceDockerfileScan)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
                     setSecurityModuleInstalled(ciPipelineResponse.result.isSecurityModuleInstalled)
@@ -508,7 +511,7 @@ export default function CIPipeline({
                 `/${URLS.APP_CI_CONFIG}/`,
                 `/${URLS.APP_JOB_CI_CONFIG}/`,
             )
-            history.push(editCIPipelineURL)
+            navigate(editCIPipelineURL)
         }
     }, [location.pathname, ciPipeline.pipelineType])
 
@@ -616,7 +619,10 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
-            isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
+            isJobCard ||
+            !isSecurityModuleInstalled ||
+            formData.scanEnabled ||
+            !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
             ToastManager.showToast({
@@ -679,6 +685,7 @@ export default function CIPipeline({
                 ...formData,
                 materials: _materials,
                 scanEnabled: !isJobCard && isSecurityModuleInstalled ? formData.scanEnabled : false,
+                dockerfileScanEnabled: formData.dockerfileScanEnabled,
             },
             _ciPipeline,
             _materials,
@@ -857,31 +864,30 @@ export default function CIPipeline({
                                 />
                             </div>
                         )}
-                        <Switch>
+                        <Routes>
                             {isAdvanced && (
-                                <Route path={`${path}/pre-build`}>
-                                    <PreBuild isJobView={isJobCard} />
-                                </Route>
+                                <>
+                                    <Route path="pre-build" element={<PreBuild isJobView={isJobCard} />} />
+                                    <Route path="post-build" element={<PreBuild />} />
+                                </>
                             )}
-                            {isAdvanced && (
-                                <Route path={`${path}/post-build`}>
-                                    <PreBuild />
-                                </Route>
-                            )}
-                            <Route path={`${path}/build`}>
-                                <Build
-                                    pageState={pageState}
-                                    isAdvanced={isAdvanced}
-                                    ciPipeline={ciPipeline}
-                                    isSecurityModuleInstalled={isSecurityModuleInstalled}
-                                    isJobView={isJobCard}
-                                    getPluginData={getPluginData}
-                                    appId={appId}
-                                    isTemplateView={isTemplateView}
-                                />
-                            </Route>
-                            <Redirect to={`${path}/build`} />
-                        </Switch>
+                            <Route
+                                path="build"
+                                element={
+                                    <Build
+                                        pageState={pageState}
+                                        isAdvanced={isAdvanced}
+                                        ciPipeline={ciPipeline}
+                                        isSecurityModuleInstalled={isSecurityModuleInstalled}
+                                        isJobView={isJobCard}
+                                        getPluginData={getPluginData}
+                                        appId={appId}
+                                        isTemplateView={isTemplateView}
+                                    />
+                                }
+                            />
+                            <Route path="*" element={<Navigate to="build" />} />
+                        </Routes>
                     </div>
                 </pipelineContext.Provider>
             </>

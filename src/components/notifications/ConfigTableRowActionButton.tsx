@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -67,7 +67,7 @@ export const ConfigurationRowActionButtonWrapper = ({
     modal: ConfigurationsTabTypes
 }) => {
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onClickEditRow = () => () => {
         const newParams = {
@@ -75,7 +75,7 @@ export const ConfigurationRowActionButtonWrapper = ({
             configId: row.id,
             modal,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }
