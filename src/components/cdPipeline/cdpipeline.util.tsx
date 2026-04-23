@@ -29,6 +29,7 @@ import {
     PipelineFormType,
     InputOutputVariablesHeaderKeys,
     ConditionDataTableHeaderKeys,
+    ConditionDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
 import Search from '../../assets/icons/ic-nav-search.svg?react'
@@ -467,6 +468,26 @@ export const filterInvalidConditionDetails = (
             return true
         }) || []
     )
+}
+
+export const getInputOutputConditionDetails = (
+    conditionDetails: ConditionDetails[],
+): {
+    inputConditionDetails: ConditionDetails[]
+    outputConditionDetails: ConditionDetails[]
+} => {
+    const inputConditionDetails = (conditionDetails || []).filter(
+        (conditionDetail) =>
+            conditionDetail.conditionType === ConditionType.TRIGGER ||
+            conditionDetail.conditionType === ConditionType.SKIP,
+    )
+    const outputConditionDetails = (conditionDetails || []).filter(
+        (conditionDetail) =>
+            conditionDetail.conditionType === ConditionType.PASS ||
+            conditionDetail.conditionType === ConditionType.FAIL,
+    )
+
+    return { inputConditionDetails, outputConditionDetails }
 }
 
 export const getNamespacePlaceholder = (isVirtualEnvironment: boolean, namespace: string): string => {
