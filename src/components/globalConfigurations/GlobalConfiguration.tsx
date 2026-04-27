@@ -54,8 +54,10 @@ const ChartRepo = lazy(() => import('@Components/chartRepo/ChartRepo'))
 const ExternalLinks = lazy(() => import('@Components/externalLinks/ExternalLinks'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 const ProjectList = lazy(() => import('@Components/project/ProjectList'))
+const NodeAutoscalerProfiles = importComponentFromFELibrary('NodeAutoscalerProfileList', null, 'function')
 
-const GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM: SideNavigationProps['list'][number]['items'][number] = importComponentFromFELibrary('GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM', null, 'function')
+const GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM: SideNavigationProps['list'][number]['items'][number] =
+    importComponentFromFELibrary('GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM', null, 'function')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -253,6 +255,21 @@ const NavItem = ({ serverMode }) => {
             dataTestId: 'global-configurations-projects',
             href: BASE_ROUTES.GLOBAL_CONFIG.PROJECTS,
         },
+        ...(!!NodeAutoscalerProfiles
+            ? [{
+                id: 'global-config-infra',
+                title: 'Infra',
+                dataTestId: 'global-configurations-infrastructure',
+                items: [
+                  {
+                      id: 'global-configurations-node-autoscaler',
+                      title: 'Node Autoscaler',
+                      dataTestId: 'global-configurations-node-autoscaler',
+                      href: BASE_ROUTES.GLOBAL_CONFIG.NODE_AUTOSCALER.ROOT,
+                  },
+              ]
+            }]
+            : []),
         {
             id: 'authorization',
             title: 'USERS & PERMISSIONS',
@@ -277,7 +294,8 @@ const NavItem = ({ serverMode }) => {
                         animation: 'shift-toward-subtle',
                         visible:
                             tippyConfig.showTippy &&
-                            tippyConfig.showOnRoute === `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USERS}`,
+                            tippyConfig.showOnRoute ===
+                                `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USERS}`,
                         className: `global-configuration__user-permissions-tooltip no-content-padding dc__mxw-250 br-8 ${getComponentSpecificThemeClass(AppThemeType.light)}`,
                         placement: 'right',
                         content: <UserPermissionsTooltipContent onClose={handleTooltipClose} />,
@@ -316,41 +334,66 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
 
     return (
         <Routes>
-            <Route key={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS} path={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS} element={<ExternalLinks />} />
-            <Route key={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES} path={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES} element={<ChartRepo isSuperAdmin={isSuperAdmin} />} />
+            <Route
+                key={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS}
+                path={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS}
+                element={<ExternalLinks />}
+            />
+            <Route
+                key={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES}
+                path={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES}
+                element={<ChartRepo isSuperAdmin={isSuperAdmin} />}
+            />
             <Route path={`${BASE_ROUTES.GLOBAL_CONFIG.CLUSTER_ENV.ROOT}/*`} element={<Clusters />} />
-            <Route key={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS} path={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS} element={<ProjectList isSuperAdmin={isSuperAdmin} />} />
-            {!window._env_.K8S_CLIENT ? [
-                ...(serverMode !== SERVER_MODE.EA_ONLY
-                    ? [
-                          <Route
-                              key={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
-                              path={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
-                              element={
-                                  <HostURLConfiguration
-                                      isSuperAdmin={isSuperAdmin}
-                                      refreshGlobalConfig={getHostURLConfig}
-                                      handleChecklistUpdate={handleChecklistUpdate}
-                                  />
-                              }
-                          />,
-                      ]
-                    : []),
-
+            <Route
+                key={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS}
+                path={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS}
+                element={<ProjectList isSuperAdmin={isSuperAdmin} />}
+            />
+            {!!NodeAutoscalerProfiles && (
                 <Route
-                    key={BASE_ROUTES.GLOBAL_CONFIG.DOCKER}
-                    path={`${BASE_ROUTES.GLOBAL_CONFIG.DOCKER}/:id?`}
-                    element={
-                        <Docker
-                            handleChecklistUpdate={handleChecklistUpdate}
-                            isSuperAdmin={isSuperAdmin}
-                            isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
-                        />
-                    }
-                />,
+                    key={BASE_ROUTES.GLOBAL_CONFIG.NODE_AUTOSCALER.ROOT}
+                    path={`${BASE_ROUTES.GLOBAL_CONFIG.NODE_AUTOSCALER.ROOT}/*`}
+                    element={<NodeAutoscalerProfiles />}
+                />
+            )}
+            {!window._env_.K8S_CLIENT
+                ? [
+                      ...(serverMode !== SERVER_MODE.EA_ONLY
+                          ? [
+                                <Route
+                                    key={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
+                                    path={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
+                                    element={
+                                        <HostURLConfiguration
+                                            isSuperAdmin={isSuperAdmin}
+                                            refreshGlobalConfig={getHostURLConfig}
+                                            handleChecklistUpdate={handleChecklistUpdate}
+                                        />
+                                    }
+                                />,
+                            ]
+                          : []),
 
-                <Route key={BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT} path={`${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/*`} element={<Authorization />} />,
-            ]: []}
+                      <Route
+                          key={BASE_ROUTES.GLOBAL_CONFIG.DOCKER}
+                          path={`${BASE_ROUTES.GLOBAL_CONFIG.DOCKER}/:id?`}
+                          element={
+                              <Docker
+                                  handleChecklistUpdate={handleChecklistUpdate}
+                                  isSuperAdmin={isSuperAdmin}
+                                  isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
+                              />
+                          }
+                      />,
+
+                      <Route
+                          key={BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}
+                          path={`${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/*`}
+                          element={<Authorization />}
+                      />,
+                  ]
+                : []}
             <Route path="*" element={<Navigate to={defaultRoute()} />} />
         </Routes>
     )

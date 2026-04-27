@@ -31,6 +31,8 @@ export interface ClusterConfigurationsProps {
     initialIsTlsConnection: boolean
     getIsConnectProtocolConfigInvalid: () => boolean
     getIsTLSConfigInvalid: () => boolean
+    autoscalerProfile: SelectPickerOptionType<number>
+    setAutoscalerProfile: Dispatch<SetStateAction<SelectPickerOptionType<number>>>
 }
 
 export interface KubeConfigEditorProps {

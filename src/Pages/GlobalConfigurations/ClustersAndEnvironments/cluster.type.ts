@@ -242,6 +242,7 @@ export interface ClusterRowData
     envCount: number
     clusterType: string
     clusterCategory: string
+    autoscalerProfile: string
 }
 
 export enum ClusterEnvTabs {
@@ -267,6 +268,7 @@ export enum ClusterListFields {
     CLUSTER_TYPE = 'clusterType',
     ENV_COUNT = 'envCount',
     CLUSTER_CATEGORY = 'clusterCategory',
+    AUTOSCALER_PROFILE = 'autoscalerProfile',
     SERVER_URL = 'serverUrl',
     ACTIONS = 'actions',
 }
