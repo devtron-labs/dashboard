@@ -119,7 +119,7 @@ const ClusterList = () => {
         isSuperAdmin && !isK8sClient,
     )
 
-    const [, clusterNameVsAutoscalerProfile] = useAsync(getClusterAutoscalerProfileMap, [])
+    const [, clusterNameVsAutoscalerProfile, , refetchProfileMap] = useAsync(getClusterAutoscalerProfileMap, [])
 
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
 
@@ -305,6 +305,11 @@ const ClusterList = () => {
             pathname: ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV,
             search,
         })
+    }
+
+    const handleCloseEditClusterModal = () => {
+        refetchProfileMap()
+        handleRedirectToClusterList()
     }
 
     const renderList = () => {
@@ -493,7 +498,7 @@ const ClusterList = () => {
                             <EditCluster
                                 clusterList={clusterListResult ?? []}
                                 reloadClusterList={reloadClusterList}
-                                handleClose={handleRedirectToClusterList}
+                                handleClose={handleCloseEditClusterModal}
                             />
                         }
                     />
