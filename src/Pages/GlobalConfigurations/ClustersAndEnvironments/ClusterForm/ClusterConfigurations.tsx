@@ -314,7 +314,7 @@ const ClusterConfigurations = ({
                             />
                         </div>
                     )}
-                    {AutoscalerProfileSelect && (
+                    {window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && AutoscalerProfileSelect && (
                         <div className="w-250">
                             <AutoscalerProfileSelect
                                 autoscalerProfile={autoscalerProfile}

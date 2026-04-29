@@ -255,7 +255,7 @@ const NavItem = ({ serverMode }) => {
             dataTestId: 'global-configurations-projects',
             href: BASE_ROUTES.GLOBAL_CONFIG.PROJECTS,
         },
-        ...(!!NodeAutoscalerProfiles
+        ...(window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && !!NodeAutoscalerProfiles
             ? [{
                 id: 'global-config-infra',
                 title: 'Infra',
@@ -350,7 +350,7 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
                 path={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS}
                 element={<ProjectList isSuperAdmin={isSuperAdmin} />}
             />
-            {!!NodeAutoscalerProfiles && (
+            {window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && !!NodeAutoscalerProfiles && (
                 <Route
                     key={BASE_ROUTES.GLOBAL_CONFIG.NODE_AUTOSCALER.ROOT}
                     path={`${BASE_ROUTES.GLOBAL_CONFIG.NODE_AUTOSCALER.ROOT}/*`}

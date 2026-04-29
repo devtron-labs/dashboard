@@ -131,7 +131,7 @@ const ClusterForm = ({
     const [autoscalerProfile, setAutoscalerProfile] = useState<SelectPickerOptionType<number>>(null)
 
     useEffect(() => {
-        if (clusterName && getProfileAttachedToCluster) {
+        if (clusterName && window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && getProfileAttachedToCluster) {
             getProfileAttachedToCluster(clusterName).then((profile) => {
                 if (profile) {
                     setAutoscalerProfile(profile)
@@ -335,7 +335,7 @@ const ClusterForm = ({
         try {
             setIsUpdating(true)
             await api(payload)
-            if (attachProfileToCluster) {
+            if (window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && attachProfileToCluster) {
                 attachProfileToCluster(autoscalerProfile?.value, payload.cluster_name)
             }
             ToastManager.showToast({

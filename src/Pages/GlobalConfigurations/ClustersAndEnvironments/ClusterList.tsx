@@ -119,7 +119,11 @@ const ClusterList = () => {
         isSuperAdmin && !isK8sClient,
     )
 
-    const [, clusterNameVsAutoscalerProfile, , refetchProfileMap] = useAsync(getClusterAutoscalerProfileMap, [])
+    const [, clusterNameVsAutoscalerProfile, , refetchProfileMap] = useAsync(
+        getClusterAutoscalerProfileMap,
+        [],
+        !!window._env_.FEATURE_NODE_AUTOSCALER_ENABLE,
+    )
 
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
 
@@ -209,7 +213,7 @@ const ClusterList = () => {
                           } as TableColumnType<ClusterRowData, FiltersTypeEnum.STATE, {}>,
                       ]
                     : []),
-                ...(getClusterAutoscalerProfileMap
+                ...(window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && getClusterAutoscalerProfileMap
                     ? [
                           {
                               field: ClusterListFields.AUTOSCALER_PROFILE,
