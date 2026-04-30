@@ -1729,9 +1729,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.22.2-pre-1":
-  version: 1.22.2-pre-1
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.2-pre-1"
+"@devtron-labs/devtron-fe-common-lib@npm:1.22.2-beta-0":
+  version: 1.22.2-beta-0
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.2-beta-0"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1746,6 +1746,7 @@ __metadata:
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@replit/codemirror-vscode-keymap": "npm:6.0.2"
     "@tanstack/react-query": "npm:<5"
+    "@tanstack/react-virtual": "npm:^3.13.24"
     "@uiw/codemirror-extensions-hyper-link": "npm:4.23.10"
     "@uiw/codemirror-theme-github": "npm:4.23.7"
     "@uiw/react-codemirror": "npm:4.23.7"
@@ -1785,7 +1786,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/190f90adeedfc8e3fe8aee4bbfa7d0ccc22a37c318813a93844af80d4dabed0c9f71a11480805b155930f62a33aebe003a96440d968780612296590bde2e3b0b
+  checksum: 10c0/6053e359afb7ecd792c255fc9f6e38228d5c0634ebce16e3991ff4ebb4c28f5320fb453f15fcf25005b5ba462cca693236a5fdbf8312a3b564c3cc900a9feb77
   languageName: node
   linkType: hard
 
@@ -3588,6 +3589,25 @@ __metadata:
     react-native:
       optional: true
   checksum: 10c0/19d93d60fc39872683da0b74ca11cf78cc6186c8eec8b4732bec3efb83d553e94108a838d6d20dd54f109f330a56858133df85b4a4700c641c1fb3eb11855d35
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-virtual@npm:^3.13.24":
+  version: 3.13.24
+  resolution: "@tanstack/react-virtual@npm:3.13.24"
+  dependencies:
+    "@tanstack/virtual-core": "npm:3.14.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/f409b2bb67965a513b75a1403e622c0b86c88c67419f757c79f670615979e38dc7ad5569a02c924741697df3d4301a0f45208fd4b9f935a5d58dd83e1db5622a
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.14.0":
+  version: 3.14.0
+  resolution: "@tanstack/virtual-core@npm:3.14.0"
+  checksum: 10c0/9e07e7f74f5e02dfc47b358f7b5089e680d8b14b9c5b90e9497be6f57c76ca98d185fbe5008795b89919346bfc3676ebe1c61b34980eefe6674c88ec6ff4b136
   languageName: node
   linkType: hard
 
@@ -5599,7 +5619,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.2-pre-1"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.2-beta-0"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"
