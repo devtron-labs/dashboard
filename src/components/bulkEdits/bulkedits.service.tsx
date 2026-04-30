@@ -62,5 +62,5 @@ export function generateBulkEditYAML(
     prompt: string,
     context?: BulkEditGenerateContext,
 ): Promise<BulkEditGenerateResponse> {
-    return post(`${COMMON_ROUTES.ATHENA}/bulk-edit/generate`, { prompt, context })
+    return post(`${COMMON_ROUTES.ATHENA}/bulk-edit/generate`, { prompt, context }, { isProxyHost: true })
 }
