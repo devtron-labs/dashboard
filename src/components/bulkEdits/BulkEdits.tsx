@@ -62,7 +62,7 @@ import {
     renderDeploymentTemplateOutput,
     renderSecretOutput,
 } from './bulkedit.utils'
-import { getSeeExample, updateBulkList, updateImpactedObjectsList } from './bulkedits.service'
+import { generateBulkEditYAML, getSeeExample, updateBulkList, updateImpactedObjectsList } from './bulkedits.service'
 import { BulkEditsProps, BulkEditsState, BulkEditViewType } from './bulkEdits.type'
 import {
     BULK_EDIT_RESIZE_HANDLE_CLASS,
@@ -100,6 +100,9 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             activeOutputTab: 'none',
             codeEditorPayload: undefined,
             schema: null,
+            showAIPanel: false,
+            aiPrompt: '',
+            aiGenerating: false,
         }
     }
 
@@ -248,6 +251,94 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         size={ComponentSizeType.small}
                         isLoading={view === BulkEditViewType.LOADING_OUTPUT}
                     />
+                </div>
+            </div>
+        )
+    }
+
+    handleAIPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        this.setState({ aiPrompt: e.target.value })
+    }
+
+    handleAIGenerate = async () => {
+        const { aiPrompt } = this.state
+        if (!aiPrompt.trim()) return
+
+        this.setState({ aiGenerating: true })
+        try {
+            const result = await generateBulkEditYAML(aiPrompt.trim())
+            this.setState({ codeEditorPayload: result.yaml, showAIPanel: false })
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: result.explanation,
+            })
+        } catch (error) {
+            showError(error)
+        } finally {
+            this.setState({ aiGenerating: false })
+        }
+    }
+
+    handleAIPanelKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault()
+            this.handleAIGenerate()
+        }
+    }
+
+    renderAIPanel = () => {
+        const { showAIPanel, aiPrompt, aiGenerating } = this.state
+
+        if (!showAIPanel) {
+            return (
+                <div className="px-16 py-8 border__secondary--bottom bg__primary flexbox dc__align-items-center dc__gap-8">
+                    <Button
+                        dataTestId="generate-with-ai-button"
+                        text="Generate with AI"
+                        variant={ButtonVariantType.text}
+                        size={ComponentSizeType.medium}
+                        startIcon={<Icon name="ic-ai" color={null} />}
+                        onClick={() => this.setState({ showAIPanel: true })}
+                    />
+                </div>
+            )
+        }
+
+        return (
+            <div className="px-16 py-12 border__secondary--bottom bg__tertiary flexbox-col dc__gap-8">
+                <div className="flex dc__content-space dc__align-items-center">
+                    <span className="fs-13 fw-6 cn-9">Generate with AI</span>
+                    <Button
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        onClick={() => this.setState({ showAIPanel: false, aiPrompt: '' })}
+                        dataTestId="close-ai-panel-button"
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.negativeGrey}
+                        ariaLabel="Close AI panel"
+                        showAriaLabelInTippy={false}
+                        size={ComponentSizeType.xs}
+                    />
+                </div>
+                <textarea
+                    className="w-100 fs-13 cn-9 dc__resize-vertical br-4 p-8 dc__border"
+                    rows={3}
+                    placeholder="e.g. Set MaxSurge to 2 for all apps in the prod environment"
+                    value={aiPrompt}
+                    onChange={this.handleAIPromptChange}
+                    onKeyDown={this.handleAIPanelKeyDown}
+                    disabled={aiGenerating}
+                    data-testid="ai-prompt-textarea"
+                />
+                <div className="flex dc__gap-8">
+                    <Button
+                        dataTestId="ai-generate-submit-button"
+                        text="Generate"
+                        size={ComponentSizeType.small}
+                        isLoading={aiGenerating}
+                        disabled={!aiPrompt.trim()}
+                        onClick={this.handleAIGenerate}
+                    />
+                    <span className="fs-12 cn-7 dc__align-self-center">Cmd+Enter to generate</span>
                 </div>
             </div>
         )
@@ -568,6 +659,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 
     renderBulkCodeEditor = () => (
         <div className="bulk-container flexbox-col flex-grow-1 dc__overflow-hidden">
+            {this.renderAIPanel()}
             {this.renderCodeEditorHeader()}
             {this.renderCodeEditorBody()}
         </div>

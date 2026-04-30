@@ -85,6 +85,9 @@ export interface BulkEditsState {
     codeEditorPayload: string
     selectedReadmeVersionOption: OptionType<BulkEditVersion>
     schema: Record<string, any> | null
+    showAIPanel: boolean
+    aiPrompt: string
+    aiGenerating: boolean
 }
 
 export interface OutputTabType {

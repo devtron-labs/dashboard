@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BulkEditVersion, get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkEditVersion, get, post, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -45,4 +45,22 @@ export function updateImpactedObjectsList(request): Promise<any> {
 
 export function getSeeExample() {
     return get(`${Routes.BULK_EDIT_V1_BASEPATH}/readme`)
+}
+
+export interface BulkEditGenerateContext {
+    projectNames?: string[]
+    appNames?: string[]
+    envNames?: string[]
+}
+
+export interface BulkEditGenerateResponse {
+    yaml: string
+    explanation: string
+}
+
+export function generateBulkEditYAML(
+    prompt: string,
+    context?: BulkEditGenerateContext,
+): Promise<BulkEditGenerateResponse> {
+    return post(`${COMMON_ROUTES.ATHENA}/bulk-edit/generate`, { prompt, context })
 }
