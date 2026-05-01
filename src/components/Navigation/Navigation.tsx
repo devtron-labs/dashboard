@@ -42,7 +42,13 @@ import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
 import { NavGroupProps, NavigationProps } from './types'
-import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
+import {
+    doesNavigationGroupMatchPath,
+    doesNavigationItemMatchPath,
+    filterNavigationItems,
+    findActiveNavigationItemOfNavGroup,
+    hasNavigationGroupItems,
+} from './utils'
 
 import './styles.scss'
 
@@ -143,17 +149,23 @@ export const Navigation = ({
     const NAVIGATION_LIST = useMemo(() => getNavigationList(serverMode), [serverMode])
 
     const selectedNavGroup = useMemo(
-        () => NAVIGATION_LIST.find(({ items }) => items.some((item) => doesNavigationItemMatchPath(item, pathname))),
-        [pathname],
+        () => NAVIGATION_LIST.find((group) => doesNavigationGroupMatchPath(group, pathname)),
+        [NAVIGATION_LIST, pathname],
+    )
+
+    const selectedExpandableNavGroup = useMemo(
+        () => (hasNavigationGroupItems(selectedNavGroup) ? selectedNavGroup : null),
+        [selectedNavGroup],
     )
 
     // The current navigation group is the one that is hovered or the one that is active, \
     // this is used to determine which nav group items are to be shown in expanded state.
-    const currentNavGroup = hoveredNavGroup || selectedNavGroup
+    const currentNavGroup = hoveredNavGroup || selectedExpandableNavGroup
     const isExpanded = !!hoveredNavGroup
 
     const navItems = useMemo<NavigationGroupType['items']>(
-        () => (currentNavGroup ? filterNavigationItems(currentNavGroup.items, searchText) : []),
+        () =>
+            hasNavigationGroupItems(currentNavGroup) ? filterNavigationItems(currentNavGroup.items, searchText) : [],
         [currentNavGroup, searchText],
     )
 
@@ -164,6 +176,7 @@ export const Navigation = ({
             // Prevent navigation, if the item is already active
             if (
                 selectedNavGroup?.id === navItem.id &&
+                hasNavigationGroupItems(selectedNavGroup) &&
                 doesNavigationItemMatchPath(findActiveNavigationItemOfNavGroup(selectedNavGroup.items), pathname)
             ) {
                 e.preventDefault()
@@ -172,6 +185,13 @@ export const Navigation = ({
                 category: 'Navigation',
                 action: `nav-${navItem.id}`,
             })
+
+            if (!hasNavigationGroupItems(navItem)) {
+                setHoveredNavGroup(null)
+                setSearchText('')
+                return
+            }
+
             setHoveredNavGroup(navItem)
             setSearchText('')
         }
@@ -186,25 +206,27 @@ export const Navigation = ({
             setSearchText('')
         }
 
-    const handleNavGroupHover = (navGroup: typeof hoveredNavGroup) => (isHovered: boolean) => {
-        clearTimeout(timeoutRef.current)
+    const handleNavGroupHover =
+        (navGroup: NavigationGroupType & { items: NonNullable<NavigationGroupType['items']> }) =>
+        (isHovered: boolean) => {
+            clearTimeout(timeoutRef.current)
 
-        if (isHovered) {
-            if (!hoveredNavGroup) {
-                setHoveredNavGroup(navGroup)
-                return
+            if (isHovered) {
+                if (!hoveredNavGroup) {
+                    setHoveredNavGroup(navGroup)
+                    return
+                }
+
+                timeoutRef.current = setTimeout(() => {
+                    setHoveredNavGroup(navGroup)
+                    setSearchText('')
+                }, 50)
             }
-
-            timeoutRef.current = setTimeout(() => {
-                setHoveredNavGroup(navGroup)
-                setSearchText('')
-            }, 50)
         }
-    }
 
     const handleOpenExpandedNavigation = (e: MouseEvent<HTMLDivElement>) => {
         if (!hoveredNavGroup && e.target === e.currentTarget) {
-            setHoveredNavGroup(selectedNavGroup)
+            setHoveredNavGroup(selectedExpandableNavGroup)
         }
     }
 
@@ -253,8 +275,16 @@ export const Navigation = ({
                             isExpanded={isExpanded}
                             isSelected={hoveredNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
                             onClick={handleNavGroupClick(item)}
-                            to={findActiveNavigationItemOfNavGroup(item.items)?.href}
-                            onHover={handleNavGroupHover(item)}
+                            to={
+                                hasNavigationGroupItems(item)
+                                    ? findActiveNavigationItemOfNavGroup(item.items)?.href
+                                    : item.href
+                            }
+                            onHover={
+                                hasNavigationGroupItems(item)
+                                    ? handleNavGroupHover(item)
+                                    : handleCloseExpandedNavigation(true)
+                            }
                             showTooltip={item.disabled}
                         />
                     ))}

@@ -2,7 +2,7 @@ import { NavigationGroupType, NavigationItemType, ROUTER_URLS, SERVER_MODE } fro
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { filterNavGroupAndItem } from './utils'
+import { filterNavGroupAndItem, hasNavigationGroupItems } from './utils'
 
 const APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
     'APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM',
@@ -252,6 +252,12 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
     },
     ...(DATA_PROTECTION_MANAGEMENT_NAV_GROUP ? [DATA_PROTECTION_MANAGEMENT_NAV_GROUP] : []),
     {
+        id: 'audit-logs',
+        title: 'Audit logs',
+        icon: 'ic-file-log-search',
+        href: ROUTER_URLS.AUDIT_LOGS,
+    },
+    {
         id: 'global-configuration',
         title: 'Global Configuration',
         icon: 'ic-gear',
@@ -332,37 +338,41 @@ export const getNavigationList = (serverMode: SERVER_MODE): NavigationGroupType[
         ),
     )
 
-    const filteredNavItems = filteredNavGroup.map((group) => {
-        const filteredItems = group.items.filter((item) =>
-            filterNavGroupAndItem(
-                {
-                    forceHideEnvKey: item.forceHideEnvKey,
-                    hideNav: item.hideNav,
-                    isAvailableInEA: item.isAvailableInEA,
-                },
-                serverMode,
-            ),
-        )
-        return { ...group, items: filteredItems }
-    })
+    return filteredNavGroup.map((group) => {
+        if (!hasNavigationGroupItems(group)) {
+            return group
+        }
 
-    return filteredNavItems.map((group) => ({
-        ...group,
-        items: group.items.map((item) => {
-            if (item.hasSubMenu && item.subItems) {
-                const filteredSubItems = item.subItems.filter((subItem) =>
-                    filterNavGroupAndItem(
-                        {
-                            forceHideEnvKey: subItem.forceHideEnvKey,
-                            hideNav: subItem.hideNav,
-                            isAvailableInEA: subItem.isAvailableInEA,
-                        },
-                        serverMode,
-                    ),
-                )
-                return { ...item, subItems: filteredSubItems }
-            }
-            return item
-        }),
-    }))
+        const filteredItems = group.items
+            .filter((item) =>
+                filterNavGroupAndItem(
+                    {
+                        forceHideEnvKey: item.forceHideEnvKey,
+                        hideNav: item.hideNav,
+                        isAvailableInEA: item.isAvailableInEA,
+                    },
+                    serverMode,
+                ),
+            )
+            .map((item) => {
+                if (item.hasSubMenu && item.subItems) {
+                    const filteredSubItems = item.subItems.filter((subItem) =>
+                        filterNavGroupAndItem(
+                            {
+                                forceHideEnvKey: subItem.forceHideEnvKey,
+                                hideNav: subItem.hideNav,
+                                isAvailableInEA: subItem.isAvailableInEA,
+                            },
+                            serverMode,
+                        ),
+                    )
+
+                    return { ...item, subItems: filteredSubItems }
+                }
+
+                return item
+            })
+
+        return { ...group, items: filteredItems } as NavigationGroupType
+    })
 }

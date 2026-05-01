@@ -70,6 +70,7 @@ import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authoriza
 import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EditClusterDrawerContent'
 import { ReleaseConfigurations } from '@Pages/Releases/Detail'
 import { ApplicationManagementRouter } from '@PagesDevtron2.0/ApplicationManagement'
+import AuditLogsRouter from '@PagesDevtron2.0/AuditLogs/AuditLogsList'
 import { InfrastructureManagementRouter } from '@PagesDevtron2.0/InfrastructureManagement'
 
 import { SERVER_MODE, ViewType } from '../../../config'
@@ -563,6 +564,11 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         key={BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.ROOT}
                                         path={`${BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.ROOT}/*`}
                                         element={<InfrastructureManagementRouter isSuperAdmin={isSuperAdmin} />}
+                                    />
+                                    <Route
+                                        key={BASE_ROUTES.AUDIT_LOGS.ROOT}
+                                        path={`${BASE_ROUTES.AUDIT_LOGS.ROOT}/*`}
+                                        element={<AuditLogsRouter />}
                                     />
                                     {!window._env_.K8S_CLIENT
                                         ? [
