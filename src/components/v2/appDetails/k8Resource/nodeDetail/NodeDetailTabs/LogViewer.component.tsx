@@ -73,6 +73,14 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({ subje
 
         handleSelectionChange(terminal.current, setPopupText)
 
+        terminal.current.attachCustomKeyEventHandler((event: KeyboardEvent) => {
+            if (event.type === 'keydown' && event.key === 'Enter') {
+                terminal.current.writeln('')
+                return false
+            }
+            return true
+        })
+
         fitAddon.current = new FitAddon()
         terminal.current.loadAddon(fitAddon.current)
 
