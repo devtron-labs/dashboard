@@ -15,13 +15,13 @@
  */
 
 import { Component } from 'react'
-import { generatePath, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { getWorkflowNodeStatusTitle, RouterV5Props, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import link from '@Icons/ic-link.svg'
 import ICLinkedCINode from '@Icons/ic-node-build-linked.svg?react'
 import { TriggerStatus } from '../../../../config'
-import { DEFAULT_STATUS } from '../../../../../../config'
+import { DEFAULT_STATUS, URLS } from '../../../../../../config'
 
 export interface CINodeProps extends RouterV5Props<{ appId: string }> {
     x: number
@@ -47,9 +47,7 @@ export interface CINodeProps extends RouterV5Props<{ appId: string }> {
 
 export class TriggerLinkedCINode extends Component<CINodeProps> {
     getCIDetailsURL(): string {
-        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS, {
-            appId: this.props.params.appId,
-        })}/${this.props.id}`
+        return `${this.props.location.pathname.replace(URLS.APP_TRIGGER, URLS.APP_CI_DETAILS)}/${this.props.id}`
     }
 
     redirectToCIDetails() {
