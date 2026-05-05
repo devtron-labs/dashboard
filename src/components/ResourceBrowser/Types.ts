@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Dispatch, RefObject, SetStateAction } from 'react'
+import React, { Dispatch, type JSX, RefObject, SetStateAction } from 'react'
 import { GroupBase } from 'react-select'
 
 import {
@@ -24,7 +24,6 @@ import {
     GVKType,
     K8SObjectBaseType,
     K8sResourceDetailDataType,
-    K8sResourceDetailType,
     OptionType,
     ResourceDetail,
     ResourceRecommenderActionMenuProps,
@@ -53,7 +52,7 @@ export interface K8SObjectMapType extends K8SObjectBaseType {
     child: Map<string, K8SObjectChildMapType>
 }
 
-export interface ClusterDetailBaseParams {
+export type ClusterDetailBaseParams = {
     clusterId: string
 }
 
@@ -170,14 +169,6 @@ export interface ResourceListEmptyStateType {
     subTitle: string
     actionButtonText?: string
     actionHandler?: () => void
-}
-
-export interface EventListType {
-    listRef: React.MutableRefObject<HTMLDivElement>
-    filteredData: K8sResourceDetailType['data']
-    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
-    searchText: string
-    clusterId: string
 }
 
 export interface ConnectingToClusterStateProps {

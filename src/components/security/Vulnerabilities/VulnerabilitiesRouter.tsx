@@ -1,13 +1,14 @@
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 import {
+    BASE_ROUTES,
     BreadCrumb,
     BreadcrumbText,
     DOCUMENTATION,
     getSecurityCenterBreadcrumb,
     InfoBlock,
     PageHeader,
-    URLS,
+    ROUTER_URLS,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -15,19 +16,19 @@ import { SecurityScansTab } from '../SecurityScansTab'
 import { CVEList } from './CVEList'
 
 const VulnerabilitiesRouter = () => {
-    const { breadcrumbs } = useBreadcrumb({
+    const { breadcrumbs } = useBreadcrumb(ROUTER_URLS.SECURITY_CENTER_VULNERABILITIES, {
         alias: {
             ...getSecurityCenterBreadcrumb(),
             vulnerabilities: {
                 component: <BreadcrumbText heading="Vulnerabilities" isActive />,
                 linked: false,
             },
-            deployments: null,
-            cves: null,
         },
     })
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => (
+        <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.SECURITY_CENTER_VULNERABILITIES} />
+    )
 
     return (
         <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
@@ -38,15 +39,14 @@ const VulnerabilitiesRouter = () => {
                 borderConfig={{ top: false, right: false, left: false }}
                 borderRadiusConfig={{ top: false, bottom: false, right: false, left: false }}
             />
-            <Switch>
-                <Route path={URLS.SECURITY_CENTER_VULNERABILITY_DEPLOYMENTS} exact>
-                    <SecurityScansTab />
-                </Route>
-                <Route path={URLS.SECURITY_CENTER_VULNERABILITY_CVES} exact>
-                    <CVEList />
-                </Route>
-                <Redirect to={URLS.SECURITY_CENTER_VULNERABILITY_DEPLOYMENTS} />
-            </Switch>
+            <Routes>
+                <Route path={BASE_ROUTES.SECURITY_CENTER.VULNERABILITIES.DEPLOYMENTS} element={<SecurityScansTab />} />
+                <Route path={BASE_ROUTES.SECURITY_CENTER.VULNERABILITIES.CVES} element={<CVEList />} />
+                <Route
+                    path="*"
+                    element={<Navigate to={BASE_ROUTES.SECURITY_CENTER.VULNERABILITIES.DEPLOYMENTS} replace />}
+                />
+            </Routes>
         </div>
     )
 }

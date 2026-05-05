@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from 'react'
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -28,6 +28,7 @@ import {
     ComponentSizeType,
     Icon,
     MODES,
+    ROUTER_URLS,
     SavedVariablesViewParamsType,
     ScopedVariablesFileViewType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -68,21 +69,31 @@ const SavedVariablesContent = ({
     variablesList,
     handleClearFilters,
 }: SavedVariablesContentProps) => {
-    const history = useHistory()
-    const { path } = useRouteMatch()
-    const { currentView: currentViewFromURL, ...params } = useParams<SavedVariablesViewParamsType>()
+    const navigate = useNavigate()
+    const { currentView: currentViewFromURL } = useParams<SavedVariablesViewParamsType>()
     const isEnvironmentListEnabled =
         window._env_.FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE && !!ScopedVariablesEnvironmentListContainer
     const currentView = parseURLViewToValidView(currentViewFromURL, isEnvironmentListEnabled)
 
     useEffect(() => {
         if (currentView !== currentViewFromURL) {
-            history.replace(generatePath(path, { ...params, currentView }))
+            navigate(
+                generatePath(ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.SCOPED_VARIABLES.CURRENT_VIEW, {
+                    currentView,
+                }),
+                {
+                    replace: true,
+                },
+            )
         }
     }, [currentViewFromURL, isEnvironmentListEnabled])
 
     const handleCurrentViewUpdate: DescriptorTabProps['handleCurrentViewUpdate'] = (view) => {
-        history.push(generatePath(path, { ...params, currentView: view }))
+        navigate(
+            generatePath(ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.SCOPED_VARIABLES.CURRENT_VIEW, {
+                currentView: view,
+            }),
+        )
     }
 
     const handleActionMenuClick: ActionMenuProps<DownloadVariableType>['onClick'] = (

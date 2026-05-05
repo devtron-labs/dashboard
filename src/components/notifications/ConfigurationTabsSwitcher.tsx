@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -24,9 +24,10 @@ import { getConfigurationTabTextWithIcon } from './notifications.util'
 import { ConfigurationTabSwitcherType } from './types'
 
 export const ConfigurationTabSwitcher = ({ isEmptyView }: ConfigurationTabSwitcherType) => {
-    const history = useHistory()
+    const navigate = useNavigate()
+    const location = useLocation()
     const { searchParams } = useSearchString()
-    const queryParams = new URLSearchParams(history.location.search)
+    const queryParams = new URLSearchParams(location.search)
     const activeTab = queryParams.get('modal') as ConfigurationsTabTypes
 
     const handleTabClick = (_activeTab: ConfigurationsTabTypes) => () => {
@@ -34,7 +35,7 @@ export const ConfigurationTabSwitcher = ({ isEmptyView }: ConfigurationTabSwitch
             ...searchParams,
             modal: _activeTab,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

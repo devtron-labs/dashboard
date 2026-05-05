@@ -271,8 +271,6 @@ export interface GroupFilterType {
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
-    selectedFilterTab: AppFilterTabs
-    setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
     groupFilterOptions: GroupOptionType[]
     selectedGroupFilter: MultiValue<GroupOptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>

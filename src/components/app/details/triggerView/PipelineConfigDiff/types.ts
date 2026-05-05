@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, type JSX, SetStateAction } from 'react'
 
 import {
     DeploymentConfigDiffProps,
@@ -41,7 +41,13 @@ export interface UsePipelineDeploymentConfigProps {
 
 export type PipelineConfigDiffProps = Pick<
     DeploymentConfigDiffProps,
-    'configList' | 'collapsibleNavList' | 'navList' | 'scopeVariablesConfig' | 'errorConfig'
+    | 'configList'
+    | 'collapsibleNavList'
+    | 'navList'
+    | 'scopeVariablesConfig'
+    | 'errorConfig'
+    | 'tabConfig'
+    | 'navHelpText'
 > & {
     isLoading?: boolean
     radioSelectConfig: DeploymentConfigDiffRadioSelectConfig

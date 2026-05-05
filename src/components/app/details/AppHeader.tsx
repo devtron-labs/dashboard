@@ -15,23 +15,24 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
-import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
+    BASE_ROUTES,
     BreadCrumb,
     DOCUMENTATION,
     getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     noop,
     PageHeader,
+    ROUTER_URLS,
     TabGroup,
     TabProps,
-    URLS as CommonURLS,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '../../../config'
+import { AppFilterTabs } from '@Components/ApplicationGroup/Constants'
+
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
@@ -45,6 +46,8 @@ import './app.scss'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
+const DEVTRON_APP_ROUTES = BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.DETAIL
+
 export const AppHeader = ({
     appName,
     appMetaInfo,
@@ -52,8 +55,6 @@ export const AppHeader = ({
     appListOptions,
     selectedAppList,
     setSelectedAppList,
-    selectedFilterTab,
-    setSelectedFilterTab,
     groupFilterOptions,
     selectedGroupFilter,
     setSelectedGroupFilter,
@@ -61,14 +62,14 @@ export const AppHeader = ({
     openDeleteGroup,
     isSuperAdmin,
 }: AppHeaderType) => {
-    const { appId } = useParams<{ appId }>()
-    const match = useRouteMatch()
-    const history = useHistory()
+    const { appId } = useParams<{ appId: string }>()
+    const navigate = useNavigate()
     const location = useLocation()
     const currentPathname = useRef('')
     const { setCurrentAppName } = useAppContext()
 
     const [isMenuOpen, setMenuOpen] = useState(false)
+    const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
 
     const contextValue = useMemo(
         () => ({
@@ -122,19 +123,20 @@ export const AppHeader = ({
 
     const handleAppChange = useCallback(
         ({ value }) => {
-            const tab = currentPathname.current.replace(match.url, '').split('/')[1]
-            const newUrl = generatePath(match.path, { appId: value })
-            history.push(`${newUrl}/${tab}`)
-            ReactGA.event({
+            const currentAppUrl = generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT, { appId })
+            const tab = currentPathname.current.replace(currentAppUrl, '').split('/')[1]
+            const newUrl = generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT, { appId: value })
+            navigate(`${newUrl}/${tab}`)
+            handleAnalyticsEvent({
                 category: 'App Selector',
                 action: 'DA_SWITCH_SEARCHED_APP_CLICKED',
-                label: tab,
             })
         },
         [location.pathname],
     )
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT,
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
@@ -142,8 +144,8 @@ export const AppHeader = ({
                     component: <span className="cb-5 fs-16 dc__capitalize">Devtron Apps</span>,
                     linked: true,
                 },
-                ':appId(\\d+)': {
-                    component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
+                ':appId': {
+                    component: <AppSelector onChange={handleAppChange} appId={+appId} appName={appName} />,
                     linked: false,
                 },
             },
@@ -169,7 +171,7 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 showWarning: !!showWarning,
                 props: {
-                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    to: DEVTRON_APP_ROUTES.OVERVIEW,
                     'data-action': 'Overview Clicked',
                     'data-testid': 'overview-click',
                     onClick: handleEventClick,
@@ -180,7 +182,7 @@ export const AppHeader = ({
                 label: 'App Details',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    to: DEVTRON_APP_ROUTES.APP_DETAILS,
                     'data-action': 'App Details Clicked',
                     'data-testid': 'app-details-tab',
                     onClick: handleEventClick,
@@ -191,7 +193,7 @@ export const AppHeader = ({
                 label: 'Build & Deploy',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_TRIGGER}`,
+                    to: DEVTRON_APP_ROUTES.TRIGGER,
                     'data-action': 'Build & Deploy Clicked',
                     'data-testid': 'build-deploy-click',
                     onClick: handleEventClick,
@@ -202,7 +204,7 @@ export const AppHeader = ({
                 label: 'Build History',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_CI_DETAILS}`,
+                    to: DEVTRON_APP_ROUTES.CI_DETAILS,
                     'data-action': 'Build History Clicked',
                     'data-testid': 'build-history-clicked',
                     onClick: handleEventClick,
@@ -213,7 +215,7 @@ export const AppHeader = ({
                 label: 'Deployment History',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_CD_DETAILS}`,
+                    to: DEVTRON_APP_ROUTES.CD_DETAILS,
                     'data-action': 'Deployment History Clicked',
                     'data-testid': 'deployment-history-link',
                     onClick: handleEventClick,
@@ -224,7 +226,7 @@ export const AppHeader = ({
                 label: 'Deployment Metrics',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`,
+                    to: DEVTRON_APP_ROUTES.DEPLOYMENT_METRICS,
                     'data-action': 'Deployment Metrics Clicked',
                     'data-testid': 'deployment-matrix',
                     onClick: handleEventClick,
@@ -236,7 +238,7 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 icon: 'ic-sliders-vertical',
                 props: {
-                    to: `${match.url}/${CommonURLS.APP_CONFIG}`,
+                    to: DEVTRON_APP_ROUTES.CONFIGURATIONS,
                     'data-action': 'App Configuration Clicked',
                     'data-testid': 'app-config-link',
                     onClick: handleEventClick,
@@ -249,7 +251,7 @@ export const AppHeader = ({
 
     const renderBreadcrumbs = () => (
         <>
-            <BreadCrumb breadcrumbs={breadcrumbs} />
+            <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT} />
             <div className="dc__border-right ml-8 mr-8 h-16" />
             <AppGroupAppFilterContext.Provider value={contextValue}>
                 <AppGroupAppFilter />

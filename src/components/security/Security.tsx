@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { SecurityCenterOverview } from '@PagesDevtron2.0/SecurityCenter'
@@ -29,21 +29,13 @@ import './security.scss'
 const SecurityEnablement = importComponentFromFELibrary('SecurityEnablement', null, 'function')
 
 export const Security = () => (
-    <Switch>
-        <Route exact path={URLS.SECURITY_CENTER_OVERVIEW}>
-            <SecurityCenterOverview />
-        </Route>
-        <Route path={URLS.SECURITY_CENTER_VULNERABILITIES}>
-            <VulnerabilitiesRouter />
-        </Route>
+    <Routes>
+        <Route path={BASE_ROUTES.SECURITY_CENTER.OVERVIEW} element={<SecurityCenterOverview />} />
+        <Route path={`${BASE_ROUTES.SECURITY_CENTER.VULNERABILITIES.ROOT}/*`} element={<VulnerabilitiesRouter />} />
         {SecurityEnablement && (
-            <Route path={URLS.SECURITY_CENTER_SECURITY_ENABLEMENT}>
-                <SecurityEnablement />
-            </Route>
+            <Route path={BASE_ROUTES.SECURITY_CENTER.SECURITY_ENABLEMENT} element={<SecurityEnablement />} />
         )}
-        <Route path={URLS.SECURITY_CENTER_POLICIES}>
-            <SecurityPoliciesTab />
-        </Route>
-        <Redirect to={SecurityCenterOverview ? URLS.SECURITY_CENTER_OVERVIEW : URLS.SECURITY_CENTER_VULNERABILITIES} />
-    </Switch>
+        <Route path={`${BASE_ROUTES.SECURITY_CENTER.POLICIES}/*`} element={<SecurityPoliciesTab />} />
+        <Route path="*" element={<Navigate to={BASE_ROUTES.SECURITY_CENTER.OVERVIEW} />} />
+    </Routes>
 )

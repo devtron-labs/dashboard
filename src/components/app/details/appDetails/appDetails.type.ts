@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+import { MultiValue } from 'react-select'
+
 import {
-    ACTION_STATE,
+    AppDetails,
     AppEnvironment,
     DeploymentStatusDetailsBreakdownDataType,
     EnvAppsMetaDTO,
     OptionType,
     ResponseType,
+    ScanRecommendationsDTO,
     ScanResultDTO,
     SelectPickerProps,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { fetchAppDetailsInTime } from '@Components/app/service'
-
-import { AppDetails, SyncErrorType } from '../../../v2/appDetails/appDetails.type'
-import { AggregatedNodes } from '../../types'
+import { AggregatedNodes, UseGetDTAppDetailsReturnType } from '../../types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -50,17 +51,11 @@ export enum StatusType {
     Throughput = 'Throughput',
 }
 
-export enum CalendarFocusInput {
-    StartDate = 'startDate',
-    EndDate = 'endDate',
-}
-
 export type AppMetricsTabType = 'aggregate' | 'pod'
 export type ChartTypes = 'cpu' | 'ram' | 'status' | 'latency'
 export type StatusTypes = '5xx' | '4xx' | '2xx' | 'Throughput'
-export type CalendarFocusInputType = 'startDate' | 'endDate'
 
-export interface AppDetailsPathParams {
+export type AppDetailsPathParams = {
     appId: string
     envId?: string
 }
@@ -114,29 +109,11 @@ export interface NodeSelectorsType {
 }
 
 export interface DetailsType {
-    environment?: any
-    appDetailsAPI: typeof fetchAppDetailsInTime
-    setAppDetailResultInParent?: (appDetails) => void
-    isAppDeployment?: boolean
+    environment?: AppEnvironment
     environments: AppEnvironment[]
-    isPollingRequired?: boolean
-    setIsAppDeleted?: any
-    commitInfo?: boolean
-    isAppDeleted?: boolean
-    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-    isVirtualEnvRef?: React.MutableRefObject<boolean>
-    isDeploymentBlocked?: boolean
-    filteredEnvIds?: string
-    deploymentUserActionState?: ACTION_STATE
-    onCloseHideDeploymentWindowConfirmationModal?: () => void
-    appDetails: any
-    setAppDetails: React.Dispatch<React.SetStateAction<AppDetails>>
     isAppView: boolean
     applications: EnvAppsMetaDTO['apps']
-}
-
-export interface DeletedAppComponentType extends SyncErrorType {
-    resourceTreeFetchTimeOut: boolean
+    appDetailsQueryData: UseGetDTAppDetailsReturnType
 }
 
 export interface AppStatusCardType {
@@ -148,7 +125,10 @@ export interface AppStatusCardType {
 }
 
 export interface DeploymentStatusCardType {
-    deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+    deploymentStatusDetailsBreakdownData?: Pick<
+        DeploymentStatusDetailsBreakdownDataType,
+        'deploymentStatus' | 'triggeredBy' | 'deploymentTriggerTime'
+    >
     cardLoading?: boolean
     hideDetails?: boolean
     triggeredBy?: string
@@ -197,12 +177,19 @@ export interface UseGetAppSecurityDetailsProps {
     envId?: number
     installedAppId?: number
     artifactId?: number
+    buildId?: number
 }
 export interface UseGetAppSecurityDetailsReturnType {
     scanResultLoading: boolean
     scanResultResponse: ResponseType<ScanResultDTO>
     scanResultError: ServerErrors
     reloadScanResult: () => void
+}
+export interface UseSecurityRecommendationReturnType {
+    scanRecommendationsResultLoading: boolean
+    scanRecommendationsResultResponse: ResponseType<ScanRecommendationsDTO>
+    scanRecommendationsResultError: ServerErrors
+    reloadScanRecommendationsResult: () => void
 }
 
 export enum HibernationModalTypes {
@@ -216,6 +203,8 @@ type AppEnvDetailsType = 'app' | 'app-group'
 export interface AppDetailProps {
     detailsType: AppEnvDetailsType
     filteredResourceIds: string
+    resourceList: OptionType<string, string>[]
+    setSelectedResourceList: Dispatch<SetStateAction<MultiValue<OptionType>>>
 }
 
 export type AppEnvDropdownProps = Pick<SelectPickerProps, 'options' | 'value'> & { isAppView?: boolean }

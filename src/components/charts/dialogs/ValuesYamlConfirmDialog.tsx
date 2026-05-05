@@ -16,7 +16,7 @@
 
 import React, { Component } from 'react'
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Warn } from '../../../assets/icons/ic-warning.svg'
+import Warn from '../../../assets/icons/ic-warning.svg?react'
 import close from '../../../assets/icons/ic-close.svg'
 
 export class ValuesYamlConfirmDialog extends Component<{

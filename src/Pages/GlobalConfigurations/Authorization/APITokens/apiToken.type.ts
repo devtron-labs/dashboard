@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { type JSX } from 'react'
 
 import { GenericModalProps } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ExpirationDateSelectOptionType } from './types'
 
 export interface FormType {
     name: string
@@ -36,8 +38,8 @@ export interface GenerateTokenType {
     showGenerateModal: boolean
     setShowGenerateModal: React.Dispatch<React.SetStateAction<boolean>>
     handleGenerateTokenActionButton: () => void
-    setSelectedExpirationDate
-    selectedExpirationDate
+    setSelectedExpirationDate: React.Dispatch<React.SetStateAction<ExpirationDateSelectOptionType>>
+    selectedExpirationDate: ExpirationDateSelectOptionType
     reload: () => void
 }
 
@@ -87,7 +89,7 @@ export interface GenerateTokenModalType {
 
 export interface APITokenListType {
     tokenList: TokenListType[]
-    renderSearchToken: () => void
+    renderSearchToken: () => JSX.Element
     reload: () => void
 }
 
@@ -95,8 +97,8 @@ export interface RegenerateModalType {
     close: () => void
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     editData: EditDataType
-    customDate: number
-    setCustomDate: React.Dispatch<React.SetStateAction<number>>
+    customDate: Date
+    setCustomDate: React.Dispatch<React.SetStateAction<Date>>
     reload: () => void
     redirectToTokenList: () => void
 }

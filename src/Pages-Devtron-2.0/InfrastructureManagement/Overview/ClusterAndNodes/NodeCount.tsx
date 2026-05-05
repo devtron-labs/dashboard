@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { generatePath, useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import {
     ButtonComponentType,
@@ -15,7 +15,7 @@ import {
     numberComparatorBySortOrder,
     OVERVIEW_PAGE_SIZE_OPTIONS,
     Pagination,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
@@ -33,7 +33,7 @@ import { getClusterNodeTooltipContent } from './utils'
 
 const NodeCounts = ({ nodeDistribution }: NodeCountsProps) => {
     const { setTempAppWindowConfig } = useMainContext()
-    const { push, location } = useHistory()
+    const navigate = useNavigate()
     const { offset, pageSize, changePage, changePageSize } = useStateFilters({
         defaultPageSize: OVERVIEW_PAGE_SIZE_OPTIONS[0].value,
     })
@@ -65,21 +65,21 @@ const NodeCounts = ({ nodeDistribution }: NodeCountsProps) => {
             component: <NodeViewGroupList nodeViewGroupType={NodeViewGroupType.AUTOSCALER_MANAGED} />,
             customCloseConfig: {
                 beforeClose: () => {
-                    push(location.pathname)
+                    navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW)
                 },
                 icon: null,
             },
         })
-        push({ search: searchParams.toString() })
+        navigate({ search: searchParams.toString() })
     }
 
     const handleRedirectToCluster: ChartProps['onChartClick'] = (_, idx) => {
-        const path = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
-            clusterId: nodeDistribution[NodeDistributionKeys.BY_CLUSTERS][idx].clusterId,
+        const path = generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.K8S_RESOURCE_LIST, {
+            clusterId: String(nodeDistribution[NodeDistributionKeys.BY_CLUSTERS][idx].clusterId),
             kind: 'node',
             group: K8S_EMPTY_GROUP,
         })
-        push(path)
+        navigate(path)
     }
 
     const { xAxisLabels, yAxisValues } = useMemo(() => {

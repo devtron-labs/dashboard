@@ -16,8 +16,8 @@
 
 import { ConfirmationModal, ConfirmationModalVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICHibernate } from '@Icons/ic-medium-hibernate.svg'
-import { ReactComponent as ICUnhibernate } from '@Icons/ic-medium-unhibernate.svg'
+import ICHibernate from '@Icons/ic-medium-hibernate.svg?react'
+import ICUnhibernate from '@Icons/ic-medium-unhibernate.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { HibernationModalTypes } from './appDetails.type'

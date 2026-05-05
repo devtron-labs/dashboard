@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
+import Trash from '../../assets/icons/ic-delete.svg?react'
 
 interface KeyValueFileInputProps {
     index: number

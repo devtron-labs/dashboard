@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import Webhook from '../../../assets/icons/ic-CIWebhook.svg?react'
+import Close from '../../../assets/icons/ic-close.svg?react'
 import { WebhookTippyType } from '../types'
 import { Button, ButtonComponentType, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 

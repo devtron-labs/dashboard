@@ -31,8 +31,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 // FIXME: Placeholder icon since no sense of git merge icon as of now
-import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
+import ICFileCode from '@Icons/ic-file-code.svg?react'
+import ICFilePlay from '@Icons/ic-file-play.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import NoPublishedVersionEmptyState from './NoPublishedVersionEmptyState'

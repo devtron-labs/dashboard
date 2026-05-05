@@ -19,11 +19,13 @@ import { useLocation } from 'react-router-dom'
 
 import {
     AuthenticationType,
+    BASE_ROUTES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ClusterCostModuleConfigPayload,
     DEFAULT_SECRET_PLACEHOLDER,
+    handleAnalyticsEvent,
     Icon,
     ModalSidebarPanel,
     ModuleNameMap,
@@ -35,7 +37,6 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
-    URLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -88,7 +89,7 @@ const ClusterForm = ({
     const location = useLocation()
 
     const [clusterConfigTab, setClusterConfigTab] = useState<ClusterConfigTabEnum>(
-        id && location.pathname.includes(URLS.COST_VISIBILITY)
+        id && location.pathname.includes(BASE_ROUTES.COST_VISIBILITY.ROOT)
             ? ClusterConfigTabEnum.COST_VISIBILITY
             : ClusterConfigTabEnum.CLUSTER_CONFIG,
     )
@@ -405,15 +406,26 @@ const ClusterForm = ({
     const hideConfirmationModal = () => setConfirmation(false)
 
     const getTabSwitchHandler = (tab: ClusterConfigTabEnum) => () => {
+        if (tab === ClusterConfigTabEnum.COST_VISIBILITY) {
+            handleAnalyticsEvent({
+                category: 'cluster-config',
+                action: 'CLUSTER_CONFIG_COST_VISIBILITY',
+            })
+        }
         validateAllAndSetErrors()
         additionalValidations()
         setClusterConfigTab(tab)
     }
 
     const toggleCostModule = () => {
+        const enabled = !costModuleState.enabled
+        handleAnalyticsEvent({
+            category: 'cluster-config-cost-toggle',
+            action: `CLUSTER_CONFIG_COST_VISIBILITY_${enabled ? 'ENABLED' : 'DISABLED'}`,
+        })
         const newConfigState: typeof costModuleState = {
             ...costModuleState,
-            enabled: !costModuleState.enabled,
+            enabled,
         }
 
         setCostModuleError(newConfigState.enabled && !validateCostModuleConfig(newConfigState))

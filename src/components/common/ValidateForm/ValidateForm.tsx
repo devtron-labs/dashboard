@@ -16,6 +16,7 @@
 
 import { ButtonProps, ButtonVariantType, InfoBlock, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import './validateForm.css'
+import { ReactNode } from 'react'
 
 export enum VALIDATION_STATUS {
     SUCCESS = 'SUCCESS',
@@ -99,7 +100,7 @@ const ValidateFailure = ({ formId, validationError, onClickValidate, isChartRepo
                         {Object.entries(validationError).map(([value, name]) => (
                             <p key={value} className="mt-4 mb-0">
                                 <span className="fw-6 dc__lowercase">{value}: </span>
-                                {name}
+                                {name as ReactNode}
                             </p>
                         ))}
                         {warning && (

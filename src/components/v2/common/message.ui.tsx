@@ -18,11 +18,11 @@ import React from 'react'
 
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
+import ErrorIcon from '../../../assets/icons/ic-error-exclamation.svg?react'
 import { Pod as PodIcon } from '../../common'
-import { ReactComponent as FilledInfoIcon } from '../assets/icons/ic-info-filled.svg'
-import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg'
-import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg'
+import FilledInfoIcon from '../assets/icons/ic-info-filled.svg?react'
+import InfoIcon from '../assets/icons/ic-info-outline-gray.svg?react'
+import MultipleContainer from '../assets/icons/ic-select-container.svg?react'
 
 export enum MsgUIType {
     LOADING = 'loading',

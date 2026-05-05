@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { generatePath, Link, useRouteMatch } from 'react-router-dom'
+import { ReactNode } from 'react'
+import { generatePath, Link, useParams } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -32,10 +33,10 @@ import {
     Icon,
     ImageWithFallback,
     PortalContainer,
+    ROUTER_URLS,
     SearchBar,
     SERVER_MODE,
     stringComparatorBySortOrder,
-    URLS as CommonURLS,
     UserIdentifier,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -57,17 +58,14 @@ import {
 
 // PRESET VALUES TABLE
 const PresetValuesTableLinkCellComponent = ({ value, row }: PresetValuesTableCellComponentProps) => {
-    const {
-        path,
-        params: { chartId },
-    } = useRouteMatch<ChartDetailsRouteParams>()
+    const { chartId } = useParams<ChartDetailsRouteParams>()
 
     return (
         <Link
             className="flex left fs-13 lh-20 dc__truncate dc__w-fit-content"
-            to={`${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/${row.id}`}
+            to={`${generatePath(`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId`, { chartId })}${URLS.PRESET_VALUES}/${row.id}`}
         >
-            {value}
+            {value as ReactNode}
         </Link>
     )
 }
@@ -100,10 +98,7 @@ export const PresetValuesTableRowActionsOnHoverComponent = ({
 }: PresetValuesTableRowActionsOnHoverComponentProps) => {
     const { id, data } = row
 
-    const {
-        path,
-        params: { chartId },
-    } = useRouteMatch<ChartDetailsRouteParams>()
+    const { chartId } = useParams<ChartDetailsRouteParams>()
 
     const handleChartPresetDeployAndEdit = () => {
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_PRESET_VALUES_NEW' })
@@ -120,7 +115,7 @@ export const PresetValuesTableRowActionsOnHoverComponent = ({
                 size={ComponentSizeType.xs}
                 component={ButtonComponentType.link}
                 linkProps={{
-                    to: `${generatePath(path, { chartId })}${URLS.DEPLOY_CHART}/${id}`,
+                    to: `${generatePath(`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId`, { chartId })}${URLS.DEPLOY_CHART}/${id}`,
                 }}
                 onClick={handleChartPresetDeployAndEdit}
             />
@@ -133,7 +128,7 @@ export const PresetValuesTableRowActionsOnHoverComponent = ({
                 size={ComponentSizeType.xs}
                 component={ButtonComponentType.link}
                 linkProps={{
-                    to: `${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/${id}`,
+                    to: `${generatePath(`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId`, { chartId })}${URLS.PRESET_VALUES}/${id}`,
                 }}
                 onClick={handleChartPresetDeployAndEdit}
             />
@@ -157,10 +152,7 @@ export const PresetValuesTableViewWrapper = ({
     children,
 }: PresetValuesTableViewWrapperProps) => {
     // HOOKS
-    const {
-        path,
-        params: { chartId },
-    } = useRouteMatch<ChartDetailsRouteParams>()
+    const { chartId } = useParams<ChartDetailsRouteParams>()
 
     return (
         <>
@@ -181,7 +173,7 @@ export const PresetValuesTableViewWrapper = ({
                             size={ComponentSizeType.medium}
                             component={ButtonComponentType.link}
                             linkProps={{
-                                to: `${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/${CHART_DETAILS_NEW_PRESET_VALUE_ID}`,
+                                to: `${generatePath(`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId`, { chartId })}${URLS.PRESET_VALUES}/${CHART_DETAILS_NEW_PRESET_VALUE_ID}`,
                             }}
                         />
                     )}
@@ -261,8 +253,14 @@ const DeploymentsTableLinkCellComponent = ({ row }: DeploymentsTableCellComponen
             className="flex left fs-13 lh-20 dc__truncate dc__w-fit-content"
             to={
                 appOfferingMode === SERVER_MODE.EA_ONLY
-                    ? `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${getAppId({ clusterId, namespace, appName })}/${appName}`
-                    : `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
+                    ? generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
+                          appId: getAppId({ clusterId, namespace, appName }),
+                          appName,
+                      })
+                    : generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART, {
+                          appId: String(installedAppId),
+                          envId: String(environmentId),
+                      })
             }
         >
             {row.data.appName}

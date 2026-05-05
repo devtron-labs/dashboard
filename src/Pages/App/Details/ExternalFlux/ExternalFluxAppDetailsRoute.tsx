@@ -15,9 +15,9 @@
  */
 
 import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { AppListConstants, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { AppListConstants, Progressing, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 
@@ -25,31 +25,26 @@ import EAHeaderComponent from '../../../../components/v2/headers/EAHeader.compon
 
 const ExternalFluxAppDetails = lazy(() => import('./ExternalFluxAppDetails'))
 
-const ExternalFluxAppDetailsRoute = () => {
-    const { path } = useRouteMatch()
-
-    return (
-        <>
-            <EAHeaderComponent
-                title={AppListConstants.AppTabs.FLUX_APPS}
-                redirectURL={URLS.FLUX_APP_LIST}
-                showAppDetailsOnly
-                breadCrumbConfig={{
-                    ':namespace': null,
-                    'external-flux': null,
-                    ':templateType': null,
-                }}
-            />
-            <Suspense fallback={<Progressing pageLoader />}>
-                <Switch>
-                    <Route path={`${path}${URLS.DETAILS}`}>
-                        <ExternalFluxAppDetails />
-                    </Route>
-                    <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-                </Switch>
-            </Suspense>
-        </>
-    )
-}
+const ExternalFluxAppDetailsRoute = () => (
+    <>
+        <EAHeaderComponent
+            title={AppListConstants.AppTabs.FLUX_APPS}
+            redirectURL={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.FLUX_CD}
+            showAppDetailsOnly
+            breadCrumbConfig={{
+                ':namespace': null,
+                'external-flux': null,
+                ':templateType': null,
+            }}
+            breadcrumbPathPattern={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_FLUX_APP}
+        />
+        <Suspense fallback={<Progressing pageLoader />}>
+            <Routes>
+                <Route path={`${URLS.APP_DETAILS}/*`} element={<ExternalFluxAppDetails />} />
+                <Route path="*" element={<Navigate to={URLS.APP_DETAILS} />} />
+            </Routes>
+        </Suspense>
+    </>
+)
 
 export default ExternalFluxAppDetailsRoute

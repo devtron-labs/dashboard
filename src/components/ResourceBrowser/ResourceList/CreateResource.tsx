@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { type JSX, useEffect, useState } from 'react'
 
 import {
     API_STATUS_CODES,
@@ -36,11 +36,11 @@ import {
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
-import { ReactComponent as MechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
+import CloseIcon from '../../../assets/icons/ic-cross.svg?react'
+import Error from '../../../assets/icons/ic-error-exclamation.svg?react'
+import Edit from '../../../assets/icons/ic-pencil.svg?react'
+import Success from '../../../assets/icons/ic-success.svg?react'
+import MechanicalOperation from '../../../assets/img/ic-mechanical-operation.svg?react'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType } from '../Types'

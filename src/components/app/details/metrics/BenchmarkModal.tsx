@@ -17,8 +17,8 @@
 import React, { Component } from 'react'
 import ReactGA from 'react-ga4'
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Tip } from '../../../../assets/icons/ic-bulb.svg'
+import Close from '../../../../assets/icons/ic-close.svg?react'
+import Tip from '../../../../assets/icons/ic-bulb.svg?react'
 import { renderCategoryTag, getTimeperiod } from './deploymentMetrics.util'
 
 export interface BenchmarkModalProps {

@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -30,10 +30,10 @@ import {
     Icon,
     RecentlyVisitedOptions,
     ResourceKindType,
+    ROUTER_URLS,
     SelectPickerProps,
     ToastManager,
     ToastVariantType,
-    URLS,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -57,7 +57,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     isInstallationStatusView,
     isClusterListLoading,
 }) => {
-    const { replace } = useHistory()
+    const navigate = useNavigate()
 
     const [openDeleteClusterModal, setOpenDeleteClusterModal] = useState(false)
     const [showEditPodSpreadModal, setShowEditPodSpreadModal] = useState(false)
@@ -138,7 +138,9 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     }
 
     const handleRedirectToClusterList = () => {
-        replace(URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
+        navigate(ROUTER_URLS.RESOURCE_BROWSER.ROOT, {
+            replace: true,
+        })
     }
 
     const handleActionMenuClick: ActionMenuProps['onClick'] = (

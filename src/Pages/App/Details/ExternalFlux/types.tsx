@@ -16,7 +16,7 @@
 
 import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ExternalFluxAppDetailParams {
+export type ExternalFluxAppDetailParams = {
     clusterId: string
     appName: string
     namespace: string

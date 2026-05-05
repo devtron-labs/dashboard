@@ -15,8 +15,8 @@
  */
 
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Smiley } from '../../../../assets/icons/ic-smiley-party.svg'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
+import Smiley from '../../../../assets/icons/ic-smiley-party.svg?react'
+import ICHelpOutline from '../../../../assets/icons/ic-help-outline.svg?react'
 import { createTimestamp } from './deploymentMetrics.service'
 
 export function frequencyXAxisLabel(props) {

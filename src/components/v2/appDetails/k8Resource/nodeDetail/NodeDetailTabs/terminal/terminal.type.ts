@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { OptionsOrGroups, GroupBase, ActionMeta, StylesConfig } from 'react-select'
+import type { JSX, RefObject } from 'react'
+import { ActionMeta, GroupBase, OptionsOrGroups, StylesConfig } from 'react-select'
 import { SelectComponents } from 'react-select/dist/declarations/src/components'
+import { Terminal } from '@xterm/xterm'
+
+import { AppDetails } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { EditModeType, TerminalWrapperType } from './constants'
-import { AppDetails } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface TerminalWrapperComponentType {
     type: TerminalWrapperType
@@ -84,7 +87,7 @@ export interface TerminalWrapperProps {
 }
 
 export interface TerminalViewType extends Pick<TerminalWrapperProps, 'isResourceBrowserView'> {
-    terminalRef: any
+    terminalRef: RefObject<Terminal>
     sessionId: string
     socketConnection: SocketConnectionType
     setSocketConnection: (type: SocketConnectionType) => void

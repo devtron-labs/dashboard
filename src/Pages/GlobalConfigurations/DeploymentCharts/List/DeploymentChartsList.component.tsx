@@ -25,15 +25,15 @@ import {
     GenericFilterEmptyState,
     getAlphabetIcon,
     highlightSearchText,
+    ROUTER_URLS,
     SortableTableHeaderCell,
     Tooltip,
-    URLS,
     useAsync,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
-import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
+import ICDevtronApp from '@Icons/ic-devtron-app.svg?react'
+import ICFolderZip from '@Icons/ic-folder-zip.svg?react'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -209,7 +209,7 @@ const DeploymentChartsList = () => {
             errorScreenManagerProps={{
                 code: chartListError?.code,
                 reload: reloadChartList,
-                redirectURL: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS,
+                redirectURL: ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.DEPLOYMENT_CHARTS,
             }}
         >
             {!!chartList && (

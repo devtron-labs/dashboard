@@ -38,7 +38,7 @@ export enum NodeDetailTab {
 
 export type EphemeralKeyType = 'containerName' | 'manifest' | 'image' | 'targetContainerName'
 
-export interface ParamsType {
+export type ParamsType = {
     actionName: string
     podName: string
     nodeType: string
@@ -174,7 +174,7 @@ export interface DeleteEphemeralButtonType {
     isExternal: boolean
 }
 
-export interface TerminalParamsType {
+export type TerminalParamsType = {
     actionName: string
     podName: string
     nodeType: string

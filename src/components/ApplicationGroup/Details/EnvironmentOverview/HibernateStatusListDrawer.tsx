@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
+import { useEffect, type JSX } from 'react'
 import {
     Drawer,
     GenericEmptyState,
@@ -24,10 +24,9 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Prompt } from 'react-router-dom'
 import { HibernateStatusRow } from './HibernateStatusRow'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
+import Close from '../../../../assets/icons/ic-cross.svg?react'
+import MechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg?react'
 
 export default function HibernateStatusListDrawer({
     closePopup,
@@ -79,8 +78,6 @@ export default function HibernateStatusListDrawer({
                     >
                         <InfoBlock variant="warning" description={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                     </GenericEmptyState>
-
-                    <Prompt when message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </>
             )
         }

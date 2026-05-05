@@ -15,22 +15,24 @@
  */
 
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { followCursor } from 'tippy.js'
 
 import {
     ClipboardButton,
     ComponentSizeType,
     getAIAnalyticsEvents,
+    MainContext,
     noop,
     SortableTableHeaderCell,
     TabGroup,
     TippyCustomized,
     TippyTheme,
     Tooltip,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
+import ICExpand from '@Icons/ic-expand.svg?react'
 
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
@@ -72,8 +74,9 @@ const NodeComponent = ({
     tabs,
     removeTabByIdentifier,
 }: NodeComponentProps) => {
-    const { url } = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
+    const { aiAgentContext } = useMainContext()
+
     const location = useLocation()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
@@ -93,6 +96,13 @@ const NodeComponent = ({
     const nodeRowClassModifier = nodeRowClassModifierMap[params.nodeType]
         ? `node-row--${nodeRowClassModifierMap[params.nodeType]}`
         : ''
+
+    const showingAIButtonInAnyNode =
+        ExplainWithAIButton &&
+        selectedNodes?.some((node) => {
+            const status = getNodeStatus(node)
+            return !!status && !EXPLAIN_AI_EXCLUDED_STATUS.has(status.toLowerCase())
+        })
 
     useEffect(() => {
         if (externalLinks?.length > 0) {
@@ -146,7 +156,7 @@ const NodeComponent = ({
             setTableHeader(tableHeaders)
 
             // splitting with /group as group is present in application-group url as well
-            let [, _selectedResource] = url.split('/group/')
+            let [, _selectedResource] = location.pathname.split('/group/')
             let _selectedNodes: Array<iNode>
             if (_selectedResource) {
                 _selectedResource = _selectedResource.replace(/\/$/, '')
@@ -173,7 +183,7 @@ const NodeComponent = ({
 
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
-    }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
+    }, [params.nodeType, podType, location.pathname, filteredNodes, podLevelExternalLinks])
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -214,7 +224,7 @@ const NodeComponent = ({
     }
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
-        let [_url] = url.split('/group/')
+        let [_url] = location.pathname.split('/group/')
         _url = `${_url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
             node.name
         }/${_tabName.toLowerCase()}`
@@ -232,10 +242,23 @@ const NodeComponent = ({
             url: _url,
         })
             .then(() => {
-                history.push({ pathname: _url, search: getSearchString() })
+                navigate({ pathname: _url, search: getSearchString() })
             })
             .catch(noop)
     }
+
+    const renderGroupHeader = (title: string, showLinksHeader: boolean = false) => (
+        <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
+            <div className="fw-6">
+                <SortableTableHeaderCell isSortable={false} title={title} />
+            </div>
+            {showLinksHeader && (
+                <div className="fw-6">
+                    <SortableTableHeaderCell isSortable={false} title="Links" />
+                </div>
+            )}
+        </div>
+    )
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
@@ -335,22 +358,43 @@ const NodeComponent = ({
                 return _classname
             }
 
+            const initChildren = (node.childNodes || []).filter((child) => child.isInitContainer)
+            const regularChildren = (node.childNodes || []).filter((child) => !child.isInitContainer)
+
+            const intelligenceConfig: MainContext['intelligenceConfig'] = {
+                metadata: {
+                    object: `${node.kind}/${node.name}`,
+                    namespace: node.namespace,
+                    status: nodeStatus,
+                },
+                clusterId,
+                prompt: `Debug what's wrong with ${node.name}/${node.kind} of ${node.namespace}`,
+                analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
+            }
+
+            const debugAgentContext: MainContext['debugAgentContext'] = aiAgentContext
+                ? ({
+                      ...aiAgentContext,
+                      data: {
+                          ...aiAgentContext.data,
+                          resourceKind: node.kind,
+                          resourceName: node.name,
+                          namespace: node.namespace,
+                          resourceStatus: nodeStatus,
+                      },
+                      prompt: `Why is ${node.kind} '${node.name}' of '${node.namespace}' namespace in ${nodeStatus} state?`,
+                  } as MainContext['debugAgentContext'])
+                : null
+
             return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Fragment key={`grt${index}`}>
-                    {showNodeHeader && (
-                        <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
-                            <div className="fw-6">
-                                <SortableTableHeaderCell isSortable={false} title={node.kind} />
-                            </div>
-                            {((node.kind === NodeType.Pod && podLevelExternalLinks.length > 0) ||
-                                (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0)) && (
-                                <div className="fw-6">
-                                    <SortableTableHeaderCell isSortable={false} title="Links" />
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    {showNodeHeader &&
+                        renderGroupHeader(
+                            node.kind,
+                            (node.kind === NodeType.Pod && podLevelExternalLinks.length > 0) ||
+                                (node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0),
+                        )}
                     <div
                         className={`node-row dc__align-items-center resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier} ${showAIButton ? 'explain-ai-button' : ''}`}
                     >
@@ -511,16 +555,8 @@ const NodeComponent = ({
                         {showAIButton && (
                             <ExplainWithAIButton
                                 isIconButton
-                                intelligenceConfig={{
-                                    metadata: {
-                                        object: `${node.kind}/${node?.name}`,
-                                        namespace: node?.namespace,
-                                        status: nodeStatus,
-                                    },
-                                    clusterId,
-                                    prompt: `Debug what’s wrong with ${node?.name}/${node.kind} of ${node?.namespace}`,
-                                    analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
-                                }}
+                                intelligenceConfig={intelligenceConfig}
+                                debugAgentContext={debugAgentContext}
                             />
                         )}
                         {!appDetails.isVirtualEnvironment &&
@@ -538,7 +574,20 @@ const NodeComponent = ({
                     </div>
                     {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-17 indent-line">
-                            <div>{makeNodeTree(node.childNodes, true)}</div>
+                            {initChildren.length > 0 ? (
+                                <>
+                                    {regularChildren.length > 0 && (
+                                        <>
+                                            {renderGroupHeader('Containers', containerLevelExternalLinks.length > 0)}
+                                            {makeNodeTree(regularChildren, false)}
+                                        </>
+                                    )}
+                                    {renderGroupHeader('Init Containers', containerLevelExternalLinks.length > 0)}
+                                    {makeNodeTree(initChildren, false)}
+                                </>
+                            ) : (
+                                makeNodeTree(node.childNodes, true)
+                            )}
                         </div>
                     )}
                 </Fragment>
@@ -572,7 +621,9 @@ const NodeComponent = ({
                             </div>
                         )}
 
-                        <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
+                        <div
+                            className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier} ${showingAIButtonInAnyNode ? 'explain-ai-button' : ''}`}
+                        >
                             {tableHeader.map((cell, index) => (
                                 <div
                                     // eslint-disable-next-line react/no-array-index-key

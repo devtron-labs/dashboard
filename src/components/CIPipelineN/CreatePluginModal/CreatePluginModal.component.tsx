@@ -47,7 +47,7 @@ import {
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+import ICCross from '@Icons/ic-cross.svg?react'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
 import { getConditionDetailsAndVariablesFromPlugin } from '../ciPipeline.utils'

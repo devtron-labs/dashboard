@@ -31,7 +31,7 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import ICAdd from '@Icons/ic-add.svg?react'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { importComponentFromFELibrary } from '@Components/common'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'

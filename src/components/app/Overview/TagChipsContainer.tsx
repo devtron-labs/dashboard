@@ -15,7 +15,7 @@
  */
 
 import Tippy from '@tippyjs/react'
-import { ReactComponent as InjectTag } from '@Icons/inject-tag.svg'
+import InjectTag from '@Icons/inject-tag.svg?react'
 import { TagChipsContainerType } from '../types'
 import { APP_TYPE } from '@Config/constants'
 

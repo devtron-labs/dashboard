@@ -31,8 +31,8 @@ import {
     ConditionDataTableHeaderKeys,
     ConditionDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
+import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
+import Search from '../../assets/icons/ic-nav-search.svg?react'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { PipelineFormDataErrorType } from '../workflowEditor/types'
 import { DELETE_ACTION } from '../../config'

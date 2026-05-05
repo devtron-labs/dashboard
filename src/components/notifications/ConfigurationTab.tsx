@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
     DeleteConfirmationModal,
@@ -25,10 +25,10 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as SESEmpty } from '@Images/ses-empty.svg'
-import { ReactComponent as EmptySlack } from '@Images/slack-empty.svg'
-import { ReactComponent as SMTPEmpty } from '@Images/smtp-empty.svg'
-import { ReactComponent as WebhookEmpty } from '@Images/webhook-empty.svg'
+import SESEmpty from '@Images/ses-empty.svg?react'
+import EmptySlack from '@Images/slack-empty.svg?react'
+import SMTPEmpty from '@Images/smtp-empty.svg?react'
+import WebhookEmpty from '@Images/webhook-empty.svg?react'
 
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
 import { ConfigurationTables } from './ConfigurationTables'
@@ -43,7 +43,7 @@ import { ConfigurationTabState } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 
 export const ConfigurationTab = () => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const { searchParams } = useSearchString()
     const queryString = new URLSearchParams(location.search)
@@ -92,7 +92,7 @@ export const ConfigurationTab = () => {
             modal: modal ?? ConfigurationsTabTypes.SES,
         }
 
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }, [])

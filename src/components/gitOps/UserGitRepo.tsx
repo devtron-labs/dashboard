@@ -24,7 +24,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import './gitops.scss'
 import { repoType } from '../../config/constants'
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import Error from '@Icons/ic-error-exclamation.svg?react'
 import { UserGitRepoProps } from './gitops.type'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 

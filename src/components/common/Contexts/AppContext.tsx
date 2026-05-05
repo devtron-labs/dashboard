@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createContext, useContext } from 'react'
+import { createContext, Dispatch, SetStateAction, useContext } from 'react'
 
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -28,13 +28,14 @@ export interface AppContextType {
      * currentAppName is the app name present in AppHeader from app List only
      */
     currentAppName?: string
-    setCurrentAppName?: (currentAppName: string) => void
+    setCurrentAppName?: Dispatch<SetStateAction<string>>
     /**
      * currentEnvironmentName is the environment name present in EnvHeader from appGroup
      */
     currentEnvironmentName?: string
     setCurrentEnvironmentName?: (currentEnvironmentName: string) => void
 }
+
 export const AppContext = createContext<AppContextType>({
     environmentId: null,
     setEnvironmentId: null,
@@ -44,15 +45,10 @@ export const AppContext = createContext<AppContextType>({
     setCurrentEnvironmentName: noop,
 })
 
-export function useAppContext() {
+export const useAppContext = () => {
     const context = useContext(AppContext)
     if (!context) {
         throw new Error(`App context cannout be used outside app scope`)
     }
     return context
-}
-
-export const withAppContext = (Component) => (props) => {
-    const appContext = useAppContext()
-    return <Component {...props} appContext={appContext} />
 }

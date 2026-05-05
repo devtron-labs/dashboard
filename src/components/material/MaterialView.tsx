@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
+import { Component, type JSX } from 'react'
 import {
     ConditionalWrap,
     Checkbox,
@@ -39,16 +39,16 @@ import {
     InfoBlock,
     AuthenticationType,
     GitProviderIcon,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
-import { URLS } from '../../config'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
-import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
+import Add from '../../assets/icons/ic-add.svg?react'
+import Down from '../../assets/icons/ic-chevron-down.svg?react'
+import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
+import Help from '../../assets/icons/ic-help.svg?react'
+import Check from '../../assets/icons/ic-check-circle-green.svg?react'
+import Wrong from '../../assets/icons/ic-close-circle.svg?react'
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import { deleteMaterial } from './material.service'
 import {
@@ -56,7 +56,7 @@ import {
     DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
-import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
+import InfoOutlined from '../../assets/icons/ic-info-outlined.svg?react'
 import {
     INCLUDE_EXCLUDE_COMMIT_TIPPY,
     INCLUDE_EXCLUDE_COMMIT_INFO,
@@ -687,7 +687,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     component: ButtonComponentType.link,
                                     variant: ButtonVariantType.borderLess,
                                     linkProps: {
-                                        to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS,
+                                        to: ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GIT_ACCOUNTS,
                                     },
                                     text: 'Add Git Account',
                                     startIcon: <Icon name="ic-add" color={null} />,

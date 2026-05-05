@@ -24,7 +24,7 @@ import {
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-clockwise.svg'
+import RetryIcon from '../../../../assets/icons/ic-arrow-clockwise.svg?react'
 import { TriggerResponseModalBodyProps, TriggerResponseModalFooterProps } from '../../AppGroup.types'
 import { BulkResponseStatus } from '../../Constants'
 import { TriggerModalRow } from './TriggerModalTableRow'

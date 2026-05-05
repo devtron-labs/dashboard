@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TokenListType } from './apiToken.type'
 
-export function getOptions(customDate) {
-    return [
-        { value: 7, label: '7 days' },
-        { value: 30, label: '30 days' },
-        { value: 60, label: '60 days' },
-        { value: 90, label: '90 days' },
-        { value: customDate, label: 'Custom' },
-        { value: 0, label: 'No expiration' },
-    ]
-}
+export const getOptions = (customDate: Date): SelectPickerOptionType<number | Date>[] => [
+    { value: 7, label: '7 days' },
+    { value: 30, label: '30 days' },
+    { value: 60, label: '60 days' },
+    { value: 90, label: '90 days' },
+    { value: customDate, label: 'Custom' },
+    { value: 0, label: 'No expiration' },
+]
 
 const millisecondsInDay = 86400000
 

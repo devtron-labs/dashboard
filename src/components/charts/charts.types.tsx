@@ -15,9 +15,8 @@
  */
 
 import { Dispatch, SetStateAction } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
 
-import { ActionMenuProps, OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMenuProps, OptionType, ResponseType, RouterV5Props } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartGroupCardProps {
     chartGroup: ChartGroup
@@ -70,9 +69,9 @@ export interface HeaderProps {
     tabs: [{ key: string; isActive: boolean }]
 }
 
-export interface ChartsProps extends RouteComponentProps<any> {}
+export interface ChartsProps extends RouterV5Props<{}> {}
 
-export interface DeployedChartProps extends RouteComponentProps<{}> {}
+export interface DeployedChartProps extends RouterV5Props<{}> {}
 
 export interface DeployedChartState {
     code: number
@@ -137,7 +136,7 @@ export interface ChartVersionType {
     version: string
 }
 
-export interface ChartValuesProps extends RouteComponentProps<{ chartId: string; chartValueId?: string }> {}
+export interface ChartValuesProps extends RouterV5Props<{ chartId: string; chartValueId?: string }> {}
 
 export interface ChartValuesState {
     view: string
@@ -168,7 +167,7 @@ export interface ChartEntryIdType {
     index: number
 }
 
-export interface ChartGroupEditProps extends RouteComponentProps<{ chartGroupId?: string }> {
+export interface ChartGroupEditProps extends RouterV5Props<{ chartGroupId?: string }> {
     view: string
     getChartGroup: () => void
     getChartEntryChartValues: (...args) => Promise<any>
@@ -179,7 +178,7 @@ interface ChartGroupCreate {
     name: string
     description?: string
 }
-export interface CreateChartGroupProps extends RouteComponentProps<{}> {
+export interface CreateChartGroupProps extends RouterV5Props<{}> {
     closeChartGroupModal: (props: ChartGroupCreate | null) => void
     chartGroupId?: number
     name?: string
@@ -235,7 +234,7 @@ export interface ChartGroupListProps {
     chartGroups: ChartGroup[]
 }
 
-export interface DiscoverChartsContainerProps extends RouteComponentProps<{}> {}
+export interface DiscoverChartsContainerProps extends RouterV5Props<{}> {}
 
 export interface ChartGroupProviderProps {}
 

@@ -15,7 +15,7 @@
  */
 
 import { FunctionComponent, useEffect, useRef } from 'react'
-import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -33,6 +33,7 @@ import {
     Icon,
     IconName,
     noop,
+    ROUTER_URLS,
     stopPropagation,
     TableCellComponentProps,
     TableSignalEnum,
@@ -55,20 +56,24 @@ import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import EditClusterDrawerContent from './EditClusterDrawerContent'
 
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
+const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
 const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
 
 export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: number; isVirtualCluster: boolean }) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { search } = useLocation()
 
     const handleEditCluster = () => {
-        push({ pathname: generatePath(COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER, { clusterId }), search })
+        navigate({
+            pathname: generatePath(COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER, { clusterId: String(clusterId) }),
+            search,
+        })
     }
 
     const handleAddEnv = () => {
-        push({
-            pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId`, {
-                clusterId,
+        navigate({
+            pathname: generatePath(`${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}${URLS.CREATE_ENVIRONMENT}/:clusterId`, {
+                clusterId: String(clusterId),
             }),
             search,
         })
@@ -77,18 +82,21 @@ export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: num
     const handleActionMenuClick = (item: ActionMenuItemType) => {
         switch (item.id) {
             case 'edit-pod-spread':
-                push({
-                    pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.POD_SPREAD}/:clusterId`, {
-                        clusterId,
+                navigate({
+                    pathname: generatePath(`${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${URLS.POD_SPREAD}/:clusterId`, {
+                        clusterId: String(clusterId),
                     }),
                     search,
                 })
                 break
             case 'hibernation-rules':
-                push({
-                    pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.HIBERNATION_RULES}/:clusterId`, {
-                        clusterId,
-                    }),
+                navigate({
+                    pathname: generatePath(
+                        `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${URLS.HIBERNATION_RULES}/:clusterId`,
+                        {
+                            clusterId: String(clusterId),
+                        },
+                    ),
                     search,
                 })
                 break
@@ -96,10 +104,13 @@ export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: num
                 if (clusterId === DEFAULT_CLUSTER_ID) {
                     break
                 }
-                push({
-                    pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.DELETE_CLUSTER}/:clusterId`, {
-                        clusterId,
-                    }),
+                navigate({
+                    pathname: generatePath(
+                        `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${URLS.DELETE_CLUSTER}/:clusterId`,
+                        {
+                            clusterId: String(clusterId),
+                        },
+                    ),
                     search,
                 })
                 break
@@ -226,7 +237,7 @@ export const ClusterListCellComponent: FunctionComponent<
             return (
                 <Link
                     ref={linkRef}
-                    to={getUrlWithSearchParams(URLS.GLOBAL_CONFIG_CLUSTER, {
+                    to={getUrlWithSearchParams(ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV, {
                         selectedTab: ClusterEnvTabs.ENVIRONMENTS,
                         clusterId,
                     })}
@@ -416,3 +427,15 @@ export const ClusterEnvLoader = () => (
         ))}
     </>
 )
+
+export const HibernationRulesModalWrapper = ({ handleClose }: { handleClose: () => void }) => {
+    const { clusterId } = useParams<{ clusterId: string }>()
+
+    return <HibernationRulesModal handleClose={handleClose} clusterId={clusterId} />
+}
+
+export const PodSpreadModalWrapper = ({ handleClose }: { handleClose: () => void }) => {
+    const { clusterId } = useParams<{ clusterId: string }>()
+
+    return <PodSpreadModal handleClose={handleClose} clusterId={clusterId} />
+}

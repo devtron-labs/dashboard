@@ -16,7 +16,7 @@
 
 /* eslint-disable no-param-reassign */
 import { useEffect, useMemo, useState } from 'react'
-import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
 import {
     ACCESS_TYPE_MAP,
@@ -89,7 +89,6 @@ const AppPermissions = () => {
         allowManageAllAccess,
     } = usePermissionConfiguration()
     const { customRoles } = useAuthorizationContext()
-    const { url, path } = useRouteMatch()
     const location = useLocation()
 
     const [isLoading, setIsLoading] = useState(false)
@@ -166,7 +165,7 @@ const AppPermissions = () => {
         accessType: DirectPermissionRowProps['permission']['accessType'],
     ) => getEnvironmentOptions(environmentsList[accessType] || [], entity)
 
-    const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
+    const appPermissionDetailConfig = getAppPermissionDetailConfig(serverMode)
     const navLinksConfig = getNavLinksConfig(serverMode, isLoggedInUserSuperAdmin, canManageAllAccess)
 
     async function fetchJobsList(projectIds: number[]) {
@@ -917,12 +916,6 @@ const AppPermissions = () => {
         }
     }
 
-    // To persist the search params
-    const _getNavLinkUrl = (tabName) => (_location) => ({
-        ..._location,
-        pathname: `${url}/${tabName}`,
-    })
-
     const handleNavLinkClick = () => {
         // Validate the direct permission form on tab switch to show the error state
         const { accessTypeToErrorMap: _accessTypeToErrorMap } = validateDirectPermissionForm(
@@ -988,7 +981,10 @@ const AppPermissions = () => {
                                   label,
                                   tabType: 'navLink',
                                   props: {
-                                      to: _getNavLinkUrl(tabName),
+                                      to: {
+                                          pathname: tabName,
+                                          search: location.search,
+                                      },
                                       'data-testid': tabName,
                                       onClick: handleNavLinkClick,
                                   },
@@ -999,45 +995,50 @@ const AppPermissions = () => {
                 />
             </div>
             <div>
-                <Switch>
+                <Routes>
                     {appPermissionDetailConfig.map(
-                        ({ shouldRender = true, accessType, url: _url, id }) =>
+                        ({ shouldRender = true, accessType, url, id }) =>
                             shouldRender && (
-                                <Route path={_url} key={id}>
-                                    <AppPermissionDetail
-                                        accessType={accessType}
-                                        removeDirectPermissionRow={removeDirectPermissionRow}
-                                        handleDirectPermissionChange={handleDirectPermissionChange}
-                                        addNewPermissionRow={addNewPermissionRowLocal}
-                                        appsListHelmApps={appsListHelmApps}
-                                        jobsList={jobsList}
-                                        appsList={appsList}
-                                        projectsList={projectsList}
-                                        getEnvironmentOptions={_getEnvironmentOptions}
-                                        environmentClusterOptions={environmentClusterOptions}
-                                        getListForAccessType={getListForAccessType}
-                                    />
-                                </Route>
+                                <Route
+                                    path={url}
+                                    key={id}
+                                    element={
+                                        <AppPermissionDetail
+                                            accessType={accessType}
+                                            removeDirectPermissionRow={removeDirectPermissionRow}
+                                            handleDirectPermissionChange={handleDirectPermissionChange}
+                                            addNewPermissionRow={addNewPermissionRowLocal}
+                                            appsListHelmApps={appsListHelmApps}
+                                            jobsList={jobsList}
+                                            appsList={appsList}
+                                            projectsList={projectsList}
+                                            getEnvironmentOptions={_getEnvironmentOptions}
+                                            environmentClusterOptions={environmentClusterOptions}
+                                            getListForAccessType={getListForAccessType}
+                                        />
+                                    }
+                                />
                             ),
                     )}
                     {(isLoggedInUserSuperAdmin || canManageAllAccess) && (
-                        <Route path={`${path}/kubernetes-objects`}>
-                            <K8sPermissions />
-                        </Route>
+                        <Route path="kubernetes-objects" element={<K8sPermissions />} />
                     )}
                     {isNonEAMode && (
-                        <Route path={`${path}/chart-groups`}>
-                            <ChartPermission chartGroupsList={chartGroupsList} />
-                        </Route>
+                        <Route path="chart-groups" element={<ChartPermission chartGroupsList={chartGroupsList} />} />
                     )}
-                    <Redirect
-                        // Preserving the search params
-                        to={{
-                            ...location,
-                            pathname: isNonEAMode ? `${path}/devtron-apps` : `${path}/helm-apps`,
-                        }}
+                    <Route
+                        path="*"
+                        element={
+                            <Navigate
+                                // Preserving the search params
+                                to={{
+                                    search: location.search,
+                                    pathname: isNonEAMode ? 'devtron-apps' : 'helm-apps',
+                                }}
+                            />
+                        }
                     />
-                </Switch>
+                </Routes>
             </div>
         </div>
     )

@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     Chart,
@@ -8,7 +8,7 @@ import {
     InfoIconTippy,
     LoadingDonutChart,
     ProdNonProdSelectValueTypes,
-    URLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AGE_DISTRIBUTION_CHART_LABELS, AGE_DISTRIBUTION_FILTERS } from '../constants'
@@ -26,7 +26,7 @@ const InfoTippyContent = () => (
 )
 
 const SeverityDistribution = ({ prodNonProdValue }: { prodNonProdValue: ProdNonProdSelectValueTypes }) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { isFetching, isError, data, refetch } = useGetSeverityInsights(prodNonProdValue)
 
     const { severityDistributionLabels, severityDistributionDataset, ageDistributionDataset } = data || {}
@@ -41,16 +41,16 @@ const SeverityDistribution = ({ prodNonProdValue }: { prodNonProdValue: ProdNonP
     }
 
     const handleSeverityDistributionClick: ChartProps['onChartClick'] = (_, idx) => {
-        push(
-            getUrlWithSearchParams(URLS.SECURITY_CENTER_VULNERABILITY_DEPLOYMENTS, {
+        navigate(
+            getUrlWithSearchParams(ROUTER_URLS.SECURITY_CENTER_VULNERABILITY_DEPLOYMENTS, {
                 severity: severityDistributionLabels[idx].toLowerCase(),
             }),
         )
     }
 
     const handleAgeDistributionClick: ChartProps['onChartClick'] = (_, idx) => {
-        push(
-            getUrlWithSearchParams(URLS.SECURITY_CENTER_VULNERABILITY_CVES, {
+        navigate(
+            getUrlWithSearchParams(ROUTER_URLS.SECURITY_CENTER_VULNERABILITY_CVES, {
                 ageOfDiscovery: AGE_DISTRIBUTION_FILTERS[idx],
             }),
         )

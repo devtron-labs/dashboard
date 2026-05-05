@@ -15,25 +15,30 @@
  */
 
 import { lazy, useRef } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
-import { Routes } from '../../../config'
+import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import './authorization.scss'
 
 const UserAndGroupPermissions = lazy(() => import('./UserAndGroupPermissions'))
 const SSOLogin = lazy(() => import('./SSOLoginServices'))
+const UserGroupRouter = importComponentFromFELibrary('UserGroupRouter', null, 'function')
 
 const Authorization = () => {
-    const { path } = useRouteMatch()
     const authorizationContainerRef = useRef<HTMLDivElement>(null)
 
     return (
-        <Switch>
-            <Route path={`${path}/${Routes.SSO_LOGIN_SERVICES}`} component={SSOLogin} />
+        <Routes>
+            <Route path={BASE_ROUTES.GLOBAL_CONFIG.AUTH.LOGIN_SERVICE} element={<SSOLogin />} />
+            {UserGroupRouter && (
+                <Route path={`${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USER_GROUPS}/*`} element={<UserGroupRouter />} />
+            )}
             <Route
-                path={path}
-                render={() => (
+                path="*"
+                element={
                     <div
                         ref={authorizationContainerRef}
                         className="authorization-container flexbox-col flex-grow-1 h-100 bg__primary dc__overflow-hidden"
@@ -42,10 +47,9 @@ const Authorization = () => {
                             <UserAndGroupPermissions authorizationContainerRef={authorizationContainerRef} />
                         </div>
                     </div>
-                )}
+                }
             />
-            <Redirect to={`${path}/${Routes.USER_PERMISSIONS}`} />
-        </Switch>
+        </Routes>
     )
 }
 

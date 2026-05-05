@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -25,6 +25,8 @@ import {
     getIsRequestAborted,
     abortPreviousRequests,
     API_STATUS_CODES,
+    useMainContext,
+    AIAgentContextSourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { sortOptionsByValue } from '../../../common'
@@ -45,7 +47,10 @@ let initTimer = null
 
 const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
+    
+    const { setAIAgentContext } = useMainContext()
+
     const [isLoading, setIsLoading] = useState(true)
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
@@ -69,6 +74,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                 clearTimeout(initTimer)
             }
             IndexStore.clearAppDetails() // Cleared out the data on unmount
+            setAIAgentContext(null)
         }
     }, [])
 
@@ -78,7 +84,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         if (checkIfToRefetchData(location)) {
             timer = setTimeout(() => {
                 _getAndSetAppDetail()
-                deleteRefetchDataFromUrl(history, location)
+                deleteRefetchDataFromUrl(navigate, location)
             }, 2000)
         }
 
@@ -147,10 +153,23 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
 
         abortPreviousRequests(() => getAppDetail(appId, abortControllerRef), abortControllerRef)
             .then((appDetailResponse: HelmAppDetailResponse) => {
+                const convertedAppDetail = _convertToGenericAppDetailModel(appDetailResponse.result)
+
                 IndexStore.publishAppDetails(
-                    _convertToGenericAppDetailModel(appDetailResponse.result),
+                    convertedAppDetail,
                     AppType.EXTERNAL_HELM_CHART,
                 )
+
+                setAIAgentContext({
+                    source: AIAgentContextSourceType.APP_DETAILS,
+                    data: {
+                        appType: 'externalHelmChart',
+                        appId: convertedAppDetail.appId,
+                        appName: convertedAppDetail.appName,
+                        clusterId: convertedAppDetail.clusterId,
+                        namespace: convertedAppDetail.namespace,
+                    }
+                })
 
                 if (appDetailResponse.result?.appDetail.environmentDetails.clusterId) {
                     getExternalLinks(

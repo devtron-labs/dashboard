@@ -36,7 +36,7 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 import { Moment12HourFormat } from '../../../../config'
 import { getCIPipelineURL } from '../../../common'

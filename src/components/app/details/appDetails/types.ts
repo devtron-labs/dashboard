@@ -15,6 +15,7 @@
  */
 
 import { SyntheticEvent } from 'react'
+import moment from 'moment'
 
 import { AppMetricsTabType, ChartTypes, HibernationModalTypes, StatusTypes } from './appDetails.type'
 import { AppInfo } from './utils'
@@ -39,3 +40,8 @@ export interface HibernationModalProps {
     hibernateConfirmationModal: HibernationModalTypes
     handleHibernateConfirmationModalClose: (e?: SyntheticEvent) => void
 }
+
+export type GrafanaPresetOptionHandlerType = (
+    startString: string,
+    momentDiff: { magnitude: number; unit: moment.unitOfTime.DurationConstructor },
+) => void

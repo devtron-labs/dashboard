@@ -28,14 +28,14 @@ import {
     ImageWithFallback,
     InfoBlock,
     isNullOrUndefined,
+    ROUTER_URLS,
     Tooltip,
-    URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
-import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
-import { ReactComponent as ICFluxCDApp } from '@Icons/ic-fluxcd-app.svg'
+import ICArgoCDApp from '@Icons/ic-argocd-app.svg?react'
+import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
+import ICDefaultChart from '@Icons/ic-default-chart.svg?react'
+import ICFluxCDApp from '@Icons/ic-fluxcd-app.svg?react'
 import { URLS } from '@Config/routes'
 import {
     AddClusterFormPrefilledInfoType,
@@ -158,7 +158,7 @@ const MigrateToDevtronValidationFactory = ({
         <p className="m-0">
             Chart version &apos;{requiredChartVersion}&apos; not found for &apos;{requiredChartName}&apos; chart.&nbsp;
             <Link
-                to={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS}
+                to={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.DEPLOYMENT_CHARTS}
                 data-testid="upload-chart-button"
                 target="_blank"
                 className="anchor"
@@ -338,7 +338,7 @@ const MigrateToDevtronValidationFactory = ({
                                 component: ButtonComponentType.link,
                                 onClick: handleAddEnvironmentClick,
                                 linkProps: {
-                                    to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${destination.clusterName}${URLS.CREATE_ENVIRONMENT}`,
+                                    to: `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${destination.clusterName}${URLS.CREATE_ENVIRONMENT}`,
                                     target: '_blank',
                                 },
                             }}

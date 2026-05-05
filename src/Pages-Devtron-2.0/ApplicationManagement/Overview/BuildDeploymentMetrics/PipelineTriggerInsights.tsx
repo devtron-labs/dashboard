@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { generatePath } from 'react-router-dom'
 
 import {
     Chart,
@@ -8,13 +9,13 @@ import {
     getSelectPickerOptionByValue,
     OVERVIEW_PAGE_SIZE_OPTIONS,
     Pagination,
+    ROUTER_URLS,
     SectionEmptyState,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
     SortingOrder,
     TabGroup,
-    URLS,
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -98,7 +99,14 @@ const PipelineTriggerInsights = () => {
 
         // For build pipelines pipelineId is required and for deployment pipelines envId is required
         if (appId && !!(isBuildTriggerInsights ? pipelineId : envId)) {
-            const url = `${window.__BASE_URL__}${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${isBuildTriggerInsights ? URLS.APP_CI_DETAILS : URLS.CD_DETAILS}/${isBuildTriggerInsights ? pipelineId : envId}`
+            const url = `${window.__BASE_URL__}${generatePath(
+                isBuildTriggerInsights
+                    ? ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS
+                    : ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS,
+                {
+                    appId: String(appId),
+                },
+            )}/${isBuildTriggerInsights ? pipelineId : envId}`
             getHandleOpenURL(url)()
         }
     }

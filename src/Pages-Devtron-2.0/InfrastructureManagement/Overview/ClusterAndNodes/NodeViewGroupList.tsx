@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { generatePath, Link, useHistory } from 'react-router-dom'
+import { useCallback, useMemo } from 'react'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
 
 import {
     ExportToCsv,
@@ -8,7 +8,7 @@ import {
     Icon,
     noop,
     PaginationEnum,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     SearchBar,
     SelectPicker,
     SelectPickerOptionType,
@@ -66,7 +66,10 @@ const NodeNameCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRow
             <Tooltip content={nodeName}>
                 <Link
                     className="dc__truncate"
-                    to={generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name: nodeName })}
+                    to={generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.NODE_DETAIL, {
+                        clusterId: String(clusterId),
+                        name: nodeName,
+                    })}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -236,50 +239,53 @@ const NodeViewGroupListWrapper = ({
 }
 
 const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewGroupType }) => {
-    const { push } = useHistory()
-    const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = async (
-        {
-            searchKey,
-            offset,
-            pageSize,
-            sortBy,
-            sortOrder,
-            errorType,
-            autoscalerType,
-            schedulableType,
-        }: Record<NodeViewGroupListFiltersTypeEnum, string> & Parameters<TableProps['getRows']>[0],
-        abortSignal,
-    ) => {
-        const response = await getNodeViewGroupList({
-            searchKey,
-            groupBy: nodeViewGroupType,
-            offset,
-            pageSize,
-            sortBy,
-            sortOrder,
-            ...(nodeViewGroupType === NodeViewGroupType.NODE_ERRORS && errorType !== 'ALL'
-                ? { errorType: errorType as NodeErrorsKeys }
-                : {}),
-            ...(nodeViewGroupType === NodeViewGroupType.AUTOSCALER_MANAGED && autoscalerType !== 'ALL'
-                ? { autoscalerType: autoscalerType as AutoscalerTypes }
-                : {}),
-            ...(nodeViewGroupType === NodeViewGroupType.NODE_SCHEDULING && schedulableType !== 'ALL'
-                ? { schedulableType: schedulableType as NodeSchedulingKeys }
-                : {}),
+    const navigate = useNavigate()
+    const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = useCallback(
+        async (
+            {
+                searchKey,
+                offset,
+                pageSize,
+                sortBy,
+                sortOrder,
+                errorType,
+                autoscalerType,
+                schedulableType,
+            }: Record<NodeViewGroupListFiltersTypeEnum, string> & Parameters<TableProps['getRows']>[0],
             abortSignal,
-        })
+        ) => {
+            const response = await getNodeViewGroupList({
+                searchKey,
+                groupBy: nodeViewGroupType,
+                offset,
+                pageSize,
+                sortBy,
+                sortOrder,
+                ...(nodeViewGroupType === NodeViewGroupType.NODE_ERRORS && errorType !== 'ALL'
+                    ? { errorType: errorType as NodeErrorsKeys }
+                    : {}),
+                ...(nodeViewGroupType === NodeViewGroupType.AUTOSCALER_MANAGED && autoscalerType !== 'ALL'
+                    ? { autoscalerType: autoscalerType as AutoscalerTypes }
+                    : {}),
+                ...(nodeViewGroupType === NodeViewGroupType.NODE_SCHEDULING && schedulableType !== 'ALL'
+                    ? { schedulableType: schedulableType as NodeSchedulingKeys }
+                    : {}),
+                abortSignal,
+            })
 
-        return {
-            rows: (response.result?.nodeList || []).map((node) => ({
-                id: `${node.nodeName}-${node.clusterName}`,
-                data: node,
-            })),
-            totalRows: response.result?.totalCount || 0,
-        }
-    }
+            return {
+                rows: (response.result?.nodeList || []).map((node) => ({
+                    id: `${node.nodeName}-${node.clusterName}`,
+                    data: node,
+                })),
+                totalRows: response.result?.totalCount || 0,
+            }
+        },
+        [],
+    )
 
     const clearFilters = () => {
-        push({ search: '' })
+        navigate({ search: '' })
     }
 
     return (
@@ -311,7 +317,7 @@ const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewG
             }}
             paginationVariant={PaginationEnum.PAGINATED}
             filtersVariant={FiltersTypeEnum.URL}
-            filter={() => true}
+            filter={null}
             additionalFilterProps={{
                 initialSortKey: 'nodeName',
                 parseSearchParams: (searchParams) => ({

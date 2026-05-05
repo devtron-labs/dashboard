@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { GroupBase } from 'react-select'
 import {
     Progressing,
@@ -38,13 +38,13 @@ import {
     Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import Error from '../../../../assets/icons/ic-warning.svg?react'
 import { importComponentFromFELibrary } from '../../../common'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
+import EditIcon from '../../../../assets/icons/ic-pencil.svg?react'
 import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 import './ChartValuesView.scss'
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import ICAdd from '@Icons/ic-add.svg?react'
 
 import {
     ActiveReadmeColumnProps,

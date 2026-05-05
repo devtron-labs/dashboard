@@ -15,8 +15,8 @@
  */
 
 import React from 'react'
-import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
+import { createRoot } from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserTracing } from '@sentry/tracing'
@@ -41,14 +41,12 @@ declare global {
         Worker: any
         __BASE_URL__: string
         __ORCHESTRATOR_ROOT__: string
-        __GRAFANA_ORG_ID__: number
     }
 }
 
 if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
     window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
     window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
-    window.__GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
 }
 
 const root = document.getElementById('root')
@@ -133,7 +131,6 @@ if (!window || !window._env_) {
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: true,
         CLAIR_TOOL_VERSION: 'V4',
-        ENABLE_RESTART_WORKLOAD: true,
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
@@ -156,7 +153,7 @@ if (!window || !window._env_) {
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: true,
         HIDE_NETWORK_STATUS_INTERFACE: true,
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
-        FEATURE_IMAGE_PROMOTION_ENABLE: false,
+        FEATURE_IMAGE_PROMOTION_ENABLE: true,
         FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS: false,
         FEATURE_CONFIG_DRIFT_ENABLE: true,
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
@@ -173,7 +170,6 @@ if (!window || !window._env_) {
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
         FEATURE_AI_INTEGRATION_ENABLE: true,
         LOGIN_PAGE_IMAGE: '',
-        FEATURE_ASK_DEVTRON_EXPERT: false,
         FEATURE_MANAGE_TRAFFIC_ENABLE: true,
         FEATURE_REDFISH_NODE_ENABLE: false,
         FEATURE_INFRA_PROVISION_INFO_BLOCK_HIDE: false,
@@ -182,25 +178,40 @@ if (!window || !window._env_) {
         FEATURE_CANARY_ROLLOUT_PROGRESS_ENABLE: true,
         COMMAND_BAR_REFETCH_INTERVAL: 3600,
         FEATURE_STORAGE_ENABLE: true,
+        FEATURE_ATHENA_DEBUG_MODE_ENABLE: false,
+        GRAFANA_ORG_ID: 2,
     }
 }
 
-ReactDOM.render(
+const router = createBrowserRouter(
+    [
+        {
+            path: '/*',
+            element: (
+                <>
+                    <UseRegisterShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </UseRegisterShortcutProvider>
+                    <ToastManagerContainer />
+                </>
+            ),
+        },
+    ],
+    {
+        basename: window.__BASE_URL__,
+    },
+)
+
+createRoot(root).render(
     <React.StrictMode>
         {window.top === window.self ? (
             <QueryClientProvider>
                 <ThemeProvider>
-                    <BrowserRouter basename={window.__BASE_URL__}>
-                        <UseRegisterShortcutProvider>
-                            <UserEmailProvider>
-                                <App />
-                            </UserEmailProvider>
-                        </UseRegisterShortcutProvider>
-                        <ToastManagerContainer />
-                    </BrowserRouter>
+                    <RouterProvider router={router} />
                 </ThemeProvider>
             </QueryClientProvider>
         ) : null}
     </React.StrictMode>,
-    root,
 )

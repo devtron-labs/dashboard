@@ -21,13 +21,12 @@ export enum CreateClusterTypeEnum {
     ADD_ISOLATED_CLUSTER = 'add-isolated-cluster',
 }
 
-export interface CreateClusterParams {
+export type CreateClusterParams = {
     type: CreateClusterTypeEnum
 }
 
 export interface CreateClusterProps {
     handleReloadClusterList: () => void
-    handleRedirectOnModalClose?: () => void
 }
 
 export interface EnterpriseTrialDialogProps {

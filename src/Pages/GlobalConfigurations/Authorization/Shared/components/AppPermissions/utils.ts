@@ -90,23 +90,23 @@ export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean, 
         },
     ] as const
 
-export const getAppPermissionDetailConfig = (path: string, serverMode: SERVER_MODE) =>
+export const getAppPermissionDetailConfig = (serverMode: SERVER_MODE) =>
     [
         {
             id: 'devtron-apps',
-            url: `${path}/devtron-apps`,
+            url: 'devtron-apps',
             accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
             shouldRender: serverMode !== SERVER_MODE.EA_ONLY,
         },
         {
             id: 'helm-apps',
-            url: `${path}/helm-apps`,
+            url: 'helm-apps',
             accessType: ACCESS_TYPE_MAP.HELM_APPS,
             shouldRender: true,
         },
         {
             id: 'jobs',
-            url: `${path}/jobs`,
+            url: 'jobs',
             accessType: ACCESS_TYPE_MAP.JOBS,
             shouldRender: serverMode !== SERVER_MODE.EA_ONLY,
         },

@@ -16,7 +16,7 @@
 
 import React, { Component } from 'react'
 import { CustomInput, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
 import { saveGitHost } from './gitProvider.service'
 
 interface GitHostConfigModalProps {

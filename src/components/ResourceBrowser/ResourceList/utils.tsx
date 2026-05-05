@@ -24,7 +24,7 @@ import {
     numberComparatorBySortOrder,
     RecentlyVisitedGroupedOptionsType,
     RecentlyVisitedOptions,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     stringComparatorBySortOrder,
     TARGET_K8S_VERSION_SEARCH_KEY,
     TreeHeading,
@@ -65,6 +65,8 @@ const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     null,
     'function',
 )
+
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
@@ -537,7 +539,7 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
 
             if (!acc.nodeGroups.has(curr.data.nodeGroup as string)) {
                 acc.nodeGroups.set(curr.data.nodeGroup as string, {
-                    label: curr.data.nodeGroup,
+                    label: `${curr.data.nodeGroup}`,
                     value: curr.data.nodeGroup as string,
                     identifier: NODE_SEARCH_KEYS.NODE_GROUP,
                 })

@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     Checkbox,
@@ -70,8 +70,7 @@ const NodeDeleteComponent = ({
     tabs,
     removeTabByIdentifier,
 }: NodeDeleteComponentType) => {
-    const { path } = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>()
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
@@ -105,10 +104,10 @@ const NodeDeleteComponent = ({
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName)
-        const updatedPath = `${path.substring(0, path.indexOf('/k8s-resources/'))}/${
+        const updatedPath = `${location.pathname.substring(0, location.pathname.indexOf('/k8s-resources/'))}/${
             URLS.APP_DETAILS_K8
         }/${NodeType.Pod.toLowerCase()}/${nodeDetails.name}/${tab.toLowerCase()}`
-        history.push(generatePath(updatedPath, { ...params, tab }))
+        navigate(generatePath(updatedPath, { ...params, tab }))
     }
 
     const deleteResourceAction = async () => {
@@ -126,7 +125,7 @@ const NodeDeleteComponent = ({
                     removeTabByIdentifier(tab.id).then(noop).catch(noop)
                 }
             })
-            appendRefetchDataToUrl(history, location)
+            appendRefetchDataToUrl(navigate, location)
         } catch (err) {
             showError(err)
         } finally {

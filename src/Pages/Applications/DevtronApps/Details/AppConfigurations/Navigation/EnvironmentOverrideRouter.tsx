@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useState } from 'react'
-import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Fragment, type JSX, useEffect, useState } from 'react'
+import { generatePath, Link, NavLink, useLocation, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -31,15 +31,16 @@ import {
     Icon,
     InfoBlock,
     Progressing,
+    ROUTER_URLS,
     SelectPicker,
     showError,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
+import ICStamp from '@Icons/ic-stamp.svg?react'
 
-import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
+import Add from '../../../../../../assets/icons/ic-add.svg?react'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
 import { URLS } from '../../../../../../config'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
@@ -61,7 +62,6 @@ const EnvOverridesHelpNote = () => (
 )
 
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
-    const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()
 
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
@@ -142,7 +142,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             })
         }
         const path = pipeline
-            ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
+            ? `${generatePath(`${ROUTER_URLS.JOBS}/:appId`, { appId })}/edit/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
             : ''
         if (showConfirmationDialog) {
             return renderConfirmationDeleteModal(pipeline, path)

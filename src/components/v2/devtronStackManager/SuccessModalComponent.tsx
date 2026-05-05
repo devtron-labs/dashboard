@@ -16,7 +16,7 @@
 
 import { ConfirmationModal, ConfirmationModalVariantType, IMAGE_SCAN_TOOL } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as UpToDateIcon } from '@Icons/ic-celebration.svg'
+import UpToDateIcon from '@Icons/ic-celebration.svg?react'
 
 import { ModuleNameMap } from '../../../config'
 import { SuccessModalType } from './DevtronStackManager.type'

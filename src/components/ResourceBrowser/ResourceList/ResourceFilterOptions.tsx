@@ -38,7 +38,7 @@ import {
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
+import NamespaceIcon from '@Icons/ic-env.svg?react'
 
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'

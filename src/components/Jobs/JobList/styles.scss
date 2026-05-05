@@ -1,0 +1,23 @@
+[id$="table__job-list"] {
+  .generic-table__row {
+    padding-block: 8px;
+  }
+
+  .generic-table__row--expanded-row {
+    padding-block: 0px;
+
+    & > div:first-child {
+      height: 45px;
+    }
+  }
+
+  .generic-table__row--is-expanded {
+    // hide 4th div onwards (inclusive) when this row is expanded
+    & > div:nth-child(n+4) > * {
+      display: none;
+    }
+
+    height: 45px;
+    flex-shrink: 0;
+  }
+}

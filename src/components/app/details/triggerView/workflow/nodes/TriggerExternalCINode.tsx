@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'

@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     ComponentSizeType,
@@ -45,7 +45,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     onSaveSuccess,
     closeSlackConfigModal,
 }: SlackConfigModalProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const projectRef = useRef(null)
 
     const [projectList, setProjectList] = useState<ProjectListTypes[]>([])
@@ -95,7 +95,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             const newParams = {
                 modal: ConfigurationsTabTypes.SLACK,
             }
-            history.push({
+            navigate({
                 search: new URLSearchParams(newParams).toString(),
             })
         }

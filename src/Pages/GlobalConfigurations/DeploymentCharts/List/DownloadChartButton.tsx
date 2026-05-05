@@ -25,7 +25,7 @@ import {
     useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICDownload } from '@Icons/ic-arrow-line-down.svg'
+import ICDownload from '@Icons/ic-arrow-line-down.svg?react'
 import { Routes } from '@Config/constants'
 
 import { DownloadChartButtonProps } from '../types'

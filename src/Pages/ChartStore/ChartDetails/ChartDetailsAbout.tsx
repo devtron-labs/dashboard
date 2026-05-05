@@ -15,7 +15,6 @@
  */
 
 import { useMemo } from 'react'
-import { useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -98,8 +97,6 @@ const ChartMetaData = ({
 }
 
 export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAboutProps) => {
-    const { url } = useRouteMatch()
-
     const {
         icon,
         name,
@@ -157,7 +154,7 @@ export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAbout
                     size={ComponentSizeType.medium}
                     component={ButtonComponentType.link}
                     linkProps={{
-                        to: `${url}/deploy-chart`,
+                        to: 'deploy-chart',
                     }}
                     onClick={handleDeploy}
                 />

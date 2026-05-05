@@ -41,8 +41,8 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
-import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
+import ICPencil from '@Icons/ic-pencil.svg?react'
+import HideIcon from '@Icons/ic-visibility-off.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router-dom'
+import { useParams, generatePath, useNavigate } from 'react-router-dom'
 import { GroupBase } from 'react-select'
 import {
     useAsync,
@@ -36,12 +36,12 @@ export default function ChartSelector({
     onChange,
     formatOptionLabel = null,
     filterOption = null,
+    path,
 }: ChartSelectorType) {
     const [loading, result, error, reload] = useAsync(api, [])
     const listMap = mapByKey(result?.result || [], apiPrimaryKey || primaryKey)
-    const { path } = useRouteMatch()
     const params = useParams()
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const _primaryKey = Number(params[primaryKey])
     const selectApp = (selected) => {
         if (onChange) {
@@ -55,7 +55,7 @@ export default function ChartSelector({
         const keys = listMap.get(selected.value)
         const replacements = [...matchedKeys].reduce((agg, curr) => ({ ...agg, [curr]: keys[curr] }), {})
         const newUrl = generatePath(path, { ...replacements, [primaryKey]: selected.value })
-        push(newUrl)
+        navigate(newUrl)
     }
 
     const getChartsOptions = (): GroupBase<SelectPickerOptionType<string | number>>[] => [

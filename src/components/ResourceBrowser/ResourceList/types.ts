@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
+
 import {
     ApiResourceType,
     BaseRecentlyVisitedEntitiesTypes,
@@ -51,13 +53,13 @@ export interface ResourceListUrlFiltersType {
     targetK8sVersion: string
 }
 
-export interface K8sResourceListURLParams extends ClusterDetailBaseParams {
+export type K8sResourceListURLParams = ClusterDetailBaseParams & {
     version: string
     kind: string
     group: string
 }
 
-export interface K8sResourceDetailURLParams extends K8sResourceListURLParams {
+export type K8sResourceDetailURLParams = K8sResourceListURLParams & {
     name: string
     namespace: string
 }
@@ -67,7 +69,7 @@ export interface NodeDetailComponentWrapperProps
         Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
     clusterName: string
 }
-export interface NodeDetailURLParams {
+export type NodeDetailURLParams = {
     name: string
 }
 
@@ -86,6 +88,7 @@ export interface AdminTerminalDummyProps
 export interface ResourcePageHeaderProps {
     breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
     renderPageHeaderActionButtons?: () => JSX.Element
+    breadcrumbsPathPattern: string
 }
 
 export interface ClusterListOptionsTypes {
@@ -164,6 +167,7 @@ export type DynamicTabComponentWrapperProps = Pick<
 > &
     ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
         children?: React.ReactElement
+        path: string
     }
 
 export interface ResourceRecommenderTableViewWrapperProps

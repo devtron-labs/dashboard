@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactElement, useState } from 'react'
+import { type JSX, ReactElement, useState } from 'react'
 import {
     WorkflowNodeType,
     ConditionalWrap,
@@ -24,9 +24,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
-import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
+import Webhook from '../../../assets/icons/ic-CIWebhook.svg?react'
 import { WebhookNodeProps } from '../types'
-import { ReactComponent as ICCIWebhook } from '@Icons/ic-CIWebhook.svg'
+import ICCIWebhook from '@Icons/ic-CIWebhook.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')

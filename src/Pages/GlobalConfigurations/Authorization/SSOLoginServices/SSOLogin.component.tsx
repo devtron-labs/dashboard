@@ -24,7 +24,7 @@
 /* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/destructuring-assignment */
-import React, { Component, createRef } from 'react'
+import { Component, createRef, FC, type JSX, MutableRefObject } from 'react'
 import ReactGA from 'react-ga4'
 import yamlJsParser from 'yaml'
 
@@ -41,8 +41,9 @@ import {
     FeatureTitleWithInfo,
     InfoBlock,
     MODES,
-    noop,
     Progressing,
+    ROUTER_URLS,
+    RouterV5Props,
     SegmentedControl,
     SegmentType,
     showError,
@@ -52,13 +53,13 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
+import InfoIcon from '@Icons/ic-info-warn.svg?react'
 import Check from '@Icons/ic-selected-corner.png'
-import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
-import { importComponentFromFELibrary } from '@Components/common'
+import UsersIcon from '@Icons/ic-users.svg?react'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
-import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, URLS, ViewType } from '../../../../config'
+import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, ViewType } from '../../../../config'
+import { AutoAssignToggleTile, getAuthorizationGlobalConfig, UserPermissionConfirmationModal } from './AutoAssign'
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
@@ -74,10 +75,7 @@ import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType 
 import '@Components/login/login.scss'
 import './ssoLogin.scss'
 
-const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
-const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
-const getAuthorizationGlobalConfig = importComponentFromFELibrary('getAuthorizationGlobalConfig', noop, 'function')
-const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => (
+const SSOLoginTab: FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => (
     <label className="dc__tertiary-tab__radio">
         <input
             className="dc__hide-section"
@@ -105,11 +103,11 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
     </label>
 )
 
-class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
+class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginState> {
     /**
      * Ref to store the value from the API, used for showing the modal
      */
-    savedShouldAutoAssignPermissionRef: React.MutableRefObject<SSOLoginState['showAutoAssignConfirmationModal']>
+    savedShouldAutoAssignPermissionRef: MutableRefObject<SSOLoginState['showAutoAssignConfirmationModal']>
 
     /**
      * Whether the auto-assign flow should be active or not
@@ -148,7 +146,9 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             // keeping the existing type intact
             .then(([ssoConfigListRes, authorizationGlobalConfig]) => {
                 let ssoConfig = ssoConfigListRes.result?.find((sso) => sso.active)
+                let ssoName = 'google'
                 if (ssoConfig) {
+                    ssoName = ssoConfig.name
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
                     ssoConfig = sample.google as any // TODO: Add type for sample
@@ -163,12 +163,13 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     })
                     this.savedShouldAutoAssignPermissionRef.current = shouldAutoAssignPermissions
                 }
+                return { ssoConfig, ssoName }
             })
-            .then(() => {
-                if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
-                    getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase())
+            .then(({ ssoConfig, ssoName }) => {
+                if (ssoConfig?.id) {
+                    getSSOConfig(ssoConfig.name.toLowerCase())
                         .then((response) => {
-                            this.setConfig(response, this.state.lastActiveSSO.name.toLowerCase())
+                            this.setConfig(response, ssoConfig.name.toLowerCase())
                         })
                         .catch((error) => {
                             this.setState({ view: ViewType.ERROR, statusCode: error.code })
@@ -176,7 +177,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 } else {
                     this.setState({
                         view: ViewType.FORM,
-                        ssoConfig: this.parseResponse(sample[this.state.sso]),
+                        ssoConfig: this.parseResponse(sample[ssoName]),
                     })
                 }
             })
@@ -293,15 +294,12 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     // The global auth config type needs to be updated irrespective of the SSO name check
-    _getGlobalAuthConfigType = () =>
-        AutoAssignToggleTile
-            ? {
-                  globalAuthConfigType:
-                      this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
-                          ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
-                          : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
-              }
-            : {}
+    _getGlobalAuthConfigType = () => ({
+        globalAuthConfigType:
+            this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
+                ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
+                : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
+    })
 
     _getSSOCreateOrUpdatePayload = (configJSON) => ({
         id: this.state.ssoConfig.id,
@@ -474,7 +472,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 setTippyConfig({
                                     showTippy: false,
                                 })
-                                this.props.history.push(URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION)
+                                this.props.navigate(ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS)
                             }
 
                             return (
@@ -496,7 +494,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             Icon: UsersIcon,
                             iconClass: 'fcy-5',
                             showTippy: true,
-                            showOnRoute: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
+                            showOnRoute: ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS,
                             iconSize: 32,
                             additionalContent: renderTippyButton(),
                         })
@@ -764,8 +762,8 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         )
 
-        this.isAutoAssignPermissionFlowActive = !!(
-            autoAssignPermissionsFlowActiveProviders.includes(this.state.sso as SSOProvider) && AutoAssignToggleTile
+        this.isAutoAssignPermissionFlowActive = !!autoAssignPermissionsFlowActiveProviders.includes(
+            this.state.sso as SSOProvider,
         )
         // The assignment confirmation modal has precedence over SSO change confirmation modal
         const showSSOChangeConfirmationModal = this.state.showToggling && !this.state.showAutoAssignConfirmationModal
@@ -811,7 +809,8 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 {this.isAutoAssignPermissionFlowActive && (
                     <div className="w-100">
                         <AutoAssignToggleTile
-                            ssoType={this.state.sso}
+                            // FIXME: Typing needs to be fixed later
+                            ssoType={this.state.sso as any}
                             isSelected={this.state.shouldAutoAssignPermissions}
                             onChange={this.toggleAutoAssignPermissions}
                         />
@@ -876,11 +875,11 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     />
                 )}
                 {/* Confirmation modal for permission auto-assignment */}
-                {UserPermissionConfirmationModal && this.state.showAutoAssignConfirmationModal && (
+                {this.state.showAutoAssignConfirmationModal && (
                     <UserPermissionConfirmationModal
                         handleSave={this.saveNewSSO}
                         handleCancel={this.handleAutoAssignConfirmationModalClose}
-                        ssoType={this.state.sso}
+                        ssoType={this.state.sso as any}
                         isLoading={this.state.saveLoading}
                     />
                 )}

@@ -117,10 +117,10 @@ const getCDInitData = async (appId: string, isTemplateView: boolean): Promise<Cr
     }
 }
 
-const getCIInitData = async (appId: string, isTemplateView: boolean) => {
+const getCIInitData = async (appId: string, isTemplateView: boolean, forceDockerfileScan: boolean) => {
     const {
         result: { form, isBlobStorageConfigured, isSecurityModuleInstalled },
-    } = await getInitData(appId.toString(), true, false, isTemplateView)
+    } = await getInitData(appId.toString(), true, false, isTemplateView, forceDockerfileScan)
 
     return {
         ...form,
@@ -132,9 +132,13 @@ const getCIInitData = async (appId: string, isTemplateView: boolean) => {
 export const getCICDPipelineInitData = async (
     appId: string,
     isTemplateView: boolean,
+    forceDockerfileScan: boolean,
 ): Promise<CreateCICDPipelineData> => {
     try {
-        const [ci, cd] = await Promise.all([getCIInitData(appId, isTemplateView), getCDInitData(appId, isTemplateView)])
+        const [ci, cd] = await Promise.all([
+            getCIInitData(appId, isTemplateView, forceDockerfileScan),
+            getCDInitData(appId, isTemplateView),
+        ])
 
         return { ci, cd }
     } catch (err) {

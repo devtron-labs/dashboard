@@ -24,9 +24,9 @@ import {
     usePopover,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICDot } from '@Icons/ic-dot.svg'
-import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICDot from '@Icons/ic-dot.svg?react'
+import ICSlidersVertical from '@Icons/ic-sliders-vertical.svg?react'
 
 import { VariableDataTablePopupMenuProps } from './types'
 

@@ -16,7 +16,7 @@
 
 /* eslint-disable react/prop-types */
 
-import { Component, createRef } from 'react'
+import { Component, createRef, useRef } from 'react'
 import Draggable, { DraggableEventHandler } from 'react-draggable'
 import { useLocation } from 'react-router-dom'
 import yamlJsParser from 'yaml'
@@ -42,6 +42,7 @@ import {
     PageHeader,
     Progressing,
     ResponseType,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerVariantType,
     showError,
@@ -285,7 +286,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 
     renderCodeEditorBody = () => {
         const { codeEditorPayload, schema, activeOutputTab } = this.state
-        const { gridTemplateRows } = this.props
+        const { gridTemplateRows, nodeRef } = this.props
 
         const isV2Schema = (codeEditorPayload ?? '').match('apiVersion:\\s*batch/v1beta2')?.length
 
@@ -330,8 +331,12 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                     position={{ x: 0, y: 0 }}
                     bounds={{ left: 0, right: 0 }}
                     onDrag={this.handleDrag}
+                    nodeRef={nodeRef}
                 >
-                    <div className={`${BULK_EDIT_RESIZE_HANDLE_CLASS} border__primary--bottom flex dc__zi-10`}>
+                    <div
+                        ref={nodeRef}
+                        className={`${BULK_EDIT_RESIZE_HANDLE_CLASS} border__primary--bottom flex dc__zi-10`}
+                    >
                         <Icon name="ic-resize-handle" size={16} color={null} />
                     </div>
                 </Draggable>
@@ -589,9 +594,12 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 
     // eslint-disable-next-line class-methods-use-this
     renderBreadcrumbs = () => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const { pathname } = useLocation()
 
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const { breadcrumbs } = useBreadcrumb(
+            ROUTER_URLS.BULK_EDIT,
             {
                 alias: {
                     ...getApplicationManagementBreadcrumb(),
@@ -601,7 +609,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             [pathname],
         )
 
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
+        return <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.BULK_EDIT} />
     }
 
     render() {
@@ -627,8 +635,9 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 const BulkEditsWithUseResizable = () => {
     const outputHeightMV = useMotionValue(INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE)
     const gridTemplateRows = useMotionTemplate`1fr 1px ${outputHeightMV}%`
+    const nodeRef = useRef<HTMLDivElement>(null)
 
-    return <BulkEdits {...{ outputHeightMV, gridTemplateRows }} />
+    return <BulkEdits {...{ outputHeightMV, gridTemplateRows, nodeRef }} />
 }
 
 export default BulkEditsWithUseResizable

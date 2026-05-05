@@ -24,10 +24,10 @@ import {
     InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
-import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-expand.svg'
-import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
+import Success from '../../../../assets/icons/appstatus/healthy.svg?react'
+import Failed from '../../../../assets/icons/ic-error.svg?react'
+import ArrowRight from '../../../../assets/icons/ic-expand.svg?react'
+import MechanicalIcon from '../../../../assets/img/ic-mechanical-operation.svg?react'
 import { importComponentFromFELibrary } from '../../../common'
 import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
 import { AllExpandableDropdown } from './AllExpandableDropdown'

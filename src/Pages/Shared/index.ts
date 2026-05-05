@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
+export { deploymentConfigDiffTabs } from './constants'
 export * from './OrganizationFrame'
+export { getDeploymentConfigDiffTabs } from './utils'

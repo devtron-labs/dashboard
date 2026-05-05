@@ -15,40 +15,44 @@
  */
 
 import { Suspense } from 'react'
-import { Route, Switch, Redirect, useRouteMatch, useParams } from 'react-router-dom'
-import { Progressing, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
-import EAHeaderComponent from '../v2/headers/EAHeader.component'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+
+import { AppListConstants, Progressing, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../config'
 import ExternalAppDetail from '../v2/appDetails/ea/EAAppDetail.component'
 import ChartDeploymentHistory from '../v2/chartDeploymentHistory/ChartDeploymentHistory.component'
+import EAHeaderComponent from '../v2/headers/EAHeader.component'
 import ChartValuesView from '../v2/values/chartValuesDiff/ChartValuesView'
 
-export default function ExternalApps() {
+const ExternalApps = () => {
     const params = useParams<{ appId: string; appName: string }>()
-    const { path } = useRouteMatch()
     return (
         <div className="flexbox-col h-100">
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.HELM_APPS}
-                redirectURL={URLS.HELM_APP_LIST}
+                redirectURL={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM}
                 breadCrumbConfig={{
                     ea: null,
                 }}
+                breadcrumbPathPattern={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP}
             />
             <Suspense fallback={<Progressing pageLoader />}>
-                <Switch>
-                    <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                        <ExternalAppDetail appId={params.appId} appName={params.appName} isExternalApp />
-                    </Route>
-                    <Route path={`${path}/${URLS.APP_VALUES}`}>
-                        <ChartValuesView appId={params.appId} isExternalApp />
-                    </Route>
-                    <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
-                        <ChartDeploymentHistory appId={params.appId} appName={params.appName} isExternal />
-                    </Route>
-                    <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-                </Switch>
+                <Routes>
+                    <Route
+                        path={`${URLS.APP_DETAILS}/*`}
+                        element={<ExternalAppDetail appId={params.appId} appName={params.appName} isExternalApp />}
+                    />
+                    <Route path={URLS.APP_VALUES} element={<ChartValuesView appId={params.appId} isExternalApp />} />
+                    <Route
+                        path={URLS.APP_DEPLOYMNENT_HISTORY}
+                        element={<ChartDeploymentHistory appId={params.appId} appName={params.appName} isExternal />}
+                    />
+                    <Route path="*" element={<Navigate to={URLS.APP_DETAILS} />} />
+                </Routes>
             </Suspense>
         </div>
     )
 }
+
+export default ExternalApps

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { type JSX, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import Select from 'react-select'
 import Tippy from '@tippyjs/react'
+import commandLineParser from 'command-line-parser'
 
 import {
     AppThemeType,
@@ -35,12 +36,12 @@ import {
     useKeyDown,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
-import { ReactComponent as Download } from '@Icons/ic-arrow-line-down.svg'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as LinesIcon } from '@Icons/ic-lines.svg'
-import { ReactComponent as PlayButton } from '@Icons/ic-play-filled.svg'
-import { ReactComponent as StopButton } from '@Icons/ic-stop-filled.svg'
+import Abort from '@Icons/ic-abort.svg?react'
+import Download from '@Icons/ic-arrow-line-down.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import LinesIcon from '@Icons/ic-lines.svg?react'
+import PlayButton from '@Icons/ic-play-filled.svg?react'
+import StopButton from '@Icons/ic-stop-filled.svg?react'
 
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { Subject } from '../../../../../../util/Subject'
@@ -54,7 +55,7 @@ import { AppDetailsTabs } from '../../../appDetails.store'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import IndexStore from '../../../index.store'
 import { downloadLogs, getLogsURL } from '../nodeDetail.api'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { NodeDetailTab, ParamsType } from '../nodeDetail.type'
 import {
     flatContainers,
     getFirstOrNull,
@@ -71,7 +72,6 @@ import { SelectedCustomLogFilterType } from './node.type'
 import './nodeDetailTab.scss'
 
 const subject: Subject<string> = new Subject()
-const commandLineParser = require('command-line-parser')
 
 const LogsComponent = ({
     selectedTab,
@@ -91,7 +91,6 @@ const LogsComponent = ({
         unit: 'minutes',
     })
     const location = useLocation()
-    const { url } = useRouteMatch()
     const params = useParams<{
         actionName: string
         podName: string
@@ -101,12 +100,10 @@ const LogsComponent = ({
         namespace: string
         kind?: string
     }>()
-    params.nodeType = params.kind ?? params.nodeType
     const key = useKeyDown()
     const { isDownloading, handleDownload } = useDownload()
     const [logsPaused, setLogsPaused] = useState(false)
     const [tempSearch, setTempSearch] = useState<string>('')
-    const [highlightString, setHighlightString] = useState('')
     const [logsCleared, setLogsCleared] = useState(false)
     const [readyState, setReadyState] = useState(null)
     const showStreamErrorRef = useRef(false)
@@ -115,7 +112,13 @@ const LogsComponent = ({
     const appDetails = IndexStore.getAppDetails()
     const isLogAnalyzer = !params.podName && !params.name
     const [logState, setLogState] = useState(() =>
-        getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+        getInitialPodContainerSelection(
+            isLogAnalyzer,
+            params as ParamsType,
+            location,
+            isResourceBrowserView,
+            selectedResource,
+        ),
     )
     const [prevContainer, setPrevContainer] = useState(false)
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
@@ -204,7 +207,7 @@ const LogsComponent = ({
 
     const podContainerOptions = getPodContainerOptions(
         isLogAnalyzer,
-        params,
+        params as ParamsType,
         location,
         logState,
         isResourceBrowserView,
@@ -397,8 +400,6 @@ const LogsComponent = ({
         setTempSearch(_searchText)
         const str = replaceLastOddBackslash(_searchText)
         handleSearchTextChange(str)
-        const { length, [length - 1]: highlightStringLocal } = str.split(' ')
-        setHighlightString(highlightStringLocal)
         handleCurrentSearchTerm(str)
     }
 
@@ -431,10 +432,16 @@ const LogsComponent = ({
 
     useEffect(() => {
         if (selectedTab) {
-            selectedTab(NodeDetailTab.LOGS, url)
+            selectedTab(NodeDetailTab.LOGS, location.pathname)
         }
         setLogState(
-            getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+            getInitialPodContainerSelection(
+                isLogAnalyzer,
+                params as ParamsType,
+                location,
+                isResourceBrowserView,
+                selectedResource,
+            ),
         )
 
         if (logSearchTerms) {
@@ -448,8 +455,6 @@ const LogsComponent = ({
             if (currentSearchTerm) {
                 setTempSearch(currentSearchTerm)
                 handleSearchTextChange(currentSearchTerm)
-                const { length, [length - 1]: highlightStringLocal } = currentSearchTerm.split(' ')
-                setHighlightString(highlightStringLocal)
             }
         }
         // TODO: reset pauseLog and grepToken
@@ -812,12 +817,7 @@ const LogsComponent = ({
                                 className={`flexbox-col flex-grow-1 w-100 h-100 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                             >
                                 <div className="log-viewer">
-                                    <LogViewerComponent
-                                        subject={subject}
-                                        highlightString={highlightString}
-                                        rootClassName="event-logs__logs"
-                                        reset={logsCleared}
-                                    />
+                                    <LogViewerComponent subject={subject} reset={logsCleared} />
                                 </div>
                             </div>
                         )}

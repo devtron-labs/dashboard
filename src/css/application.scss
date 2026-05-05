@@ -15,13 +15,13 @@
  */
 
 // @TODO: Patternfly styles files need to be removed in future
-@import './colorPalette.scss';
-@import './patternfly.scss';
-@import './normalize.scss';
-@import './mixins.scss';
-@import 'iconTheming.scss';
-@import './themeUtils.scss';
-@import './base.scss';
-@import './formulae.scss';
-@import './forms.scss';
-@import 'tippy.js/dist/tippy.css';
+@use './colorPalette.scss';
+@use './patternfly.scss';
+@use './normalize.scss';
+@use './mixins.scss';
+@use 'iconTheming.scss';
+@use './themeUtils.scss';
+@use './base.scss';
+@use './formulae.scss';
+@use './forms.scss';
+@use 'tippy.js/dist/tippy.css';

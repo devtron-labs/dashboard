@@ -34,10 +34,10 @@ import {
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
-import { ReactComponent as ICLegoBlock } from '@Icons/ic-lego-block.svg'
-import { ReactComponent as ICTag } from '@Icons/ic-tag.svg'
-import { ReactComponent as ICVisibilityOn } from '@Icons/ic-visibility-on.svg'
+import ICHelp from '@Icons/ic-help.svg?react'
+import ICLegoBlock from '@Icons/ic-lego-block.svg?react'
+import ICTag from '@Icons/ic-tag.svg?react'
+import ICVisibilityOn from '@Icons/ic-visibility-on.svg?react'
 
 import CreatePluginFormField from './CreatePluginFormField'
 import CreatePluginInputVariableContainer from './CreatePluginInputVariableContainer'

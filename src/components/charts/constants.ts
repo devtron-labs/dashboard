@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { URLS } from '@Config/routes'
+import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AddSourceMenuOptions, CHART_SOURCE_TYPE } from './charts.types'
 
@@ -62,13 +62,13 @@ export const getAddSourceActionMenuOptions = (): AddSourceMenuOptions['options']
                 id: CHART_SOURCE_TYPE.CHART_REPO,
                 label: 'Add Chart Repository',
                 componentType: 'link',
-                to: URLS.GLOBAL_CONFIG_CHART_REPO,
+                to: ROUTER_URLS.GLOBAL_CONFIG_CHART_REPOSITORIES,
             },
             {
                 id: CHART_SOURCE_TYPE.OCI,
                 label: 'Add OCI Registry',
                 componentType: 'link',
-                to: `${URLS.GLOBAL_CONFIG_DOCKER}/0`,
+                to: `${ROUTER_URLS.GLOBAL_CONFIG_DOCKER}/0`,
             },
         ],
     },

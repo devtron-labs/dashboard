@@ -23,7 +23,7 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import Close from '@Icons/ic-close.svg?react'
 
 import { ConfigurationsTabTypes } from './constants'
 import { getTabText } from './notifications.util'

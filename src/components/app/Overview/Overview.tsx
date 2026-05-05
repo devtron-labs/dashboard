@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import moment from 'moment'
-import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, Link, useNavigate, useLocation, useParams } from 'react-router-dom'
 import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
@@ -29,19 +29,20 @@ import {
     EditableTextArea,
     ToastManager,
     ToastVariantType,
-    URLS as CommonUrls,
     AppStatus,
     StatusType,
     SegmentedControl,
     Button,
     ComponentSizeType,
     SegmentType,
+    ROUTER_URLS,
+    GenericDescription,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
-import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
+import EditIcon from '../../../assets/icons/ic-pencil.svg?react'
+import TagIcon from '../../../assets/icons/ic-tag.svg?react'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
@@ -49,7 +50,7 @@ import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
-import GenericDescription from '../../common/Description/GenericDescription'
+import { patchApplicationNote } from '../../ClusterNodes/clusterNodes.service'
 import { editApp } from '../service'
 import { getAppConfig, getOverviewSegmentControlOptions, getResourceKindFromAppType } from './utils'
 import { EnvironmentList } from './EnvironmentList'
@@ -68,7 +69,7 @@ type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
     const searchParams = new URLSearchParams(location.search)
     const activeTab = searchParams.get(TAB_SEARCH_KEY) as AvailableTabs
     const isUpdateDependencyModalOpen =
@@ -94,14 +95,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const [, isArgoInstalled] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD), [])
     const { resourceName } = config
 
-    let _moment: moment.Moment
-    let _date: string
-
     const setActiveTab = (selectedTab: AvailableTabs) => {
         const _searchParams = new URLSearchParams({
             [TAB_SEARCH_KEY]: selectedTab,
         })
-        history.replace({ search: _searchParams.toString() })
+        navigate({ search: _searchParams.toString() }, { replace: true })
     }
 
     const toggleUpdateDependencyModal = () => {
@@ -110,7 +108,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         } else {
             searchParams.set(MODAL_STATE.key, MODAL_STATE.value)
         }
-        history.replace({ search: searchParams.toString() })
+        navigate({ search: searchParams.toString() }, { replace: true })
     }
 
     const handleEditDependencyClick = () => {
@@ -126,23 +124,18 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         // add a default tab if not set
         if (!activeTab || !Object.values(OVERVIEW_TABS).includes(activeTab)) {
             searchParams.set(TAB_SEARCH_KEY, OVERVIEW_TABS.ABOUT)
-            history.replace({ search: searchParams.toString() })
+            navigate({ search: searchParams.toString() }, { replace: true })
         }
     }, [searchParams])
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
-            _moment = moment(appMetaInfo?.note?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.note?.updatedOn
-            const description =
-                appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
-                    ? appMetaInfo.note.description
-                    : config.defaultNote
-            _date = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id ? _date : ''
-            setNewUpdatedOn(_date)
-            setNewUpdatedBy(appMetaInfo?.note?.updatedBy)
+            const hasNote = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
+            const description = hasNote ? appMetaInfo.note.description : config.defaultNote
             setNewDescription(description)
+            setNewUpdatedBy(hasNote ? appMetaInfo?.note?.updatedBy : '')
+            setNewUpdatedOn(hasNote ? appMetaInfo?.note?.updatedOn : '')
             setDescriptionId(appMetaInfo?.note?.id)
             setIsLoading(false)
         }
@@ -295,7 +288,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                 <span>{chartUsed.appStoreChartName}/</span>
                                 <Link
                                     className="dc__ellipsis-right"
-                                    to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}
+                                    to={`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/${chartUsed.appStoreChartId}`}
                                 >
                                     {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
                                 </Link>
@@ -345,8 +338,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created from template</div>
                             <Link
-                                to={generatePath(CommonUrls.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
-                                    appId: templateConfig.id,
+                                to={generatePath(ROUTER_URLS.APP_TEMPLATE_DETAIL, {
+                                    appId: String(templateConfig.id),
                                 })}
                                 className="flexbox dc__gap-8 dc__w-fit-content"
                                 target="_blank"
@@ -422,7 +415,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <div key={jobPipeline.ciPipelineID} className="flex dc__content-start pr-16 pl-16">
                         <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
-                                to={`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${appId}/ci-details/${jobPipeline.ciPipelineID}/`}
+                                to={`${generatePath(ROUTER_URLS.JOB_DETAIL.CI_DETAILS, { appId })}/${jobPipeline.ciPipelineID}`}
                                 className="fs-13 dc__ellipsis-right"
                             >
                                 {jobPipeline.ciPipelineName}
@@ -460,6 +453,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return <div className="flex column left">{renderWorkflowComponent()}</div>
     }
 
+    const handleUpdateDescription = async (description: string): Promise<void> => {
+        const response = await patchApplicationNote({
+            id: descriptionId,
+            identifier: Number(appId),
+            description,
+        })
+        if (response.result) {
+            setNewDescription(response.result.description)
+            setNewUpdatedBy(response.result.updatedBy)
+            setNewUpdatedOn(response.result.updatedOn)
+            setDescriptionId(response.result.id)
+        }
+    }
+
     function renderAppDescription() {
         return (
             <div>
@@ -468,14 +475,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <DeploymentWindowOverview appId={Number(appId)} filteredEnvIds={filteredEnvIds} />
                 )}
                 <GenericDescription
-                    isClusterTerminal={false}
-                    appId={Number(appId)}
-                    descriptionId={descriptionId}
-                    initialDescriptionText={newDescription}
-                    initialDescriptionUpdatedBy={newUpdatedBy}
-                    initialDescriptionUpdatedOn={newUpdatedOn}
-                    initialEditDescriptionView
-                    appMetaInfo={appMetaInfo}
+                    text={newDescription}
+                    updatedBy={newUpdatedBy}
+                    updatedOn={newUpdatedOn}
+                    updateDescription={handleUpdateDescription}
+                    title="Readme"
                 />
             </div>
         )

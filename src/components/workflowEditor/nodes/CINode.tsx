@@ -23,9 +23,9 @@ import {
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
-import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
-import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
-import { ReactComponent as IcLink } from '../../../assets/icons/ic-link.svg'
+import Warning from '../../../assets/icons/ic-warning.svg?react'
+import ICLinkedCINode from '../../../assets/icons/ic-node-build-linked.svg?react'
+import IcLink from '../../../assets/icons/ic-link.svg?react'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
@@ -36,7 +36,7 @@ export class CINode extends Component<CINodeProps> {
         // stopPropagation to stop redirection to ci-details
         e.stopPropagation()
         e.preventDefault()
-        this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
+        this.props.navigate(`${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
     }
 
     onClickAddNode = (event: any) => {

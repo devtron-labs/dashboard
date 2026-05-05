@@ -32,9 +32,9 @@ import Descriptor from './Descriptor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
-import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICArrowRight from '@Icons/ic-arrow-right.svg?react'
+import ICPencil from '@Icons/ic-pencil.svg?react'
 import { SAVE_SUCCESS_TOAST_MESSAGE, GET_SCOPED_VARIABLES_ERROR, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
 
 export default function ScopedVariablesEditor({

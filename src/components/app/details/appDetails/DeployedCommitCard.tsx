@@ -26,7 +26,7 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
+import CommitIcon from '../../../../assets/icons/ic-code-commit.svg?react'
 import { DeployedCommitCardType } from './appDetails.type'
 
 const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifactId }: DeployedCommitCardType) => {

@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
@@ -37,6 +37,7 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { deploymentConfigDiffTabs, getDeploymentConfigDiffTabs } from '@Pages/Shared'
 import { getChartReferencesForAppAndEnv, getTemplateOptions } from '@Services/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
@@ -49,12 +50,10 @@ import {
 import { getDeploymentTemplateData, getManifestData } from './service.utils'
 import { DeploymentConfigComparisonDataType } from './types'
 import {
-    deploymentConfigDiffTabs,
     getAppAndEnvIds,
     getAppEnvDeploymentConfigPayload,
     getCompareEnvironmentSelectorOptions,
     getConfigChartRefId,
-    getDeploymentConfigDiffTabs,
     getEnvironmentConfigTypeOptions,
     getIdentifierIdBasedOnConfiguration,
     getManifestRequestValues,
@@ -74,10 +73,11 @@ export const DeploymentConfigCompare = ({
     overwriteNavHeading,
     getNavItemHref,
     appOrEnvIdToResourceApprovalConfigurationMap,
+    routePath,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
-    const { push } = useHistory()
-    const { path, params } = useRouteMatch<DeploymentConfigParams>()
+    const navigate = useNavigate()
+    const params = useParams<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
     const location = useLocation()
     const { isSuperAdmin } = useMainContext()
@@ -639,8 +639,8 @@ export const DeploymentConfigCompare = ({
             currentSearchParams.delete('manifestChartRefId')
         }
 
-        push({
-            pathname: generatePath(path, {
+        navigate({
+            pathname: generatePath(routePath, {
                 ...params,
                 resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
                 resourceName: null,

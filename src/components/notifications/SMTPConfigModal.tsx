@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     CustomInput,
@@ -43,7 +43,7 @@ export const SMTPConfigModal = ({
     onSaveSuccess,
     selectSMTPFromChild,
 }: SMTPConfigModalProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [form, setForm] = useState<SMTPFormType>(getSMTPDefaultConfiguration(shouldBeDefault))
     const [isFormValid, setFormValid] = useState(DefaultSMTPValidation)
@@ -95,7 +95,7 @@ export const SMTPConfigModal = ({
             const newParams = {
                 modal: ConfigurationsTabTypes.SMTP,
             }
-            history.push({
+            navigate({
                 search: new URLSearchParams(newParams).toString(),
             })
         }

@@ -17,7 +17,7 @@
 import React, { Component } from 'react'
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTable } from './DeploymentTable'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import Close from '../../../../assets/icons/ic-close.svg?react'
 import { ViewType } from '../../../../config'
 
 export interface DeploymentTableModalProps {

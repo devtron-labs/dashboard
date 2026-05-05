@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     API_STATUS_CODES,
@@ -37,7 +37,7 @@ import {
 } from './utils'
 
 const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }: CommandBarBackdropProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     const [searchText, setSearchText] = useState('')
@@ -72,7 +72,11 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
         [resourceList],
     )
 
-    const { data: recentActionsGroup, isLoading } = useQuery({
+    const {
+        data: recentActionsGroup,
+        isLoading,
+        refetch: refetchActionsGroup,
+    } = useQuery({
         queryFn: ({ signal }) =>
             getUserPreferences(signal).then((response) => {
                 const responseData: ResponseType<typeof response> = {
@@ -176,6 +180,8 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
             return
         }
 
+        await refetchActionsGroup()
+
         const currentItemId = sanitizeItemId(item)
 
         // In this now we will put the id as first item in the list and keep first 5 items then
@@ -207,7 +213,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
             return
         }
 
-        history.push(item.href)
+        navigate(item.href)
         handleClose()
 
         await pushItemToRecent(item)

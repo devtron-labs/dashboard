@@ -1,11 +1,13 @@
+import type { JSX } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { getRandomColor, Icon, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { getRandomColor, Icon, ROUTER_URLS, SERVER_MODE, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import TextLogo from '@Icons/ic-nav-devtron.svg'
 
 export const NavigationLogo = () => {
     const { ORGANIZATION_NAME, SIDEBAR_DT_LOGO } = window._env_ ?? {}
+    const { serverMode } = useMainContext()
 
     let logoContent: JSX.Element
 
@@ -33,7 +35,14 @@ export const NavigationLogo = () => {
     }
 
     return (
-        <NavLink className="flex" to={URLS.APPLICATION_MANAGEMENT_APP}>
+        <NavLink
+            className="flex"
+            to={
+                serverMode === SERVER_MODE.EA_ONLY
+                    ? ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM
+                    : ROUTER_URLS.DEVTRON_APP_LIST
+            }
+        >
             {logoContent}
         </NavLink>
     )
