@@ -271,7 +271,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 <EmptyView
                     title={APP_GROUP_CI_DETAILS.linkedCI.title}
                     subTitle={APP_GROUP_CI_DETAILS.linkedCI.title}
-                    link={`${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS, { appId: pipeline.parentAppId })}/${pipeline.parentCiPipeline}/logs`}
+                    link={`${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS, { appId: pipeline.parentAppId })}/${pipeline.parentCiPipeline}`}
                     linkText={APP_GROUP_CI_DETAILS.linkedCI.linkText}
                 />
             )
