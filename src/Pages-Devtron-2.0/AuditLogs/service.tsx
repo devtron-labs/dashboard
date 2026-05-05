@@ -1,98 +1,100 @@
-import { get, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
     AuditLogApiResponse,
     AuditLogDetailType,
     AuditLogFilterKeys,
     AuditLogFilterOptionsType,
-    AuditLogRowType,
-    AuditLogSortableKeys,
-    GetAuditLogListProps,
+    AuditLogsTableProps,
+    GetAuditLogsParams,
+    NormalizedAuditLogApiResponse,
 } from './types'
 
 const AUDIT_LOG_ENDPOINT = 'audit-log'
 
-const fetchAuditLogs = async (signal?: AbortSignal): Promise<AuditLogDetailType[]> => {
-    const response = await get<AuditLogApiResponse>(AUDIT_LOG_ENDPOINT, { signal })
-    return response.result?.auditLogs?.data ?? []
-}
-
-const matchesSearch = (auditLog: AuditLogDetailType, searchKey: string) => {
-    if (!searchKey) {
-        return true
-    }
-
-    const normalizedSearchKey = searchKey.toLowerCase()
-
-    return [
-        auditLog.action,
-        auditLog.user,
-        auditLog.resourceName,
-        auditLog.resourceType,
-        auditLog.module,
-        auditLog.requestMethod,
-    ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase()
-        .includes(normalizedSearchKey)
-}
-
-const getSortedAuditLogs = (
-    auditLogs: AuditLogDetailType[],
-    sortBy: string | undefined,
-    sortOrder: SortingOrder | undefined,
-) => {
-    const sortingKey = (sortBy as AuditLogSortableKeys) || AuditLogSortableKeys.TIMESTAMP
-    const effectiveSortOrder = sortOrder || SortingOrder.DESC
-
-    return [...auditLogs].sort((first, second) => {
-        const firstValue = first[sortingKey]
-        const secondValue = second[sortingKey]
-
-        const comparison =
-            sortingKey === AuditLogSortableKeys.TIMESTAMP
-                ? new Date(firstValue).getTime() - new Date(secondValue).getTime()
-                : String(firstValue).localeCompare(String(secondValue))
-
-        return effectiveSortOrder === SortingOrder.ASC ? comparison : -comparison
-    })
-}
-
-export const getAuditLogList = async ({
-    offset,
-    pageSize,
-    searchKey,
-    sortBy,
-    sortOrder,
-    signal,
-    [AuditLogFilterKeys.TYPE]: type = [],
-    [AuditLogFilterKeys.MODULE]: module = [],
-}: GetAuditLogListProps): Promise<{ rows: { id: string; data: AuditLogRowType }[]; totalRows: number }> => {
-    const auditLogs = await fetchAuditLogs(signal)
-
-    const filteredAuditLogs = auditLogs.filter(
-        (auditLog) =>
-            matchesSearch(auditLog, searchKey) &&
-            (!type.length || type.includes(auditLog.requestMethod)) &&
-            (!module.length || module.includes(auditLog.module)),
-    )
-
-    const sortedAuditLogs = getSortedAuditLogs(filteredAuditLogs, sortBy, sortOrder)
-    const paginatedAuditLogs = sortedAuditLogs.slice(offset, offset + pageSize)
+const normalizeAuditLogResponse = (response?: AuditLogApiResponse): NormalizedAuditLogApiResponse => {
+    const {
+        data = response?.data ?? [],
+        offset = response?.offset ?? 0,
+        size = response?.size ?? data.length,
+        totalCount = response?.totalCount ?? data.length,
+    } = response?.auditLogs ?? {}
 
     return {
-        rows: paginatedAuditLogs.map((auditLog) => ({
-            id: String(auditLog.auditLogId),
-            data: auditLog,
-        })),
-        totalRows: filteredAuditLogs.length,
+        data,
+        offset,
+        size,
+        totalCount,
     }
 }
 
-export const getAuditLogFilterOptions = async (): Promise<AuditLogFilterOptionsType> => {
-    const auditLogs = await fetchAuditLogs()
+export const getAuditLogs = async (
+    params?: Partial<GetAuditLogsParams>,
+    signal?: AbortSignal,
+): Promise<NormalizedAuditLogApiResponse> => {
+    const {
+        offset = 0,
+        pageSize,
+        searchKey,
+        sortBy,
+        sortOrder,
+        [AuditLogFilterKeys.TYPE]: type,
+        [AuditLogFilterKeys.MODULE]: module,
+    } = params ?? {}
 
+    const url = getUrlWithSearchParams(AUDIT_LOG_ENDPOINT, {
+        offset,
+        size: pageSize,
+        searchKey,
+        sortBy,
+        sortOrder,
+        type,
+        module,
+    })
+    const { result } = await get<AuditLogApiResponse>(url, { signal })
+
+    return normalizeAuditLogResponse(result)
+}
+
+export const getAuditLogList: AuditLogsTableProps['getRows'] = async (
+    {
+        offset,
+        pageSize,
+        searchKey,
+        sortBy,
+        sortOrder,
+        [AuditLogFilterKeys.TYPE]: type = [],
+        [AuditLogFilterKeys.MODULE]: module = [],
+    }: GetAuditLogsParams,
+    signal,
+) => {
+    const auditLogResponse = await getAuditLogs(
+        {
+            offset,
+            pageSize,
+            searchKey,
+            sortBy,
+            sortOrder,
+            [AuditLogFilterKeys.TYPE]: type,
+            [AuditLogFilterKeys.MODULE]: module,
+        },
+        signal,
+    )
+    const pageAuditLogs =
+        auditLogResponse.data.length > pageSize
+            ? auditLogResponse.data.slice(offset, offset + pageSize)
+            : auditLogResponse.data
+
+    return {
+        rows: pageAuditLogs.map((auditLog, index) => ({
+            id: `${auditLog.auditLogId}-${offset + index}`,
+            data: auditLog,
+        })),
+        totalRows: auditLogResponse.totalCount,
+    }
+}
+
+export const getAuditLogFilterOptions = (auditLogs: AuditLogDetailType[]): AuditLogFilterOptionsType => {
     const toOptions = (values: string[]) =>
         [...new Set(values.filter(Boolean))]
             .sort((first, second) => first.localeCompare(second))

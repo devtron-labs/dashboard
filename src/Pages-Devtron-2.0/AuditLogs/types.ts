@@ -10,16 +10,6 @@ export enum AuditLogFilterKeys {
     MODULE = 'module',
 }
 
-export enum AuditLogSortableKeys {
-    TIMESTAMP = 'timestamp',
-    ACTION = 'action',
-    TYPE = 'type',
-    USER = 'user',
-    RESOURCE_NAME = 'resourceName',
-    RESOURCE_TYPE = 'resourceType',
-    MODULE = 'module',
-}
-
 export type AuditLogFiltersType = {
     [AuditLogFilterKeys.TYPE]: string[]
     [AuditLogFilterKeys.MODULE]: string[]
@@ -37,14 +27,26 @@ export interface AuditLogRowType {
 }
 
 export interface AuditLogDetailType extends AuditLogRowType {
-    payload: Record<string, unknown>
+    jsonFormatLog?: string
+    payload?: Record<string, unknown> | string
 }
 
 export interface AuditLogApiResponse {
-    auditLogs: {
-        data: AuditLogDetailType[]
+    data?: AuditLogDetailType[]
+    offset?: number
+    size?: number
+    totalCount?: number
+    auditLogs?: {
+        data?: AuditLogDetailType[]
+        offset?: number
+        size?: number
+        totalCount?: number
     }
 }
+
+export type NormalizedAuditLogApiResponse = Required<
+    Pick<AuditLogApiResponse, 'data' | 'offset' | 'size' | 'totalCount'>
+>
 
 export type AuditLogFilterOptionsType = {
     typeOptions: SelectPickerOptionType<string>[]
@@ -58,10 +60,8 @@ export type AuditLogTableAdditionalProps = {
 
 export type AuditLogsTableProps = TableProps<AuditLogRowType, FiltersTypeEnum.URL, AuditLogTableAdditionalProps>
 
-export type GetAuditLogListProps = AuditLogFiltersType &
-    Parameters<NonNullable<AuditLogsTableProps['getRows']>>[0] & {
-        signal: AbortSignal
-    }
+export type GetAuditLogsParams = Partial<AuditLogFiltersType> &
+    Parameters<NonNullable<AuditLogsTableProps['getRows']>>[0]
 
 export type AuditLogsTableWrapperProps = TableViewWrapperProps<
     AuditLogRowType,

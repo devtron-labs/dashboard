@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
     BreadCrumb,
@@ -14,10 +15,16 @@ import {
 
 import AuditLogDetail from './AuditLogDetail'
 import AuditLogsTableWrapper from './AuditLogsTableWrapper'
-import { getAuditLogFilterOptions, getAuditLogList } from './service'
-import { AuditLogDetailType, AuditLogRowType, AuditLogTableAdditionalProps } from './types'
+import { getAuditLogFilterOptions, getAuditLogList, getAuditLogs } from './service'
+import {
+    AuditLogDetailType,
+    AuditLogRowType,
+    AuditLogTableAdditionalProps,
+    NormalizedAuditLogApiResponse,
+} from './types'
 import { getAuditLogColumns, parseAuditLogURLParams } from './utils'
 
+const EMPTY_AUDIT_LOGS: AuditLogDetailType[] = []
 const EMPTY_FILTER_OPTIONS: AuditLogTableAdditionalProps['filterOptions'] = {
     typeOptions: [],
     moduleOptions: [],
@@ -26,6 +33,7 @@ const EMPTY_FILTER_OPTIONS: AuditLogTableAdditionalProps['filterOptions'] = {
 const AuditLogsList = () => {
     const columns = useMemo(() => getAuditLogColumns(), [])
     const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLogDetailType | null>(null)
+    const navigate = useNavigate()
 
     const { breadcrumbs } = useBreadcrumb(ROUTER_URLS.AUDIT_LOGS, {
         alias: {
@@ -36,16 +44,21 @@ const AuditLogsList = () => {
         },
     })
 
-    const { data: filterOptions = EMPTY_FILTER_OPTIONS } = useQuery<
-        Awaited<ReturnType<typeof getAuditLogFilterOptions>>,
-        AuditLogTableAdditionalProps['filterOptions'],
-        ['audit-log-filter-options'],
+    const { data: auditLogs = EMPTY_AUDIT_LOGS, isLoading: areAuditLogsLoading } = useQuery<
+        NormalizedAuditLogApiResponse,
+        AuditLogDetailType[],
+        ['audit-logs'],
         false
     >({
-        queryFn: getAuditLogFilterOptions,
-        queryKey: ['audit-log-filter-options'],
-        select: (data) => data,
+        queryFn: ({ signal }) => getAuditLogs({}, signal),
+        queryKey: ['audit-logs'],
+        select: (response) => response.data,
     })
+
+    const filterOptions = useMemo(
+        () => (auditLogs.length ? getAuditLogFilterOptions(auditLogs) : EMPTY_FILTER_OPTIONS),
+        [auditLogs],
+    )
 
     const handleSelectAuditLog = useCallback((auditLog: AuditLogDetailType) => {
         setSelectedAuditLog(auditLog)
@@ -59,6 +72,10 @@ const AuditLogsList = () => {
         NonNullable<TableProps<AuditLogRowType, FiltersTypeEnum.URL, AuditLogTableAdditionalProps>['onRowClick']>
     >((row) => handleSelectAuditLog(row.data as AuditLogDetailType), [handleSelectAuditLog])
 
+    const clearFilters = useCallback(() => {
+        navigate(ROUTER_URLS.AUDIT_LOGS)
+    }, [navigate])
+
     const auditLogBreadcrumb = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.AUDIT_LOGS} />
 
     return (
@@ -71,21 +88,26 @@ const AuditLogsList = () => {
                 ViewWrapper={AuditLogsTableWrapper}
                 filtersVariant={FiltersTypeEnum.URL}
                 additionalFilterProps={{
-                    initialSortKey: 'timestamp',
+                    initialSortKey: 'timeStamp',
                     parseSearchParams: parseAuditLogURLParams,
-                    defaultPageSize: 5,
                 }}
                 paginationVariant={PaginationEnum.PAGINATED}
                 getRows={getAuditLogList}
+                filter={null}
+                loading={areAuditLogsLoading}
                 onRowClick={handleRowClick}
+                clearFilters={clearFilters}
                 emptyStateConfig={{
                     noRowsConfig: {
                         title: 'No audit logs found',
                         subTitle: 'Audit trail entries will show up here once actions are performed.',
-                        noImage: true,
+                    },
+                    noRowsForFilterConfig: {
+                        title: 'No audit logs found',
+                        subTitle: 'Try adjusting your search or filters',
+                        clearFilters,
                     },
                 }}
-                filter={null}
                 additionalProps={{ filterOptions, onSelectAuditLog: handleSelectAuditLog }}
             />
 

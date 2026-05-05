@@ -20,7 +20,7 @@ const TimestampCellComponent = ({ value }: TableCellComponentProps<AuditLogRowTy
 
 const ActionCellComponent = ({ row }: TableCellComponentProps<AuditLogRowType, FiltersTypeEnum.URL>) => (
     <div className="flex left py-12">
-        <span className="dc__link fs-13 lh-20 dc__truncate">{`${capitalizeFirstLetter(row.data.action)}ed ${row.data.resourceName} ${row.data.resourceType} `}</span>
+        <span className="dc__link fs-13 lh-20 dc__truncate">{`${capitalizeFirstLetter(row.data.action)}d ${row.data.resourceName} ${row.data.resourceType} `}</span>
     </div>
 )
 
@@ -45,12 +45,18 @@ const TypeCellComponent = ({ row }: TableCellComponentProps<AuditLogRowType, Fil
     </div>
 )
 
+const compareDates = (first: unknown, second: unknown) =>
+    new Date(String(first ?? '')).getTime() - new Date(String(second ?? '')).getTime()
+
+const compareStrings = (first: unknown, second: unknown) => String(first ?? '').localeCompare(String(second ?? ''))
+
 export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
     {
         field: 'timeStamp',
         label: 'Timestamp',
         size: { fixed: 220 },
         isSortable: true,
+        comparator: compareDates,
         CellComponent: TimestampCellComponent,
     },
     {
@@ -58,6 +64,7 @@ export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
         label: 'Action',
         size: null,
         isSortable: true,
+        comparator: compareStrings,
         CellComponent: ActionCellComponent,
     },
     {
@@ -65,6 +72,7 @@ export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
         label: 'Type',
         size: { fixed: 130 },
         isSortable: true,
+        comparator: compareStrings,
         CellComponent: TypeCellComponent,
     },
     {
@@ -72,6 +80,7 @@ export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
         label: 'User',
         size: { fixed: 180 },
         isSortable: true,
+        comparator: compareStrings,
         CellComponent: UserCellComponent,
     },
     {
@@ -79,18 +88,21 @@ export const getAuditLogColumns = (): AuditLogsTableProps['columns'] => [
         label: 'Resource Type',
         size: { fixed: 180 },
         isSortable: true,
+        comparator: compareStrings,
     },
     {
         field: 'resourceName',
         label: 'Resource Name',
         size: { fixed: 200 },
         isSortable: true,
+        comparator: compareStrings,
     },
     {
         field: 'module',
         label: 'Module',
         size: { fixed: 190 },
         isSortable: true,
+        comparator: compareStrings,
         CellComponent: ModuleCellComponent,
     },
 ]
