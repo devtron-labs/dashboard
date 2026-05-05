@@ -48,6 +48,7 @@ import {
     TableColumnType,
     useAsync,
     useMainContext,
+    useQuery,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -119,11 +120,11 @@ const ClusterList = () => {
         isSuperAdmin && !isK8sClient,
     )
 
-    const [, clusterNameVsAutoscalerProfile, , refetchProfileMap] = useAsync(
-        getClusterAutoscalerProfileMap,
-        [],
-        !!window._env_.FEATURE_NODE_AUTOSCALER_ENABLE,
-    )
+    const { data: clusterNameVsAutoscalerProfile, refetch: refetchProfileMap } = useQuery({
+        queryKey: ['clusterNameVsAutoscalerProfile'],
+        queryFn: getClusterAutoscalerProfileMap,
+        enabled: !!getClusterAutoscalerProfileMap && !!window._env_.FEATURE_NODE_AUTOSCALER_ENABLE,
+    })
 
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
 
@@ -311,8 +312,8 @@ const ClusterList = () => {
         })
     }
 
-    const handleCloseEditClusterModal = () => {
-        refetchProfileMap()
+    const handleCloseEditClusterModal = async () => {
+        await refetchProfileMap()
         handleRedirectToClusterList()
     }
 

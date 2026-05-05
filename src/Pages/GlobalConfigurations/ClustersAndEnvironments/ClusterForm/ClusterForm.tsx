@@ -38,6 +38,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
@@ -130,15 +131,17 @@ const ClusterForm = ({
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
     const [autoscalerProfile, setAutoscalerProfile] = useState<SelectPickerOptionType<number>>(null)
 
+    const { data: profileData } = useQuery({
+        queryKey: ['getProfileAttachedToCluster', clusterName],
+        queryFn: () => getProfileAttachedToCluster(clusterName),
+        enabled: !!clusterName && window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && !!getProfileAttachedToCluster,
+    })
+
     useEffect(() => {
-        if (clusterName && window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && getProfileAttachedToCluster) {
-            getProfileAttachedToCluster(clusterName).then((profile) => {
-                if (profile) {
-                    setAutoscalerProfile(profile)
-                }
-            })
+        if (profileData) {
+            setAutoscalerProfile(profileData)
         }
-    }, [])
+    }, [profileData])
 
     const isPrometheusEnabled = costModuleState.enabled || isAppMetricsEnabled
 
