@@ -56,7 +56,6 @@ import {
     TempAppWindowConfig,
     ToastManager,
     ToastVariantType,
-    URLS as CommonURLS,
     useMotionTemplate,
     useMotionValue,
     UserPreferencesType,
@@ -594,11 +593,10 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                               ...(Observability
                                                   ? [
                                                         <Route
-                                                            key={CommonURLS.OBSERVABILITY}
-                                                            path={CommonURLS.OBSERVABILITY}
-                                                        >
-                                                            <Observability />
-                                                        </Route>,
+                                                            key={BASE_ROUTES.OBSERVABILITY.ROOT}
+                                                            path={`${BASE_ROUTES.OBSERVABILITY.ROOT}/*`}
+                                                            element={<Observability />}
+                                                        />,
                                                     ]
                                                   : []),
                                               ...(serverMode === SERVER_MODE.FULL &&
