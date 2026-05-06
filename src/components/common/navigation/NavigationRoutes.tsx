@@ -132,7 +132,7 @@ const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter'
 const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
 const AIChatProvider = importComponentFromFELibrary('AIChatProvider', null, 'function')
 
-const AuditLogsRouter = importComponentFromFELibrary('AuditLogsRouter', null, 'function')
+const AuditLogsRouter = importComponentFromFELibrary('AuditLogs', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const navigate = useNavigate()
