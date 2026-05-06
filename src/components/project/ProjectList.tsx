@@ -20,15 +20,14 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { HEADER_TEXT, ViewType } from '../../config'
+import { ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
 import { Project } from './Project'
 import { ProjectListState, ProjectType, ProjectListProps } from './types'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Add from '../../assets/icons/ic-add.svg?react'
 import './project.scss'
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -53,6 +52,8 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     getProjectList = () => {
+        this.setState({ view: ViewType.LOADING })
+
         getProjectList()
             .then((response) => {
                 this.setState({
@@ -162,7 +163,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             })
             .catch((errors) => {
                 showError(errors)
-                this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
+                this.setState({ loadingData: false })
             })
     }
 
@@ -181,19 +182,6 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                 index={index}
                 loadingData={this.state.loadingData}
                 reload={this.getProjectList}
-            />
-        )
-    }
-
-    renderPageHeader() {
-        return (
-            <FeatureTitleWithInfo
-                title={HEADER_TEXT.PROJECTS.title}
-                renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
-                docLink={HEADER_TEXT.PROJECTS.docLink}
-                showInfoIconTippy
-                additionalContainerClasses="mb-20"
-                dataTestId="project-list-title"
             />
         )
     }
@@ -228,21 +216,22 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__align-reload-center">
-                    <ErrorScreenManager code={this.state.code} />
+                    <ErrorScreenManager code={this.state.code} reload={this.getProjectList} />
                 </div>
             )
         }
         return (
-            <section className="global-configuration__component flex-1">
-                {this.renderPageHeader()}
-                {this.renderAddProject()}
-                {this.state.projects.map((project, index) => {
-                    return (
-                        <React.Fragment key={`${project.name}-${index}`}>
-                            {this.renderProjects(project, index)}
-                        </React.Fragment>
-                    )
-                })}
+            <section className="flex-grow-1 flex top p-24 bg__secondary dc__overflow-auto">
+                <div className="project-list-container flex-grow-1">
+                    {this.renderAddProject()}
+                    {this.state.projects.map((project, index) => {
+                        return (
+                            <React.Fragment key={`${project.name}-${index}`}>
+                                {this.renderProjects(project, index)}
+                            </React.Fragment>
+                        )
+                    })}
+                </div>
             </section>
         )
     }

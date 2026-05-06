@@ -32,7 +32,7 @@ import {
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import Close from '@Icons/ic-close.svg?react'
 import { getGitProviderIcon } from '@Components/common'
 
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
@@ -63,8 +63,8 @@ const BranchRegexModal = ({
     title,
     onCloseBranchRegexModal,
     appId,
-    workflowId,
     handleReload,
+    ciPipelineId,
 }: BranchRegexModalProps) => {
     const [isSavingRegexValue, setIsSavingRegexValue] = useState(false)
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getInitialRegexValue(material))
@@ -88,7 +88,7 @@ const BranchRegexModal = ({
         try {
             const payload: Parameters<typeof savePipeline>[0] = {
                 appId: +appId,
-                id: +workflowId,
+                id: +ciPipelineId,
                 ciPipelineMaterial: selectedCIPipeline.ciMaterial.map((_cm) => {
                     const regVal = regexValue[_cm.gitMaterialId]
                     let _updatedCM

@@ -16,10 +16,9 @@
 
 import { Link } from 'react-router-dom'
 
-import { DeploymentAppTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, ROUTER_URLS, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GenericAppType } from '@Components/app/list-new/AppListType'
-import { URLS } from '@Config/routes'
 
 import {
     ValidateMigrateToDevtronPayloadType,
@@ -115,7 +114,12 @@ export const generateMigrateAppOption = ({
 export const renderGitOpsNotConfiguredDescription = () => (
     <p className="m-0">
         GitOps credentials is required to deploy applications via GitOps.&nbsp;
-        <Link to={URLS.GLOBAL_CONFIG_GITOPS} data-testid="configure-gitops-button" target="_blank" className="anchor">
+        <Link
+            to={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GITOPS}
+            data-testid="configure-gitops-button"
+            target="_blank"
+            className="anchor"
+        >
             Configure
         </Link>
         &nbsp;and try again.

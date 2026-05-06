@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { Link, useRouteMatch } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import {
     BulkSelectionEvents,
@@ -29,8 +29,8 @@ import {
     getRandomColor,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 import { deletePermissionGroup } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
@@ -50,7 +50,6 @@ const PermissionGroupRow = ({
     hasSuperAdminPermission,
     hasAccessManagerPermission,
 }: PermissionGroupRowProps) => {
-    const { path } = useRouteMatch()
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const { isBulkSelectionApplied, handleBulkSelection } = useAuthorizationBulkSelection()
 
@@ -102,7 +101,7 @@ const PermissionGroupRow = ({
                 </div>
                 <div className="flexbox dc__align-items-center dc__gap-8">
                     <span className="dc__ellipsis-right">
-                        <Link className="anchor dc__ellipsis-right" to={`${path}/${id}`}>
+                        <Link className="anchor dc__ellipsis-right" to={`${id}`}>
                             {name}
                         </Link>
                     </span>
@@ -120,7 +119,7 @@ const PermissionGroupRow = ({
                         showAriaLabelInTippy={false}
                         dataTestId={`user-permission__edit-button-${index}`}
                         linkProps={{
-                            to: `${path}/${id}`,
+                            to: `${id}`,
                         }}
                         isOpacityHoverChild
                         size={ComponentSizeType.xs}

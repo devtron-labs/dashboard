@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type JSX } from 'react'
 import {
     showError,
     Progressing,
@@ -26,10 +26,10 @@ import {
     getIsRequestAborted,
     abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'
-import { ReactComponent as Restore } from '../../../../../assets/icons/ic-restore.svg'
+import Info from '../../../../../assets/icons/ic-info-filled.svg?react'
+import Close from '../../../../../assets/icons/ic-close.svg?react'
+import ScaleDown from '../../../../../assets/icons/ic-scale-down.svg?react'
+import Restore from '../../../../../assets/icons/ic-restore.svg?react'
 import {
     HibernateRequest,
     LoadingText,
@@ -44,8 +44,11 @@ import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { AppType } from '../../appDetails.type'
 import { getInstalledChartDetailWithResourceTree } from '../../appDetails.api'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWorkloadsModalProps) {
+export default function ScaleWorkloadsModal({ appId, onClose }: ScaleWorkloadsModalProps) {
+    const navigate = useNavigate()
+    const { pathname } = useLocation()
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
         scaleDown: {
             isChecked: false,
@@ -331,7 +334,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
                 setFetchingLatestDetails(true)
                 _setWorkloadsList(_workloadsList)
-                history.push(`${history.location.pathname}?refetchData=true`)
+                navigate(`${pathname}?refetchData=true`)
             }
             await _getAndSetAppDetail()
         } catch (e) {

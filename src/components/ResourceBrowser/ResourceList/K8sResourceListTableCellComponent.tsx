@@ -15,7 +15,7 @@
  */
 
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useParams } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 
 import {
@@ -28,15 +28,17 @@ import {
     highlightSearchText,
     Icon,
     IconName,
+    MainContext,
     Nodes,
     noop,
-    RESOURCE_BROWSER_ROUTES,
     ResourceBrowserActionMenuEnum,
+    ROUTER_URLS,
     TableSignalEnum,
     Tooltip,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import ICErrorExclamation from '@Icons/ic-error-exclamation.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
@@ -54,6 +56,8 @@ import { getClassNameForColumn, getFirstResourceFromKindResourceMap, getShowAIBu
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
+
 const K8sResourceListTableCellComponent = ({
     field: columnName,
     row: { id, data: resourceData },
@@ -65,13 +69,14 @@ const K8sResourceListTableCellComponent = ({
     isEventListing,
     lowercaseKindToResourceGroupMap,
 }: K8sResourceListTableCellComponentProps) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const isNodeListing = selectedResource?.gvk.Kind === Nodes.Node
     const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
     const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
     const nameButtonRef = useRef<HTMLButtonElement>(null)
     const contextMenuRef = useRef<HTMLButtonElement>(null)
+    const { aiAgentContext } = useMainContext()
 
     const [showCreateEnvironmentDrawer, setShowCreateEnvironmentDrawer] = useState(false)
 
@@ -106,14 +111,14 @@ const K8sResourceListTableCellComponent = ({
             group: _group || K8S_EMPTY_GROUP,
         })
 
-        push(`${url}/${tab}`)
+        navigate(`${url}/${tab}`)
     }
 
     const handleNodeClick = async (e: MouseEvent<HTMLButtonElement>) => {
         const { name } = e.currentTarget.dataset
         const _url = generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })
         await addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
-        push(_url)
+        navigate(_url)
     }
 
     useEffect(() => {
@@ -160,7 +165,7 @@ const K8sResourceListTableCellComponent = ({
         const group =
             getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, kind)?.gvk?.Group || K8S_EMPTY_GROUP
 
-        push(
+        navigate(
             generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
                 clusterId,
                 namespace: resourceData.namespace as string,
@@ -216,15 +221,42 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
-    const eventDetails = {
+    const baseEventDetails = {
         message: resourceData.message as string,
         namespace: resourceData.namespace as string,
-        object: resourceData[EVENT_LIST.dataKeys.involvedObject] as string,
         source: resourceData.source as string,
         count: resourceData.count as number,
         age: resourceData.age as string,
         lastSeen: resourceData[EVENT_LIST.dataKeys.lastSeen] as string,
     }
+
+    const eventDetails = {
+        ...baseEventDetails,
+        object: resourceData[EVENT_LIST.dataKeys.involvedObject] as string,
+    }
+
+    const eventIntelligentConfig: MainContext['intelligenceConfig'] = {
+        clusterId: +clusterId,
+        metadata: eventDetails,
+        prompt: JSON.stringify(eventDetails),
+        analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
+    }
+
+    const eventDebugAgentContext = aiAgentContext
+        ? ({
+              ...aiAgentContext,
+              prompt: `Explain why the event occurred with the following details: ${JSON.stringify(eventDetails)}`,
+              data: {
+                  ...aiAgentContext.data,
+                  ...baseEventDetails,
+                  uiMarkup: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
+                      baseEventDetails,
+                  )
+                      .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
+                      .join('')}</div>`,
+              },
+          } as MainContext['debugAgentContext'])
+        : null
 
     if (columnName === 'cpu.usagePercentage') {
         return (
@@ -256,15 +288,15 @@ const K8sResourceListTableCellComponent = ({
                     data-testid="created-resource-name"
                 >
                     <div className="flex left dc__gap-4">
-                        <Tooltip content={resourceData.name}>
+                        <Tooltip content={`${resourceData.name}`}>
                             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                             <button
                                 type="button"
                                 className="dc__unset-button-styles dc__align-left dc__truncate"
                                 data-name={resourceData.name}
                                 data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
-                                data-kind={selectedResource.gvk.Kind}
-                                data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
+                                data-kind={selectedResource.gvk?.Kind}
+                                data-group={selectedResource.gvk?.Group || K8S_EMPTY_GROUP}
                                 onClick={onClickHandler}
                                 ref={nameButtonRef}
                             >
@@ -293,7 +325,7 @@ const K8sResourceListTableCellComponent = ({
                 </div>
             ) : (
                 <div
-                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-start'} ${
+                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-start py-10'} ${
                         columnName === 'status' || columnName === 'type'
                             ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]), isNodeListing)}`
                             : ''
@@ -348,12 +380,8 @@ const K8sResourceListTableCellComponent = ({
                             isEventListing &&
                             resourceData.type === 'Warning' && (
                                 <ExplainWithAIButton
-                                    intelligenceConfig={{
-                                        clusterId,
-                                        metadata: eventDetails,
-                                        prompt: JSON.stringify(eventDetails),
-                                        analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
-                                    }}
+                                    intelligenceConfig={eventIntelligentConfig}
+                                    debugAgentContext={eventDebugAgentContext}
                                 />
                             )}
                         <span>
@@ -380,6 +408,21 @@ const K8sResourceListTableCellComponent = ({
                                     prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
                                     analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
                                 }}
+                                debugAgentContext={
+                                    aiAgentContext
+                                        ? {
+                                              ...aiAgentContext,
+                                              prompt: `Why is ${selectedResource?.gvk?.Kind} '${resourceData.name}' of '${resourceData.namespace}' namespace in ${resourceData.status} state?`,
+                                              data: {
+                                                  ...aiAgentContext.data,
+                                                  kind: selectedResource?.gvk?.Kind,
+                                                  name: resourceData.name,
+                                                  namespace: resourceData.namespace,
+                                                  status: resourceData.status ?? '',
+                                              },
+                                          }
+                                        : null
+                                }
                             />
                         </div>
                     )}

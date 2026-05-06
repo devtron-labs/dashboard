@@ -38,13 +38,15 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, searchKey 
         [],
     )
 
-    const [isListLoading, listResponse, listError, reloadList, setListResponse] = useAsync(() =>
-        fetchDevtronCloneList({
-            isJobView,
-            searchKey,
-            cloneListAbortControllerRef,
-            handleCloneAppClick,
-        }),
+    const [isListLoading, listResponse, listError, reloadList, setListResponse] = useAsync(
+        () =>
+            fetchDevtronCloneList({
+                isJobView,
+                searchKey,
+                cloneListAbortControllerRef,
+                handleCloneAppClick,
+            }),
+        isJobView ? [searchKey] : [], // Since job list is paginated, we want to refetch the list on searchKey change
     )
 
     const loadMoreData = async () => {

@@ -249,3 +249,4 @@ export const BULK_CI_BUILD_STATUS = (noOfApps) => ({
 
 export const ENV_GROUP_LOCAL_STORAGE_KEY: AppEnvLocalStorageKeyType = 'envGroup__filter'
 export const APP_GROUP_LOCAL_STORAGE_KEY: AppEnvLocalStorageKeyType = 'appGroup__filter'
+export const APP_GROUP_TIPPY_CONTENT = 'Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'

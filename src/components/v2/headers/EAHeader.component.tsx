@@ -15,28 +15,57 @@
  */
 
 import ReactGA from 'react-ga4'
-import { Link, useParams, useRouteMatch } from 'react-router-dom'
-import { PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useParams } from 'react-router-dom'
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    TabGroup,
+    TabProps,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { EAHeaderComponentType } from './appHeader.type'
 
-const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: EAHeaderComponentType) => {
-    const match = useRouteMatch()
+const EAHeaderComponent = ({
+    title,
+    redirectURL,
+    showAppDetailsOnly = false,
+    breadCrumbConfig,
+    breadcrumbPathPattern,
+}: EAHeaderComponentType) => {
     const params = useParams<{ appId: string; appName: string }>()
 
-    const renderBreadcrumbs = () => {
-        return (
-            <div className="m-0 flex left fs-12 cn-9fw-4 fs-16">
-                <Link to={redirectURL} className="dc__devtron-breadcrumb__item">
-                    <div className="cb-5">{title}</div>
-                </Link>
-                <span className="ml-4 mr-4">/</span>
-                <span>{params.appName}</span>
-            </div>
-        )
-    }
+    const { breadcrumbs } = useBreadcrumb(
+        breadcrumbPathPattern,
+        {
+            alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                ...breadCrumbConfig,
+                apps: {
+                    component: (
+                        <Link to={redirectURL} className="dc__devtron-breadcrumb__item">
+                            <div className="cb-5">{title}</div>
+                        </Link>
+                    ),
+                },
+                ':appName': {
+                    component: <BreadcrumbText heading={params.appName} isActive />,
+                    linked: false,
+                },
+                ':clusterId': null,
+                ':appId': null,
+            },
+        },
+        [params.appName],
+    )
+
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={breadcrumbPathPattern} />
+
     const renderExternalHelmApp = () => {
         const tabs: TabProps[] = [
             {
@@ -44,7 +73,7 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
                 label: 'App details',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    to: URLS.APP_DETAILS,
                     onClick: () => {
                         ReactGA.event({
                             category: 'External App',
@@ -63,7 +92,7 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
                     tabType: 'navLink',
                     icon: Settings,
                     props: {
-                        to: `${match.url}/${URLS.APP_VALUES}`,
+                        to: URLS.APP_VALUES,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'External App',
@@ -77,7 +106,7 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
                     label: 'Deployment history',
                     tabType: 'navLink',
                     props: {
-                        to: `${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`,
+                        to: URLS.APP_DEPLOYMNENT_HISTORY,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'External App',
@@ -99,6 +128,7 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
                 showTabs
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

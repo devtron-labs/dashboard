@@ -25,14 +25,14 @@ import {
     MarkDown,
     MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
 import { getEnvironmentListMin } from '../../services/service'
 import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
 import { getReadme, getChartValues } from './charts.service'
 import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
-import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
+import LockIcon from '../../assets/icons/ic-locked.svg?react'
+import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
 import { getSavedValuesListURL } from './charts.helper'
 
 interface AdvancedConfigProps extends AdvancedConfigHelpers {
@@ -81,7 +81,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         () => getReadme(appStoreApplicationVersionId),
         [appStoreApplicationVersionId],
     )
-    const { push } = useHistory()
+    const navigate = useNavigate()
 
     useEffect(() => {
         async function getEnvironments() {
@@ -148,7 +148,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
     }
 
     function openSavedValuesList() {
-        push(getSavedValuesListURL(chart.id))
+        navigate(getSavedValuesListURL(chart.id))
     }
 
     let selectedChartValue: ChartValuesNativeType = {

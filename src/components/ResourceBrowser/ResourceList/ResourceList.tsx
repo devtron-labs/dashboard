@@ -15,31 +15,34 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
+    AIAgentContextSourceType,
+    BASE_ROUTES,
+    BreadcrumbText,
     DevtronProgressing,
     ErrorScreenManager,
+    getInfrastructureManagementBreadcrumb,
     getResourceGroupListRaw,
     handleAnalyticsEvent,
     Icon,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
-import { ReactComponent as ICChartLineUp } from '@Icons/ic-chart-line-up.svg'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
-import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
-import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg?react'
+import ICChartLineUp from '@Icons/ic-chart-line-up.svg?react'
+import ICObject from '@Icons/ic-object.svg?react'
+import ICTerminalFill from '@Icons/ic-terminal-fill.svg?react'
+import ICWorldBlack from '@Icons/ic-world-black.svg?react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
-import { URLS } from '../../../config'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import { importComponentFromFELibrary } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
@@ -71,10 +74,11 @@ const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', 
 const ResourceRecommender = importComponentFromFELibrary('ResourceRecommender', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
+const CLUSTER_DETAILS_ROUTES = BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.RESOURCE_BROWSER.CLUSTER_DETAILS
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
+
 const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) => {
-    const params = useParams<ClusterDetailBaseParams>()
-    const { clusterId } = params
-    const { path } = useRouteMatch()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
     const location = useLocation()
     const {
         tabs,
@@ -88,7 +92,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
         stopTabByIdentifier,
         getTabId,
         getTabById,
-    } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
+    } = useTabs(generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.ROOT, { clusterId }))
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
     const { setIntelligenceConfig, setAIAgentContext, isResourceRecommendationEnabled } = useMainContext()
@@ -124,20 +128,23 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
 
         return () => {
             setIntelligenceConfig(null)
-            setAIAgentContext(null)
         }
     }, [])
+
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffect(() => {
         setAIAgentContext({
-            path,
-            context: {
-                ...params,
+            source: AIAgentContextSourceType.RESOURCE_BROWSER_CLUSTER,
+            data: {
+                clusterId: +clusterId || undefined,
                 clusterName: selectedCluster.label,
-                search: location.search,
             },
         })
+
+        return () => {
+            setAIAgentContext(null)
+        }
     }, [location.pathname, location.search, selectedCluster.label])
 
     const refreshData = () => {
@@ -217,89 +224,158 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                     [RESOURCE_RECOMMENDER_TAB_ID]: <Icon name="ic-speedometer" color="N700" />,
                 }}
             />
-            <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
-                <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                    <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
-                </DynamicTabComponentWrapper>
-            </Route>
-            {MonitoringDashboard && (
-                <Route path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD} exact>
-                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                        <MonitoringDashboard />
-                    </DynamicTabComponentWrapper>
-                </Route>
-            )}
-            <Route path={RESOURCE_BROWSER_ROUTES.TERMINAL} exact>
-                <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps} />
-            </Route>
-            {ResourceRecommender && (
-                <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
-                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                        <ResourceRecommender
-                            selectedCluster={selectedCluster}
-                            ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
-                            dynamicSort={dynamicSort}
+            <Routes>
+                <Route
+                    path={CLUSTER_DETAILS_ROUTES.OVERVIEW}
+                    element={
+                        <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.OVERVIEW}
+                            type="fixed"
+                            path={RESOURCE_BROWSER_ROUTES.OVERVIEW}
+                            {...DynamicTabComponentWrapperBaseProps}
+                        >
+                            <ClusterOverview selectedCluster={selectedCluster} />
+                        </DynamicTabComponentWrapper>
+                    }
+                />
+                {MonitoringDashboard && (
+                    <Route
+                        path={CLUSTER_DETAILS_ROUTES.MONITORING_DASHBOARD}
+                        element={
+                            <DynamicTabComponentWrapper
+                                key={CLUSTER_DETAILS_ROUTES.MONITORING_DASHBOARD}
+                                type="fixed"
+                                path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD}
+                                {...DynamicTabComponentWrapperBaseProps}
+                            >
+                                <MonitoringDashboard />
+                            </DynamicTabComponentWrapper>
+                        }
+                    />
+                )}
+                <Route
+                    path={CLUSTER_DETAILS_ROUTES.TERMINAL}
+                    element={
+                        <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.TERMINAL}
+                            type="fixed"
+                            path={RESOURCE_BROWSER_ROUTES.TERMINAL}
+                            {...DynamicTabComponentWrapperBaseProps}
                         />
-                    </DynamicTabComponentWrapper>
-                </Route>
-            )}
-            {ClusterUpgradeCompatibilityInfo && (
-                <Route path={RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE} exact>
-                    <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
-                        <ClusterUpgradeCompatibilityInfo
-                            clusterName={selectedCluster.label}
-                            updateTabUrl={getUpdateTabUrlForId(
-                                getTabId(
-                                    UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
-                                    UPGRADE_CLUSTER_CONSTANTS.NAME,
-                                    SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
-                                ),
-                            )}
-                            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        />
-                    </DynamicTabComponentWrapper>
-                </Route>
-            )}
-            <Route path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL} exact>
-                <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
-                    <NodeDetailWrapper
-                        getTabId={getTabId}
-                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        updateTabUrl={updateTabUrl}
+                    }
+                />
+                {ResourceRecommender && (
+                    <Route
+                        path={CLUSTER_DETAILS_ROUTES.RESOURCE_RECOMMENDER}
+                        element={
+                            <DynamicTabComponentWrapper
+                                key={CLUSTER_DETAILS_ROUTES.RESOURCE_RECOMMENDER}
+                                type="fixed"
+                                path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER}
+                                {...DynamicTabComponentWrapperBaseProps}
+                            >
+                                <ResourceRecommender
+                                    selectedCluster={selectedCluster}
+                                    ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
+                                    dynamicSort={dynamicSort}
+                                />
+                            </DynamicTabComponentWrapper>
+                        }
                     />
-                </DynamicTabComponentWrapper>
-            </Route>
-            <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL}>
-                <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
-                    <NodeDetailComponentWrapper
-                        clusterName={selectedCluster.label}
-                        getTabId={getTabId}
-                        logSearchTerms={logSearchTerms}
-                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        removeTabByIdentifier={removeTabByIdentifier}
-                        setLogSearchTerms={setLogSearchTerms}
-                        updateTabUrl={updateTabUrl}
-                        loadingResources={false}
+                )}
+                {ClusterUpgradeCompatibilityInfo && (
+                    <Route
+                        path={CLUSTER_DETAILS_ROUTES.CLUSTER_UPGRADE}
+                        element={
+                            <DynamicTabComponentWrapper
+                                key={CLUSTER_DETAILS_ROUTES.CLUSTER_UPGRADE}
+                                type="dynamic"
+                                path={RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE}
+                                {...DynamicTabComponentWrapperBaseProps}
+                                addTab={addTab}
+                            >
+                                <ClusterUpgradeCompatibilityInfo
+                                    clusterName={selectedCluster.label}
+                                    updateTabUrl={getUpdateTabUrlForId(
+                                        getTabId(
+                                            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+                                            UPGRADE_CLUSTER_CONSTANTS.NAME,
+                                            SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+                                        ),
+                                    )}
+                                    lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                                />
+                            </DynamicTabComponentWrapper>
+                        }
                     />
-                </DynamicTabComponentWrapper>
-            </Route>
-            <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST} exact>
-                <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                    <K8SResourceTabComponent
-                        selectedCluster={selectedCluster}
-                        addTab={addTab}
-                        renderRefreshBar={renderRefreshBar(
-                            isDataStale,
-                            getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
-                            refreshData,
-                        )}
-                        updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
-                        clusterName={selectedCluster.label}
-                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        updateTabLastSyncMoment={updateTabLastSyncMoment}
-                    />
-                </DynamicTabComponentWrapper>
-            </Route>
+                )}
+                <Route
+                    path={`${CLUSTER_DETAILS_ROUTES.NODE_DETAIL}/*`}
+                    element={
+                        <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.NODE_DETAIL}
+                            type="dynamic"
+                            path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL}
+                            {...DynamicTabComponentWrapperBaseProps}
+                            addTab={addTab}
+                        >
+                            <NodeDetailWrapper
+                                getTabId={getTabId}
+                                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                                updateTabUrl={updateTabUrl}
+                            />
+                        </DynamicTabComponentWrapper>
+                    }
+                />
+                <Route
+                    path={`${CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_DETAIL}/*`}
+                    element={
+                        <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_DETAIL}
+                            type="dynamic"
+                            path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL}
+                            {...DynamicTabComponentWrapperBaseProps}
+                            addTab={addTab}
+                        >
+                            <NodeDetailComponentWrapper
+                                clusterName={selectedCluster.label}
+                                getTabId={getTabId}
+                                logSearchTerms={logSearchTerms}
+                                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                                removeTabByIdentifier={removeTabByIdentifier}
+                                setLogSearchTerms={setLogSearchTerms}
+                                updateTabUrl={updateTabUrl}
+                                loadingResources={false}
+                            />
+                        </DynamicTabComponentWrapper>
+                    }
+                />
+                <Route
+                    path={CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_LIST}
+                    element={
+                        <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_LIST}
+                            type="fixed"
+                            path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST}
+                            {...DynamicTabComponentWrapperBaseProps}
+                        >
+                            <K8SResourceTabComponent
+                                selectedCluster={selectedCluster}
+                                addTab={addTab}
+                                renderRefreshBar={renderRefreshBar(
+                                    isDataStale,
+                                    getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
+                                    refreshData,
+                                )}
+                                updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
+                                clusterName={selectedCluster.label}
+                                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                                updateTabLastSyncMoment={updateTabLastSyncMoment}
+                            />
+                        </DynamicTabComponentWrapper>
+                    }
+                />
+            </Routes>
 
             {renderTerminal()}
         </>
@@ -311,7 +387,7 @@ const ResourceListWrapper = () => {
     const [loading, clusterList, error] = useAsync(() => getClusterListing(true))
     const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<string>(null)
 
-    const { replace } = useHistory()
+    const navigate = useNavigate()
     const { setIntelligenceConfig } = useMainContext()
 
     const clusterOptions: ClusterOptionType[] = useMemo(() => getClusterOptions(clusterList), [clusterList])
@@ -342,9 +418,14 @@ const ResourceListWrapper = () => {
 
         /* if user manually tries default cluster url redirect */
         if (Number(selected.value) === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
-            replace({
-                pathname: URLS.RESOURCE_BROWSER,
-            })
+            navigate(
+                {
+                    pathname: ROUTER_URLS.RESOURCE_BROWSER.ROOT,
+                },
+                {
+                    replace: true,
+                },
+            )
             return
         }
 
@@ -353,9 +434,14 @@ const ResourceListWrapper = () => {
             String(selected.isClusterInCreationPhase ? selected.installationId : selected.value),
         )
 
-        replace({
-            pathname: newPath,
-        })
+        navigate(
+            {
+                pathname: newPath,
+            },
+            {
+                replace: true,
+            },
+        )
     }
 
     const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
@@ -384,10 +470,12 @@ const ResourceListWrapper = () => {
     }
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.ROOT,
         {
             alias: {
+                ...getInfrastructureManagementBreadcrumb(),
                 'resource-browser': {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
+                    component: <BreadcrumbText heading="Resource Browser" />,
                     linked: true,
                 },
                 ':clusterId': {
@@ -401,10 +489,6 @@ const ResourceListWrapper = () => {
                     ),
                     linked: false,
                 },
-                ':namespace': null,
-                ':nodeType': null,
-                ':group': null,
-                ':node?': null,
             },
         },
         [clusterId, clusterOptions],
@@ -422,6 +506,7 @@ const ResourceListWrapper = () => {
         <div className="resource-browser-container flexbox-col h-100 bg__primary">
             <ResourcePageHeader
                 breadcrumbs={breadcrumbs}
+                breadcrumbsPathPattern={ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.ROOT}
                 renderPageHeaderActionButtons={renderPageHeaderActionButtons}
             />
             <ResourceList

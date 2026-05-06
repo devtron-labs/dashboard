@@ -17,6 +17,8 @@ import {
     handleUTCTime,
     Icon,
     MaterialHistory,
+    OptionType,
+    ROUTER_URLS,
     SearchBar,
     showError,
     SourceTypeMap,
@@ -153,7 +155,7 @@ const GitInfoMaterial = ({
         )
         // Not added source not configured check here since ideally this should not be even called at that moment and we are not adding a new material
 
-        if (!newSelectedMaterialItem.result.length) {
+        if (!newSelectedMaterialItem.result?.length) {
             throw new Error('Unable to fetch material details')
         }
 
@@ -208,17 +210,17 @@ const GitInfoMaterial = ({
             updatedMaterialKeys.history = [
                 {
                     commitURL: selectedMaterial.gitURL
-                        ? createGitCommitUrl(selectedMaterial.gitURL, commitHistoryResult.Commit)
+                        ? createGitCommitUrl(selectedMaterial.gitURL, commitHistoryResult?.Commit)
                         : '',
-                    commit: commitHistoryResult.Commit || '',
-                    author: commitHistoryResult.Author || '',
-                    date: commitHistoryResult.Date ? handleUTCTime(commitHistoryResult.Date, false) : '',
-                    message: commitHistoryResult.Message || '',
-                    changes: commitHistoryResult.Changes || [],
+                    commit: commitHistoryResult?.Commit || '',
+                    author: commitHistoryResult?.Author || '',
+                    date: commitHistoryResult?.Date ? handleUTCTime(commitHistoryResult.Date, false) : '',
+                    message: commitHistoryResult?.Message || '',
+                    changes: commitHistoryResult?.Changes || [],
                     showChanges: true,
-                    webhookData: commitHistoryResult.WebhookData,
-                    isSelected: !commitHistoryResult.Excluded,
-                    excluded: commitHistoryResult.Excluded,
+                    webhookData: commitHistoryResult?.WebhookData,
+                    isSelected: !commitHistoryResult?.Excluded,
+                    excluded: commitHistoryResult?.Excluded,
                 },
             ]
 
@@ -354,8 +356,8 @@ const GitInfoMaterial = ({
         }
     }
 
-    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
+    const handleSidebarTabChange = (selectedSidebarTab: OptionType<CIMaterialSidebarType>) => {
+        setCurrentSidebarTab(selectedSidebarTab.value as CIMaterialSidebarType)
     }
 
     const toggleIncludeExcludeCommits = async () => {
@@ -620,7 +622,7 @@ const GitInfoMaterial = ({
                         imgSrc={linkedCiImg}
                         title={`${selectedApp.name} ${BULK_CI_MESSAGING.emptyLinkedCI.title}`}
                         subTitle={BULK_CI_MESSAGING.emptyLinkedCI.subTitle}
-                        link={`${URLS.APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
+                        link={`${ROUTER_URLS.DEVTRON_APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
                         linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
                         rootClassName="bg__tertiary"
                     />
@@ -657,7 +659,7 @@ const GitInfoMaterial = ({
 
         const showHeader =
             currentSidebarTab === CIMaterialSidebarType.CODE_SOURCE &&
-            !(node.type === WorkflowNodeType.WEBHOOK || node.isLinkedCI || node.isLinkedCD)
+            !(node?.type === WorkflowNodeType.WEBHOOK || node?.isLinkedCI || node?.isLinkedCD)
 
         if (materialError || !areCommitsPresent) {
             return (
@@ -771,7 +773,7 @@ const GitInfoMaterial = ({
                     title={node?.title}
                     onCloseBranchRegexModal={handleCloseBranchRegexModal}
                     appId={appId}
-                    workflowId={workflowId}
+                    ciPipelineId={node ? +node.id : null}
                     // This will ensure ciTriggerDetails are also updated
                     handleReload={handleReloadWithWorkflows}
                 />

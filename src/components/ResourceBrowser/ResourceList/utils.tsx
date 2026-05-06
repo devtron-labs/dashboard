@@ -24,8 +24,9 @@ import {
     numberComparatorBySortOrder,
     RecentlyVisitedGroupedOptionsType,
     RecentlyVisitedOptions,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     stringComparatorBySortOrder,
+    TARGET_K8S_VERSION_SEARCH_KEY,
     TreeHeading,
     TreeItem,
     TreeNode,
@@ -46,7 +47,6 @@ import {
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     ResourceBrowserRouteToTabIdMap,
     SIDEBAR_KEYS,
-    TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import {
@@ -65,6 +65,8 @@ const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     null,
     'function',
 )
+
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
@@ -524,7 +526,8 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
         nodeGroups: Map<string, NodeSearchListOptionType>
     }>(
         (acc, curr) => {
-            ;((curr.data.labels ?? []) as { key: string; value: string }[]).forEach(({ key, value }) => {
+            const labelsArray = (curr.data.labels ?? []) as { key: string; value: string }[]
+            labelsArray.forEach(({ key, value }) => {
                 if (!acc.labels.has(`${key}/${value}`)) {
                     acc.labels.set(`${key}/${value}`, {
                         label: `${key}=${value}`,
@@ -536,7 +539,7 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
 
             if (!acc.nodeGroups.has(curr.data.nodeGroup as string)) {
                 acc.nodeGroups.set(curr.data.nodeGroup as string, {
-                    label: curr.data.nodeGroup,
+                    label: `${curr.data.nodeGroup}`,
                     value: curr.data.nodeGroup as string,
                     identifier: NODE_SEARCH_KEYS.NODE_GROUP,
                 })

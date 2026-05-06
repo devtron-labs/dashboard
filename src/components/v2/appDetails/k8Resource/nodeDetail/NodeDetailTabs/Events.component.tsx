@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -44,14 +44,13 @@ const EventsComponent = ({
         namespace: string
         kind?: string
     }>()
-    params.nodeType = params.kind ?? params.nodeType
-    const { url } = useRouteMatch()
+    const location = useLocation()
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const appDetails = IndexStore.getAppDetails()
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.EVENTS, url)
+        selectedTab(NodeDetailTab.EVENTS, location.pathname)
     }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
@@ -60,7 +59,13 @@ const EventsComponent = ({
         }
 
         try {
-            getEvent(appDetails, params.podName, params.nodeType, isResourceBrowserView, selectedResource)
+            getEvent(
+                appDetails,
+                params.podName,
+                params.kind ?? params.nodeType,
+                isResourceBrowserView,
+                selectedResource,
+            )
                 .then((response) => {
                     /* Sorting the EventList object on the basis of Last TimeStamp. */
                     const eventResult =
@@ -86,7 +91,7 @@ const EventsComponent = ({
             setEvents([])
             setLoading(false)
         }
-    }, [params.podName, params.name, params.nodeType, params.namespace])
+    }, [params.podName, params.name, params.kind, params.nodeType, params.namespace])
 
     const renderContent = () => {
         if (isDeleted) {

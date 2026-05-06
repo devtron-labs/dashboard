@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { generatePath } from 'react-router-dom'
 
@@ -26,16 +26,16 @@ export function getCDPipelineURL(
     cdPipelineId: string = null,
     shouldComputeCompleteURL: boolean = false,
 ) {
-    const prefix = `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
     const suffix = `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
         cdPipelineId ? `/${cdPipelineId}` : ''
     }`
 
-    if (shouldComputeCompleteURL) {
-        return `${prefix}${suffix}`
+    if (!shouldComputeCompleteURL) {
+        return suffix
     }
 
-    return suffix
+    const prefix = `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })}/${URLS.APP_WORKFLOW_CONFIG}/`
+    return `${prefix}${suffix}`
 }
 
 export function getCIPipelineURL(
@@ -45,13 +45,19 @@ export function getCIPipelineURL(
     ciPipelineId: string | number = null,
     isJobView: boolean,
     isCIJob: boolean,
-    isTemplateView: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView'],
 ) {
     let prefixURL = ''
     if (addPrefix) {
-        prefixURL = `${isTemplateView ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
-            appId,
-        }) : `/${isJobView ? 'job' : 'app'}/${appId}`}/edit/workflow/`
+        prefixURL = `${
+            isTemplateView
+                ? generatePath(ROUTER_URLS.APP_TEMPLATE_DETAIL, {
+                      appId,
+                  })
+                : generatePath(isJobView ? ROUTER_URLS.JOB_DETAIL.ROOT : ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT, {
+                      appId,
+                  })
+        }/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
     const ciPipelineType = isCIJob ? URLS.APP_JOB_CI_CONFIG : URLS.APP_CI_CONFIG
@@ -70,7 +76,7 @@ export function getLinkedCIPipelineURL(
 ) {
     const suffix = `${workflowId}/linked-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
     if (addPrefix) {
-        return `/app/${appId}/edit/workflow/${suffix}`
+        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId: String(appId) })}/workflow/${suffix}`
     }
 
     return suffix

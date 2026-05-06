@@ -14,31 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    customEnv,
-    EnvironmentDataValuesDTO,
-    IconsProps,
-    ReloadVersionConfigTypes,
-    URLS as CommonURLS,
-} from '@devtron-labs/devtron-fe-common-lib'
-
-import { URLS } from '@Config/routes'
-
-export interface NavigationListItemType {
-    title: string
-    dataTestId: string
-    type: 'link'
-    icon: IconsProps['name']
-    href: (typeof URLS)[keyof typeof URLS] | (typeof CommonURLS)[keyof typeof CommonURLS]
-    isAvailableInEA?: boolean
-    markOnlyForSuperAdmin?: boolean
-    forceHideEnvKey?: keyof customEnv
-    hideNav?: boolean
-    markAsBeta?: boolean
-    isAvailableInDesktop?: boolean
-    moduleName?: string
-    moduleNameTrivy?: string
-}
+import { EnvironmentDataValuesDTO, ReloadVersionConfigTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface EnvironmentDataStateType extends Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'> {
     isAirgapped: boolean

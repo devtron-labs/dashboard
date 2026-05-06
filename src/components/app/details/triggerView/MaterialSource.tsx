@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ReactComponent as Refresh } from '@Icons/ic-restore.svg'
-import { ReactComponent as Error } from '@Icons/ic-warning.svg'
+import Refresh from '@Icons/ic-restore.svg?react'
+import Error from '@Icons/ic-warning.svg?react'
 import { MaterialSourceProps } from './types'
 import { CIMaterialType, CiPipelineSourceConfig, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderIcon } from '@Components/common'

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { ERROR_STATUS_CODE, ErrorScreenManager, URLS, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { BASE_ROUTES, ERROR_STATUS_CODE, ErrorScreenManager, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { DeploymentChartsList } from './List'
 
-const DeploymentChartDetailRouter = importComponentFromFELibrary('DeploymentChartDetailRouter', null, 'function')
+const DeploymentChartDetail = importComponentFromFELibrary('DeploymentChartDetail', null, 'function')
 
 const DeploymentChartsRouter = () => {
     const { isSuperAdmin } = useMainContext()
@@ -34,13 +34,16 @@ const DeploymentChartsRouter = () => {
     return (
         // NOTE: need to give fixed height here for resizable code editor height
         <div className="flexbox-col bg__primary h-100">
-            <Switch>
-                <Route exact path={URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}>
-                    <DeploymentChartsList />
-                </Route>
-                {DeploymentChartDetailRouter && <DeploymentChartDetailRouter />}
-                <Redirect to={URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST} />
-            </Switch>
+            <Routes>
+                <Route index element={<DeploymentChartsList />} />
+                {DeploymentChartDetail && (
+                    <Route
+                        path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.DEPLOYMENT_CHARTS.EDIT}
+                        element={<DeploymentChartDetail />}
+                    />
+                )}
+                <Route path="*" element={<Navigate to="" />} />
+            </Routes>
         </div>
     )
 }

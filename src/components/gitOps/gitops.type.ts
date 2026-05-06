@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
 import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 import { GitProvider } from '@Components/common/GitTabs/constants'
@@ -141,7 +140,7 @@ export interface GitOpsState {
     bitBucketDCDataStore: BitBucketDCDataStoreType
 }
 
-export interface GitOpsProps extends RouteComponentProps<{}> {
+export interface GitOpsProps {
     handleChecklistUpdate: (string) => void
 }
 

@@ -26,12 +26,12 @@ import {
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
     PipelineBuildStageType,
-    SeverityCount,
     useMainContext,
     SelectPickerOptionType,
     InfoBlock,
-    Badge,
-    SeveritiesDTO,
+    ToastManager,
+    ToastVariantType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -50,7 +50,6 @@ import { PATTERNS } from '../../../config/constants'
 import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
 import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
-import { URLS } from '@Config/routes'
 import { HOST_ERROR_MESSAGE } from '@Config/constantMessaging'
 
 let module
@@ -74,7 +73,7 @@ export function validateEmail(email) {
 /**
  * @deprecated use `useForm` from fe-common-lib.
  */
-export function useForm(stateSchema, validationSchema = {}, callback) {
+export function useForm(stateSchema, validationSchema = {}, callback, errorMessageOnSubmit = null) {
     const [state, setState] = useState(stateSchema)
     const [disable, setDisable] = useState(true)
     const [isDirty, setIsDirty] = useState(false)
@@ -92,6 +91,16 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
     }, [state, isDirty])
 
+    const getIsSchemaKeyRequired = (schemaKeyData) =>
+        !!schemaKeyData?.required || !!schemaKeyData?.getIsRequired?.(state)
+
+    const isStateKeyInvalid = (schemaKeyData, stateKeyData) => {
+        const isInputFieldRequired = getIsSchemaKeyRequired(schemaKeyData)
+        const stateValue = stateKeyData?.value // state value
+        const stateError = stateKeyData?.error // state error
+        return (isInputFieldRequired && !stateValue) || stateError
+    }
+
     // Used to disable submit button if there's an error in state
     // or the required field in state has no value.
     // Wrapped in useCallback to cached the function to avoid intensive memory leaked
@@ -99,19 +108,16 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     const validateState = useCallback(
         (state) => {
             // check errors in all fields
-            const hasErrorInState = Object.keys(validationSchema).some((key) => {
-                const isInputFieldRequired = validationSchema[key].required
-                const stateValue = state[key].value // state value
-                const stateError = state[key].error // state error
-                return (isInputFieldRequired && !stateValue) || stateError
-            })
+            const hasErrorInState = Object.keys(validationSchema).some((key) =>
+                isStateKeyInvalid(validationSchema[key], state[key]),
+            )
             return hasErrorInState
         },
         [state, validationSchema],
     )
 
     function validateField(name, value): string | string[] {
-        if (validationSchema[name]?.required) {
+        if (getIsSchemaKeyRequired(validationSchema[name])) {
             if (!value) {
                 return 'This is a required field.'
             }
@@ -163,6 +169,16 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         [validationSchema],
     )
 
+    const validateAllAndSetErrors = (): boolean => {
+        const newState = Object.keys(validationSchema).reduce((agg, curr) => {
+            agg[curr] = { ...state[curr], error: validateField(curr, state[curr].value) }
+            return agg
+        }, state)
+
+        setState({ ...newState })
+        return validateState(newState)
+    }
+
     const handleOnSubmit = (event) => {
         event.preventDefault()
         const newState = Object.keys(validationSchema).reduce((agg, curr) => {
@@ -172,10 +188,17 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         if (!validateState(newState)) {
             callback(state)
         } else {
+            if (errorMessageOnSubmit) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: errorMessageOnSubmit,
+                })
+            }
+
             setState({ ...newState })
         }
     }
-    return { state, disable, handleOnChange, handleOnSubmit }
+    return { state, disable, handleOnChange, handleOnSubmit, validateAllAndSetErrors }
 }
 
 /**
@@ -1158,7 +1181,7 @@ export const setAppGroupFilterInLocalStorage = ({
 const renderHostURLWarning = () => (
     <div className="flexbox dc__content-space">
         {HOST_ERROR_MESSAGE.NotConfigured} &nbsp;
-        <Link className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
+        <Link className="dc__link-bold" to={ROUTER_URLS.GLOBAL_CONFIG_HOST_URL}>
             {HOST_ERROR_MESSAGE.Review}
         </Link>
     </div>

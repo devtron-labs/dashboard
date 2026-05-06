@@ -15,7 +15,7 @@
  */
 
 import { FunctionComponent, useEffect, useRef } from 'react'
-import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -23,7 +23,8 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    ClusterStatusType,
+    ClusterDetailListType,
+    ClusterStatusIcon,
     ComponentSizeType,
     Drawer,
     FiltersTypeEnum,
@@ -32,6 +33,7 @@ import {
     Icon,
     IconName,
     noop,
+    ROUTER_URLS,
     stopPropagation,
     TableCellComponentProps,
     TableSignalEnum,
@@ -43,54 +45,35 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import {
-    Cluster,
     ClusterEnvTabs,
     ClusterListFields,
     ClusterRowData,
     DEFAULT_CLUSTER_ID,
     EditDeleteClusterProps,
 } from './cluster.type'
-import { getBulletColorAccToStatus } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import EditClusterDrawerContent from './EditClusterDrawerContent'
 
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
+const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
 const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
 
-export const ClusterIconWithStatus = ({
-    clusterStatus,
-    isVirtualCluster,
-}: {
-    clusterStatus: ClusterStatusType
-    isVirtualCluster: boolean
-}) => {
-    const statusColor = getBulletColorAccToStatus(clusterStatus)
-    return (
-        <span className="dc__position-rel dc__overflow-hidden icon-dim-24">
-            <Icon name="ic-bg-cluster" color={null} size={24} />
-            {!isVirtualCluster && (
-                <span
-                    className={`dc__position-abs dc__top-16 icon-dim-10 dc__border-radius-50-per dc__right-2--neg ${statusColor}`}
-                    style={{ border: '2px solid var(--N0)' }}
-                />
-            )}
-        </span>
-    )
-}
-
 export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: number; isVirtualCluster: boolean }) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { search } = useLocation()
 
     const handleEditCluster = () => {
-        push({ pathname: generatePath(COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER, { clusterId }), search })
+        navigate({
+            pathname: generatePath(COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER, { clusterId: String(clusterId) }),
+            search,
+        })
     }
 
     const handleAddEnv = () => {
-        push({
-            pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId`, {
-                clusterId,
+        navigate({
+            pathname: generatePath(`${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}${URLS.CREATE_ENVIRONMENT}/:clusterId`, {
+                clusterId: String(clusterId),
             }),
             search,
         })
@@ -99,18 +82,21 @@ export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: num
     const handleActionMenuClick = (item: ActionMenuItemType) => {
         switch (item.id) {
             case 'edit-pod-spread':
-                push({
-                    pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.POD_SPREAD}/:clusterId`, {
-                        clusterId,
+                navigate({
+                    pathname: generatePath(`${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${URLS.POD_SPREAD}/:clusterId`, {
+                        clusterId: String(clusterId),
                     }),
                     search,
                 })
                 break
             case 'hibernation-rules':
-                push({
-                    pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.HIBERNATION_RULES}/:clusterId`, {
-                        clusterId,
-                    }),
+                navigate({
+                    pathname: generatePath(
+                        `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${URLS.HIBERNATION_RULES}/:clusterId`,
+                        {
+                            clusterId: String(clusterId),
+                        },
+                    ),
                     search,
                 })
                 break
@@ -118,10 +104,13 @@ export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: num
                 if (clusterId === DEFAULT_CLUSTER_ID) {
                     break
                 }
-                push({
-                    pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.DELETE_CLUSTER}/:clusterId`, {
-                        clusterId,
-                    }),
+                navigate({
+                    pathname: generatePath(
+                        `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${URLS.DELETE_CLUSTER}/:clusterId`,
+                        {
+                            clusterId: String(clusterId),
+                        },
+                    ),
                     search,
                 })
                 break
@@ -241,14 +230,14 @@ export const ClusterListCellComponent: FunctionComponent<
         case ClusterListFields.ICON:
             return (
                 <div className="flex left py-10">
-                    <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
+                    <ClusterStatusIcon clusterStatus={status} isVirtualCluster={isVirtualCluster} />
                 </div>
             )
         case ClusterListFields.CLUSTER_NAME:
             return (
                 <Link
                     ref={linkRef}
-                    to={getUrlWithSearchParams(URLS.GLOBAL_CONFIG_CLUSTER, {
+                    to={getUrlWithSearchParams(ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV, {
                         selectedTab: ClusterEnvTabs.ENVIRONMENTS,
                         clusterId,
                     })}
@@ -314,7 +303,7 @@ export const AddEnvironmentFromClusterName = ({
     handleClose,
     clusterList,
 }: {
-    clusterList: Cluster[]
+    clusterList: ClusterDetailListType[]
     reloadEnvironments: () => void
     handleClose: () => void
 }) => {
@@ -336,45 +325,69 @@ export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: Edi
     const { clusterId } = useParams<{ clusterId: string }>()
     const cluster = clusterList.find((c) => c.clusterId === +clusterId)
 
-    if (!cluster || !cluster.isVirtualCluster) {
-        return (
-            <Drawer position="right" width="1000px" onClose={handleClose}>
-                <div className="h-100 bg__primary" onClick={stopPropagation}>
-                    {!cluster ? (
-                        <GenericEmptyState
-                            title="Cluster not found"
-                            subTitle="The cluster that you are looking is not available."
-                        />
-                    ) : (
-                        <EditClusterDrawerContent
-                            handleModalClose={handleClose}
-                            sshTunnelConfig={cluster.sshTunnelConfig}
-                            clusterId={cluster.clusterId}
-                            clusterName={cluster.clusterName}
-                            serverUrl={cluster.serverUrl}
-                            reload={reloadClusterList}
-                            prometheusUrl={cluster.prometheusUrl}
-                            proxyUrl={cluster.proxyUrl}
-                            toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
-                            isProd={cluster.isProd}
-                            installationId={cluster.installationId}
-                            category={cluster.category}
-                            insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
-                        />
-                    )}
-                </div>
-            </Drawer>
+    const renderBody = () => {
+        if (!cluster) {
+            return (
+                <GenericEmptyState
+                    title="Cluster not found"
+                    subTitle="The cluster that you are looking is not available."
+                />
+            )
+        }
+
+        return cluster.isVirtualCluster ? (
+            <VirtualClusterForm
+                id={+cluster.clusterId}
+                clusterName={cluster.clusterName}
+                handleModalClose={handleClose}
+                reload={reloadClusterList}
+                category={cluster.category}
+                isProd={cluster.isProd}
+            />
+        ) : (
+            <EditClusterDrawerContent
+                handleModalClose={handleClose}
+                sshTunnelConfig={cluster.sshTunnelConfig}
+                clusterId={cluster.clusterId}
+                clusterName={cluster.clusterName}
+                serverUrl={cluster.serverUrl}
+                reload={reloadClusterList}
+                prometheusUrl={cluster.prometheusUrl}
+                proxyUrl={cluster.proxyUrl}
+                toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
+                isProd={cluster.isProd}
+                installationId={cluster.installationId}
+                category={cluster.category}
+                insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
+                costModuleConfig={cluster.costModuleConfig}
+            />
         )
     }
+
     return (
-        <VirtualClusterForm
-            id={+cluster.clusterId}
-            clusterName={cluster.clusterName}
-            handleModalClose={handleClose}
-            reload={reloadClusterList}
-            category={cluster.category}
-            isProd={cluster.isProd}
-        />
+        <Drawer position="right" width="1000px" onClose={handleClose}>
+            <div className="flexbox-col h-100 bg__primary" onClick={stopPropagation}>
+                <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
+                    <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                        <span className="fw-6 fs-16 cn-9">
+                            {cluster?.isVirtualCluster ? 'Edit Isolated Cluster' : 'Edit Cluster'}
+                        </span>
+                    </h2>
+
+                    <Button
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        dataTestId="header_close_icon"
+                        style={ButtonStyleType.negativeGrey}
+                        size={ComponentSizeType.xs}
+                        variant={ButtonVariantType.borderLess}
+                        ariaLabel="Close edit cluster drawer"
+                        onClick={handleClose}
+                        showAriaLabelInTippy={false}
+                    />
+                </div>
+                {renderBody()}
+            </div>
+        </Drawer>
     )
 }
 
@@ -414,3 +427,15 @@ export const ClusterEnvLoader = () => (
         ))}
     </>
 )
+
+export const HibernationRulesModalWrapper = ({ handleClose }: { handleClose: () => void }) => {
+    const { clusterId } = useParams<{ clusterId: string }>()
+
+    return <HibernationRulesModal handleClose={handleClose} clusterId={clusterId} />
+}
+
+export const PodSpreadModalWrapper = ({ handleClose }: { handleClose: () => void }) => {
+    const { clusterId } = useParams<{ clusterId: string }>()
+
+    return <PodSpreadModal handleClose={handleClose} clusterId={clusterId} />
+}

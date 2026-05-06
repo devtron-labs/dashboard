@@ -15,30 +15,49 @@
  */
 
 import { Component } from 'react'
-import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
-import { DOCUMENTATION, ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { Route, Routes, Navigate } from 'react-router-dom'
+import {
+    ErrorScreenNotAuthorized,
+    FeatureTitleWithInfo,
+    RouterV5Props,
+    TabGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
 import { HEADER_TEXT } from '../../config'
 import './notifications.scss'
+import { NotificationsProps, NotificationsState } from './types'
+import { AddNotificationButton } from './AddNotificationButton'
+export default class Notifications extends Component<NotificationsProps, NotificationsState> {
 
-interface NotificationsProps extends RouteComponentProps<{}> {
-    isSuperAdmin: boolean
-}
+    constructor(props) {
+        super(props)
+        this.state = {
+            disableEdit: false,
+        }
+    }
 
-export default class Notifications extends Component<NotificationsProps, {}> {
+    toggleDisableEdit = (disableEdit: boolean) => {
+        this.setState({ disableEdit })
+    }
+
     renderNotificationHeader() {
         return (
             <div className="notification-page bg__primary flexbox-col h-100">
                 <div className="notification-page__header">
-                    <FeatureTitleWithInfo
-                        title={HEADER_TEXT.NOTIFICATIONS.title}
-                        renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
-                        docLink="GLOBAL_CONFIG_NOTIFICATION"
-                        showInfoIconTippy
-                        dataTestId="notifications-feature-title"
-                    />
+                    <div className="flex dc__content-space">
+                        <FeatureTitleWithInfo
+                            title={HEADER_TEXT.NOTIFICATIONS.title}
+                            renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
+                            docLink="GLOBAL_CONFIG_NOTIFICATION"
+                            showInfoIconTippy
+                            dataTestId="notifications-feature-title"
+                        />
+                        <div className="flex right">
+                            <AddNotificationButton disableEdit={this.state.disableEdit} />
+                        </div>
+                    </div>
                     <TabGroup
                         tabs={[
                             {
@@ -46,7 +65,7 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                                 label: 'Notifications',
                                 tabType: 'navLink',
                                 props: {
-                                    to: `${this.props.match.path}/channels`,
+                                    to: 'channels',
                                     'data-testid': 'notifications-link-button',
                                 },
                             },
@@ -55,7 +74,7 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                                 label: 'Configurations',
                                 tabType: 'navLink',
                                 props: {
-                                    to: `${this.props.match.path}/configurations`,
+                                    to: 'configurations',
                                     'data-testid': 'configurations-link-button',
                                 },
                             },
@@ -63,11 +82,22 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                     />
                 </div>
                 <ErrorBoundary>
-                    <Switch>
-                        <Route path={`${this.props.match.url}/channels`} component={NotificationTab} />
-                        <Route path={`${this.props.match.url}/configurations`} component={ConfigurationTab} />
-                        <Redirect to={`${this.props.match.url}/channels`} />
-                    </Switch>
+                    <Routes>
+                        <Route
+                            path="channels"
+                            element={
+                                <NotificationTab
+                                    location={this.props.location}
+                                    navigate={this.props.navigate}
+                                    params={this.props.params}
+                                    disableEdit={this.state.disableEdit}
+                                    toggleDisableEdit={this.toggleDisableEdit}
+                                />
+                            }
+                        />
+                        <Route path="configurations" element={<ConfigurationTab />} />
+                        <Route path="*" element={<Navigate to="channels" />} />
+                    </Routes>
                 </ErrorBoundary>
             </div>
         )

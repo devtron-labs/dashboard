@@ -18,6 +18,7 @@ import {
     Button,
     ComponentSizeType,
     DetectBottom,
+    GenericFilterEmptyState,
     GenericInfoCardBorderVariant,
     GenericInfoCardListing,
     GenericInfoListSkeleton,
@@ -72,24 +73,30 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView, handleCreationMet
                         inputProps={{
                             placeholder: `Search ${isJobView ? 'job' : 'application'}`,
                         }}
+                        isLoading={isListLoading || isLoadingMore}
                     />
                 )}
             </div>
             <div className="flex-grow-1 flexbox-col dc__gap-12 p-20 dc__overflow-auto">
-                <GenericInfoCardListing
-                    borderVariant={GenericInfoCardBorderVariant.ROUNDED}
-                    list={list}
-                    searchKey={searchKey}
-                    isLoading={isListLoading}
-                    error={listError}
-                    reloadList={reloadList}
-                    handleClearFilters={clearFilters}
-                    emptyStateConfig={{
-                        title: 'Nothing to Clone… Yet!',
-                        subTitle: `You haven’t created any ${isJobView ? 'job' : 'application'} to clone. Kick things off by crafting one from scratch—it’s quick and easy!`,
-                        renderButton: renderCreateFromScratchButton,
-                    }}
-                />
+                {/* Empty filter state for jobs since job list is paginated */}
+                {isJobView && searchKey && !isListLoading && !listError && !list.length ? (
+                    <GenericFilterEmptyState handleClearFilters={clearFilters} />
+                ) : (
+                    <GenericInfoCardListing
+                        borderVariant={GenericInfoCardBorderVariant.ROUNDED}
+                        list={list}
+                        searchKey={isJobView ? '' : searchKey} // Not filtering on FE for jobs since job list is paginated
+                        isLoading={isListLoading}
+                        error={listError}
+                        reloadList={reloadList}
+                        handleClearFilters={clearFilters}
+                        emptyStateConfig={{
+                            title: 'Nothing to Clone… Yet!',
+                            subTitle: `You haven’t created any ${isJobView ? 'job' : 'application'} to clone. Kick things off by crafting one from scratch—it’s quick and easy!`,
+                            renderButton: renderCreateFromScratchButton,
+                        }}
+                    />
+                )}
                 {hasMoreData && isLoadingMore && <GenericInfoListSkeleton />}
 
                 {hasMoreData && !isLoadingMore && <DetectBottom callback={handleLoadMore} hasError={hasError} />}

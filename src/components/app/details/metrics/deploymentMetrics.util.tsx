@@ -15,8 +15,8 @@
  */
 
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Smiley } from '../../../../assets/icons/ic-smiley-party.svg'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
+import Smiley from '../../../../assets/icons/ic-smiley-party.svg?react'
+import ICHelpOutline from '../../../../assets/icons/ic-help-outline.svg?react'
 import { createTimestamp } from './deploymentMetrics.service'
 
 export function frequencyXAxisLabel(props) {
@@ -114,10 +114,10 @@ export const ReferenceLineLegend = () => {
 
 export const EliteCategoryMessage = (props) => {
     return (
-        <div className="cursor" onClick={props.onClick}>
+        <button type='button' className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column" onClick={props.onClick}>
             <p className="graph-legend__secondary-label"> You are in elite category </p>
             <p className="graph-legend__secondary-value">Good job!</p>
-        </div>
+        </button>
     )
 }
 

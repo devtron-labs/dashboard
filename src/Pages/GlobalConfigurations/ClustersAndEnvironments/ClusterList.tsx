@@ -15,11 +15,12 @@
  */
 
 import { useMemo, useState } from 'react'
-import { generatePath, Route, useHistory, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     ActionMenu,
     ActionMenuItemType,
+    BASE_ROUTES,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -31,11 +32,13 @@ import {
     FiltersTypeEnum,
     GenericEmptyState,
     GenericFilterEmptyState,
+    getDetailedClusterList,
     getSelectPickerOptionByValue,
     Icon,
     numberComparatorBySortOrder,
     OptionType,
     PaginationEnum,
+    ROUTER_URLS,
     SearchBar,
     SegmentedControl,
     SelectPicker,
@@ -43,7 +46,6 @@ import {
     stringComparatorBySortOrder,
     Table,
     TableColumnType,
-    URLS as COMMON_URLS,
     useAsync,
     useMainContext,
     useUrlFilters,
@@ -52,11 +54,9 @@ import {
 import NoClusterImg from '@Images/no-cluster-empty-state.png'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
-import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
-import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
-import { UpgradeToEnterpriseDialog } from '@Pages/Shared/UpgradeToEnterprise'
+import AddClusterButton from '@Pages/Shared/AddEditCluster/AddClusterButton'
 
-import { getClusterList, getEnvironmentList } from './cluster.service'
+import { getEnvironmentList } from './cluster.service'
 import {
     ClusterEnvFilterType,
     ClusterEnvTabs,
@@ -74,6 +74,8 @@ import {
     ClusterListCellComponent,
     DeleteCluster,
     EditCluster,
+    HibernationRulesModalWrapper,
+    PodSpreadModalWrapper,
 } from './ClusterList.components'
 import { ALL_CLUSTER_VALUE } from './constants'
 import EnvironmentList from './EnvironmentList'
@@ -84,11 +86,10 @@ const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'fun
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 
 const ClusterList = () => {
-    const { isSuperAdmin, licenseData } = useMainContext()
+    const { isSuperAdmin } = useMainContext()
     const isK8sClient = window._env_.K8S_CLIENT
-    const isFreemium = licenseData?.isFreemium ?? false
 
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { search } = useLocation()
 
     const {
@@ -105,12 +106,8 @@ const ClusterList = () => {
         initialSortKey: EnvListSortableKeys.ENV_NAME,
     })
 
-    const clearSearch = () => {
-        handleSearch('')
-    }
-
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
-        getClusterList,
+        getDetailedClusterList,
         [],
         isSuperAdmin,
     )
@@ -122,8 +119,8 @@ const ClusterList = () => {
     )
 
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
-    const [showUpgradeToEnterprise, setShowUpgradeToEnterprise] = useState(false)
 
+    const clusterCount = clusterListResult?.length ?? 0
     const clusterIdVsEnvMap: Record<number, Environment[]> = useMemo(
         () =>
             (envListResult ?? []).reduce<Record<number, Environment[]>>((agg, curr) => {
@@ -246,8 +243,15 @@ const ClusterList = () => {
 
     const isEnvironmentsView = selectedTab === ClusterEnvTabs.ENVIRONMENTS
     const isClusterEnvListLoading = clusterListLoading || envListLoading
-    const isClusterAdditionAllowed =
-        !isFreemium || clusterListResult?.length < licenseData?.moduleLimits.maxAllowedClusters
+
+    const clearSearch = () => {
+        handleSearch('')
+    }
+
+    const handleReload = () => {
+        reloadClusterList()
+        reloadEnvironments()
+    }
 
     // Early return for non super admin users
     if (!isK8sClient && !isSuperAdmin) {
@@ -283,7 +287,10 @@ const ClusterList = () => {
     }
 
     const handleRedirectToClusterList = () => {
-        push({ pathname: URLS.GLOBAL_CONFIG_CLUSTER, search })
+        navigate({
+            pathname: ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV,
+            search,
+        })
     }
 
     const renderList = () => {
@@ -292,7 +299,7 @@ const ClusterList = () => {
         }
 
         if (clusterListError || envListError) {
-            return <ErrorScreenManager code={clusterListError?.code ?? envListError.code} />
+            return <ErrorScreenManager code={clusterListError?.code ?? envListError.code} reload={handleReload} />
         }
 
         if (isEnvironmentsView) {
@@ -332,7 +339,7 @@ const ClusterList = () => {
                         filtersVariant={FiltersTypeEnum.STATE}
                         paginationVariant={PaginationEnum.NOT_PAGINATED}
                         emptyStateConfig={null}
-                        filter={() => true}
+                        filter={null}
                         additionalFilterProps={{
                             initialSortKey: 'clusterName',
                         }}
@@ -342,76 +349,19 @@ const ClusterList = () => {
         )
     }
 
-    const handleOpenUpgradeDialog = () => {
-        setShowUpgradeToEnterprise(true)
-    }
-
-    const handleCloseUpgradeDialog = () => {
-        setShowUpgradeToEnterprise(false)
-    }
-
-    const renderAddEnvButton = () => (
-        <Button
-            dataTestId="add-environment-button"
-            linkProps={{
-                to: {
-                    pathname: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}`,
-                    search,
-                },
-            }}
-            component={ButtonComponentType.link}
-            startIcon={<Icon name="ic-add" color={null} />}
-            size={ComponentSizeType.medium}
-            text="Add Environment"
-        />
-    )
-
     const renderAddClusterButton = () => (
-        <Button
-            dataTestId="add-cluster-button"
-            component={ButtonComponentType.link}
-            startIcon={<Icon name="ic-link" color={null} />}
-            size={ComponentSizeType.medium}
-            text="Connect Cluster"
-            {...(isClusterAdditionAllowed
-                ? {
-                      component: ButtonComponentType.link,
-                      linkProps: {
-                          to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
-                              type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                          }),
-                          search,
-                      },
-                  }
-                : {
-                      component: ButtonComponentType.button,
-                      onClick: handleOpenUpgradeDialog,
-                  })}
-        />
+        <AddClusterButton clusterCount={clusterCount} handleReloadClusterList={reloadClusterList} />
     )
-
-    const renderAddClusterRoute = () =>
-        isClusterAdditionAllowed ? (
-            <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                <CreateCluster
-                    handleReloadClusterList={reloadClusterList}
-                    handleRedirectOnModalClose={handleRedirectToClusterList}
-                />
-            </Route>
-        ) : null
 
     if (clusterListResult && !clusterListResult.length) {
         return (
-            <>
-                <GenericEmptyState
-                    title="Manage Clusters and Environments"
-                    subTitle="It looks like you haven't set up any Kubernetes clusters yet. Start by adding your first cluster and environment."
-                    isButtonAvailable
-                    renderButton={renderAddClusterButton}
-                    image={NoClusterImg}
-                />
-                {renderAddClusterRoute()}
-            </>
+            <GenericEmptyState
+                title="Manage Clusters and Environments"
+                subTitle="It looks like you haven't set up any Kubernetes clusters yet. Start by adding your first cluster and environment."
+                isButtonAvailable
+                renderButton={renderAddClusterButton}
+                image={NoClusterImg}
+            />
         )
     }
 
@@ -459,7 +409,23 @@ const ClusterList = () => {
                             keyboardShortcut="/"
                         />
                         {ManageCategoryButton && <ManageCategoryButton search={search} />}
-                        {isEnvironmentsView ? renderAddEnvButton() : renderAddClusterButton()}
+                        {isEnvironmentsView ? (
+                            <Button
+                                dataTestId="add-environment-button"
+                                linkProps={{
+                                    to: {
+                                        pathname: `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}${URLS.CREATE_ENVIRONMENT}`,
+                                        search,
+                                    },
+                                }}
+                                component={ButtonComponentType.link}
+                                startIcon={<Icon name="ic-add" color={null} />}
+                                size={ComponentSizeType.medium}
+                                text="Add Environment"
+                            />
+                        ) : (
+                            renderAddClusterButton()
+                        )}
                         {isEnvironmentsView && (
                             <ActionMenu
                                 id="additional-options-action-menu"
@@ -500,58 +466,68 @@ const ClusterList = () => {
                 {/* Body */}
                 {renderList()}
                 {/* Modals and Routes */}
-                <UpgradeToEnterpriseDialog open={showUpgradeToEnterprise} handleClose={handleCloseUpgradeDialog} />
-                {ManageCategories && <ManageCategories />}
-                {renderAddClusterRoute()}
-                <Route path={COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER}>
-                    <EditCluster
-                        clusterList={clusterListResult ?? []}
-                        reloadClusterList={reloadClusterList}
-                        handleClose={handleRedirectToClusterList}
-                    />
-                </Route>
-                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId?`}>
-                    <AddEnvironment reloadEnvironments={reloadEnvironments} handleClose={handleRedirectToClusterList} />
-                </Route>
-                {/* Below route is to maintain backward compatibility and redirection from various places in dashboard */}
-                {clusterListResult && (
-                    <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterName${URLS.CREATE_ENVIRONMENT}`}>
-                        <AddEnvironmentFromClusterName
-                            clusterList={clusterListResult ?? []}
-                            reloadEnvironments={reloadEnvironments}
-                            handleClose={handleRedirectToClusterList}
+                <Routes>
+                    {ManageCategories && (
+                        <Route
+                            path={BASE_ROUTES.GLOBAL_CONFIG.CLUSTER_ENV.MANAGE_CATEGORIES}
+                            element={<ManageCategories />}
                         />
-                    </Route>
-                )}
-                {PodSpreadModal && (
+                    )}
                     <Route
-                        path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.POD_SPREAD}/:clusterId`}
-                        render={({ match }) => (
-                            <PodSpreadModal
-                                clusterId={match.params.clusterId}
+                        path="edit/:clusterId"
+                        element={
+                            <EditCluster
+                                clusterList={clusterListResult ?? []}
+                                reloadClusterList={reloadClusterList}
                                 handleClose={handleRedirectToClusterList}
                             />
-                        )}
+                        }
                     />
-                )}
-                {HibernationRulesModal && (
                     <Route
-                        path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.HIBERNATION_RULES}/:clusterId`}
-                        render={({ match }) => (
-                            <HibernationRulesModal
-                                clusterId={match.params.clusterId}
+                        path={`${URLS.CREATE_ENVIRONMENT}/:clusterId?`}
+                        element={
+                            <AddEnvironment
+                                reloadEnvironments={reloadEnvironments}
                                 handleClose={handleRedirectToClusterList}
                             />
-                        )}
+                        }
                     />
-                )}
-                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.DELETE_CLUSTER}/:clusterId`}>
-                    <DeleteCluster
-                        clusterList={clusterListResult ?? []}
-                        reloadClusterList={reloadClusterList}
-                        handleClose={handleRedirectToClusterList}
+                    {/* Below route is to maintain backward compatibility and redirection from various places in dashboard */}
+                    {clusterListResult && (
+                        <Route
+                            path={`:clusterName${URLS.CREATE_ENVIRONMENT}`}
+                            element={
+                                <AddEnvironmentFromClusterName
+                                    clusterList={clusterListResult ?? []}
+                                    reloadEnvironments={reloadEnvironments}
+                                    handleClose={handleRedirectToClusterList}
+                                />
+                            }
+                        />
+                    )}
+                    {PodSpreadModal && (
+                        <Route
+                            path={`${URLS.POD_SPREAD}/:clusterId`}
+                            element={<PodSpreadModalWrapper handleClose={handleRedirectToClusterList} />}
+                        />
+                    )}
+                    {HibernationRulesModal && (
+                        <Route
+                            path={`${URLS.HIBERNATION_RULES}/:clusterId`}
+                            element={<HibernationRulesModalWrapper handleClose={handleRedirectToClusterList} />}
+                        />
+                    )}
+                    <Route
+                        path={`${URLS.DELETE_CLUSTER}/:clusterId`}
+                        element={
+                            <DeleteCluster
+                                clusterList={clusterListResult ?? []}
+                                reloadClusterList={reloadClusterList}
+                                handleClose={handleRedirectToClusterList}
+                            />
+                        }
                     />
-                </Route>
+                </Routes>
             </div>
         </div>
     )

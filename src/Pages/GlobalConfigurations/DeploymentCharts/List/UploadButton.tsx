@@ -16,7 +16,7 @@
 
 import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Upload } from '@Icons/ic-upload.svg'
+import Upload from '@Icons/ic-upload.svg?react'
 
 import { UploadButtonProps } from '../types'
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     ClipboardButton,
@@ -26,9 +26,9 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
+import ErrorIcon from '@Icons/ic-warning.svg?react'
 
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
+import Help from '../../assets/icons/ic-help.svg?react'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import {
     ConfigurationFieldKeys,
@@ -57,7 +57,7 @@ export const WebhookConfigModal = ({
     const [rows, setRows] = useState<WebhookDataRowType[]>()
     const [isFormValid, setFormValid] = useState<WebhookValidations>(DefaultWebhookValidations)
 
-    const history = useHistory()
+    const navigate = useNavigate()
     const [webhookAttribute, setWebhookAttribute] = useState({})
 
     const fetchWebhookData = async () => {
@@ -117,7 +117,7 @@ export const WebhookConfigModal = ({
             const newParams = {
                 modal: ConfigurationsTabTypes.WEBHOOK,
             }
-            history.push({
+            navigate({
                 search: new URLSearchParams(newParams).toString(),
             })
         }

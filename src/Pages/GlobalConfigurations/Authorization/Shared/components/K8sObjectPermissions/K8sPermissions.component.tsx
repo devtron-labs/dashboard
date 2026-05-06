@@ -16,7 +16,7 @@
 
 import { useState } from 'react'
 
-import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
+import AddIcon from '../../../../../../assets/icons/ic-add.svg?react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { K8sPermissionFilter } from '../../../types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'

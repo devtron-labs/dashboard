@@ -1,0 +1,12 @@
+.infra-management-overview {
+    grid-template-columns: 10fr 3fr;
+
+    .cards-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 8px;
+    }
+
+    .capacity-table-row {
+        grid-template-columns: 150px 1fr 1fr;
+    }
+}

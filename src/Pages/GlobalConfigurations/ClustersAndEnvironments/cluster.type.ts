@@ -15,14 +15,16 @@
  */
 
 import { Dispatch, SetStateAction } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
 
 import {
+    ClusterDetailListType,
     ClusterEnvironmentCategoryType,
-    ClusterStatusType,
+    ClusterProviderType,
     EnvListMinDTO,
     FiltersTypeEnum,
     OptionType,
+    ResponseType,
+    RJSFFormSchema,
     SelectPickerOptionType,
     TableProps,
     UseUrlFiltersReturnType,
@@ -31,12 +33,6 @@ import {
 export const POLLING_INTERVAL = 30000
 
 export const DEFAULT_CLUSTER_ID = 1
-
-export const AuthenticationType = {
-    BASIC: 'BASIC',
-    ANONYMOUS: 'ANONYMOUS',
-    IAM: 'IAM',
-}
 
 export const emptyClusterTerminalParamsData = {
     selectedImage: null,
@@ -91,32 +87,6 @@ export interface SaveClusterPayloadType {
     remoteConnectionConfig: RemoteConnectionConfig
 }
 
-export enum ClusterComponentStatus {
-    WF_UNKNOWN = 'WF_UNKNOWN',
-    REQUEST_ACCEPTED = 'REQUEST_ACCEPTED',
-    ENQUEUED = 'ENQUEUED',
-    QUE_ERROR = 'QUE_ERROR',
-    DEQUE_ERROR = 'DEQUE_ERROR',
-    TRIGGER_ERROR = 'TRIGGER_ERROR',
-    DEPLOY_SUCCESS = 'DEPLOY_SUCCESS',
-    DEPLOY_INIT = 'DEPLOY_INIT',
-    GIT_ERROR = 'GIT_ERROR',
-    GIT_SUCCESS = 'GIT_SUCCESS',
-    ACD_ERROR = 'ACD_ERROR',
-    ACD_SUCCESS = 'ACD_SUCCESS',
-}
-
-export type ClusterComponentStatusType = keyof typeof ClusterComponentStatus
-
-export interface ClusterComponentType {
-    name: string
-    appId: number
-    installedAppId: number
-    envId: number
-    envName: string
-    status: ClusterComponentStatusType
-}
-
 export interface ClusterMetadataTypes {
     id: number
     cluster_name: string
@@ -138,33 +108,11 @@ export interface ClusterMetadataTypes {
     category: SelectPickerOptionType
 }
 
-export interface ClusterComponentModalProps {
-    components: ClusterComponentType[] | null
-    environmentName: string
-    redirectToChartDeployment: (appId, envId) => void
-    callRetryClusterInstall: () => void
-    close: (event) => void
-}
-
-export interface ClusterInstallStatusProps {
-    envName: string | undefined
-    onClick: (...args) => void
-}
-
 export interface ConfigCluster {
     bearerToken: string
     cert_auth_data: string
     cert_data: string
     tls_key: string
-}
-
-export interface UserInfos {
-    username: string
-    config: ConfigCluster
-}
-
-export interface ClusterProps extends RouteComponentProps<{}> {
-    isSuperAdmin: boolean
 }
 
 export interface ClusterStepModal {
@@ -182,9 +130,28 @@ export interface ClusterTerminalParamsType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
+export interface EditClusterDrawerContentProps
+    extends Pick<
+        ClusterDetailListType,
+        | 'sshTunnelConfig'
+        | 'insecureSkipTlsVerify'
+        | 'category'
+        | 'isProd'
+        | 'installationId'
+        | 'toConnectWithSSHTunnel'
+        | 'proxyUrl'
+        | 'prometheusUrl'
+        | 'serverUrl'
+        | 'clusterName'
+        | 'clusterId'
+        | 'costModuleConfig'
+    > {
+    reload: () => void
+    handleModalClose: () => void
+}
+
 export type EditClusterFormProps = {
     id: number
-    hideEditModal: () => void
     isProd?: boolean
     clusterName: string
     serverUrl: string
@@ -197,9 +164,14 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
-}
+    clusterProvider: ClusterProviderType
+    costModuleSchema: RJSFFormSchema
+} & Pick<EditClusterDrawerContentProps, 'costModuleConfig'>
 
-export type ClusterFormProps = { reload: () => void } & Pick<ClusterMetadataTypes, 'category'> &
+export type ClusterFormProps = { reload: () => void; handleModalClose: () => void } & Pick<
+    ClusterMetadataTypes,
+    'category'
+> &
     (
         | ({
               handleCloseCreateClusterForm?: never
@@ -220,7 +192,7 @@ export interface AddClusterFormPrefilledInfoType {
 export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
 }
-export interface DeleteClusterConfirmationModalProps extends Pick<Cluster, 'clusterName'> {
+export interface DeleteClusterConfirmationModalProps extends Pick<ClusterDetailListType, 'clusterName'> {
     clusterId: string
     handleClose: () => void
     installationId: string
@@ -236,25 +208,6 @@ export interface UserNameDropDownListProps {
     clusterDetail: DataListType
     selectedUserNameOptions: Record<string, any>
     onChangeUserName: (selectedOption: any, clusterDetail: DataListType) => void
-}
-
-export interface EditClusterDrawerContentProps
-    extends Pick<
-        Cluster,
-        | 'sshTunnelConfig'
-        | 'insecureSkipTlsVerify'
-        | 'category'
-        | 'isProd'
-        | 'installationId'
-        | 'toConnectWithSSHTunnel'
-        | 'proxyUrl'
-        | 'prometheusUrl'
-        | 'serverUrl'
-        | 'clusterName'
-        | 'clusterId'
-    > {
-    reload: () => void
-    handleModalClose: () => void
 }
 
 export interface EnvironmentDTO {
@@ -284,35 +237,8 @@ export interface Environment
     clusterName: EnvironmentDTO['cluster_name']
 }
 
-export interface ClusterDTO {
-    category: ClusterEnvironmentCategoryType
-    cluster_name: string
-    description: string
-    id: number
-    insecureSkipTlsVerify: boolean
-    installationId: number
-    isProd: boolean
-    isVirtualCluster: boolean
-    server_url: string
-    sshTunnelConfig: any
-    prometheus_url: string
-    proxyUrl: string
-    toConnectWithSSHTunnel: boolean
-    clusterStatus: ClusterStatusType
-}
-
-export interface Cluster
-    extends Omit<ClusterDTO, 'server_url' | 'cluster_name' | 'prometheus_url' | 'id' | 'category' | 'clusterStatus'> {
-    serverUrl: ClusterDTO['server_url']
-    clusterName: ClusterDTO['cluster_name']
-    prometheusUrl: ClusterDTO['prometheus_url']
-    clusterId: ClusterDTO['id']
-    category: SelectPickerOptionType
-    status: ClusterStatusType
-}
-
 export interface ClusterRowData
-    extends Pick<Cluster, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
+    extends Pick<ClusterDetailListType, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
     envCount: number
     clusterType: string
     clusterCategory: string
@@ -362,7 +288,7 @@ export type EnvNamespaceRowType = {
 
 export interface EnvironmentListProps {
     isLoading: boolean
-    clusterList: Cluster[]
+    clusterList: ClusterDetailListType[]
     clusterIdVsEnvMap: Record<number, Environment[]>
     showUnmappedEnvs: boolean
     filterConfig: Pick<UseUrlFiltersReturnType<EnvListSortableKeys>, 'sortBy' | 'sortOrder' | 'searchKey'>
@@ -377,7 +303,7 @@ export type EditEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'>
 
 export interface ClusterEnvListProps
     extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs' | 'filterClusterId'> {
-    clusterDetails: Cluster
+    clusterDetails: ClusterDetailListType
     environments: Environment[]
     setDeleteEnvConfig: Dispatch<SetStateAction<DeleteEnvConfigType>>
     setEditEnvConfig: Dispatch<SetStateAction<EditEnvConfigType>>
@@ -394,7 +320,13 @@ export interface EditEnvProps {
 export interface DeleteEnvProps extends Omit<EditEnvProps, 'isVirtualCluster'> {}
 
 export interface EditDeleteClusterProps {
-    clusterList: Cluster[]
+    clusterList: ClusterDetailListType[]
     reloadClusterList: () => void
     handleClose: () => void
+}
+
+export interface EditClusterDrawerMetadataType {
+    prometheusAuthResult: ResponseType
+    clusterProvider: ClusterProviderType
+    costModuleSchema: RJSFFormSchema
 }

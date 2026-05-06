@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
+import { Component } from 'react'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 
-export class SecurityPolicyGlobal extends Component<RouteComponentProps<{}>, {}> {
+export class SecurityPolicyGlobal extends Component<{}, {}> {
     render() {
         return <SecurityPolicyEdit level="global" />
     }

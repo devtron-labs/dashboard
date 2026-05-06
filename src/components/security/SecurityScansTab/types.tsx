@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    FiltersTypeEnum,
+    SelectPickerOptionType,
+    ServerErrors,
+    SortingOrder,
+    TableViewWrapperProps,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { SecurityScanType } from '../security.types'
+
+export enum ScanTypeOptions {
+    SCANNED = 'scanned',
+    NOT_SCANNED = 'not-scanned',
+    ALL = 'all',
+}
 
 export enum SecurityScansTabMultiFilterKeys {
     severity = 'severity',
@@ -23,16 +37,11 @@ export enum SecurityScansTabMultiFilterKeys {
 }
 
 export enum SecurityScansTabSingleFilterKeys {
-    searchType = 'searchType',
+    scanStatus = 'scanStatus',
 }
 
-export interface ScanListUrlFiltersType
-    extends Record<SecurityScansTabMultiFilterKeys, string[]>,
-        Record<SecurityScansTabSingleFilterKeys, string> {}
-
-export enum SearchType {
-    APPLICATION = 'appName',
-    VULNERABILITY = 'cveName',
+export interface ScanListUrlFiltersType extends Record<SecurityScansTabMultiFilterKeys, string[]> {
+    [SecurityScansTabSingleFilterKeys.scanStatus]: ScanTypeOptions
 }
 
 export interface ScanDetailsType {
@@ -50,12 +59,12 @@ export interface ScanListPayloadType {
     offset: number
     size: number
     appName: string
-    cveName: string
     severity: number[]
     clusterIds: number[]
     envIds: number[]
     sortBy: SecurityListSortableKeys
     sortOrder: SortingOrder
+    scanStatus: ScanTypeOptions
 }
 
 export enum SeverityFilterValues {
@@ -66,15 +75,20 @@ export enum SeverityFilterValues {
     'unknown' = 5,
 }
 
-export enum SeverityMapping {
-    'critical' = 'Critical',
-    'high' = 'High',
-    'medium' = 'Medium',
-    'low' = 'Low',
-    'unknown' = 'Unknown',
+export type SecurityScansTableAdditionalProps = {
+    clusterEnvListLoading: boolean
+    clusterEnvListResult: Record<SecurityScansTabMultiFilterKeys, SelectPickerOptionType[]>
+    clusterEnvListError: ServerErrors
+    reloadClusterEnvOptions: () => void
+    scanDetails: ScanDetailsType
+    setScanDetails: (details: ScanDetailsType) => void
 }
 
-export interface SearchTypeOptionType {
-    label: string
-    value: SearchType
-}
+export type SecurityScansTableWrapperProps = TableViewWrapperProps<SecurityScanType, FiltersTypeEnum.URL> & {
+    severity: string[]
+    cluster: string[]
+    environment: string[]
+    scanStatus: ScanTypeOptions
+    updateSearchParams: (params: Partial<ScanListUrlFiltersType>) => void
+    clearFilters: () => void
+} & SecurityScansTableAdditionalProps

@@ -26,7 +26,7 @@ import {
     SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
 import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { RootBuildContext } from './ciConfigConstant'
 import { BuildContextProps } from './types'

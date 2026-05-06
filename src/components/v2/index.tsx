@@ -15,20 +15,22 @@
  */
 
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useNavigate, useLocation, useParams, Navigate } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
+    AIAgentContextSourceType,
     API_STATUS_CODES,
     DetailsProgressing,
     ErrorScreenManager,
+    GenericEmptyState,
     getIsRequestAborted,
     showError,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
-import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
@@ -41,14 +43,16 @@ import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHist
 import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
 import ValuesComponent from './values/ChartValues.component'
+import { ERROR_EMPTY_SCREEN } from '@Config/constantMessaging'
 
 let initTimer = null
 
 const RouterComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const { path } = useRouteMatch()
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
+    const { setAIAgentContext } = useMainContext()
+
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
@@ -86,6 +90,7 @@ const RouterComponent = () => {
 
     useEffect(
         () => () => {
+            setAIAgentContext(null)
             abortControllerRef.current.abort()
         },
         [],
@@ -108,7 +113,7 @@ const RouterComponent = () => {
         if (checkIfToRefetchData(location)) {
             timer = setTimeout(() => {
                 abortPreviousRequests(() => _getAndSetAppDetail(true), abortControllerRef)
-                deleteRefetchDataFromUrl(history, location)
+                deleteRefetchDataFromUrl(navigate, location)
             }, 5000)
         }
 
@@ -143,6 +148,20 @@ const RouterComponent = () => {
             ...response.result,
             helmReleaseStatus: response.result?.releaseStatus || appDetailsRef.current?.helmReleaseStatus,
         }
+
+        // There is no env change so can handle AIAgentContext here directly instead of useEffect
+        setAIAgentContext({
+            source: AIAgentContextSourceType.APP_DETAILS,
+            data: {
+                appId: +params.appId,
+                envId: +params.envId,
+                clusterId: appDetailsRef.current.clusterId,
+                appName: appDetailsRef.current.appName,
+                envName: appDetailsRef.current.environmentName,
+                appType: 'devtronHelmChart'
+            }
+        })
+
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
         setErrorResponseCode(undefined)
     }
@@ -168,7 +187,7 @@ const RouterComponent = () => {
             setLoadingDetails(false)
         } catch (error) {
             const isAborted = getIsRequestAborted(error)
-            
+
             if (!isAborted) {
                 handleAppDetailsCallError(error)
             }
@@ -201,17 +220,16 @@ const RouterComponent = () => {
 
     const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
         // Intentionally not setting await since it was not awaited earlier when in thens as well
-        Promise.allSettled([
-            handleFetchAppDetails(fetchExternalLinks),
-            handleFetchResourceTree(),
-        ]).then((results) => {
-            const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
-            if (!isAborted) {
-                handleInitiatePolling()
-            }
-        }).finally(() => {
-            handledFirstCall.current = true
-        })
+        Promise.allSettled([handleFetchAppDetails(fetchExternalLinks), handleFetchResourceTree()])
+            .then((results) => {
+                const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
+                if (!isAborted) {
+                    handleInitiatePolling()
+                }
+            })
+            .finally(() => {
+                handledFirstCall.current = true
+            })
     }
 
     const handleReloadResourceTree = () => {
@@ -257,7 +275,12 @@ const RouterComponent = () => {
             return (
                 <div className="h-100">
                     <ChartHeaderComponent errorResponseCode={errorResponseCode} />
-                    <AppDetailsEmptyState envType={EnvType.CHART} />
+                    <GenericEmptyState
+                        imgName="img-no-result"
+                        classname="w-100 dc__text-center"
+                        title={ERROR_EMPTY_SCREEN.APP_NOT_AVAILABLE}
+                        subTitle={ERROR_EMPTY_SCREEN.DEPLOYMENT_NOT_EXIST}
+                    />
                 </div>
             )
         }
@@ -278,39 +301,50 @@ const RouterComponent = () => {
                 <>
                     <ChartHeaderComponent />
                     <Suspense fallback={<DetailsProgressing fullHeight loadingText="Please wait…" size={24} />}>
-                        <Switch>
-                            <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                                <HelmAppOverview
-                                    key={params.appId}
-                                    appId={params.appId}
-                                    setErrorResponseCode={setErrorResponseCode}
-                                />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                                <AppDetailsComponent
-                                    externalLinks={externalLinksAndTools.externalLinks}
-                                    monitoringTools={externalLinksAndTools.monitoringTools}
-                                    isExternalApp={false}
-                                    _init={_init}
-                                    loadingDetails={loadingDetails}
-                                    loadingResourceTree={loadingResourceTree}
-                                    handleReloadResourceTree={handleReloadResourceTree}
-                                    isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
-                                />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_VALUES}`}>
-                                <ValuesComponent appId={params.appId} init={_init} />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
-                                <ChartDeploymentHistory
-                                    appId={params.appId}
-                                    isExternal={false}
-                                    isLoadingDetails={loadingDetails}
-                                    isVirtualEnvironment={isVirtualRef.current}
-                                />
-                            </Route>
-                            <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-                        </Switch>
+                        <Routes>
+                            <Route
+                                path={URLS.APP_OVERVIEW}
+                                element={
+                                    <HelmAppOverview
+                                        key={params.appId}
+                                        appId={params.appId}
+                                        setErrorResponseCode={setErrorResponseCode}
+                                    />
+                                }
+                            />
+                            <Route
+                                path={`${URLS.APP_DETAILS}/*`}
+                                element={
+                                    <AppDetailsComponent
+                                        externalLinks={externalLinksAndTools.externalLinks}
+                                        monitoringTools={externalLinksAndTools.monitoringTools}
+                                        isExternalApp={false}
+                                        _init={_init}
+                                        loadingDetails={loadingDetails}
+                                        loadingResourceTree={loadingResourceTree}
+                                        handleReloadResourceTree={handleReloadResourceTree}
+                                        isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
+                                    />
+                                }
+                            />
+
+                            <Route
+                                path={URLS.APP_VALUES}
+                                element={<ValuesComponent appId={params.appId} init={_init} />}
+                            />
+                            <Route
+                                path={URLS.APP_DEPLOYMNENT_HISTORY}
+                                element={
+                                    <ChartDeploymentHistory
+                                        appId={params.appId}
+                                        isExternal={false}
+                                        isLoadingDetails={loadingDetails}
+                                        isVirtualEnvironment={isVirtualRef.current}
+                                    />
+                                }
+                            />
+                            <Route path="*" element={<Navigate to={URLS.APP_DETAILS} replace />} />
+                        </Routes>
                     </Suspense>
                 </>
             )}

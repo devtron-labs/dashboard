@@ -36,10 +36,10 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { ReactComponent as ICChoicesDropdown } from '@Icons/ic-choices-dropdown.svg'
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import ICAdd from '@Icons/ic-add.svg?react'
+import ICChoicesDropdown from '@Icons/ic-choices-dropdown.svg?react'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_OPTIONS_MAP } from './constants'
@@ -243,7 +243,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
 
         if (choices.length) {
             return (
-                <div ref={scrollableRef} className="flexbox-col dc__gap-6 pt-12 min-h-100">
+                <div ref={scrollableRef} className="flexbox-col dc__gap-6 pt-12 min-h-100 dc__overflow-auto">
                     <div className="py-4 px-12">
                         <Button
                             text="Add choice"
@@ -254,7 +254,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                             size={ComponentSizeType.small}
                         />
                     </div>
-                    <div className="flexbox-col dc__gap-6 dc__overflow-auto pb-12 px-12">
+                    <div className="flexbox-col dc__gap-6 pb-12 px-12">
                         {choices.map(({ id, value, error }, index) => (
                             <div key={id} className="flexbox dc__align-items-center dc__gap-4 w-100">
                                 <CustomInput

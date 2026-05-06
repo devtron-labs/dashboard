@@ -19,7 +19,7 @@ import { useFileReader, HiddenInput, importComponentFromFELibrary } from '../com
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import { validator, downloadData } from './utils'
-import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
+import ICUpload from '../../assets/icons/ic-upload-blue.svg?react'
 import { UploadScopedVariablesProps } from './types'
 import { FileReaderStatus, ReadFileAs } from '../common/hooks/types'
 import {

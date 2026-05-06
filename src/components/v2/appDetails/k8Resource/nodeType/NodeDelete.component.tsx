@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     Checkbox,
@@ -25,7 +25,6 @@ import {
     GetResourceScanDetailsPayloadType,
     MODAL_TYPE,
     noop,
-    PopupMenu,
     ResponseType,
     ScanResultDTO,
     SecurityModal,
@@ -35,8 +34,6 @@ import {
     useAsync,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
 
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
@@ -73,8 +70,7 @@ const NodeDeleteComponent = ({
     tabs,
     removeTabByIdentifier,
 }: NodeDeleteComponentType) => {
-    const { path } = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>()
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
@@ -108,10 +104,10 @@ const NodeDeleteComponent = ({
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName)
-        const updatedPath = `${path.substring(0, path.indexOf('/k8s-resources/'))}/${
+        const updatedPath = `${location.pathname.substring(0, location.pathname.indexOf('/k8s-resources/'))}/${
             URLS.APP_DETAILS_K8
         }/${NodeType.Pod.toLowerCase()}/${nodeDetails.name}/${tab.toLowerCase()}`
-        history.push(generatePath(updatedPath, { ...params, tab }))
+        navigate(generatePath(updatedPath, { ...params, tab }))
     }
 
     const deleteResourceAction = async () => {
@@ -129,7 +125,7 @@ const NodeDeleteComponent = ({
                     removeTabByIdentifier(tab.id).then(noop).catch(noop)
                 }
             })
-            appendRefetchDataToUrl(history, location)
+            appendRefetchDataToUrl(navigate, location)
         } catch (err) {
             showError(err)
         } finally {
@@ -204,27 +200,13 @@ const NodeDeleteComponent = ({
 
     return (
         <>
-            <PopupMenu autoClose>
-                <PopupMenu.Button
-                    dataTestId="node-resource-dot-button"
-                    isKebab
-                    rootClassName="dc__h-fit-content flex dc__align-self-center dc__no-border"
-                >
-                    <ICMoreOption
-                        className="icon-dim-20 fcn-6 rotate dc__no-shrink"
-                        style={{ ['--rotateBy' as string]: '90deg' }}
-                    />
-                </PopupMenu.Button>
-                <PopupMenu.Body>
-                    <PodPopup
-                        kind={nodeDetails?.kind}
-                        // eslint-disable-next-line react/jsx-no-bind
-                        describeNode={describeNodeWrapper}
-                        toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
-                        handleShowVulnerabilityModal={handleShowVulnerabilityModal}
-                    />
-                </PopupMenu.Body>
-            </PopupMenu>
+            <PodPopup
+                kind={nodeDetails?.kind}
+                // eslint-disable-next-line react/jsx-no-bind
+                describeNode={describeNodeWrapper}
+                toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
+                handleShowVulnerabilityModal={handleShowVulnerabilityModal}
+            />
 
             {!!manifestPayload && !!getResourceScanDetails && (
                 <SecurityModal

@@ -7,6 +7,7 @@
             "@Components/*": ["./src/components/*"],
             "@Config/*": ["./src/config/*"],
             "@Pages/*": ["./src/Pages/*"],
+            "@PagesDevtron2.0/*": ["./src/Pages-Devtron-2.0/*"],
             "@Services/*": ["./src/services/*"]
         },
         "target": "ES2020",

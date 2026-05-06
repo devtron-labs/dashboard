@@ -9,6 +9,7 @@ import {
     DeploymentNodeType,
     DeploymentStrategyTypeWithDefault,
     DeploymentWindowProfileMetaData,
+    OptionType,
     PipelineIdsVsDeploymentStrategyMap,
     PolicyConsequencesDTO,
     ResponseType,
@@ -75,7 +76,7 @@ export type DeployImageHeaderProps = Pick<
 export interface RuntimeParamsSidebarProps {
     areTabsDisabled: boolean
     currentSidebarTab: CDMaterialSidebarType
-    handleSidebarTabChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    handleSidebarTabChange: (selectedSidebarTab: OptionType<CDMaterialSidebarType>) => void
     runtimeParamsErrorState: RuntimeParamsErrorState
     appName: string
 }

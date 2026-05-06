@@ -16,11 +16,15 @@
 
 import { GroupBase } from 'react-select'
 
-import { OptionType, SelectPickerOptionType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DynamicDataTableHeaderType,
+    ExportToCsvProps,
+    SelectPickerOptionType,
+    UseUrlFiltersProps,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-
-import { AppStatuses, AppStatusesDTO, FluxCDTemplateType } from './AppListType'
+import { AppStatuses, AppStatusesDTO, ExportAppListDataType, FluxCDTemplateType } from './AppListType'
+import { AppListFilterLabelOperatorType, AppListFilterLabelTableHeaderType } from './types'
 
 export const APP_LIST_HEADERS = {
     AppName: 'APP NAME',
@@ -89,11 +93,55 @@ export const APP_STATUS_FILTER_OPTIONS: GroupBase<SelectPickerOptionType>[] = [
     },
 ]
 
-export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
-    label: 'Apps with no project',
-    value: '0',
-}
-
-export const APP_LISTING_URLS = [URLS.DEVTRON_APP_LIST, URLS.HELM_APP_LIST, URLS.ARGO_APP_LIST, URLS.FLUX_APP_LIST]
-
+export const DEVTRON_APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] =
+    'devtron-app-list__filters'
 export const APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] = 'app-list__filters'
+
+export const APPLIST_EXPORT_HEADERS: ExportToCsvProps<keyof ExportAppListDataType>['headers'] = [
+    { label: 'App Name', key: 'appName' },
+    { label: 'App ID', key: 'appId' },
+    { label: 'Project Name', key: 'projectName' },
+    { label: 'Project ID', key: 'projectId' },
+    { label: 'Application Status', key: 'status' },
+    { label: 'Environment Name', key: 'environmentName' },
+    { label: 'Environment ID', key: 'environmentId' },
+    { label: 'Cluster Name', key: 'clusterName' },
+    { label: 'Cluster ID', key: 'clusterId' },
+    { label: 'Namespace Name', key: 'namespace' },
+    { label: 'Namespace ID', key: 'namespaceId' },
+    { label: 'Last Deployed', key: 'lastDeployedTime' },
+]
+
+export const LABEL_SELECTOR_HEADER_CONFIG: DynamicDataTableHeaderType<AppListFilterLabelTableHeaderType>[] = [
+    {
+        label: 'Key',
+        key: AppListFilterLabelTableHeaderType.KEY,
+        width: '200px',
+    },
+    {
+        label: 'Operator',
+        key: AppListFilterLabelTableHeaderType.OPERATOR,
+        width: '140px',
+    },
+    {
+        label: 'Value',
+        key: AppListFilterLabelTableHeaderType.VALUE,
+        width: '1fr',
+    },
+]
+
+export const LABEL_OPERATORS_WITHOUT_VALUE: AppListFilterLabelOperatorType[] = [
+    AppListFilterLabelOperatorType.EXISTS,
+    AppListFilterLabelOperatorType.DOES_NOT_EXIST,
+]
+
+export const DEFAULT_LABEL_SELECTOR_OPERATOR = AppListFilterLabelOperatorType.EQUALS
+
+export const LABEL_OPERATOR_DISPLAY_TEXT: Record<AppListFilterLabelOperatorType, string> = {
+    [AppListFilterLabelOperatorType.EQUALS]: 'equals',
+    [AppListFilterLabelOperatorType.DOES_NOT_EQUAL]: 'not equals',
+    [AppListFilterLabelOperatorType.CONTAINS]: 'contains',
+    [AppListFilterLabelOperatorType.DOES_NOT_CONTAIN]: 'does not contain',
+    [AppListFilterLabelOperatorType.EXISTS]: 'exists',
+    [AppListFilterLabelOperatorType.DOES_NOT_EXIST]: 'does not exist',
+}

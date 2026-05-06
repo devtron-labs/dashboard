@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
+
 import { DeploymentAppTypes, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ArgoCD } from '@Icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '@Icons/helm-app.svg'
-import { ReactComponent as FluxCD } from '@Icons/ic-fluxcd.svg'
+import ArgoCD from '@Icons/argo-cd-app.svg?react'
+import Helm from '@Icons/helm-app.svg?react'
+import FluxCD from '@Icons/ic-fluxcd.svg?react'
 
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
@@ -52,7 +54,7 @@ const getDeploymentTypeIcon = ({ deploymentAppType, iconSize = 32 }: DeploymentT
     }
 }
 
-const DeploymentTypeIcon = ({ deploymentAppType, iconSize }: DeploymentTypeIconProps): JSX.Element => {
+const DeploymentTypeIcon = ({ deploymentAppType, iconSize = 32 }: DeploymentTypeIconProps): JSX.Element => {
     switch (deploymentAppType) {
         case DeploymentAppTypes.MANIFEST_DOWNLOAD:
         case DeploymentAppTypes.MANIFEST_PUSH:
@@ -65,7 +67,9 @@ const DeploymentTypeIcon = ({ deploymentAppType, iconSize }: DeploymentTypeIconP
                     alwaysShowTippyOnHover
                     content={`Deployed Using ${DEPLOYMENT_TYPE_TO_TEXT_MAP[deploymentAppType]}`}
                 >
-                    <div>{getDeploymentTypeIcon({ deploymentAppType, iconSize })}</div>
+                    <div className={`icon-dim-${iconSize}`}>
+                        {getDeploymentTypeIcon({ deploymentAppType, iconSize })}
+                    </div>
                 </Tooltip>
             )
         default:

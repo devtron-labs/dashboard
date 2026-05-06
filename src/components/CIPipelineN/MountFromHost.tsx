@@ -18,9 +18,9 @@ import { useContext } from 'react'
 
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import Add from '../../assets/icons/ic-add.svg?react'
+import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
+import Close from '../../assets/icons/ic-close.svg?react'
 import { MountPathMap } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 

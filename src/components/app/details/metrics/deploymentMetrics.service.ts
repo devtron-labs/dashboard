@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 
-import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartColorKey, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes } from '../../../../config'
+import { BenchmarkType } from './deploymentMetrics.types'
 
-export function getDeploymentMetrics(startTime, endTime, appId: string | number, envId: string | number): Promise<any> {
+export async function getDeploymentMetrics(
+    startTime: string,
+    endTime: string,
+    appId: string | number,
+    envId: string | number,
+): Promise<any> {
     startTime += 'Z'
     endTime += 'Z'
 
-    return get(`${Routes.DEPLOYMENT_METRICS}/?appId=${appId}&envId=${envId}&from=${startTime}&to=${endTime}`).then(
-        (response) => {
-            return {
-                code: response.code,
-                result: {
-                    ...createGraphs(response.result, startTime, endTime),
-                    rows: createDeploymentTableRows(response.result, startTime, endTime),
-                },
-            }
+    const url = getUrlWithSearchParams(Routes.DEPLOYMENT_METRICS, {
+        appId,
+        envId,
+        from: startTime,
+        to: endTime,
+    })
+
+    const response = await get(url)
+    return {
+        ...response,
+        result: {
+            ...createGraphs(response.result, startTime, endTime),
+            rows: createDeploymentTableRows(response.result, startTime, endTime),
         },
-    )
+    }
 }
 
 export function createGraphs(responseResult, startTime: string, endTime: string) {
@@ -139,20 +149,25 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
     const frequencies = frequencyGraph.map((f) => f.frequency)
     const frequencyBenchmark = getFrequencyBenchmark(avgFrequency)
     const maxFrequency = Math.max(...frequencies, frequencyBenchmark.targetValue)
+
+    const meanLeadTime = responseResult.average_lead_time
+    const meanTimeToRecovery = responseResult.average_recovery_time
+    const changeFailureRate = responseResult.change_failure_rate
+    
     const stats = {
-        avgFrequency,
+        avgFrequency: responseResult.average_cycle_time?.toFixed(2) || 0,
         totalDeployments: allDeployments.length,
         failedDeployments: recoveryTimeGraph.length,
         maxFrequency,
         frequencyBenchmark,
-        meanLeadTimeLabel: `${createTimestamp(Math.floor(responseResult.average_lead_time))}`,
-        meanLeadTime: responseResult.average_lead_time,
-        leadTimeBenchmark: getLeadTimeBenchmark(responseResult.average_lead_time),
-        meanRecoveryTime: `${sumRecoveryTime / recoveryTimeGraph.length}`,
-        meanRecoveryTimeLabel: `${createTimestamp(sumRecoveryTime / recoveryTimeGraph.length)}`,
-        recoveryTimeBenchmark: getRecoveryTimeBenchmark(sumRecoveryTime / recoveryTimeGraph.length),
-        failureRate: Math.floor((100 * recoveryTimeGraph.length) / allDeployments.length) || 0,
-        failureRateBenchmark: getFailureRateBenchmark((100 * recoveryTimeGraph.length) / allDeployments.length),
+        meanLeadTimeLabel: createTimestamp(meanLeadTime),
+        meanLeadTime,
+        leadTimeBenchmark: getLeadTimeBenchmark(meanLeadTime),
+        meanRecoveryTime: `${meanTimeToRecovery}`,
+        meanRecoveryTimeLabel: createTimestamp(meanTimeToRecovery),
+        recoveryTimeBenchmark: getRecoveryTimeBenchmark(meanTimeToRecovery),
+        failureRate: changeFailureRate,
+        failureRateBenchmark: getFailureRateBenchmark(changeFailureRate),
     }
 
     return {
@@ -199,21 +214,13 @@ function createDeploymentTableRows(responseResult, startTime: string, endTime: s
     return rows
 }
 
-export interface BenchmarkType {
-    color: string
-    name: string
-    targetName: string
-    targetLabel?: string
-    targetValue: number
-}
-
 export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
     if (frequencyInDays >= 0 && frequencyInDays < 0.06) {
         return {
             name: 'LOW',
             targetName: 'MEDIUM',
             targetValue: 0.06,
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (frequencyInDays >= 0.06 && frequencyInDays < 0.13) {
@@ -221,7 +228,7 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
             name: 'MEDIUM',
             targetName: 'HIGH',
             targetValue: 0.13,
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (frequencyInDays >= 0.13 && frequencyInDays < 1) {
@@ -229,7 +236,7 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 1,
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 
@@ -256,7 +263,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             name: 'LOW',
             targetName: 'MEDIUM',
             targetValue: 46,
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (failureRate <= 46 && failureRate > 30) {
@@ -264,7 +271,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             name: 'MEDIUM',
             targetName: 'HIGH',
             targetValue: 30,
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (failureRate <= 30 && failureRate > 15) {
@@ -272,7 +279,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 15,
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 
@@ -302,7 +309,7 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetName: 'MEDIUM',
             targetValue: 14 * 60 * 24,
             targetLabel: createTimestamp(14 * 60 * 24),
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (leadTimeInDays <= 14 && leadTimeInDays > 7) {
@@ -311,7 +318,7 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetName: 'HIGH',
             targetValue: 7 * 60 * 24,
             targetLabel: createTimestamp(7 * 60 * 24),
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (leadTimeInDays <= 7 && leadTimeInDays > 2) {
@@ -320,7 +327,7 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetName: 'ELITE',
             targetValue: 2 * 60 * 24,
             targetLabel: createTimestamp(2 * 60 * 24),
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 
@@ -341,7 +348,7 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetName: 'MEDIUM',
             targetLabel: createTimestamp(8 * 60),
             targetValue: 8 * 60,
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (recoveryTimeInHours <= 8 && recoveryTimeInHours > 4) {
@@ -350,7 +357,7 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetName: 'HIGH',
             targetValue: 4 * 60,
             targetLabel: createTimestamp(4 * 60),
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (recoveryTimeInHours <= 4 && recoveryTimeInHours > 1) {
@@ -359,7 +366,7 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetName: 'ELITE',
             targetValue: 1 * 60,
             targetLabel: createTimestamp(1 * 60),
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 

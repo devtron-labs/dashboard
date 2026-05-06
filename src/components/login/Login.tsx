@@ -15,10 +15,10 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
-    AnimatePresence,
+    BASE_ROUTES,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -29,12 +29,11 @@ import {
     Icon,
     LoginBanner,
     motion,
+    ROUTER_URLS,
     SSOProviderIcon,
     ToastManager,
     ToastVariantType,
-    URLS as CommonURL,
     useAsync,
-    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -54,16 +53,15 @@ const getTermsAndConditions = importComponentFromFELibrary('getTermsAndCondition
 const Login = () => {
     const [continueUrl, setContinueUrl] = useState('')
 
-    const { searchParams } = useSearchString()
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [ssoListLoading, ssoListResponse] = useAsync(getSSOConfigList, [])
 
     const loginList = ssoListResponse?.result ?? []
 
     const setLoginNavigationURL = () => {
-        let queryParam = searchParams.continue
+        let queryParam = new URLSearchParams(location.search).get('continue') || ''
 
         // 1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
         // If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
@@ -82,16 +80,13 @@ const Login = () => {
         if (queryParam && queryParam.includes('login')) {
             queryParam =
                 window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface
-                    ? URLS.APP
-                    : CommonURL.NETWORK_STATUS_INTERFACE
+                    ? ROUTER_URLS.DEVTRON_APP_LIST
+                    : ROUTER_URLS.NETWORK_STATUS_INTERFACE.ROOT
             const url = `${location.pathname}?continue=${queryParam}`
-            history.push(url)
-        }
-        if (!queryParam) {
-            queryParam = ''
+            navigate(url)
         }
 
-        setContinueUrl(encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
+        setContinueUrl(encodeURIComponent(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
     }
 
     useEffect(() => {
@@ -101,6 +96,14 @@ const Login = () => {
     }, [])
 
     const onClickSSO = () => {
+        if (import.meta.env.VITE_ARGOCD_TOKEN) {
+            document.cookie = `argocd.token=${import.meta.env.VITE_ARGOCD_TOKEN}; path=/`
+
+            navigate(ROUTER_URLS.DEVTRON_APP_LIST, { replace: true })
+
+            return
+        }
+
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('isSSOLogin', 'true')
         }
@@ -145,7 +148,7 @@ const Login = () => {
                     component={ButtonComponentType.link}
                     variant={ButtonVariantType.text}
                     linkProps={{
-                        to: `${URLS.LOGIN_ADMIN}${location.search}`,
+                        to: `${ROUTER_URLS.LOGIN.ADMIN}${location.search}`,
                     }}
                     text="Login as administrator"
                     dataTestId="login-as-admin"
@@ -169,11 +172,11 @@ const Login = () => {
     )
 
     const renderLoginContent = () => (
-        <Switch location={location}>
-            <Route path={URLS.LOGIN_SSO} component={renderSSOLoginPage} />
-            <Route path={URLS.LOGIN_ADMIN} component={renderAdminLoginPage} />
-            <Redirect to={URLS.LOGIN_SSO} />
-        </Switch>
+        <Routes>
+            <Route path={BASE_ROUTES.LOGIN.SSO} element={renderSSOLoginPage()} />
+            <Route path={BASE_ROUTES.LOGIN.ADMIN} element={renderAdminLoginPage()} />
+            <Route path="*" element={<Navigate to={BASE_ROUTES.LOGIN.SSO} replace />} />
+        </Routes>
     )
 
     return (
@@ -194,19 +197,17 @@ const Login = () => {
                 <div className="shadow__overlay dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
-                        <AnimatePresence>
-                            <motion.div
-                                key={location.pathname}
-                                variants={LOGIN_CARD_ANIMATION_VARIANTS}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                                className="dc__overflow-hidden"
-                            >
-                                {renderLoginContent()}
-                            </motion.div>
-                        </AnimatePresence>
+                        <motion.div
+                            key={location.pathname}
+                            variants={LOGIN_CARD_ANIMATION_VARIANTS}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                            className="dc__overflow-hidden"
+                        >
+                            {renderLoginContent()}
+                        </motion.div>
                     </div>
                     {getTermsAndConditions && getTermsAndConditions()}
                 </div>

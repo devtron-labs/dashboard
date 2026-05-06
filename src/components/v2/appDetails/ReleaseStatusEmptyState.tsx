@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
+import InfoIcon from '../../../assets/icons/info-filled.svg?react'
 
 const ReleaseStatusEmptyState = ({ message, description }) => {
     return (

@@ -16,8 +16,8 @@
 
 import React from 'react'
 import { LoadScopedVariablesProps } from './types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
+import Close from '../../assets/icons/ic-close.svg?react'
+import ICError from '../../assets/icons/ic-error-exclamation.svg?react'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { FileReaderStatus } from '../common/hooks/types'
 import { UPLOAD_FAILED_FALLBACK_MESSAGE, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'

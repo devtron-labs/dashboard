@@ -25,7 +25,7 @@ import {
     Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import Error from '../../../../assets/icons/ic-warning.svg?react'
 import { IssuesListingModalType } from './appDetails.type'
 
 const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListingModalType) => {

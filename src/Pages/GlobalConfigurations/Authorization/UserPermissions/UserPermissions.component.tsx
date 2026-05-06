@@ -15,7 +15,7 @@
  */
 
 import { lazy } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
 import {
     ERROR_EMPTY_SCREEN,
@@ -34,7 +34,6 @@ const UserPermissionList = lazy(() => import('./List'))
 const UserPermissionAddEdit = lazy(() => import('./AddEdit'))
 
 const UserPermissions = () => {
-    const { path } = useRouteMatch()
     const [isSSOListLoading, ssoConfig, ssoConfigError, refetchSSOConfig] = useAsync(getSSOConfigList)
 
     if (isSSOListLoading) {
@@ -61,19 +60,18 @@ const UserPermissions = () => {
     }
 
     return (
-        <Switch>
-            <Route path={path} component={UserPermissionList} exact />
+        <Routes>
+            <Route index element={<UserPermissionList />} />
             <Route
-                path={`${path}/:userId`}
-                render={({ match }) => (
+                path=":userId/*"
+                element={
                     <section className="flexbox-col flex-grow-1 h-100 dc__content-center">
-                        {/* Passing the userId as key to re-mount the component on its change */}
-                        <UserPermissionAddEdit key={match.params.userId} />
+                        <UserPermissionAddEdit />
                     </section>
-                )}
+                }
             />
-            <Redirect to={path} />
-        </Switch>
+            <Route path="*" element={<Navigate to="" />} />
+        </Routes>
     )
 }
 

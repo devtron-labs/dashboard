@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ReactComponent as Bitbucket } from '@Icons/git/bitbucket.svg'
-import { ReactComponent as ICGit } from '@Icons/git/git.svg'
-import { ReactComponent as GitHub } from '@Icons/git/github.svg'
-import { ReactComponent as GitLab } from '@Icons/git/gitlab.svg'
-import { ReactComponent as ICAwsCodeCommit } from '@Icons/ic-aws-codecommit.svg'
-import { ReactComponent as Azure } from '@Icons/ic-azure.svg'
+import Bitbucket from '@Icons/git/bitbucket.svg?react'
+import ICGit from '@Icons/git/git.svg?react'
+import GitHub from '@Icons/git/github.svg?react'
+import GitLab from '@Icons/git/gitlab.svg?react'
+import ICAwsCodeCommit from '@Icons/ic-aws-codecommit.svg?react'
+import Azure from '@Icons/ic-azure.svg?react'
 
 import { GitProviderTabIconsProps } from '../../gitOps/gitops.type'
 import { GitProvider } from './constants'

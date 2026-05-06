@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, type JSX } from 'react'
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
 import { InstallationWrapper } from './DevtronStackManager.component'
 import { AboutDevtronViewType } from './DevtronStackManager.type'
 import './AboutDevtronView.scss'
-import { URLS } from '../../../config'
-import { InstallationType, MarkDown, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { InstallationType, MarkDown, ROUTER_URLS, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 
 const AboutDevtronView = ({
     parentRef,
@@ -38,8 +37,8 @@ const AboutDevtronView = ({
     setPreRequisiteChecked,
 }: AboutDevtronViewType) => {
     const aboutDevtronTabs: { name: string; link: string }[] = [
-        { name: 'About', link: URLS.STACK_MANAGER_ABOUT },
-        { name: 'Releases', link: URLS.STACK_MANAGER_ABOUT_RELEASES },
+        { name: 'About', link: ROUTER_URLS.STACK_MANAGER.ABOUT },
+        { name: 'Releases', link: ROUTER_URLS.STACK_MANAGER.ABOUT_RELEASES },
     ]
 
     useEffect(() => {

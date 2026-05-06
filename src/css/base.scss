@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-@import './modal.scss';
-@import './whiteCard.scss';
-@import './workflow.scss';
-@import './icons.scss';
-@import './triggerView.scss';
+@use './modal.scss';
+@use './whiteCard.scss';
+@use './workflow.scss';
+@use './icons.scss';
+@use './triggerView.scss';
 
 :root {
     --modal-index: 20;
@@ -370,12 +370,12 @@ a:focus {
     top: 47px;
 }
 
-.dc__top-49 {
-    top: 49px;
+.dc__top-48 {
+    top: 48px;
 }
 
-.dc__top-77 {
-    top: 77px;
+.dc__top-49 {
+    top: 49px;
 }
 
 .dc__top-80 {
@@ -880,12 +880,6 @@ button.anchor {
     margin-bottom: 20px;
 }
 
-.dc__devtron-tag__container {
-    padding: 6px 0px;
-    display: flex;
-    flex-wrap: wrap;
-}
-
 .dc__devtron-tag {
     border-radius: 4px;
     border: solid 1px var(--N200);
@@ -1360,6 +1354,8 @@ button.anchor {
 
 .dc__devtron-breadcrumb__item__separator {
     margin: 0 4px;
+    font-weight: 400;
+    color: var(--N600);
 }
 
 .multi-chart-summary__values-select.popup-body,
@@ -2223,6 +2219,10 @@ button.anchor {
     max-width: 600px;
 }
 
+.dc__mxw-720 {
+    max-width: 720px;
+}
+
 .dc__mxw-800 {
     max-width: 800px;
 }
@@ -2301,6 +2301,34 @@ button.anchor {
 
 .xterm .xterm-viewport {
     width: initial !important;
+    background-color: var(--terminal-bg) !important;
+}
+
+.xterm {
+
+    .xterm-scrollable-element {
+        >.scrollbar.vertical {
+            width: 12px !important;
+
+            .slider {
+                border-radius: 10px !important; // pill shape
+                background: rgba(255, 255, 255, 0.2) !important;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.4) !important;
+                }
+            }
+        }
+
+        >.scrollbar.horizontal {
+            height: 6px !important;
+
+            .slider {
+                border-radius: 10px !important;
+                background: rgba(255, 255, 255, 0.2) !important;
+            }
+        }
+    }
 }
 
 // Radius
@@ -2376,6 +2404,11 @@ button.anchor {
 .dc__right-radius-4 {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
+}
+
+.dc__right-radius-8 {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 .dc__no-border-radius {
@@ -3238,6 +3271,10 @@ button.anchor {
     height: 2px;
 }
 
+.h-6 {
+    height: 6px;
+}
+
 .h-8 {
     height: 8px;
 }
@@ -3382,6 +3419,10 @@ button.anchor {
     height: 132px;
 }
 
+.h-150 {
+    height: 150px;
+}
+
 .h-166 {
     height: 166px;
 }
@@ -3418,12 +3459,20 @@ button.anchor {
     height: 300px !important;
 }
 
+.h-360 {
+    height: 360px !important;
+}
+
 .h-365 {
     height: 365px !important;
 }
 
 .h-380 {
     height: 380px !important;
+}
+
+.h-400 {
+    height: 400px;
 }
 
 .h-500 {
@@ -3446,6 +3495,10 @@ button.anchor {
 
 .mh-40 {
     min-height: 40px;
+}
+
+.mh-44 {
+    min-height: 44px;
 }
 
 .mh-48 {
@@ -3558,6 +3611,10 @@ button.anchor {
 
 .mxh-300-imp {
     max-height: 300px !important;
+}
+
+.mxh-320 {
+    max-height: 320px;
 }
 
 .mxh-350 {
@@ -4299,35 +4356,6 @@ textarea::placeholder {
     }
 }
 
-.dc__beta-feat-nav {
-    &:not(.active-nav) {
-        .svg-container {
-            position: relative;
-
-            &::after {
-                content: '';
-                width: 12px;
-                height: 12px;
-                background: var(--Y500);
-                position: absolute;
-                border-radius: 50%;
-                top: 6px;
-                right: 6px;
-                border: 2px solid var(--B500);
-            }
-        }
-    }
-
-    .expandable-active-nav {
-        .title-container {
-            &::after {
-                content: '(Beta)';
-                margin-left: 4px;
-            }
-        }
-    }
-}
-
 .radio-group-no-border {
     border: none !important;
     display: inline-block !important;
@@ -4816,21 +4844,6 @@ textarea::placeholder {
 }
 
 .dc__pulsating-dot {
-    width: 10px;
-    height: 10px;
-    border: solid 4px var(--O200);
-    background-color: var(--O500);
-    top: -5px;
-    right: -5px;
-    border-radius: 50%;
-    animation-name: pulse;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-}
-
-// TODO: rename this to `dc__pulsating-dot` and remove existing `dc__pulsating-dot`(above class) when removing `FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE` flag
-.dc__pulsating-dot-new {
     width: 12px;
     height: 12px;
     background-color: var(--O500);
@@ -5023,6 +5036,22 @@ details[open] {
             // TODO: need to create a override for color as well
             background-color: var(--N100);
             transform: unset;
+        }
+
+        &-gap-8 {
+            gap: 16px;
+
+            &> :not(:first-child)::before {
+                top: -8px;
+            }
+        }
+
+        &-gap-12 {
+            gap: 24px;
+
+            &> :not(:first-child)::before {
+                top: -12px;
+            }
         }
     }
 }

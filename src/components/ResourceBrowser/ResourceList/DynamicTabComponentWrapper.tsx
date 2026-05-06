@@ -15,9 +15,14 @@
  */
 
 import { cloneElement, ReactElement, useEffect } from 'react'
-import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
-import { logExceptionToSentry, noop, RESOURCE_BROWSER_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    logExceptionToSentry,
+    noop,
+    ROUTER_URLS,
+    TARGET_K8S_VERSION_SEARCH_KEY,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { DynamicTabComponentWrapperProps } from './types'
@@ -30,10 +35,11 @@ export const DynamicTabComponentWrapper = ({
     addTab,
     getTabById,
     children,
+    path,
 }: DynamicTabComponentWrapperProps) => {
     const { pathname, search } = useLocation()
-    const { path } = useRouteMatch()
     const params = useParams<Record<string, string>>()
+    const searchParams = new URLSearchParams(search)
 
     const tabId = getTabIdForTab(path, getTabId, params)
 
@@ -47,14 +53,15 @@ export const DynamicTabComponentWrapper = ({
             .then((found) => {
                 if (!found && addTab) {
                     const [idPrefix, name, kind] = getTabIdParamsForPath(path, params) || []
-                    const { targetK8sVersion = '' } = params
+                    const targetK8sVersion = searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY) || ''
+
                     addTab({
                         idPrefix,
                         name,
                         kind,
                         type: 'dynamic',
                         url: `${pathname}${search}`,
-                        ...(path === RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE
+                        ...(path === ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.CLUSTER_UPGRADE
                             ? {
                                   dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`,
                                   tippyConfig: getUpgradeCompatibilityTippyConfig({
@@ -78,6 +85,9 @@ export const DynamicTabComponentWrapper = ({
     }, [pathname, search])
 
     return children
-        ? (cloneElement(children, { ...children.props, key: getTabById(tabId)?.componentKey }) as ReactElement)
+        ? (cloneElement(children, {
+              ...(children.props as object),
+              key: getTabById(tabId)?.componentKey,
+          }) as ReactElement)
         : null
 }

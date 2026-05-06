@@ -146,6 +146,7 @@ export const getResourceData = async ({
             headers: [...response.result.headers, ...(isEventList && ExplainWithAIButton ? ['explainButton'] : [])],
             data: data.map((entry, index) => ({
                 ...entry,
+                message: entry.message || '-',
                 id: `${idPrefix}${index}`,
             })),
         }

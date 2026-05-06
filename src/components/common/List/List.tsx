@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg'
+import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg?react'
 import './list.scss'
 
 const Logo = ({ src = '', style = {}, className = '', children = null }) => {

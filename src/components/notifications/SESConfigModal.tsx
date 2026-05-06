@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     ComponentSizeType,
@@ -54,7 +54,7 @@ const SESConfigModal = ({
     onSaveSuccess,
     closeSESConfigModal,
 }: SESConfigModalProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const selectRef = useRef(null)
 
     const [form, setForm] = useState<SESFormType>(getSESDefaultConfiguration(shouldBeDefault))
@@ -144,7 +144,7 @@ const SESConfigModal = ({
             const newParams = {
                 modal: ConfigurationsTabTypes.SES,
             }
-            history.push({
+            navigate({
                 search: new URLSearchParams(newParams).toString(),
             })
         }

@@ -31,7 +31,7 @@ import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
+import Lock from '../../../../assets/icons/ic-locked.svg?react'
 import {
     ChartGroupOptionType,
     ChartKind,
@@ -40,7 +40,7 @@ import {
     CompareWithDropdownProps,
     ValuesForDiffStateType,
 } from './ChartValuesView.type'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
 import {
     GROUPED_OPTION_LABELS,
     ListToTraverseKeys,

@@ -35,10 +35,10 @@ import MultiplePort from './MultiplsPort'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
 import CustomScript from './CustomScript'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import Info from '../../assets/icons/ic-info-filled.svg?react'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const TaskTypeDetailComponent = () => {
@@ -191,16 +191,22 @@ export const TaskTypeDetailComponent = () => {
         setFormData(_formData)
     }
 
-    function handleCreatableBlur(e) {
-        if (e.target.value) {
-            setSelectedContainerImage({
-                label: e.target.value,
-                value: e.target.value,
-            })
-            const _formData = { ...formData }
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail['containerImagePath'] = e.target.value
-            setFormData(_formData)
+    const handleCreateContainerImage = (imageValue: string) => {
+        if (!imageValue) {
+            return
         }
+
+        setSelectedContainerImage({
+            label: imageValue,
+            value: imageValue,
+        })
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail['containerImagePath'] = imageValue
+        setFormData(_formData)
+    }
+
+    function handleCreatableBlur(e) {
+        handleCreateContainerImage(e.target.value)
     }
 
     const handleKeyDown = (event) => {
@@ -230,6 +236,7 @@ export const TaskTypeDetailComponent = () => {
                             classNamePrefix="select"
                             onBlur={handleCreatableBlur}
                             onKeyDown={handleKeyDown}
+                            onCreateOption={handleCreateContainerImage}
                             isCreatable
                             menuListFooterConfig={{
                                 type: 'text',

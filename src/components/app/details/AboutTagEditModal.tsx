@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -33,7 +33,7 @@ import {
     validateTagKeyValue,
     validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
+import Close from '../../../assets/icons/ic-cross.svg?react'
 import { AboutAppInfoModalProps } from '../types'
 import { editApp } from '../service'
 import { importComponentFromFELibrary } from '../../common'

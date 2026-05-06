@@ -18,7 +18,7 @@ import { GenericEmptyState, GenericFilterEmptyState } from '@devtron-labs/devtro
 import { JobListViewType, JOBLIST_EMPTY_STATE_MESSAGING } from './Constants'
 import { JobsEmptyProps } from './Types'
 import nojobs from '../../assets/img/empty-joblist.webp'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import Add from '../../assets/icons/ic-add.svg?react'
 
 export default function JobsEmptyState(props: JobsEmptyProps) {
     const renderNoJobsView = () => {

@@ -19,8 +19,8 @@ import Tippy from '@tippyjs/react'
 
 import { copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ClipboardIcon } from '@Icons/ic-copy.svg'
-import { ReactComponent as Help } from '@Icons/ic-help.svg'
+import ClipboardIcon from '@Icons/ic-copy.svg?react'
+import Help from '@Icons/ic-help.svg?react'
 
 import { ClusterStepModal } from './cluster.type'
 

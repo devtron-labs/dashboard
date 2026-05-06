@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import { generatePath, useHistory } from 'react-router-dom'
+import { generatePath, useLocation } from 'react-router-dom'
 
 import {
     AppThemeType,
     getComponentSpecificThemeClass,
     K8S_EMPTY_GROUP,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ArrowLeft } from '../../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as AllResourcesIcon } from '../../../assets/icons/ic-resource.svg'
-import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
+import ArrowLeft from '../../../assets/icons/ic-arrow-left.svg?react'
+import AllResourcesIcon from '../../../assets/icons/ic-resource.svg?react'
+import TerminalIcon from '../../../assets/icons/ic-terminal-fill.svg?react'
 import { URLS } from '../../../config'
 import { NodeDetailTabs } from '../../app/types'
 import { ClusterMetaDataBarProps } from './types'
 
 import './ClusterMetaData.scss'
+
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 export const ClusterMetaDataBar = ({
     clusterName,
@@ -41,8 +43,7 @@ export const ClusterMetaDataBar = ({
     isVirtualEnvironment,
 }: ClusterMetaDataBarProps) => {
     const { isSuperAdmin } = useMainContext()
-    const history = useHistory()
-    const { pathname } = history.location
+    const { pathname } = useLocation()
     const { appTheme } = useTheme()
     const darkTheme =
         pathname.includes(NodeDetailTabs.MANIFEST.toLowerCase()) ||
@@ -55,7 +56,7 @@ export const ClusterMetaDataBar = ({
         <a
             className={`${darkTheme ? 'icon-stroke__white resource-link__dark-theme text__white' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor`}
             target="_blank"
-            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, { clusterId, group: K8S_EMPTY_GROUP, kind: 'pod' })}?namespace=${namespace}`}
+            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, { clusterId: String(clusterId), group: K8S_EMPTY_GROUP, kind: 'pod' })}?namespace=${namespace}`}
             rel="noreferrer"
         >
             <AllResourcesIcon />
@@ -67,7 +68,7 @@ export const ClusterMetaDataBar = ({
         <a
             className={`${darkTheme ? 'resource-link__dark-theme text__white' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor`}
             target="_blank"
-            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?namespace=${namespace}`}
+            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId: String(clusterId) })}?namespace=${namespace}`}
             rel="noreferrer"
         >
             <TerminalIcon className={`${darkTheme ? 'icon-fill__white' : ''} icon-dim-16`} />

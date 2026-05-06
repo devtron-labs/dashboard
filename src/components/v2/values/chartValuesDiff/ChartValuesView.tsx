@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useReducer, useRef } from 'react'
-import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router-dom'
+import { useState, useEffect, useReducer, useRef, type JSX } from 'react'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
     showError,
@@ -26,7 +26,6 @@ import {
     GenericEmptyState,
     ResponseType,
     DeploymentAppTypes,
-    StyledRadioGroup as RadioGroup,
     useMainContext,
     YAMLStringify,
     usePrompt,
@@ -45,6 +44,11 @@ import {
     handleAnalyticsEvent,
     Icon,
     AnimatedDeployButton,
+    SegmentedControl,
+    ComponentSizeType,
+    SegmentType,
+    ROUTER_URLS,
+    validateAppName,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -91,11 +95,11 @@ import {
     getChartValuesList,
 } from '../common/chartValues.api'
 import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
-import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
+import Arrows from '../../../../assets/icons/ic-arrows-left-right.svg?react'
+import File from '../../../../assets/icons/ic-file-text.svg?react'
+import Close from '../../../../assets/icons/ic-close.svg?react'
+import LinkIcon from '../../../../assets/icons/ic-link.svg?react'
 import {
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,
@@ -135,7 +139,6 @@ import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
-import { validateAppName } from '@Pages/App/CreateAppModal/utils'
 import { DeleteChartDialog } from './DeleteChartDialog'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
@@ -155,8 +158,7 @@ const ChartValuesView = ({
     selectedVersionFromParent,
     init,
 }: ChartValuesViewType) => {
-    const history = useHistory()
-    const { url } = useRouteMatch()
+    const navigate = useNavigate()
     const { chartValueId, presetValueId, envId } = useParams<{
         chartValueId: string
         presetValueId: string
@@ -228,7 +230,10 @@ const ChartValuesView = ({
 
     const enablePrompt = shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty)
 
-    usePrompt({ shouldPrompt: enablePrompt })
+    usePrompt({
+        shouldPrompt: enablePrompt,
+        message: isFormDirty ? UNSAVED_CHANGES_PROMPT_MESSAGE : DEFAULT_ROUTE_PROMPT_MESSAGE,
+    })
 
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)
@@ -685,7 +690,7 @@ const ChartValuesView = ({
                     if (typeof init === 'function') {
                         init()
                     }
-                    history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
+                    navigate(getSavedValuesListURL(installedConfigFromParent.appStoreId))
                     return
                 }
                 // ends
@@ -701,7 +706,7 @@ const ChartValuesView = ({
                     })
 
                     init && init()
-                    history.push(URLS.HELM_APP_LIST)
+                    navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM)
                     return
                 }
 
@@ -822,14 +827,20 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({
-                clusterId: commonState.selectedEnvironment.clusterId,
-                namespace: commonState.selectedEnvironment.namespace,
+            return generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
+                appId: getAppId({
+                    clusterId: commonState.selectedEnvironment.clusterId,
+                    namespace: commonState.selectedEnvironment.namespace,
+                    appName,
+                }),
                 appName,
-            })}/${appName}`
+            })
         }
 
-        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
+        return `${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART, {
+            appId: String(newInstalledAppId),
+            envId: String(newEnvironmentId),
+        })}/${URLS.APP_DETAILS}?newDeployment=true`
     }
 
     const isRequestDataValid = (validatedName: { isValid: boolean; message: string }): boolean => {
@@ -1049,7 +1060,7 @@ const ChartValuesView = ({
                     variant: ToastVariantType.success,
                     description: toastMessage,
                 })
-                history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
+                navigate(getSavedValuesListURL(installedConfigFromParent.appStoreId))
             } else if (isDeployChartView && res?.result) {
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
@@ -1058,7 +1069,7 @@ const ChartValuesView = ({
                     variant: ToastVariantType.success,
                     description: CHART_VALUE_TOAST_MSGS.DeploymentInitiated,
                 })
-                history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
+                navigate(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
                 appDetails?.isVirtualEnvironment &&
                     onClickManifestDownload(
@@ -1072,7 +1083,7 @@ const ChartValuesView = ({
                     description: CHART_VALUE_TOAST_MSGS.UpdateInitiated,
                 })
                 IndexStore.clearAppDetails()
-                history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+                navigate(`../${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
@@ -1121,14 +1132,15 @@ const ChartValuesView = ({
     const redirectToChartValues = async () => {
         const _chartId = commonState.repoChartValue?.chartId || commonState.installedConfig?.appStoreId
         if (_chartId) {
-            history.push(getChartValuesURL(_chartId))
+            navigate(getChartValuesURL(_chartId))
         }
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_NEW_PRESET_VALUE' })
     }
 
-    const handleTabSwitch = (e) => {
-        if (e?.target && e.target.value !== commonState.activeTab) {
-            if (e.target.value === 'manifest') {
+    const handleTabSwitch = (selectedTab: SegmentType) => {
+        const value = selectedTab.value
+        if (commonState.activeTab !== value) {
+            if (value === 'manifest') {
                 handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_MANIFEST' })
                 const validatedName = validateAppName(isCreateValueView ? valueName : appName)
                 if (isCreateValueView && !validatedName.isValid) {
@@ -1168,7 +1180,7 @@ const ChartValuesView = ({
             }
 
             let _payload = {}
-            if (e.target.value === 'gui' && commonState.schemaJson) {
+            if (value === 'gui' && commonState.schemaJson) {
                 getAndUpdateSchemaValue(commonState.modifiedValuesYaml, commonState.schemaJson, dispatch)
             }
 
@@ -1190,7 +1202,7 @@ const ChartValuesView = ({
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
-                    activeTab: e.target.value,
+                    activeTab: value,
                     openReadMe: false,
                     openComparison: false,
                     ..._payload,
@@ -1281,31 +1293,34 @@ const ChartValuesView = ({
                 : ConfigurationType.YAML
 
         return (
-            <RadioGroup
-                className="gui-yaml-switch"
-                name="yaml-mode"
-                initialTab={initialSelectedTab.toLowerCase()}
-                disabled={false}
+            <SegmentedControl
+                segments={[
+                    ...(initialSelectedTab === ConfigurationType.GUI || !!commonState.schemaJson
+                        ? [
+                              {
+                                  label: ConfigurationType.GUI,
+                                  value: ConfigurationType.GUI.toLowerCase(),
+                              },
+                          ]
+                        : []),
+                    {
+                        label: ConfigurationType.YAML,
+                        value: ConfigurationType.YAML.toLowerCase(),
+                        icon: 'ic-pencil',
+                    },
+                    {
+                        label: 'Manifest output',
+                        value: 'manifest',
+                        tooltipProps: {
+                            content: MANIFEST_INFO.InfoText,
+                        },
+                    },
+                ]}
+                value={commonState.activeTab}
                 onChange={handleTabSwitch}
-            >
-                {(initialSelectedTab === ConfigurationType.GUI || !!commonState.schemaJson) && (
-                    <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>
-                        {ConfigurationType.GUI}
-                    </RadioGroup.Radio>
-                )}
-                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()} dataTestId="yaml-radio-button">
-                    <Edit className="icon-dim-12 mr-6" />
-                    {ConfigurationType.YAML}
-                </RadioGroup.Radio>
-                <RadioGroup.Radio
-                    value="manifest"
-                    canSelect={isValidData()}
-                    tippyContent={MANIFEST_INFO.InfoText}
-                    dataTestId="manifest-radio-button"
-                >
-                    Manifest output
-                </RadioGroup.Radio>
-            </RadioGroup>
+                name="chart-values-view-tabs"
+                size={ComponentSizeType.xs}
+            />
         )
     }
 
@@ -1915,10 +1930,6 @@ const ChartValuesView = ({
                         }
                     />
                 )}
-                <Prompt
-                    when={enablePrompt}
-                    message={isFormDirty ? UNSAVED_CHANGES_PROMPT_MESSAGE : DEFAULT_ROUTE_PROMPT_MESSAGE}
-                />
             </div>
         )
     }

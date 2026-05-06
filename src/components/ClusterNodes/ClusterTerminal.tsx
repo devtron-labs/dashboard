@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
-import { generatePath, useHistory, useLocation } from 'react-router-dom'
+import { type JSX, useEffect, useRef, useState } from 'react'
+import { generatePath, useLocation, useNavigate } from 'react-router-dom'
+import { ILink, Terminal } from '@xterm/xterm'
 
 import {
     Checkbox,
@@ -27,8 +28,8 @@ import {
     NodeTaintType,
     noop,
     OptionType,
-    RESOURCE_BROWSER_ROUTES,
     ResponseType,
+    ROUTER_URLS,
     SelectPickerOptionType,
     ServerErrors,
     showError,
@@ -76,6 +77,8 @@ import {
 } from './constants'
 import { ClusterTerminalType } from './types'
 
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
+
 let clusterTimeOut
 
 const ClusterTerminal = ({
@@ -86,15 +89,15 @@ const ClusterTerminal = ({
     taints,
     updateTabUrl,
 }: ClusterTerminalType) => {
-    const { replace } = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const isAdminTerminalVisible =
         location.pathname ===
         generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
-            clusterId,
+            clusterId: String(clusterId),
         })
     const queryParams = new URLSearchParams(location.search)
-    const terminalAccessIdRef = useRef()
+    const terminalAccessIdRef = useRef(null)
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
@@ -137,7 +140,7 @@ const ClusterTerminal = ({
     const [hideManagedFields, setHideManagedFields] = useState<boolean>(true)
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
-    const terminalRef = useRef(null)
+    const terminalRef = useRef<Terminal>(null)
     const prevNodeRef = useRef('')
     const currNodeRef = useRef('')
     const containerRef = useRef(null)
@@ -188,10 +191,10 @@ const ClusterTerminal = ({
         queryParams.set('node', selectedNodeName.value)
         updateTabUrl({
             id: ResourceBrowserTabsId.terminal,
-            url: `${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`,
+            url: `${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId: String(clusterId) })}?${queryParams.toString()}`,
         })
         if (isAdminTerminalVisible) {
-            replace({ search: queryParams.toString() })
+            navigate({ search: queryParams.toString() }, { replace: true })
         }
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
@@ -286,7 +289,7 @@ const ClusterTerminal = ({
                 showError(error)
             }
         }
-        return null
+        return noop
     }, [manifestData, forceDelete])
 
     useEffect(() => {
@@ -669,14 +672,38 @@ const ClusterTerminal = ({
         setHideManagedFields(!hideManagedFields)
     }
 
-    const renderRegisterLinkMatcher = (terminal) => {
-        const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
-        terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
-            if (text === POD_LINKS.POD_EVENTS) {
-                selectEventsTab()
-            } else if (text === POD_LINKS.POD_MANIFEST) {
-                selectManifestTab()
-            }
+    const registerLinkMatcher = (terminal: Terminal) => {
+        const podLinkTexts = [POD_LINKS.POD_MANIFEST, POD_LINKS.POD_EVENTS]
+        terminal.registerLinkProvider({
+            provideLinks: (bufferLineNumber, callback) => {
+                const line = terminal.buffer.active.getLine(bufferLineNumber - 1)
+                if (!line) {
+                    callback(undefined)
+                    return
+                }
+                const lineText = line.translateToString()
+                const links: ILink[] = []
+                podLinkTexts.forEach((linkText) => {
+                    const index = lineText.indexOf(linkText)
+                    if (index !== -1) {
+                        links.push({
+                            range: {
+                                start: { x: index + 1, y: bufferLineNumber },
+                                end: { x: index + 1 + linkText.length, y: bufferLineNumber },
+                            },
+                            text: linkText,
+                            activate: (_event, text) => {
+                                if (text === POD_LINKS.POD_EVENTS) {
+                                    selectEventsTab()
+                                } else if (text === POD_LINKS.POD_MANIFEST) {
+                                    selectManifestTab()
+                                }
+                            },
+                        })
+                    }
+                })
+                callback(links.length > 0 ? links : undefined)
+            },
         })
     }
 
@@ -716,7 +743,7 @@ const ClusterTerminal = ({
             <div
                 className={`${selectedTabIndex === 0 ? 'flexbox-col flex-grow-1 dc__overflow-hidden' : 'dc__hide-section'}`}
             >
-                {connectTerminal && terminalView}
+                {connectTerminal && terminalView()}
             </div>
             {selectedTabIndex === 1 && (
                 <div className="flex-grow-1 flexbox-col dc__overflow-auto">
@@ -1040,7 +1067,7 @@ const ClusterTerminal = ({
                 socketConnection,
                 isTerminalTab: selectedTabIndex === 0 && isAdminTerminalVisible,
                 sessionId,
-                registerLinkMatcher: renderRegisterLinkMatcher,
+                registerLinkMatcher,
             },
         },
         metadata: {

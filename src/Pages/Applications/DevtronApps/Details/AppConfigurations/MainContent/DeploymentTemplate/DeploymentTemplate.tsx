@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Reducer, SyntheticEvent, useEffect, useMemo, useReducer, useRef } from 'react'
+import { SyntheticEvent, useEffect, useMemo, useReducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
-import { Prompt, useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
 
 import {
@@ -28,7 +28,6 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    checkIfPathIsMatching,
     CompareFromApprovalOptionsValuesType,
     ComponentSizeType,
     ConfigHeaderTabType,
@@ -58,6 +57,7 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
     useAsync,
     useMainContext,
     useOneTimePrompt,
@@ -67,12 +67,13 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
+import { CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP } from '@Pages/Shared/ConfigMapSecret/constants'
 
 import BaseConfigurationNavigation from '../BaseConfigurationNavigation'
 import CompareConfigView from '../CompareConfigView'
@@ -89,7 +90,6 @@ import DeploymentTemplateCTA from './DeploymentTemplateCTA'
 import DeploymentTemplateForm from './DeploymentTemplateForm'
 import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
 import {
-    DeploymentTemplateActionState,
     DeploymentTemplateActionType,
     deploymentTemplateReducer,
     getDeploymentTemplateInitialState,
@@ -108,7 +108,6 @@ import {
     ConfigEditorStatesType,
     DeploymentTemplateEditorDataStateType,
     DeploymentTemplateProps,
-    DeploymentTemplateStateType,
     DeploymentTemplateURLConfigType,
     GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
@@ -171,10 +170,9 @@ const DeploymentTemplate = ({
 }: DeploymentTemplateProps) => {
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
-    const location = useLocation()
     const { isSuperAdmin } = useMainContext()
 
-    const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
+    const [state, dispatch] = useReducer(
         deploymentTemplateReducer,
         getDeploymentTemplateInitialState({ isSuperAdmin, isExceptionUser }),
     )
@@ -227,6 +225,7 @@ const DeploymentTemplate = ({
         showExpressEditPromptTooltip,
     } = state
 
+    const initialServiceAbortController = useRef<AbortController>(new AbortController())
     const manifestAbortController = useRef<AbortController>(new AbortController())
     const loadMergedTemplateAbortController = useRef<AbortController>(new AbortController())
     const editorStateBeforeExpressEditView = useRef<DeploymentTemplateEditorDataStateType>(null)
@@ -339,6 +338,7 @@ const DeploymentTemplate = ({
 
     usePrompt({
         shouldPrompt: areChangesPresent,
+        message: UNSAVED_CHANGES_PROMPT_MESSAGE,
     })
 
     const handleUnResolveScopedVariables = () => {
@@ -1061,9 +1061,13 @@ const DeploymentTemplate = ({
         try {
             reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
-                getChartList({ appId, envId, isTemplateView }),
+                getChartList({ appId, envId, isTemplateView, signal: initialServiceAbortController.current?.signal }),
                 getJsonPath && !isTemplateView
-                    ? getJsonPath(appId, envId || BASE_CONFIGURATION_ENV_ID)
+                    ? getJsonPath(
+                          appId,
+                          envId || BASE_CONFIGURATION_ENV_ID,
+                          initialServiceAbortController.current?.signal,
+                      )
                     : Promise.resolve(null),
             ])
 
@@ -1071,6 +1075,13 @@ const DeploymentTemplate = ({
                 throw chartRefsDataResponse.reason
             }
             const chartRefsData = chartRefsDataResponse.value
+
+            if (
+                lockedKeysConfigResponse.status === 'rejected' &&
+                getIsRequestAborted(lockedKeysConfigResponse.reason)
+            ) {
+                throw lockedKeysConfigResponse.reason
+            }
 
             const isLockedConfigResponseValid =
                 lockedKeysConfigResponse.status === 'fulfilled' && !!lockedKeysConfigResponse.value?.result
@@ -1088,19 +1099,26 @@ const DeploymentTemplate = ({
 
             await handleInitializePublishedAndCurrentEditorData(chartRefsData, lockedKeysConfig)
         } catch (error) {
-            showError(error)
-            dispatch({
-                type: DeploymentTemplateActionType.INITIAL_DATA_ERROR,
-                payload: {
-                    error,
-                },
-            })
+            const isReqAbortedError = getIsRequestAborted(error)
+            if (!isReqAbortedError) {
+                showError(error)
+                dispatch({
+                    type: DeploymentTemplateActionType.INITIAL_DATA_ERROR,
+                    payload: {
+                        error,
+                    },
+                })
+            }
         }
     }
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         handleInitialDataLoad()
+
+        return () => {
+            initialServiceAbortController.current.abort()
+        }
     }, [])
 
     useEffect(() => {
@@ -2012,16 +2030,14 @@ const DeploymentTemplate = ({
     const renderValuesView = () => (
         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
-                <div className="app-config-variable-widget-position">
-                    <FloatingVariablesSuggestions
-                        zIndex={100}
-                        appId={appId}
-                        hideObjectVariables={false}
-                        {...(envId && { envId })}
-                        {...(clusterId && { clusterId })}
-                        isTemplateView={isTemplateView}
-                    />
-                </div>
+                <FloatingVariablesSuggestions
+                    appId={appId}
+                    hideObjectVariables={false}
+                    {...(envId && { envId })}
+                    {...(clusterId && { clusterId })}
+                    isTemplateView={isTemplateView}
+                    boundaryGap={CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP}
+                />
             )}
 
             {renderEditorComponent()}
@@ -2254,22 +2270,18 @@ const DeploymentTemplate = ({
     }
 
     return (
-        <>
-            <div className="h-100 bg__tertiary flexbox">
-                {renderDeploymentTemplate()}
+        <div className="h-100 bg__tertiary flexbox">
+            {renderDeploymentTemplate()}
 
-                {DraftComments && showDraftComments && (
-                    <DraftComments
-                        draftId={draftTemplateData?.latestDraft?.draftId}
-                        draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
-                        toggleDraftComments={handleToggleDraftComments}
-                        handleUpdateAreCommentsPresent={handleUpdateAreCommentsPresent}
-                    />
-                )}
-            </div>
-
-            <Prompt when={areChangesPresent} message={checkIfPathIsMatching(location.pathname)} />
-        </>
+            {DraftComments && showDraftComments && (
+                <DraftComments
+                    draftId={draftTemplateData?.latestDraft?.draftId}
+                    draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
+                    toggleDraftComments={handleToggleDraftComments}
+                    handleUpdateAreCommentsPresent={handleUpdateAreCommentsPresent}
+                />
+            )}
+        </div>
     )
 }
 

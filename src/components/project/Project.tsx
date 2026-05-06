@@ -27,7 +27,7 @@ import {
     preventDefault,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
 import folder from '@Icons/ic-folder.svg'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 

@@ -196,47 +196,11 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 
 export type AppDetails = CommonAppDetails
 
-export interface ResourceTree {
-    conditions: any
-    newGenerationReplicaSet: string
-    nodes: Array<Node>
-    podMetadata: Array<PodMetaData>
-    status: string
-    resourcesSyncResult?: Record<string, string>
-}
-
-export interface PodMetaData {
-    containers: Array<string>
-    initContainers: any
-    ephemeralContainers: any
-    isNew: boolean
-    name: string
-    uid: string
-}
-
-export interface Info {
-    value: string
-    name: string
-}
-
 export type Node = CommonNode
 
-export interface Health {
+interface Health {
     status: string
     message?: string
-}
-
-export interface NetworkingInfo {
-    targetLabels: TargetLabels
-}
-
-export interface TargetLabels {
-    targetLabel: TargetLabel
-}
-
-export interface TargetLabel {
-    'app.kubernetes.io/instance': string
-    'app.kubernetes.io/name': string
 }
 
 export type iNode = CommoniNode

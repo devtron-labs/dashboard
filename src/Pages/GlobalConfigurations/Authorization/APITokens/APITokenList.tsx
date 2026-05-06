@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -23,14 +23,15 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    DATE_TIME_FORMATS,
     FeatureTitleWithInfo,
     GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import { HEADER_TEXT, MomentDateFormat } from '../../../../config'
+import Trash from '../../../../assets/icons/ic-delete-interactive.svg?react'
+import Key from '../../../../assets/icons/ic-key-bulb.svg?react'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
+import { HEADER_TEXT } from '../../../../config'
 import { APITokenListType, TokenListType } from './apiToken.type'
 import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
@@ -38,12 +39,12 @@ import DeleteAPITokenModal from './DeleteAPITokenModal'
 import './apiToken.scss'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [selectedToken, setSelectedToken] = useState<TokenListType>()
 
     const handleGenerateRowActionButton = (key: 'create' | 'edit', id?) => {
-        history.push(id ? `${key}/${id}` : key)
+        navigate(id ? `../${key}/${id}` : `../${key}`)
     }
 
     const handleDeleteButton = (_tokenList) => {
@@ -126,7 +127,9 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                   </div>
                                   <div className="dc__ellipsis-right">
                                       {list.lastUsedAt
-                                          ? moment(list.lastUsedAt).format(MomentDateFormat)
+                                          ? moment(list.lastUsedAt).format(
+                                                DATE_TIME_FORMATS.WEEKDAY_WITH_DATE_MONTH_AND_YEAR,
+                                            )
                                           : 'Never used'}
                                   </div>
                                   <div>{list.lastUsedByIp ? list.lastUsedByIp : '-'}</div>
@@ -136,7 +139,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                       ) : (
                                           <>
                                               {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
-                                              {moment(list.expireAtInMs).format(MomentDateFormat)}
+                                              {moment(list.expireAtInMs).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
                                           </>
                                       )}
                                   </div>

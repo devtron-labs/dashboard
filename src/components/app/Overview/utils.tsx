@@ -17,13 +17,16 @@
 import { AppOverviewProps } from '../types'
 import { DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import { IconBaseSizeType, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { IconBaseSizeType, ResourceKindType, SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppIconWithBackground } from '@Config/utils'
+import { OVERVIEW_TABS } from './constants'
+import { importComponentFromFELibrary } from '@Components/common'
 
 const {
     OVERVIEW: { APP_DESCRIPTION, JOB_DESCRIPTION },
 } = EMPTY_STATE_STATUS
 
+const DependencyList = importComponentFromFELibrary('DependencyList')
 export const getResourceKindFromAppType = (appType: AppOverviewProps['appType']) => {
     switch (appType) {
         case 'app':
@@ -60,4 +63,40 @@ export const getAppConfig = (appType: AppOverviewProps['appType'], iconSize: Ico
                 defaultDescription: APP_DESCRIPTION,
             }
     }
+}
+
+export const BASE_OVERVIEW_SEGMENTED_CONTROL_SEGMENTS: SegmentedControlProps['segments'] = [
+    {
+        label: 'About',
+        value: OVERVIEW_TABS.ABOUT,
+    },
+]
+
+export const DEVTRON_APPS_OVERVIEW_CONTROL_SEGMENTS: SegmentedControlProps['segments'] = [
+    {
+        label: 'Environments',
+        value: OVERVIEW_TABS.ENVIRONMENTS,
+    },
+    ...(DependencyList
+        ? [
+              {
+                  label: 'Dependencies',
+                  value: OVERVIEW_TABS.DEPENDENCIES,
+              },
+          ]
+        : []),
+]
+
+export const getOverviewSegmentControlOptions = (appType: AppOverviewProps['appType']) => {
+    if (appType === 'job') {
+        return [
+            ...BASE_OVERVIEW_SEGMENTED_CONTROL_SEGMENTS,
+            {
+                label: 'Job Pipelines',
+                value: OVERVIEW_TABS.JOB_PIPELINES,
+            },
+        ]
+    }
+
+    return [...BASE_OVERVIEW_SEGMENTED_CONTROL_SEGMENTS, ...DEVTRON_APPS_OVERVIEW_CONTROL_SEGMENTS]
 }

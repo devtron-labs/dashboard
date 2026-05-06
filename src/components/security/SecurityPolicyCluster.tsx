@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { RouteComponentProps, NavLink } from 'react-router-dom'
+import { Component } from 'react'
+import { NavLink, useParams } from 'react-router-dom'
 import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getClusterListMinNoAuth } from './security.service'
 import { ViewType } from '../../config'
 import { SecurityPolicyClusterState } from './security.types'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 
-export class SecurityPolicyCluster extends Component<
-    RouteComponentProps<{ clusterId: string }>,
+class SecurityPolicyCluster extends Component<
+    { params: ReturnType< typeof useParams<{ clusterId: string }>>},
     SecurityPolicyClusterState
 > {
     constructor(props) {
@@ -61,7 +60,6 @@ export class SecurityPolicyCluster extends Component<
     }
 
     renderList() {
-        const { url } = this.props.match
         if (this.state.view === ViewType.LOADING) {
             return (
                 <div style={{ height: '280px' }}>
@@ -99,7 +97,7 @@ export class SecurityPolicyCluster extends Component<
                                     data-testid="select-cluster-from-list"
                                 >
                                     <td className="pl-20 pr-20 pt-16 pb-16">
-                                        <NavLink to={`${url}/${cluster.id}`}>{cluster.name}</NavLink>
+                                        <NavLink to={`${cluster.id}`}>{cluster.name}</NavLink>
                                     </td>
                                 </tr>
                             )
@@ -110,12 +108,12 @@ export class SecurityPolicyCluster extends Component<
     }
 
     renderContent() {
-        if (this.props.match.params.clusterId) {
+        if (this.props.params.clusterId) {
             return (
                 <SecurityPolicyEdit
                     level="cluster"
-                    id={Number(`${this.props.match.params.clusterId}`)}
-                    key={`${this.props.match.params.clusterId}`}
+                    id={Number(`${this.props.params.clusterId}`)}
+                    key={`${this.props.params.clusterId}`}
                 />
             )
         }
@@ -139,3 +137,11 @@ export class SecurityPolicyCluster extends Component<
         return <>{this.renderContent()}</>
     }
 }
+
+const SecurityPolicyClusterWithParams = () => {
+    const params = useParams<{ clusterId: string }>()
+
+    return <SecurityPolicyCluster params={params} />
+}
+
+export default SecurityPolicyClusterWithParams

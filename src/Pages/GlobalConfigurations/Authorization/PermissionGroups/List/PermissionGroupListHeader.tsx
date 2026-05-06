@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { useRouteMatch } from 'react-router-dom'
-
 import {
     Button,
     ButtonComponentType,
@@ -25,7 +23,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
+import PlusIcon from '../../../../../assets/icons/ic-add.svg?react'
 import ExportPermissionGroupsToCsv from './ExportPermissionGroupsToCsv'
 import { PermissionGroupListHeaderProps } from './types'
 
@@ -35,7 +33,6 @@ const PermissionGroupListHeader = ({
     initialSearchText,
     getDataToExport,
 }: PermissionGroupListHeaderProps) => {
-    const { path } = useRouteMatch()
     const { isSuperAdmin } = useMainContext()
 
     return (
@@ -63,7 +60,7 @@ const PermissionGroupListHeader = ({
                     startIcon={<PlusIcon />}
                     component={ButtonComponentType.link}
                     linkProps={{
-                        to: `${path}/add`,
+                        to: 'add',
                     }}
                     size={ComponentSizeType.medium}
                     dataTestId="add-permission-group-link"

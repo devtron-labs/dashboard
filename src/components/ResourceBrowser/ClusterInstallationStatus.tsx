@@ -15,9 +15,15 @@
  */
 
 import { useMemo } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { useAsync, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BreadcrumbText,
+    getInfrastructureManagementBreadcrumb,
+    ROUTER_URLS,
+    useAsync,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -35,7 +41,7 @@ const ClusterInstallationStatusDialog = importComponentFromFELibrary(
 )
 
 const ClusterInstallationStatus = () => {
-    const { replace } = useHistory()
+    const navigate = useNavigate()
     const { installationId } = useParams<{ installationId: string }>()
 
     const [isClusterListLoading, clusterList] = useAsync(() => getClusterListing(true))
@@ -52,17 +58,18 @@ const ClusterInstallationStatus = () => {
             isClusterInCreationPhase ? String(clusterInstallationId) : value,
         )
 
-        replace({
-            pathname: path,
+        navigate(path, {
+            replace: true,
         })
     }
 
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.RESOURCE_BROWSER.INSTALLATION_CLUSTER,
         {
             alias: {
+                ...getInfrastructureManagementBreadcrumb(),
                 'resource-browser': {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
-                    linked: true,
+                    component: <BreadcrumbText heading="Resource Browser" isActive />,
                 },
                 'installation-cluster': {
                     component: (
@@ -85,7 +92,10 @@ const ClusterInstallationStatus = () => {
 
     return (
         <div className="flexbox-col flex-grow-1">
-            <ResourcePageHeader breadcrumbs={breadcrumbs} />
+            <ResourcePageHeader
+                breadcrumbs={breadcrumbs}
+                breadcrumbsPathPattern={ROUTER_URLS.RESOURCE_BROWSER.INSTALLATION_CLUSTER}
+            />
             <div className="flex flex-grow-1">
                 <ClusterInstallationStatusDialog key={installationId} installationId={installationId} />
             </div>

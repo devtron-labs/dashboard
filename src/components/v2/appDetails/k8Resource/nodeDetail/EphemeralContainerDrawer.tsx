@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import {
     CustomInput,
     Drawer,
@@ -29,6 +30,8 @@ import {
     SelectPicker,
     ComponentSizeType,
     MODES,
+    SegmentedControl,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -38,11 +41,9 @@ import {
     EphemeralFormAdvancedType,
     ResponsePayload,
 } from './nodeDetail.type'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import Close from '../../../assets/icons/ic-close.svg?react'
 import {
     convertToOptionsList,
-    DevtronSwitch as Switch,
-    DevtronSwitchItem as SwitchItem,
     filterImageList,
 } from '../../../../common'
 import sampleConfig from './sampleConfig.json'
@@ -52,7 +53,7 @@ import { getHostURLConfiguration } from '../../../../../services/service'
 import { CLUSTER_TERMINAL_MESSAGING, IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
-import { DEFAULT_CONTAINER_NAME, SwitchItemValues, EDITOR_VIEW } from '../../../../../config'
+import { DEFAULT_CONTAINER_NAME, SwitchItemValues, EDITOR_VIEW, SWITCH_ITEM_SEGMENTS } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
@@ -72,7 +73,7 @@ const EphemeralContainerDrawer = ({
     selectedNamespaceByClickingPod,
     handleSuccess,
 }: EphemeralContainerDrawerType) => {
-    const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
+    const [switchManifest, setSwitchManifest] = useState<SwitchItemValues>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
     const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
@@ -171,8 +172,8 @@ const EphemeralContainerDrawer = ({
         })
     }
 
-    const handleManifestTabChange = (e): void => {
-        setSwitchManifest(e.target.value)
+    const handleManifestTabChange = (segment: SegmentType<SwitchItemValues>) => {
+        setSwitchManifest(segment.value)
     }
 
     const renderEphemeralHeaders = (): JSX.Element => {
@@ -382,12 +383,12 @@ const EphemeralContainerDrawer = ({
                     height="fitToParent"
                 >
                     <CodeEditor.Header>
-                        <div className="flex dc__content-space">
-                            <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
-                                <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
-                                <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
-                            </Switch>
-                        </div>
+                        <SegmentedControl<SwitchItemValues>
+                            segments={SWITCH_ITEM_SEGMENTS}
+                            value={switchManifest}
+                            onChange={handleManifestTabChange}
+                            name="ephemeral-manifest-editor-tab"
+                        />
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>
@@ -411,7 +412,7 @@ const EphemeralContainerDrawer = ({
                 ...payload,
                 basicData: {
                     containerName: ephemeralForm.basicData.containerName,
-                    image: ephemeralForm.basicData?.image ? ephemeralForm.basicData.image : imageListOption[0].value,
+                    image: ephemeralForm.basicData?.image ? ephemeralForm.basicData.image : imageListOption[0]?.value,
                     targetContainerName: ephemeralForm.basicData?.targetContainerName
                         ? ephemeralForm.basicData.targetContainerName
                         : targetContainerOption[0]?.value || '',

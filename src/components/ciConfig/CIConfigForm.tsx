@@ -41,7 +41,7 @@ import {
     SelectedGitMaterialType,
     SourceConfigType,
 } from './types'
-import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
+import NextIcon from '../../assets/icons/ic-arrow-right.svg?react'
 import CIConfigDiffView from './CIConfigDiffView'
 import CIContainerRegistryConfig from './CIContainerRegistryConfig'
 import CIDockerFileConfig from './CIDockerFileConfig'
@@ -96,12 +96,12 @@ export default function CIConfigForm({
     const getParsedCurrentMaterial = (material?): SelectedGitMaterialType => {
         const _currentMaterial = {
             ...material,
-            name: material?.name || currentMaterial.name,
-            url: material?.url || currentMaterial.url,
-            value: material?.id || currentMaterial.id,
-            label: material?.name || currentMaterial.name,
-            startIcon: getGitProviderIcon(material?.url || currentMaterial.url),
-            checkoutPath: material?.checkoutPath || currentMaterial.checkoutPath,
+            name: material?.name || currentMaterial?.name,
+            url: material?.url || currentMaterial?.url,
+            value: material?.id || currentMaterial?.id,
+            label: material?.name || currentMaterial?.name,
+            startIcon: getGitProviderIcon(material?.url || currentMaterial?.url),
+            checkoutPath: material?.checkoutPath || currentMaterial?.checkoutPath,
         }
         return _currentMaterial
     }

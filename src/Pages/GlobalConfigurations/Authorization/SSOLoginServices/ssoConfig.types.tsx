@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
+import { RouterV5Props } from '@devtron-labs/devtron-fe-common-lib'
+
+import { SwitchItemValues } from '@Config/constants'
 
 import { GlobalConfiguration } from '../../../../components/globalConfigurations/types'
 import { SSOProvider } from './constants'
@@ -44,7 +46,7 @@ export interface SSOLoginState {
     saveLoading: boolean
     sso: string // lowercase
     lastActiveSSO: undefined | SSOLogin
-    configMap: string
+    configMap: SwitchItemValues
     showToggling: boolean
     ssoConfig: SSOConfigType
     isError: {
@@ -63,7 +65,7 @@ export interface SSOLoginState {
     showAutoAssignConfirmationModal: boolean
 }
 
-export interface SSOLoginProps extends RouteComponentProps<unknown> {
+export interface SSOLoginProps extends RouterV5Props<unknown> {
     globalConfiguration: GlobalConfiguration
 }
 

@@ -15,21 +15,22 @@
  */
 
 import React from 'react'
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import { LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Timer } from '../../../../assets/icons/ic-clock-counterclockwise.svg'
+import Timer from '@Icons/ic-clock-counterclockwise.svg?react'
+
 import { URLS } from '../../../../config'
 import { LastUpdatedCardType } from './appDetails.type'
 import { validateMomentDate } from './utils'
 
 const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: LastUpdatedCardType) => {
-    const history = useHistory()
-    const match = useRouteMatch()
+    const navigate = useNavigate()
 
     const goToDeploymentHistory = () => {
-        history.push(`${match.url.split(URLS.APP_DETAILS)[0]}${URLS.APP_DEPLOYMNENT_HISTORY}`)
+        const url = generatePath(`../${URLS.APP_DEPLOYMNENT_HISTORY}`)
+        navigate(url)
     }
 
     if (cardLoading) {
@@ -39,7 +40,7 @@ const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: La
     return (
         <div
             data-testid="last-updated-card"
-            className="app-details-info-card cursor flex left bg__primary br-8 mr-12 lh-20 w-200"
+            className="app-details-info-card cursor flex left bg__primary br-8 lh-20 w-200"
             onClick={goToDeploymentHistory}
         >
             <div className="app-details-info-card__top-container flex">

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-.helm-delete-wrapper {
-    padding: 0 4px !important;
-}
-
 .helm-delete-pop-up {
     position: fixed;
     left: unset;

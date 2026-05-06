@@ -29,8 +29,8 @@ import {
     LoadingCard,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
+import ICHelpOutline from '../../../../assets/icons/ic-help-outline.svg?react'
+import ErrorIcon from '../../../../assets/icons/ic-warning.svg?react'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
 import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 import { TOAST_INFO } from '../../../../config/constantMessaging'

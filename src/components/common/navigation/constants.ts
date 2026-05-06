@@ -31,6 +31,8 @@ const COMMON_ENV_FALLBACK: Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'>
     canFetchHelmAppStatus: false,
     devtronManagedLicensingEnabled: false,
     isResourceRecommendationEnabled: false,
+    featureAskDevtronExpert: false,
+    forceDockerfileScan: false,
 }
 
 export const ENVIRONMENT_DATA_FALLBACK: EnvironmentDataValuesDTO = {

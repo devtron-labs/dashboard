@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import {
-    get,
-    getUrlWithSearchParams,
-    post,
-    put,
-    stringComparatorBySortOrder,
-    trash,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterProviderDetailsType, get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
 
-import { Cluster, ClusterDTO, DeleteClusterPayload, Environment, EnvironmentDTO } from './cluster.type'
+import { DeleteClusterPayload, EditClusterDrawerMetadataType, Environment, EnvironmentDTO } from './cluster.type'
+
+const getCloudProviderForCluster: (clusterId: number) => Promise<ClusterProviderDetailsType> =
+    importComponentFromFELibrary('getCloudProviderForCluster', null, 'function')
 
 export const getEnvironmentList = async (): Promise<Environment[]> => {
     const { result } = await get<EnvironmentDTO[]>(Routes.ENVIRONMENT)
@@ -50,39 +47,6 @@ export const getEnvironmentList = async (): Promise<Environment[]> => {
             namespace: namespace ?? '',
         }),
     )
-}
-
-export const getClusterList = async (clusterIds?: number[]): Promise<Cluster[]> => {
-    const url = getUrlWithSearchParams(Routes.CLUSTER, { clusterId: clusterIds?.join() })
-    const { result } = await get<ClusterDTO[]>(url)
-
-    // eslint-disable-next-line camelcase
-    return (result ?? [])
-        .map(
-            ({
-                id,
-                server_url: serverUrl,
-                cluster_name: clusterName,
-                prometheus_url: prometheusUrl,
-                category,
-                clusterStatus,
-                ...res
-            }) => ({
-                ...res,
-                clusterId: id,
-                serverUrl,
-                clusterName,
-                prometheusUrl,
-                category: category?.name
-                    ? {
-                          label: category.name,
-                          value: category.id,
-                      }
-                    : null,
-                status: clusterStatus,
-            }),
-        )
-        .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
 }
 
 export function getCluster(id: number) {
@@ -125,4 +89,21 @@ export function deleteCluster(payload: DeleteClusterPayload): Promise<any> {
 
 export function deleteEnvironment(request): Promise<any> {
     return trash(Routes.ENVIRONMENT, request)
+}
+
+export const getEditClusterDrawerMetadata = async (clusterId: number): Promise<EditClusterDrawerMetadataType> => {
+    if (!clusterId) {
+        return { prometheusAuthResult: null, clusterProvider: null, costModuleSchema: null }
+    }
+
+    const [prometheusAuthResult, clusterProviderDetails] = await Promise.all([
+        getCluster(+clusterId),
+        getCloudProviderForCluster ? getCloudProviderForCluster(+clusterId) : null,
+    ])
+
+    return {
+        prometheusAuthResult,
+        clusterProvider: clusterProviderDetails?.clusterProvider,
+        costModuleSchema: clusterProviderDetails?.costModuleSchema,
+    }
 }

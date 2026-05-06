@@ -27,8 +27,8 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
+import AddIcon from '../../../../../../assets/icons/ic-add.svg?react'
+import Close from '../../../../../../assets/icons/ic-close.svg?react'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8sPermissionActionType } from './constants'
 import K8sListItemCard from './K8sListItemCard'

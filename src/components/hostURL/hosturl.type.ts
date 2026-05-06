@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
 import { HostURLConfig } from '../../services/service.types'
 
 export interface HostURLConfigState {
@@ -26,7 +24,7 @@ export interface HostURLConfigState {
     isHostUrlValid: boolean
 }
 
-export interface HostURLConfigProps extends RouteComponentProps<{}> {
+export interface HostURLConfigProps {
     isSuperAdmin: boolean
     refreshGlobalConfig: () => void
     handleChecklistUpdate: (hostUrl) => void

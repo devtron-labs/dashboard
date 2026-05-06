@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react'
 import { generatePath, Link } from 'react-router-dom'
 
 import {
@@ -28,12 +29,12 @@ import {
     ConditionalWrap,
     Icon,
     InstallationClusterStatus,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     Tooltip,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import Error from '@Icons/ic-error-exclamation.svg?react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 
@@ -51,34 +52,28 @@ const ClusterListRow = ({
     onChangeShowKubeConfigModal,
     setSelectedClusterName,
 }: ClusterListRowTypes) => {
-    const { selectedIdentifiers: bulkSelectionState, getSelectedIdentifiersCount } =
+    const { selectedIdentifiers, getSelectedIdentifiersCount } =
         useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
-    const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
     const identifierCount = getSelectedIdentifiersCount()
+    const isIdentifierSelected = Boolean(selectedIdentifiers[clusterData.name])
 
-    const hideDataOnLoad = (value) => {
-        if (clusterListLoader) {
-            return null
-        }
-        return value
-    }
-
-    const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
-        if (!status) {
-            return null
-        }
-
-        return <ClusterStatus status={status} errorInNodeListing={errorInNodeListing} />
-    }
-
-    const isIdentifierSelected = !!bulkSelectionState[clusterData.name]
-
-    const isClusterInCreationPhase = !!clusterData.installationId && !clusterData.id
-
-    const clusterLinkURL = getClusterChangeRedirectionUrl(
-        isClusterInCreationPhase,
-        String(isClusterInCreationPhase ? clusterData.installationId : clusterData.id),
+    const errorCount = useMemo(
+        () => (clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0),
+        [clusterData.nodeErrors],
     )
+
+    const isClusterInCreationPhase = Boolean(clusterData.installationId && !clusterData.id)
+
+    const clusterLinkURL = useMemo(
+        () =>
+            getClusterChangeRedirectionUrl(
+                isClusterInCreationPhase,
+                String(isClusterInCreationPhase ? clusterData.installationId : clusterData.id),
+            ),
+        [isClusterInCreationPhase, clusterData.installationId, clusterData.id],
+    )
+
+    const hideDataOnLoad = (value) => (clusterListLoader ? null : value)
 
     const wrapWithLinkForClusterName = (children) => (
         <Link className="dc__ellipsis-right dc__no-decor" to={clusterLinkURL}>
@@ -88,9 +83,8 @@ const ClusterListRow = ({
 
     return (
         <div
-            key={`cluster-${clusterData.id}`}
             className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 py-12 px-20 hover-class dc__visible-hover dc__visible-hover--parent
-                 ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
+            ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
         >
             {KubeConfigRowCheckbox && <KubeConfigRowCheckbox clusterData={clusterData} />}
             {!isIdentifierSelected && identifierCount === 0 && (
@@ -119,15 +113,17 @@ const ClusterListRow = ({
                                     variant={ButtonVariantType.borderLess}
                                     component={ButtonComponentType.link}
                                     linkProps={{
-                                        to: generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
-                                            clusterId: clusterData.id,
+                                        to: generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.TERMINAL, {
+                                            clusterId: String(clusterData.id),
                                         }),
                                     }}
                                 />
                             )}
+
                             {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
                                 <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
                             )}
+
                             {KubeConfigButton && (
                                 <KubeConfigButton
                                     onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
@@ -139,8 +135,18 @@ const ClusterListRow = ({
                     </div>
                 )}
             </div>
-            <div className="child-shimmer-loading">{hideDataOnLoad(renderClusterStatus(clusterData))}</div>
-            {}
+
+            <div className="child-shimmer-loading">
+                {hideDataOnLoad(
+                    clusterData.status && (
+                        <ClusterStatus
+                            status={clusterData.status}
+                            errorInNodeListing={clusterData.errorInNodeListing}
+                        />
+                    ),
+                )}
+            </div>
+
             <div className="child-shimmer-loading">
                 {hideDataOnLoad(clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION)}
             </div>

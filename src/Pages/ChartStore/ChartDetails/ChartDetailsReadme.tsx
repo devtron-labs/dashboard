@@ -24,11 +24,10 @@ import {
     getSelectPickerOptionByValue,
     Icon,
     MarkDown,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { URLS } from '@Config/routes'
 
 import { ChartDetailsReadmeProps } from './types'
 
@@ -81,7 +80,11 @@ export const ChartDetailsReadme = ({
                 isLoading={isLoading}
                 error={error}
                 progressingProps={{ size: 24 }}
-                errorScreenManagerProps={{ code: error?.code, reload, redirectURL: URLS.CHARTS_DISCOVER }}
+                errorScreenManagerProps={{
+                    code: error?.code,
+                    reload,
+                    redirectURL: ROUTER_URLS.CHART_STORE,
+                }}
             >
                 {!readme ? (
                     <GenericEmptyState

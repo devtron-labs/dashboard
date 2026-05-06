@@ -21,6 +21,7 @@ import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
 import { JobCIPipeline, JobList, JobsMasterFilters } from './Types'
 import { JOB_STATUS_OPTIONS } from './Constants'
+import { ExportJobDataType } from './JobList/types'
 
 export const getJobs = async (request, options?: APIOptions) => {
     const response = (await post(Routes.JOB_LIST, request, options)) as JobList
@@ -71,7 +72,8 @@ export const getAppListDataToExport = (
     payloadParsedFromUrl: Record<string, any>,
     searchString: string,
     jobCount: number,
-) => {
+    signal: AbortSignal,
+): Promise<ExportJobDataType[]> => {
     return getJobs(
         typeof payloadParsedFromUrl === 'object'
             ? {
@@ -91,6 +93,7 @@ export const getAppListDataToExport = (
                   offset: 0,
                   size: jobCount,
               },
+            { signal }
     ).then(({ result }) => {
         if (result.jobContainers) {
             const _jobDataList = []

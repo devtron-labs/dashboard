@@ -36,6 +36,7 @@ import {
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { EnvConfigType } from '../../AppConfig.types'
 import { ConfigToolbarProps } from '../types'
 
 export enum ConfigEditorStatesType {
@@ -71,7 +72,7 @@ export type DeploymentTemplateProps = Required<Pick<AppConfigProps, 'isTemplateV
     isApprovalPolicyConfigured: boolean
     isExceptionUser: boolean
     reloadEnvironments: () => void
-    fetchEnvConfig: (environmentId: number) => void
+    fetchEnvConfig: (environmentId: number, callback?: (res: EnvConfigType) => void) => void
 } & (BaseDeploymentTemplateProps | EnvOverrideDeploymentTemplateProps)
 
 export interface DeploymentTemplateChartStateType {

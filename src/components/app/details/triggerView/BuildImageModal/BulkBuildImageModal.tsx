@@ -1,12 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
-import { Prompt } from 'react-router-dom'
 
 import {
     API_STATUS_CODES,
     ApiQueuingWithBatch,
     Button,
     ComponentSizeType,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DocLink,
     Drawer,
     GenericEmptyState,
@@ -477,8 +475,6 @@ const BulkBuildImageModal = ({
                     {!showWebhookModal && !isLoadingAppInfoMap && renderFooter()}
                 </div>
             </div>
-
-            <Prompt when={isBuildTriggerLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
         </Drawer>
     )
 }

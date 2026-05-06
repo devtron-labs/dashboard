@@ -15,16 +15,20 @@
  */
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import dayjs from 'dayjs'
 import moment from 'moment'
 
 import {
+    API_STATUS_CODES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ClipboardButton,
     CustomInput,
+    DATE_TIME_FORMATS,
+    ErrorScreenManager,
     Icon,
     InfoBlock,
     noop,
@@ -37,7 +41,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../../components/common'
-import { MomentDateFormat } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
@@ -84,12 +87,11 @@ const EditAPIToken = ({
         setObservabilityPermission,
     } = usePermissionConfiguration()
 
-    const history = useHistory()
-    const match = useRouteMatch()
+    const navigate = useNavigate()
     const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
 
-    const [customDate, setCustomDate] = useState<number>(undefined)
+    const [customDate, setCustomDate] = useState<Date>(dayjs().add(1, 'day').toDate())
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
@@ -98,7 +100,7 @@ const EditAPIToken = ({
     }
 
     const redirectToTokenList = () => {
-        history.push(`${match.path.split('edit')[0]}list`)
+        navigate('../list')
     }
 
     const handleDeleteButton = () => {
@@ -186,7 +188,7 @@ const EditAPIToken = ({
         return (
             <span className="fw-6 cn-9">
                 This token {isTokenExpired(editData.expireAtInMs) ? 'expired' : 'expires'} on&nbsp;
-                {moment(editData.expireAtInMs).format(MomentDateFormat)}.
+                {moment(editData.expireAtInMs).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}.
             </span>
         )
     }
@@ -304,11 +306,14 @@ const EditAPIToken = ({
 
 const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
     const params = useParams<{ id: string }>()
-    const [isLoading, setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(false)
     const [userData, setUserData] = useState<User>()
     const [editData, setEditData] = useState<EditDataType>()
 
+    const tokenDetails = useMemo(() => tokenList?.find((list) => list.id === +params.id), [tokenList, params.id])
+
     const getUserData = async (userId: number) => {
+        setLoading(true)
         try {
             const user = await getUserById(userId)
             setUserData(user)
@@ -320,15 +325,16 @@ const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
     }
 
     useEffect(() => {
-        // eslint-disable-next-line radix
-        const _editData = tokenList?.find((list) => list.id === parseInt(params.id))
-
-        if (_editData) {
-            setEditData(_editData)
+        if (tokenDetails) {
+            setEditData(tokenDetails)
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getUserData(_editData.userId)
+            getUserData(tokenDetails.userId)
         }
     }, [])
+
+    if (!tokenDetails) {
+        return <ErrorScreenManager code={API_STATUS_CODES.NOT_FOUND} />
+    }
 
     return (
         <PermissionConfigurationFormProvider data={userData} showStatus={showStatus}>

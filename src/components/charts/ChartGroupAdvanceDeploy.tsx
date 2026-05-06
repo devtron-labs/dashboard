@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { useParams, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
+import { useState } from 'react'
+import { useParams, useNavigate, useLocation, generatePath } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -26,6 +26,11 @@ import {
     PageHeader,
     ToastVariantType,
     ToastManager,
+    getInfrastructureManagementBreadcrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
+    ROUTER_URLS,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import MultiChartSummary from './MultiChartSummary'
@@ -33,13 +38,15 @@ import useChartGroup from './useChartGroup'
 import { Select, mapByKey } from '../common'
 import AdvancedConfig from './AdvancedConfig'
 import { deployChartGroup } from './charts.service'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
+import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
 
+const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId/deploy`
+
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams<{ groupId: string }>()
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -60,9 +67,15 @@ export default function ChartGroupAdvanceDeploy() {
     } = useChartGroup(groupId)
     const projectsMap = mapByKey(state.projects, 'id')
     const { breadcrumbs } = useBreadcrumb(
+        pagePathPattern,
         {
             alias: {
-                'chart-store': 'Chart store',
+                ...getInfrastructureManagementBreadcrumb(),
+                'chart-store': null,
+                discover: {
+                    component: <BreadcrumbText heading="Chart Store" />,
+                    linked: true,
+                },
                 group: 'Chart groups',
                 ':groupId': {
                     component: state.name,
@@ -75,15 +88,22 @@ export default function ChartGroupAdvanceDeploy() {
     )
     const isLeavingPageAllowed = state.charts.every((chart) => chart.valuesYaml === chart.originalValuesYaml)
 
-    const { url, path } = useRouteMatch()
     const [deployed, setDeployed] = useState(false)
+
+    usePrompt({
+        shouldPrompt: !deployed && !isLeavingPageAllowed,
+        message: 'Your changes will be lost. Do you want to leave without deploying?',
+    })
 
     useEffectAfterMount(() => {
         if (state.loading) {
             return
         }
         if (state.charts.length === 0) {
-            push(url.replace('/deploy', ''))
+            navigate(
+                generatePath(`${ROUTER_URLS.CHART_STORE}/group/${groupId}`, { groupId }),
+                { replace: true },
+            )
         }
         configureChart((location?.state as any)?.configureChartIndex || 0)
     }, [state.loading])
@@ -98,29 +118,12 @@ export default function ChartGroupAdvanceDeploy() {
         }
     }, [state.chartGroupDetailsLoading])
 
-    const reloadCallback = useCallback(
-        (event) => {
-            event.preventDefault()
-            if (!isLeavingPageAllowed) {
-                event.returnValue = 'Your changes will be lost. Do you want to leave without deploying?'
-            }
-        },
-        [isLeavingPageAllowed],
-    )
-
-    useEffect(() => {
-        window.addEventListener('beforeunload', reloadCallback)
-        return () => {
-            window.removeEventListener('beforeunload', reloadCallback)
-        }
-    }, [reloadCallback])
-
     useEffectAfterMount(() => {
         // whenver deployment succeeds, go to deployments list
         if (!deployed) {
             return
         }
-        push(url.replace('/deploy', ''))
+        navigate(generatePath(`${ROUTER_URLS.CHART_STORE}/group/${groupId}`, { groupId }))
     }, [deployed])
 
     async function handleInstall() {
@@ -153,21 +156,15 @@ export default function ChartGroupAdvanceDeploy() {
     const renderAdvanceBreadcrumb = () => {
         return (
             <div className="flex left">
-                <BreadCrumb sep="/" breadcrumbs={breadcrumbs.slice(1)} />
+                <BreadCrumb sep="/" breadcrumbs={breadcrumbs} path={pagePathPattern} />
             </div>
         )
     }
 
     return (
         <div className="chart-group-advance-deploy-page">
-            <PageHeader isBreadcrumbs breadCrumbs={renderAdvanceBreadcrumb} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderAdvanceBreadcrumb} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
             <div className="chart-group-advance-deploy__body flexbox-col dc__overflow-auto">
-                {!deployed && (
-                    <Prompt
-                        when={!isLeavingPageAllowed}
-                        message="Your changes will be lost. Do you want to leave without deploying?"
-                    />
-                )}
                 {state.loading && <Progressing pageLoader />}
                 {!state.loading && (
                     <div className="deploy-and-details-view summary-show">

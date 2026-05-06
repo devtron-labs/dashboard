@@ -418,6 +418,7 @@ export const getVariableDataTableRows = ({
             fileMountDir,
             fileReferenceId,
             defaultValue,
+            refVariableStepIndex,
             id,
         }) => {
             const isInputVariableRequired = type === PluginVariableType.INPUT && !allowEmptyValue
@@ -462,7 +463,8 @@ export const getVariableDataTableRows = ({
                                   value: refVariableName || value,
                                   refVariableName,
                                   refVariableStage,
-                                  variableType: refVariableName ? RefVariableType.GLOBAL : RefVariableType.NEW,
+                                  refVariableStepIndex,
+                                  variableType,
                                   format,
                               }
                             : null,

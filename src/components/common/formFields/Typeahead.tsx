@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component, createContext } from 'react'
+import React, { Component, createContext, PropsWithChildren } from 'react'
 import dropdown from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { isArrayEqual } from '../helpers/utils'
 // id must exist
@@ -41,7 +41,7 @@ export interface TypeaheadProps {
 }
 
 export class Typeahead extends Component<
-    TypeaheadProps,
+    PropsWithChildren<TypeaheadProps>,
     { defaultSelections: any[]; search: string; showMenu: boolean; selections: any[] }
 > {
     constructor(props) {
@@ -199,7 +199,9 @@ export class Typeahead extends Component<
     }
 }
 
-export class TypeaheadOption extends Component<{ dataTestIdMenuList?: string; item: any; id: number | string }> {
+export class TypeaheadOption extends Component<
+    PropsWithChildren<{ dataTestIdMenuList?: string; item: any; id: number | string }>
+> {
     render() {
         return (
             <TypeaheadContext.Consumer>
@@ -225,7 +227,7 @@ export class TypeaheadOption extends Component<{ dataTestIdMenuList?: string; it
     }
 }
 
-export class TypeaheadErrorOption extends Component<{ className?: string }> {
+export class TypeaheadErrorOption extends Component<PropsWithChildren<{ className?: string }>> {
     render() {
         return (
             <TypeaheadContext.Consumer>

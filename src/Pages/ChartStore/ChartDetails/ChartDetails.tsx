@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 /*
  * Copyright (c) 2024. Devtron Inc.
  *
@@ -15,13 +16,17 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router-dom'
 
 import {
     APIResponseHandler,
     BreadCrumb,
+    ComponentSizeType,
+    DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
+    ROUTER_URLS,
     SegmentedControl,
     SegmentedControlProps,
     SelectPickerProps,
@@ -46,15 +51,14 @@ import { chartSelectorFilterOption, chartSelectorFormatOptionLabel, parseChartDe
 
 import './chartDetails.scss'
 
-export const ChartDetails = () => {
+const pathPattern = `${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId`
+
+const ChartDetails = () => {
     // STATES
     const [selectedChartVersion, setSelectedChartVersion] = useState<number>(null)
 
     // HOOKS
-    const {
-        path,
-        params: { chartId },
-    } = useRouteMatch<ChartDetailsRouteParams>()
+    const { chartId } = useParams<ChartDetailsRouteParams>()
 
     const { tab, updateSearchParams } = useUrlFilters<void, ChartDetailsSearchParams>({
         parseSearchParams: parseChartDetailsSearchParams,
@@ -81,9 +85,14 @@ export const ChartDetails = () => {
 
     // CONFIGS
     const { breadcrumbs } = useBreadcrumb(
+        pathPattern,
         {
             alias: {
-                ':chartSegment?': null,
+                ...getInfrastructureManagementBreadcrumb(),
+                discover: {
+                    component: 'Chart Store',
+                    linked: true,
+                },
                 ':chartId': {
                     component: (
                         <ChartSelector
@@ -94,6 +103,7 @@ export const ChartDetails = () => {
                             apiPrimaryKey="id"
                             formatOptionLabel={chartSelectorFormatOptionLabel}
                             filterOption={chartSelectorFilterOption}
+                            path={`${ROUTER_URLS.CHART_STORE}${URLS.CHART}/:chartId`}
                         />
                     ),
                     linked: false,
@@ -133,7 +143,7 @@ export const ChartDetails = () => {
     }
 
     // RENDERERS
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={pathPattern} />
 
     const renderSegments = () => {
         switch (tab) {
@@ -161,7 +171,7 @@ export const ChartDetails = () => {
 
     return (
         <div className="flex-grow-1 flexbox-col bg__secondary dc__overflow-hidden">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
 
             <APIResponseHandler
                 isLoading={isFetchingChartVersions}
@@ -169,32 +179,45 @@ export const ChartDetails = () => {
                 error={chartVersionsErr}
                 errorScreenManagerProps={{ code: chartVersionsErr?.code, reload: reloadChartVersions }}
             >
-                <Switch>
-                    <Route path={`${path}${URLS.DEPLOY_CHART}/:presetValueId?`}>
-                        <ChartDetailsDeploy
-                            chartDetails={chartDetails}
-                            chartVersions={chartVersions}
-                            selectedChartVersion={selectedChartVersion}
-                        />
-                    </Route>
-                    <Route>
-                        <div className="chart-details flex-grow-1 p-20 dc__overflow-auto">
-                            <div className="flexbox-col dc__gap-16 mw-none">
-                                <div id={CHART_DETAILS_PORTAL_CONTAINER_ID} className="flex dc__content-space">
-                                    <SegmentedControl
-                                        name="chart-details-segmented-control"
-                                        segments={CHART_DETAILS_SEGMENTS}
-                                        value={tab}
-                                        onChange={handleSegmentChange}
-                                    />
+                <Routes>
+                    <Route
+                        path={`${URLS.DEPLOY_CHART}/:presetValueId?`}
+                        element={
+                            <ChartDetailsDeploy
+                                chartDetails={chartDetails}
+                                chartVersions={chartVersions}
+                                selectedChartVersion={selectedChartVersion}
+                            />
+                        }
+                    />
+                    <Route
+                        index
+                        element={
+                            <div className="chart-details flex-grow-1 p-20 dc__overflow-auto">
+                                <div className="flexbox-col dc__gap-16 mw-none">
+                                    <div id={CHART_DETAILS_PORTAL_CONTAINER_ID} className="flex dc__content-space">
+                                        <SegmentedControl
+                                            name="chart-details-segmented-control"
+                                            segments={CHART_DETAILS_SEGMENTS}
+                                            value={tab}
+                                            onChange={handleSegmentChange}
+                                            size={ComponentSizeType.xs}
+                                        />
+                                    </div>
+                                    {renderSegments()}
                                 </div>
-                                {renderSegments()}
+                                <ChartDetailsAbout isLoading={isChartDetailsLoading} chartDetails={chartDetails} />
                             </div>
-                            <ChartDetailsAbout isLoading={isChartDetailsLoading} chartDetails={chartDetails} />
-                        </div>
-                    </Route>
-                </Switch>
+                        }
+                    />
+                </Routes>
             </APIResponseHandler>
         </div>
     )
+}
+
+export const ChartDetailsWithKey = () => {
+    const { chartId } = useParams<ChartDetailsRouteParams>()
+
+    return <ChartDetails key={`chart-details-${chartId}`} />
 }

@@ -18,9 +18,10 @@ import {
     SelectPickerOptionType,
     ToastManager,
     ROUTES as COMMON_ROUTES,
-    EnvResourceType,
     RegistryCredentialsType,
     DOCUMENTATION,
+    SegmentType,
+    PATTERNS as COMMON_PATTERNS,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -57,7 +58,6 @@ export const Routes = {
     V2_CD_CONFIG: 'app/v2/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
-    WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_TRIGGER_STATUS: 'app/vsm',
 
@@ -104,7 +104,6 @@ export const Routes = {
     PROJECT_LIST_MIN: 'team/autocomplete',
     TEAM_USER: 'team/app/user', // TODO: PROJECT_USER
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
-    DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
     GITOPS_DEVTRON_APP: `app/template/gitops/config`,
     GITOPS_VALIDATE: 'gitops/validate',
@@ -114,7 +113,6 @@ export const Routes = {
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
     CHART_LIST_SUBPATH_MIN: 'list/min',
-    GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
     DB_MIGRATION_CONFIGURATION: 'config/db-migration-config',
@@ -129,9 +127,6 @@ export const Routes = {
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
-    USER_PERMISSIONS: 'users',
-    PERMISSION_GROUPS: 'groups',
-    SSO_LOGIN_SERVICES: 'login-service',
     API_TOKEN: 'api-token',
     API_TOKEN_WEBHOOK: 'api-token/webhook',
 
@@ -209,7 +204,6 @@ export const Routes = {
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
-    CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     TAINTS_EDIT: 'k8s/capacity/node/taints/edit',
@@ -259,10 +253,31 @@ export const Routes = {
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
+    SECURITY_SCAN_VULNERABILITIES: 'security/scan/vulnerabilities',
     CONFIG_MANIFEST: 'config/manifest',
     USER_RESOURCE_OPTIONS: 'user/resource/options',
     HEALTH: 'health',
     ENV_DATA_SOURCE_NAME: 'env/data-source-name',
+    VULNERABILITY_SUMMARY: 'security/scan/summary',
+
+    // Infrastructure management overview
+    INFRA_OVERVIEW: 'overview/infra',
+    INFRA_OVERVIEW_REFRESH: 'overview/infra/refresh',
+    OVERVIEW_NODE_LIST: 'overview/infra/node-list',
+    // Application management overview
+    APPS_OVERVIEW: 'overview/apps-overview',
+    WORKFLOW_OVERVIEW: 'overview/workflow-overview',
+    DORA_METRICS: 'overview/dora-metrics',
+    BUILD_DEPLOYMENT_ACTIVITY: 'overview/build-deployment-activity',
+    BUILD_DEPLOYMENT_ACTIVITY_DETAILED: 'overview/build-deployment-activity/detailed',
+    PIPELINE_INSIGHTS: 'overview/pipeline-insights',
+    // Security Overview
+    SECURITY_OVERVIEW: 'overview/security/security-glance',
+    SECURITY_SEVERITY_INSIGHTS: 'overview/security/severity-insights',
+    SECURITY_VULNERABILITY_TREND: 'overview/security/vulnerability-trend',
+    SECURITY_DEPLOYMENT_STATUS: 'overview/security/deployment-security-status',
+    SECURITY_BLOCKED_DEPLOYMENTS_TREND: 'overview/security/blocked-deployments-trend',
+    AUTHORISATION_GLOBAL_CONFIG: 'authorisation/global-config',
 }
 
 export enum ViewType {
@@ -287,7 +302,7 @@ export const AppConfigStatus = {
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
-    APP_NAME: '^[a-z][a-z0-9-]*[a-z0-9]$/*',
+    APP_NAME: COMMON_PATTERNS.APP_NAME,
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     APP_LABEL_CHIP: /^.+:.+$/,
     VARIABLE: /^[A-z0-9-_]+$/,
@@ -311,7 +326,6 @@ export const repoType = {
 }
 
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
-export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 export const MomentInvalidDate = 'Invalid date'
 
@@ -346,11 +360,6 @@ export const HEADER_TEXT: Record<string, { title: string; description: string; d
         title: 'Notifications',
         description: 'Manage notifications for build and deployment pipelines.',
         docLink: "GLOBAL_CONFIG_NOTIFICATION"
-    },
-    PROJECTS: {
-        title: 'Projects',
-        description: "Manage your organization's projects.",
-        docLink: "GLOBAL_CONFIG_PROJECT"
     },
     SSO_LOGIN: {
         title: 'SSO Login Service',
@@ -441,6 +450,7 @@ export interface RegistryPayloadType {
     awsAccessKeyId?: string
     awsSecretAccessKey?: string
     awsRegion?: string
+    assumeRoleArn?: string
     username?: string
     password?: string
     connection?: string
@@ -486,11 +496,6 @@ export const RegistryType = {
 export const RegistryTypeName = {
     OCI_PRIVATE: 'Private Registry',
     OCI_PUBLIC: 'Public Registry',
-}
-
-export const AppCreationType = {
-    Blank: 'BLANK',
-    Existing: 'EXISTING',
 }
 
 export const BuildStageVariable = {
@@ -801,10 +806,15 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  */
 export const SELECT_ALL_VALUE = '*'
 
-export const SwitchItemValues = {
-    Sample: 'sample',
-    Configuration: 'configuration',
+export enum SwitchItemValues {
+    Sample = 'sample',
+    Configuration = 'configuration',
 }
+
+export const SWITCH_ITEM_SEGMENTS: SegmentType<SwitchItemValues>[] = [
+    { label: 'Sample', value: SwitchItemValues.Sample },
+    { label: 'Configuration', value: SwitchItemValues.Configuration },
+]
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
@@ -822,4 +832,4 @@ export const EDITOR_VIEW = {
 
 export const DEVTRON_IFRAME_PRIMARY: string = 'devtronIframePrimary'
 
-export const DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE = `:resourceType(${Object.values(EnvResourceType).join('|')})`
+export const DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE = ':resourceType'

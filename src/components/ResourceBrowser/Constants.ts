@@ -18,10 +18,10 @@ import {
     K8S_EMPTY_GROUP as K8S_EMPTY_GROUP_FROM_COMMON,
     NO_MATCHING_RESULT,
     Nodes,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg?react'
 
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
@@ -275,8 +275,6 @@ export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
 
-export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion'
-
 export const NODE_LIST_HEADERS = [
     'name',
     'status',
@@ -375,12 +373,20 @@ export const ResourceBrowserGAEvent = {
     RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED: 'RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED',
 }
 
+const CLUSTER_DETAILS_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
+
 export const ResourceBrowserRouteToTabIdMap: Partial<
-    Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
+    Record<
+        (typeof ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS)[keyof typeof ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS],
+        ResourceBrowserTabsId | string
+    >
 > = {
-    '/resource-browser/:clusterId/:kind/:group': ResourceBrowserTabsId.k8s_Resources,
-    '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
-    '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
-    '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
-    '/resource-browser/:clusterId/resource-recommender': RESOURCE_RECOMMENDER_TAB_ID,
+    [CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_LIST]: ResourceBrowserTabsId.k8s_Resources,
+    [CLUSTER_DETAILS_ROUTES.OVERVIEW]: ResourceBrowserTabsId.cluster_overview,
+    [CLUSTER_DETAILS_ROUTES.MONITORING_DASHBOARD]: MONITORING_DASHBOARD_TAB_ID,
+    [CLUSTER_DETAILS_ROUTES.TERMINAL]: ResourceBrowserTabsId.terminal,
+    [CLUSTER_DETAILS_ROUTES.RESOURCE_RECOMMENDER]: RESOURCE_RECOMMENDER_TAB_ID,
 }
+
+export const KUBERNETES_RESOURCE_BROWSER_DESCRIPTION =
+    'The Resource Browser gives you a powerful, centralized view of all your Kubernetes objects across clusters. Effortlessly troubleshoot and manage resources with features like live manifest editing, log viewing, and direct resource creation or deletion—right from the UI. All in one place, across all your cluster'

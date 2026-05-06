@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { showError, Progressing, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Success } from '../../../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as Error } from '../../../../../assets/icons/ic-error-exclamation.svg'
+import Close from '../../../../../assets/icons/ic-close.svg?react'
+import Success from '../../../../../assets/icons/appstatus/healthy.svg?react'
+import Error from '../../../../../assets/icons/ic-error-exclamation.svg?react'
 import { RotatePodsRequest, RotatePodsResponseTargetObject, RotateResponseModalProps } from './rotatePodsModal.type'
 import '../scaleWorkloads/scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
-import { ReactComponent as RetryIcon } from '../../../../../assets/icons/ic-arrow-clockwise.svg'
+import RetryIcon from '../../../../../assets/icons/ic-arrow-clockwise.svg?react'
 import { RotatePods } from './rotatePodsModal.service'
 import { POD_ROTATION_INITIATED } from '../../../../../config'
-import { ReactComponent as BackIcon } from '../../../../../assets/icons/ic-arrow-backward.svg'
+import BackIcon from '../../../../../assets/icons/ic-arrow-backward.svg?react'
 
 export default function RotateResponseModal({
     onClose,

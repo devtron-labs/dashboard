@@ -15,6 +15,7 @@
  */
 
 import {
+    APIOptions,
     AppConfigProps,
     BaseURLParams,
     get,
@@ -179,10 +180,12 @@ export async function getBaseDeploymentTemplate(
 export const getChartList = async ({
     appId,
     envId,
+    signal,
     isTemplateView,
 }: Pick<BaseURLParams, 'appId' | 'envId'> &
+    Pick<APIOptions, 'signal'> &
     Required<Pick<AppConfigProps, 'isTemplateView'>>): Promise<GetChartListReturnType> => {
-    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId, isTemplateView)
+    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId, isTemplateView, signal)
 
     const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
     // Sorting chartRefs by version

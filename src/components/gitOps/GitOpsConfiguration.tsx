@@ -15,7 +15,6 @@
  */
 
 import React, { Component, ComponentType, Fragment, SyntheticEvent } from 'react'
-import { withRouter } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -58,8 +57,7 @@ import {
 import '../login/login.scss'
 import './gitops.scss'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as ICInfoFilled } from '../../assets/icons/ic-info-filled.svg'
+import Error from '../../assets/icons/ic-warning.svg?react'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import {
     GitHost,
@@ -1452,4 +1450,4 @@ const withIsFeatureUserDefinedGitOpsEnabled = (Component: ComponentType) => (pro
     return <Component isFeatureUserDefinedGitOpsEnabled={isFeatureUserDefinedGitOpsEnabled} {...props} />
 }
 
-export default withIsFeatureUserDefinedGitOpsEnabled(withRouter(GitOpsConfiguration))
+export default withIsFeatureUserDefinedGitOpsEnabled(GitOpsConfiguration)

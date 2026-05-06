@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { FunctionComponent, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { FunctionComponent, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 
 import {
     AboutDevtronDialog,
     animate,
     AppThemeType,
+    BASE_ROUTES,
     BaseConfirmationModal,
     ConfirmationModalProvider,
+    CostVisibilityRenderProviderProps,
     DEVTRON_BASE_MAIN_ID,
     DevtronLicenseInfo,
     DevtronProgressing,
@@ -64,10 +66,14 @@ import {
     ViewIsPipelineRBACConfiguredRadioTabs,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { Navigation } from '@Components/Navigation'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
-import { Configurations } from '@Pages/Releases/Detail'
+import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EditClusterDrawerContent'
+import { ReleaseConfigurations } from '@Pages/Releases/Detail'
+import { ApplicationManagementRouter } from '@PagesDevtron2.0/ApplicationManagement'
+import { InfrastructureManagementRouter } from '@PagesDevtron2.0/InfrastructureManagement'
 
-import { SERVER_MODE, URLS, ViewType } from '../../../config'
+import { SERVER_MODE, ViewType } from '../../../config'
 import {
     dashboardLoggedIn,
     getAppListMin,
@@ -89,23 +95,18 @@ import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { SidePanel } from '../SidePanel'
-import { AppContext, ErrorBoundary } from '..'
+import { ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-import Navigation from './Navigation'
-import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
+import { AutomationAndEnablementRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
+import UpgradeToOSSPlusDialog from './UpgradeToOSSPlusDialog'
 
-const Charts = lazy(() => import('../../charts/Charts'))
+import './navigation.scss'
 
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
-const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
-const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
-const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
@@ -114,6 +115,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     'function',
 )
 const Observability = importComponentFromFELibrary('Observability', null, 'function')
+const AskDevtronButton = importComponentFromFELibrary('AskDevtronButton', null, 'function')
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -125,13 +127,19 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
+const DataProtectionManagementRouter = importComponentFromFELibrary('DataProtectionManagementRouter', null, 'function')
+const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
+    importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
+const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter', null, 'function')
+const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
+const AIChatProvider = importComponentFromFELibrary('AIChatProvider', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const match = useRouteMatch()
-    const navRouteRef = useRef<HTMLDivElement>()
+    const navRouteRef = useRef<HTMLDivElement | null>(null)
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
+    const [debugAgentContext, setDebugAgentContext] = useState<MainContext['debugAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -154,14 +162,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     }
     // We use this to determine if we can show resource recommender, since we do not allow users to feed prometheus url if grafana module is not installed
     const [isGrafanaModuleInstalled, setIsGrafanaModuleInstalled] = useState(false)
-    const [environmentId, setEnvironmentId] = useState(null)
-    const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
 
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
 
     const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
+    const [showUpgradeToOSSPlusDialog, setShowUpgradeToOSSPlusDialog] =
+        useState<MainContext['showUpgradeToOSSPlusDialog']>(false)
 
     const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({
         state: 'closed',
@@ -178,6 +186,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 ease: 'easeOut',
                 delay: 0.6,
             })
+
             return controls.stop
         }
         return noop
@@ -234,17 +243,17 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     _sseConnection.onmessage = (message) => {
                         const externalAppData: HelmAppListResponse = JSON.parse(message.data)
                         if (externalAppData.result?.helmApps?.length <= 1) {
-                            history.push(`/${URLS.GETTING_STARTED}`)
+                            navigate(`/${BASE_ROUTES.GETTING_STARTED}`)
                         }
                         _sseConnection.close()
                     }
                     _sseConnection.onerror = () => {
                         _sseConnection.close()
-                        history.push(`/${URLS.GETTING_STARTED}`)
+                        navigate(`/${BASE_ROUTES.GETTING_STARTED}`)
                     }
                 }
             } catch {
-                history.push(`/${URLS.GETTING_STARTED}`)
+                navigate(`/${BASE_ROUTES.GETTING_STARTED}`)
             }
         }
     }
@@ -265,6 +274,19 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = () => {
         handleThemeSwitcherDialogVisibilityChange(false)
     }
+
+    useEffect(() => {
+        if (email && window._env_.GA_ENABLED) {
+            let { pathname } = location
+            pathname = pathname.replace(/\d/g, '')
+            pathname = pathname.replace(/\/\//g, '/')
+            ReactGA.send({ hitType: 'pageview', page: pathname })
+            ReactGA.event({
+                category: `Page ${pathname}`,
+                action: 'First Land',
+            })
+        }
+    }, [location.pathname])
 
     useEffect(() => {
         if (!email) {
@@ -291,16 +313,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     ReactGA.event({
                         category: `Page ${path}`,
                         action: 'First Land',
-                    })
-                    history.listen((locationObj) => {
-                        let { pathname } = locationObj
-                        pathname = pathname.replace(/\d/g, '')
-                        pathname = pathname.replace(/\/\//g, '/')
-                        ReactGA.send({ hitType: 'pageview', page: pathname })
-                        ReactGA.event({
-                            category: `Page ${pathname}`,
-                            action: 'First Land',
-                        })
                     })
                 })
             }
@@ -330,6 +342,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
 
     const getServerMode = async (): Promise<SERVER_MODE> => {
         const response = await getAllModulesInfo()
+
+        Object.values(response).forEach(({ name, status }) => {
+            installedModuleMap.current = {
+                ...installedModuleMap.current,
+                [name]: status === ModuleStatus.INSTALLED,
+            }
+        })
+
         const isFullMode =
             response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED
         return isFullMode ? SERVER_MODE.FULL : SERVER_MODE.EA_ONLY
@@ -392,6 +412,9 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     result.devtronManagedLicensingEnabled ?? ENVIRONMENT_DATA_FALLBACK.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled:
                     result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
+                featureAskDevtronExpert:
+                    result.featureAskDevtronExpert ?? ENVIRONMENT_DATA_FALLBACK.featureAskDevtronExpert,
+                forceDockerfileScan: result.forceDockerfileScan ?? ENVIRONMENT_DATA_FALLBACK.forceDockerfileScan,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -421,6 +444,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
+                featureAskDevtronExpert: environmentDataResponse.featureAskDevtronExpert,
+                forceDockerfileScan: environmentDataResponse.forceDockerfileScan,
             })
 
             setServerMode(serverModeResponse)
@@ -456,12 +481,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         }
     }, [location.pathname])
 
-    const getIsOnboardingPage = () => {
-        const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
-        return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
-    }
-
-    const isOnboardingPage = getIsOnboardingPage()
+    const isOnboardingPage = location.pathname.includes(BASE_ROUTES.GETTING_STARTED)
 
     const gridTemplateColumns = !isOnboardingPage
         ? useMotionTemplate`${navBarWidth}px 1fr ${asideWidth}px`
@@ -489,6 +509,29 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         )
     }
 
+    const renderClusterForm: CostVisibilityRenderProviderProps['renderClusterForm'] = ({
+        clusterDetails,
+        handleClose,
+        handleSuccess,
+    }) => (
+        <EditClusterDrawerContent
+            handleModalClose={handleClose}
+            sshTunnelConfig={clusterDetails.sshTunnelConfig}
+            clusterId={clusterDetails.clusterId}
+            clusterName={clusterDetails.clusterName}
+            serverUrl={clusterDetails.serverUrl}
+            reload={handleSuccess}
+            prometheusUrl={clusterDetails.prometheusUrl}
+            proxyUrl={clusterDetails.proxyUrl}
+            toConnectWithSSHTunnel={clusterDetails.toConnectWithSSHTunnel}
+            isProd={clusterDetails.isProd}
+            installationId={clusterDetails.installationId}
+            category={clusterDetails.category}
+            insecureSkipTlsVerify={clusterDetails.insecureSkipTlsVerify}
+            costModuleConfig={clusterDetails.costModuleConfig}
+        />
+    )
+
     const renderMainContent = () => {
         if (pageState === ViewType.LOADING) {
             return <DevtronProgressing parentClasses="flex flex-grow-1 bg__primary" classes="icon-dim-80" />
@@ -512,123 +555,144 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                             }
                         >
                             <ErrorBoundary>
-                                <Switch>
-                                    <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
-                                        <ResourceBrowser />
-                                    </Route>
+                                <Routes>
                                     <Route
-                                        path={CommonURLS.GLOBAL_CONFIG}
-                                        render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
+                                        key={BASE_ROUTES.GLOBAL_CONFIG.ROOT}
+                                        path={`${BASE_ROUTES.GLOBAL_CONFIG.ROOT}/*`}
+                                        element={<GlobalConfig isSuperAdmin={isSuperAdmin} />}
                                     />
-                                    {!window._env_.K8S_CLIENT && [
-                                        <Route
-                                            key={URLS.APP}
-                                            path={URLS.APP}
-                                            render={() => (
-                                                <AppRouter
-                                                    isSuperAdmin={isSuperAdmin}
-                                                    appListCount={appListCount}
-                                                    loginCount={loginCount}
-                                                />
-                                            )}
-                                        />,
-                                        <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
-                                            <AppGroupRoute isSuperAdmin={isSuperAdmin} />
-                                        </Route>,
-                                        <Route
-                                            key={URLS.CHARTS}
-                                            path={URLS.CHARTS}
-                                            render={() => <Charts isSuperAdmin={isSuperAdmin} />}
-                                        />,
-                                        <Route
-                                            key={URLS.BULK_EDITS}
-                                            path={URLS.BULK_EDITS}
-                                            render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
-                                        />,
-                                        <Route
-                                            key={URLS.SECURITY}
-                                            path={URLS.SECURITY}
-                                            render={(props) => <Security {...props} serverMode={serverMode} />}
-                                        />,
-                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
-                                            ? [
-                                                  <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
-                                                      <ResourceWatcherRouter />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        !!Observability && (
-                                            <Route key={CommonURLS.OBSERVABILITY} path={CommonURLS.OBSERVABILITY}>
-                                                <Observability />
-                                            </Route>
-                                        ),
-
-                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
-                                            ? [
-                                                  <Route
-                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
-                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
-                                                  >
-                                                      <ImageSelectionUtilityProvider
-                                                          value={{
-                                                              getModuleInfo,
-                                                          }}
-                                                      >
-                                                          <SoftwareDistributionHubRenderProvider
-                                                              renderers={{
-                                                                  ReleaseConfigurations: Configurations,
-                                                              }}
-                                                          >
-                                                              <SoftwareDistributionHub />
-                                                          </SoftwareDistributionHubRenderProvider>
-                                                      </ImageSelectionUtilityProvider>
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
-                                            ? [
-                                                  <Route
-                                                      key={CommonURLS.NETWORK_STATUS_INTERFACE}
-                                                      path={CommonURLS.NETWORK_STATUS_INTERFACE}
-                                                  >
-                                                      <NetworkStatusInterface />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        ...(showStackManager
-                                            ? [
-                                                  <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
-                                                      <DevtronStackManager
-                                                          serverInfo={currentServerInfo.serverInfo}
-                                                          getCurrentServerInfo={getCurrentServerInfo}
+                                    <Route
+                                        key={BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.ROOT}
+                                        path={`${BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.ROOT}/*`}
+                                        element={<InfrastructureManagementRouter isSuperAdmin={isSuperAdmin} />}
+                                    />
+                                    {!window._env_.K8S_CLIENT
+                                        ? [
+                                              ...(serverMode === SERVER_MODE.FULL
+                                                  ? [
+                                                        <Route
+                                                            key={BASE_ROUTES.APPLICATION_MANAGEMENT.ROOT}
+                                                            path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.ROOT}/*`}
+                                                            element={
+                                                                <ApplicationManagementRouter
+                                                                    isSuperAdmin={isSuperAdmin}
+                                                                />
+                                                            }
+                                                        />,
+                                                        <Route
+                                                            key={BASE_ROUTES.SECURITY_CENTER.ROOT}
+                                                            path={`${BASE_ROUTES.SECURITY_CENTER.ROOT}/*`}
+                                                            element={<Security />}
+                                                        />,
+                                                        <Route
+                                                            key={BASE_ROUTES.AUTOMATION_AND_ENABLEMENT.ROOT}
+                                                            path={`${BASE_ROUTES.AUTOMATION_AND_ENABLEMENT.ROOT}/*`}
+                                                            element={<AutomationAndEnablementRouter />}
+                                                        />,
+                                                    ]
+                                                  : []),
+                                              ...(Observability
+                                                  ? [
+                                                        <Route
+                                                            key={CommonURLS.OBSERVABILITY}
+                                                            path={CommonURLS.OBSERVABILITY}
+                                                        >
+                                                            <Observability />
+                                                        </Route>,
+                                                    ]
+                                                  : []),
+                                              ...(serverMode === SERVER_MODE.FULL &&
+                                              window._env_.FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE &&
+                                              SoftwareDistributionHub
+                                                  ? [
+                                                        <Route
+                                                            key={BASE_ROUTES.SOFTWARE_RELEASE_MANAGEMENT.ROOT}
+                                                            path={`${BASE_ROUTES.SOFTWARE_RELEASE_MANAGEMENT.ROOT}/*`}
+                                                            element={
+                                                                <ImageSelectionUtilityProvider
+                                                                    value={{
+                                                                        getModuleInfo,
+                                                                    }}
+                                                                >
+                                                                    <SoftwareDistributionHubRenderProvider
+                                                                        renderers={{
+                                                                            ReleaseConfigurations,
+                                                                        }}
+                                                                    >
+                                                                        <SoftwareDistributionHub />
+                                                                    </SoftwareDistributionHubRenderProvider>
+                                                                </ImageSelectionUtilityProvider>
+                                                            }
+                                                        />,
+                                                    ]
+                                                  : []),
+                                              ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
+                                                  ? [
+                                                        <Route
+                                                            key={BASE_ROUTES.NETWORK_STATUS_INTERFACE.ROOT}
+                                                            path={`${BASE_ROUTES.NETWORK_STATUS_INTERFACE.ROOT}/*`}
+                                                            element={<NetworkStatusInterface />}
+                                                        />,
+                                                    ]
+                                                  : []),
+                                              ...(showStackManager
+                                                  ? [
+                                                        <Route
+                                                            key={BASE_ROUTES.STACK_MANAGER.ROOT}
+                                                            path={`${BASE_ROUTES.STACK_MANAGER.ROOT}/*`}
+                                                            element={
+                                                                <DevtronStackManager
+                                                                    serverInfo={currentServerInfo.serverInfo}
+                                                                    getCurrentServerInfo={getCurrentServerInfo}
+                                                                    isSuperAdmin={isSuperAdmin}
+                                                                />
+                                                            }
+                                                        />,
+                                                    ]
+                                                  : []),
+                                              <Route
+                                                  key={BASE_ROUTES.GETTING_STARTED}
+                                                  path={BASE_ROUTES.GETTING_STARTED}
+                                                  element={
+                                                      <OnboardingGuide
+                                                          loginCount={loginCount}
                                                           isSuperAdmin={isSuperAdmin}
+                                                          serverMode={serverMode}
+                                                          isGettingStartedClicked={isGettingStartedClicked}
                                                       />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
-                                            <OnboardingGuide
-                                                loginCount={loginCount}
-                                                isSuperAdmin={isSuperAdmin}
-                                                serverMode={serverMode}
-                                                isGettingStartedClicked={isGettingStartedClicked}
-                                            />
-                                        </Route>,
-                                    ]}
-                                    {/* TODO: Check why its coming as empty in case route is in other library */}
-                                    {!window._env_.K8S_CLIENT && (
-                                        <Route path={URLS.JOB} key={URLS.JOB}>
-                                            <AppContext.Provider value={contextValue}>
-                                                <Jobs />
-                                            </AppContext.Provider>
-                                        </Route>
-                                    )}
-                                    <Route>
-                                        <RedirectUserWithSentry
-                                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+                                                  }
+                                              />,
+                                          ]
+                                        : []}
+                                    {CostVisibilityRouter && CostVisibilityRenderProvider && (
+                                        <Route
+                                            key={BASE_ROUTES.COST_VISIBILITY.ROOT}
+                                            path={`${BASE_ROUTES.COST_VISIBILITY.ROOT}/*`}
+                                            element={
+                                                <CostVisibilityRenderProvider renderClusterForm={renderClusterForm}>
+                                                    <CostVisibilityRouter />
+                                                </CostVisibilityRenderProvider>
+                                            }
                                         />
-                                    </Route>
-                                </Switch>
+                                    )}
+                                    {serverMode === SERVER_MODE.FULL && window._env_.FEATURE_STORAGE_ENABLE && (
+                                        <Route
+                                            key={BASE_ROUTES.DATA_PROTECTION_MANAGEMENT.ROOT}
+                                            path={`${BASE_ROUTES.DATA_PROTECTION_MANAGEMENT.ROOT}/*`}
+                                            element={<DataProtectionManagementRouter />}
+                                        />
+                                    )}
+                                    <Route
+                                        path="*"
+                                        element={
+                                            <RedirectUserWithSentry
+                                                isFirstLoginUser={
+                                                    isSuperAdmin && loginCount === 0 && appListCount === 0
+                                                }
+                                            />
+                                        }
+                                    />
+                                </Routes>
                                 {AIResponseWidget && intelligenceConfig && <AIResponseWidget parentRef={navRouteRef} />}
                             </ErrorBoundary>
                         </Suspense>
@@ -638,6 +702,40 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
             )
         )
     }
+
+    const renderMainBody = () => (
+        <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
+            {!isOnboardingPage && (
+                <Navigation
+                    showStackManager={showStackManager}
+                    isAirgapped={isAirgapped}
+                    serverMode={serverMode}
+                    moduleInInstallingState={moduleInInstallingState}
+                    installedModuleMap={installedModuleMap}
+                    pageState={pageState}
+                />
+            )}
+            <>
+                <motion.div
+                    className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                    ref={navRouteRef}
+                >
+                    {renderMainContent()}
+                </motion.div>
+
+                <SidePanel asideWidth={asideWidth} />
+            </>
+            {showThemeSwitcherDialog && (
+                <SwitchThemeDialog
+                    initialThemePreference={userPreferences?.themePreference}
+                    handleClose={handleCloseSwitchThemeDialog}
+                    handleUpdateUserThemePreference={handleUpdateUserThemePreference}
+                />
+            )}
+            {!isFELibAvailable && <UpgradeToOSSPlusDialog />}
+            {renderAboutDevtronDialog()}
+        </motion.main>
+    )
 
     return (
         <MainContextProvider
@@ -676,6 +774,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                featureAskDevtronExpert: environmentDataState.featureAskDevtronExpert,
                 reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
@@ -689,43 +788,19 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
                 tempAppWindowConfig,
                 setTempAppWindowConfig,
+                AIRecommendations,
+                debugAgentContext,
+                setDebugAgentContext,
+                AskDevtronButton,
+                showUpgradeToOSSPlusDialog,
+                setShowUpgradeToOSSPlusDialog,
+                forceDockerfileScan: environmentDataState.forceDockerfileScan,
             }}
         >
             <ConfirmationModalProvider>
                 <BaseConfirmationModal />
-                <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
-                    {!isOnboardingPage && (
-                        <Navigation
-                            currentServerInfo={currentServerInfo}
-                            history={history}
-                            match={match}
-                            location={location}
-                            serverMode={serverMode}
-                            moduleInInstallingState={moduleInInstallingState}
-                            installedModuleMap={installedModuleMap}
-                            isSuperAdmin={isSuperAdmin}
-                            isAirgapped={isAirgapped}
-                            showStackManager={showStackManager}
-                        />
-                    )}
-                    <>
-                        <div
-                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
-                            ref={navRouteRef}
-                        >
-                            {renderMainContent()}
-                        </div>
-                        <SidePanel asideWidth={asideWidth} />
-                    </>
-                    {showThemeSwitcherDialog && (
-                        <SwitchThemeDialog
-                            initialThemePreference={userPreferences?.themePreference}
-                            handleClose={handleCloseSwitchThemeDialog}
-                            handleUpdateUserThemePreference={handleUpdateUserThemePreference}
-                        />
-                    )}
-                    {renderAboutDevtronDialog()}
-                </motion.main>
+                {/* Ensure useAIChat is used in fe-lib only! */}
+                {AIChatProvider ? <AIChatProvider>{renderMainBody()}</AIChatProvider> : renderMainBody()}
             </ConfirmationModalProvider>
         </MainContextProvider>
     )

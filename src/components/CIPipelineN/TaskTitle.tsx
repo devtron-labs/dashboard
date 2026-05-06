@@ -19,10 +19,10 @@ import Tippy from '@tippyjs/react'
 
 import { ActivityIndicator, PluginImageContainer, PluginType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
+import ICFileEdit from '@Icons/ic-file-edit.svg?react'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
-import { ReactComponent as ICCDStage } from '../../assets/icons/ic-cd-stage.svg'
+import ICCDStage from '../../assets/icons/ic-cd-stage.svg?react'
 import { TaskTitleProps, TaskTitleTippyContentProps } from './types'
 
 const TaskTitleTippyContent = ({ isLatest, pluginName, pluginVersion, displayName }: TaskTitleTippyContentProps) => (

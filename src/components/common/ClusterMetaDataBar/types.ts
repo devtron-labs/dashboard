@@ -17,6 +17,6 @@
 export interface ClusterMetaDataBarProps {
     clusterName: string
     namespace: string
-    clusterId: string
+    clusterId: number
     isVirtualEnvironment?: boolean
 }

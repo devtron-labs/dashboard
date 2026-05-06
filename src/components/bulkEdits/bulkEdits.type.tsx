@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { BulkEditVersion, OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
+import { useRef } from 'react'
 
-import { SERVER_MODE_TYPE } from '../../config'
+import { BulkEditVersion, OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 interface BaseOperationResponseType {
     appId: number
@@ -95,7 +95,7 @@ export interface OutputTabType {
 }
 
 export interface BulkEditsProps {
-    serverMode: SERVER_MODE_TYPE
     outputHeightMV: ReturnType<typeof useMotionValue<number>>
     gridTemplateRows: ReturnType<typeof useMotionValue<string>>
+    nodeRef: ReturnType<typeof useRef<HTMLDivElement>>
 }

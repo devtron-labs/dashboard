@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useState } from 'react'
-import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Fragment, type JSX, useEffect, useState } from 'react'
+import { generatePath, Link, NavLink, useLocation, useParams } from 'react-router-dom'
 
 import {
+    ActionMenu,
+    ButtonStyleType,
+    ButtonVariantType,
     ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
@@ -25,22 +28,20 @@ import {
     DocLink,
     EnvResourceType,
     getEnvironmentListMinPublic,
+    Icon,
     InfoBlock,
-    PopupMenu,
     Progressing,
+    ROUTER_URLS,
     SelectPicker,
     showError,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
+import ICStamp from '@Icons/ic-stamp.svg?react'
 
-import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
+import Add from '../../../../../../assets/icons/ic-add.svg?react'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
-import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
 import { URLS } from '../../../../../../config'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
 import { AppConfigState, JobEnvOverrideRouteProps } from '../AppConfig.types'
@@ -61,7 +62,6 @@ const EnvOverridesHelpNote = () => (
 )
 
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
-    const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()
 
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
@@ -142,7 +142,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             })
         }
         const path = pipeline
-            ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
+            ? `${generatePath(`${ROUTER_URLS.JOBS}/:appId`, { appId })}/edit/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
             : ''
         if (showConfirmationDialog) {
             return renderConfirmationDeleteModal(pipeline, path)
@@ -150,8 +150,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         return renderDeleteDialog()
     }
 
-    const toggleDeleteDialog = (e) => {
-        e.stopPropagation()
+    const toggleDeleteDialog = () => {
         setDeleteView(true)
         const pipeline = ciPipelines?.find((env) => env.environmentId === envOverride.environmentId)
         if (pipeline) {
@@ -160,25 +159,38 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         }
     }
 
-    const deletePopUpMenu = (): JSX.Element => (
-        <PopupMenu autoClose>
-            <PopupMenu.Button rootClassName="flex" isKebab>
-                <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
-            </PopupMenu.Button>
-            <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
-                <div className="fs-13 fw-4 lh-20">
-                    <button
-                        type="button"
-                        className="dc__unset-button-styles w-100 flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
-                        onClick={toggleDeleteDialog}
-                        data-testid="delete-jobs-environment-link"
-                    >
-                        <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
-                        {RESOURCE_ACTION_MENU.delete}
-                    </button>
-                </div>
-            </PopupMenu.Body>
-        </PopupMenu>
+    const handleActionDelete = (item) => {
+        if (item.id === 'delete') {
+            toggleDeleteDialog()
+        }
+        return null
+    }
+
+    const renderDeletePopUpMenu = (): JSX.Element => (
+        <ActionMenu
+            id="delete-env-action-menu"
+            onClick={handleActionDelete}
+            options={[
+                {
+                    items: [
+                        {
+                            id: 'delete',
+                            label: 'Delete',
+                            startIcon: { name: 'ic-delete' },
+                            type: 'negative',
+                        },
+                    ],
+                },
+            ]}
+            buttonProps={{
+                dataTestId: 'delete-env-action-menu-button',
+                icon: <Icon name="ic-more-vertical" color={null} rotateBy={90} />,
+                variant: ButtonVariantType.borderLess,
+                ariaLabel: 'Open action menu',
+                style: ButtonStyleType.neutral,
+                size: ComponentSizeType.xs,
+            }}
+        />
     )
 
     return (
@@ -191,7 +203,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
                 <span className="dc__truncate">{envOverride.environmentName}</span>
                 {isEnvProtected && <ICStamp className="icon-dim-20 scv-5 dc__no-shrink" />}
             </NavLink>
-            {deletePopUpMenu()}
+            {renderDeletePopUpMenu()}
             {showDelete && showDeleteDialog(deletePipeline)}
         </div>
     )

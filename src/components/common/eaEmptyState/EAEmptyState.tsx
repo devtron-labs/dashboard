@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png'
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png'
-import { ModuleNameMap, URLS } from '../../../config'
 import './eaEmptyState.css'
 import { NavLink } from 'react-router-dom'
+import { ModuleNameMap, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum EAEmptyStateType {
     SECURITY = 'security',
@@ -56,7 +55,7 @@ export default function EAEmptyState({ title, msg, stateType, knowMoreLink, head
                 <div className="fs-20 fw-6 mb-8">{title}</div>
                 <div className="fs-14 dc__m-auto w-600">{msg}</div>
                 <div className="pt-20">
-                    <NavLink to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}>
+                    <NavLink to={`${ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}>
                         <button type="button" className="cta empty__install-btn">
                             View Integration
                         </button>

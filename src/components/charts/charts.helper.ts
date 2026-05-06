@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { ToastManager, ToastVariantType, versionComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ROUTER_URLS,
+    ToastManager,
+    ToastVariantType,
+    versionComparatorBySortOrder,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ChartDetailsSegment } from '@Pages/ChartStore/ChartDetails/types'
 
-import { URLS } from '../../config'
 import { ChartGroupDeployResponse, ChartValuesType } from './charts.types'
 
 export const MultiChartSummaryView = {
@@ -28,26 +32,26 @@ export const MultiChartSummaryView = {
 }
 
 export function getDiscoverChartDetailsURL(chartId: string | number) {
-    return `${URLS.CHARTS}/discover/chart/${chartId}`
+    return `${ROUTER_URLS.CHART_STORE}/chart/${chartId}`
 }
 
 export function getSavedValuesListURL(chartId): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}?tab=${ChartDetailsSegment.PRESET_VALUES}`
+    return `${ROUTER_URLS.CHART_STORE}/chart/${chartId}?tab=${ChartDetailsSegment.PRESET_VALUES}`
 }
 
 export function getChartValuesURL(chartId: number | string, chartValueId?: number | string): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}/preset-values/${chartValueId || 0}`
+    return `${ROUTER_URLS.CHART_STORE}/chart/${chartId}/preset-values/${chartValueId || 0}`
 }
 
 export function getChartGroupURL(chartGroupId: number | string | null) {
     if (chartGroupId) {
-        return `${URLS.CHARTS}/discover/group/${chartGroupId}`
+        return `${ROUTER_URLS.CHART_STORE}/group/${chartGroupId}`
     }
-    return `${URLS.CHARTS}/group`
+    return `${ROUTER_URLS.CHART_STORE}/group`
 }
 
 export function getChartGroupEditURL(chartGroupId: number | string) {
-    return `${URLS.CHARTS}/discover/group/${chartGroupId}/edit`
+    return `${ROUTER_URLS.CHART_STORE}/group/${chartGroupId}/edit`
 }
 
 export function getChartValuesFiltered(chartValuesList: ChartValuesType[]): {

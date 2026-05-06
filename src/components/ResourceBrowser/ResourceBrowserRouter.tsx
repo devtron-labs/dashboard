@@ -15,12 +15,11 @@
  */
 
 import React from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
 
 import ClusterInstallationStatus from './ClusterInstallationStatus'
 import ResourceBrowser from './ResourceBrowser'
@@ -31,34 +30,24 @@ import './ResourceBrowser.scss'
 const CompareClusterViewWrapper = importComponentFromFELibrary('CompareClusterViewWrapper', null, 'function')
 const isFeLibAvailable = !!CompareClusterViewWrapper
 
-const ResourceBrowserRouter: React.FC = () => {
-    const { path } = useRouteMatch()
+const RESOURCE_BROWSER_ROUTES = BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.RESOURCE_BROWSER
 
-    return (
-        <Switch>
-            {isFeLibAvailable && (
-                <Route path={URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER} exact>
-                    <ClusterInstallationStatus />
-                </Route>
-            )}
+const ResourceBrowserRouter: React.FC = () => (
+    <Routes>
+        {isFeLibAvailable && (
+            <Route path={RESOURCE_BROWSER_ROUTES.INSTALLATION_CLUSTER} element={<ClusterInstallationStatus />} />
+        )}
 
-            {isFeLibAvailable && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
-                <Route path={`${COMMON_URLS.RESOURCE_BROWSER}${COMMON_URLS.COMPARE_CLUSTERS}`} exact>
-                    <CompareClusterViewWrapper />
-                </Route>
-            )}
+        {isFeLibAvailable && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
+            <Route path={RESOURCE_BROWSER_ROUTES.COMPARE_CLUSTERS} element={<CompareClusterViewWrapper />} />
+        )}
 
-            <Route path={[path, URLS.RESOURCE_BROWSER_CREATE_CLUSTER]} exact>
-                <ResourceBrowser />
-            </Route>
+        <Route path={`${RESOURCE_BROWSER_ROUTES.CLUSTER_DETAILS.ROOT}/*`} element={<ResourceList />} />
 
-            <Route path={`${path}/:clusterId`}>
-                <ResourceList />
-            </Route>
+        <Route path={`${RESOURCE_BROWSER_ROUTES.CLUSTER_LIST}/*`} index element={<ResourceBrowser />} />
 
-            <Redirect to={path} />
-        </Switch>
-    )
-}
+        <Route path="*" element={<Navigate to={RESOURCE_BROWSER_ROUTES.CLUSTER_LIST} />} />
+    </Routes>
+)
 
 export default ResourceBrowserRouter

@@ -47,7 +47,7 @@ const Timer: React.FC<TimerType> = ({ start, callback, transition, transpose, fo
         return () => clearTimeout(timeout)
     }, [start])
 
-    return loading ? transition() : transpose?.(now) || <span>{now || '0s'}</span>
+    return loading ? transition?.() : transpose?.(now) || <span>{now || '0s'}</span>
 }
 
 export default Timer

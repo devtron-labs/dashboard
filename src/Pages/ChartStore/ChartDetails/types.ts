@@ -39,7 +39,7 @@ export interface ChartDetailsSearchParams {
     tab: ChartDetailsSegment
 }
 
-export interface ChartDetailsRouteParams {
+export type ChartDetailsRouteParams = {
     chartId: string
 }
 

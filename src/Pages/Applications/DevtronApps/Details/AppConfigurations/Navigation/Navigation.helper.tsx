@@ -25,8 +25,8 @@ import {
     ResourceIdToResourceApprovalPolicyConfigMapType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
-import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
+import Lock from '@Icons/ic-locked.svg?react'
+import ICStamp from '@Icons/ic-stamp.svg?react'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {

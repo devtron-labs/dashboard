@@ -15,36 +15,52 @@
  */
 
 import ReactGA from 'react-ga4'
-import { Link, useRouteMatch } from 'react-router-dom'
-import { AppListConstants, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+import { Link } from 'react-router-dom'
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    ROUTER_URLS,
+    TabGroup,
+    TabProps,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { ChartHeaderComponentType } from './appHeader.type'
 
 const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {
-    const match = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
 
-    const renderBreadcrumbs = () => {
-        return (
-            <div className="m-0 flex left ">
-                <Link
-                    to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                    className="dc__devtron-breadcrumb__item"
-                >
-                    <span className="cb-5 fs-16 cursor">Helm Apps </span>
-                </Link>
-                {Object.keys(appDetails).length > 0 && (
-                    <>
-                        <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
-                        <span className="fs-16 cn-9">{appDetails.appName}</span>
-                    </>
-                )}
-            </div>
-        )
-    }
+    const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART,
+        {
+            alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                apps: {
+                    component: (
+                    <Link to={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM} className="dc__devtron-breadcrumb__item">
+                        <div className="cb-5">Helm Apps</div>
+                    </Link>
+                )},
+                deployments: {
+                    component: <BreadcrumbText heading={appDetails.appName} isActive />,
+                    linked: false,
+                },
+                dc: null,
+                env: null,
+                ':appId': null,
+                ':envId': null,
+            },
+        },
+        [appDetails.appName],
+    )
+
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART} />
 
     const renderHelmDetailsTabs = () => {
         const tabs: TabProps[] = [
@@ -53,7 +69,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 label: 'Overview',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_OVERVIEW}`,
+                    to: URLS.APP_OVERVIEW,
                     onClick: () => {
                         ReactGA.event({
                             category: 'App',
@@ -67,7 +83,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 label: 'App Details',
                 tabType: 'navLink',
                 props: {
-                    to: `${match.url}/${URLS.APP_DETAILS}`,
+                    to: URLS.APP_DETAILS,
                     onClick: () => {
                         ReactGA.event({
                             category: 'App',
@@ -86,7 +102,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                     tabType: 'navLink',
                     icon: Settings,
                     props: {
-                        to: `${match.url}/${URLS.APP_VALUES}`,
+                        to: URLS.APP_VALUES,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'App',
@@ -101,7 +117,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                     label: 'Deployment history',
                     tabType: 'navLink',
                     props: {
-                        to: `${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`,
+                        to: URLS.APP_DEPLOYMNENT_HISTORY,
                         onClick: () => {
                             ReactGA.event({
                                 category: 'App',
@@ -123,6 +139,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

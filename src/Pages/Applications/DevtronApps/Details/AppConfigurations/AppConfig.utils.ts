@@ -21,6 +21,7 @@ import {
     BASE_CONFIGURATION_ENV_ID,
     ConfigResourceType,
     ResourceKindType,
+    ROUTER_URLS,
     stringComparatorBySortOrder,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -122,9 +123,10 @@ export const getNavItems = ({
     )
 
     let completedPercent = 0
-    const basePath = isTemplateView
-        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, { appId })
-        : `/app/${appId}`
+    const basePath = generatePath(
+        isTemplateView ? ROUTER_URLS.APP_TEMPLATE_DETAIL : ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT,
+        { appId },
+    )
 
     switch (resourceKind) {
         case ResourceKindType.job:
@@ -134,7 +136,7 @@ export const getNavItems = ({
                 navItems: [
                     {
                         title: 'Source code',
-                        href: `/job/${appId}/edit/materials`,
+                        href: `${ROUTER_URLS.JOBS}/${appId}/edit/materials`,
                         stage: STAGE_NAME.GIT_MATERIAL,
                         isLocked: !_isUnlocked.material,
                         supportDocumentURL: 'JOB_SOURCE_CODE',
@@ -144,7 +146,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Workflow Editor',
-                        href: `/job/${appId}/edit/workflow`,
+                        href: `${ROUTER_URLS.JOBS}/${appId}/edit/workflow`,
                         stage: STAGE_NAME.WORKFLOW,
                         isLocked: !_isUnlocked.workflowEditor,
                         supportDocumentURL: 'JOB_WORKFLOW_EDITOR',
@@ -186,7 +188,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Environment Override',
-                        href: `/job/${appId}/edit/env-override`,
+                        href: `${ROUTER_URLS.JOBS}/${appId}/edit/env-override`,
                         stage: STAGE_NAME.ENV_OVERRIDE,
                         isLocked: !_isUnlocked.envOverride,
                     },

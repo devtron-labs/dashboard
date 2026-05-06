@@ -25,9 +25,9 @@ import {
     DraggableWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Trash } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Tilde } from '../../../../../../assets/icons/ic-tilde.svg'
+import Close from '../../../../../../assets/icons/ic-close.svg?react'
+import Trash from '../../../../../../assets/icons/ic-delete-interactive.svg?react'
+import Tilde from '../../../../../../assets/icons/ic-tilde.svg?react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { BulkSelectionEntityTypes, BulkSelectionModalTypes } from './constants'
 import { BulkSelectionActionWidgetProps } from './types'
@@ -67,7 +67,6 @@ const BulkSelectionActionWidget = ({
             positionVariant={DraggablePositionVariant.PARENT_BOTTOM_CENTER}
             parentRef={parentRef}
             zIndex="calc(var(--modal-index) - 1)"
-            layoutFixDelta={67}
         >
             <div className="flex dc__gap-8 pt-12 pb-12 pr-12 pl-8 bulk-selection-widget br-8">
                 <DraggableButton dragClassName="drag-selector" />

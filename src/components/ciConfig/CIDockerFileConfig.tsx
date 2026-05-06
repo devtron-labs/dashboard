@@ -34,8 +34,8 @@ import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
 import { RootBuildContext, CI_BUILD_TYPE_OPTIONS } from './ciConfigConstant'
 import { FEATURE_DISABLED } from '../../config/constantMessaging'
-import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
+import CheckIcon from '../../assets/icons/ic-check.svg?react'
+import ErrorIcon from '../../assets/icons/ic-error-exclamation.svg?react'
 
 export default function CIDockerFileConfig({
     configOverrideView,

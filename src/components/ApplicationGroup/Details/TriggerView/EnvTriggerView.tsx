@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { Prompt, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { MouseEvent, useEffect, useState, type JSX } from 'react'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
+    ActionMenu,
+    ActionMenuProps,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -26,10 +28,8 @@ import {
     CHECKBOX_VALUE,
     CommonNodeAttr,
     ComponentSizeType,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DeploymentNodeType,
     ErrorScreenManager,
-    PopupMenu,
     Progressing,
     ServerErrors,
     showError,
@@ -39,6 +39,7 @@ import {
     usePrompt,
     WorkflowNodeType,
     WorkflowType,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
@@ -47,15 +48,15 @@ import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImage
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
-import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { URLS, ViewType } from '../../../../config'
+import Dropdown from '../../../../assets/icons/ic-chevron-down.svg?react'
+import Close from '../../../../assets/icons/ic-cross.svg?react'
+import DeployIcon from '../../../../assets/icons/ic-nav-rocket.svg?react'
+import Pencil from '../../../../assets/icons/ic-pencil.svg?react'
+import { ViewType } from '../../../../config'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
-import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import { triggerBranchChange } from '../../../app/service'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
@@ -78,6 +79,7 @@ import BulkSourceChange from './BulkSourceChange'
 import { getSelectedNodeAndAppId } from './utils'
 
 import './EnvTriggerView.scss'
+import { EnvTriggerViewActionKey } from './types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
@@ -91,10 +93,8 @@ const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal'
 let inprogressStatusTimer
 const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) => {
     const { envId } = useParams<{ envId: string }>()
+    const navigate = useNavigate()
     const location = useLocation()
-    const history = useHistory()
-    const match = useRouteMatch<CIMaterialRouterProps>()
-    const { url } = useRouteMatch()
 
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [isBranchChangeLoading, setIsBranchChangeLoading] = useState(false)
@@ -403,9 +403,9 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             })
     }
 
-    const closeApprovalModal = (e: React.MouseEvent): void => {
+    const closeApprovalModal = (e: MouseEvent): void => {
         e.stopPropagation()
-        history.push({
+        navigate({
             search: '',
         })
         getWorkflowStatusData(workflows)
@@ -415,7 +415,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         setShowBulkCDModal(false)
         setResponseList([])
 
-        history.push({
+        navigate({
             search: '',
         })
     }
@@ -527,6 +527,25 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
+    const handleActionClick: ActionMenuProps['onClick'] = (item) => {
+        switch (item.id) {
+            case EnvTriggerViewActionKey.PRE_DEPLOY:
+                setBulkTriggerType(DeploymentNodeType.PRECD)
+                setShowBulkCDModal(true)
+                break
+            case EnvTriggerViewActionKey.DEPLOY:
+                setBulkTriggerType(DeploymentNodeType.CD)
+                setShowBulkCDModal(true)
+                break
+            case EnvTriggerViewActionKey.POST_DEPLOY:
+                setBulkTriggerType(DeploymentNodeType.POSTCD)
+                setShowBulkCDModal(true)
+                break
+            default:
+                break
+        }
+    }
+
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             const { node, appId } = getSelectedNodeAndAppId(filteredWorkflows, location.search)
@@ -541,7 +560,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     pipelineId={node?.id}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
-                    history={history}
                 />
             )
         }
@@ -550,45 +568,43 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const renderDeployPopupMenu = (): JSX.Element => (
-        <PopupMenu autoClose>
-            <PopupMenu.Button
-                isKebab
-                rootClassName="h-32 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
-                dataTestId="deploy-popup"
-            >
-                <Dropdown className="icon-dim-20 fcn-0" />
-            </PopupMenu.Button>
-            <PopupMenu.Body rootClassName=" dc__border pt-4 pb-4 mb-8">
-                {showPreDeployment && (
-                    <div
-                        className="flex left p-10 dc__hover-n50 pointer fs-13"
-                        data-trigger-type="PRECD"
-                        onClick={onShowBulkCDModal}
-                        data-testid="pre-deploy-popup-button"
-                    >
-                        Trigger Pre-deployment stage
-                    </div>
-                )}
-                <div
-                    className="flex left p-10 dc__hover-n50 pointer fs-13"
-                    data-trigger-type="CD"
-                    onClick={onShowBulkCDModal}
-                    data-testid="deploy-popup-button"
-                >
-                    Trigger Deployment
-                </div>
-                {showPostDeployment && (
-                    <div
-                        className="flex left p-10 dc__hover-n50 pointer fs-13"
-                        data-trigger-type="POSTCD"
-                        onClick={onShowBulkCDModal}
-                        data-testid="post-deploy-popup-button"
-                    >
-                        Trigger Post-deployment stage
-                    </div>
-                )}
-            </PopupMenu.Body>
-        </PopupMenu>
+        <ActionMenu<EnvTriggerViewActionKey>
+            id="deploy-popup"
+            onClick={handleActionClick}
+            options={[
+                {
+                    items: [
+                        ...(showPreDeployment
+                            ? [
+                                  {
+                                      id: EnvTriggerViewActionKey.PRE_DEPLOY,
+                                      label: 'Trigger Pre-deployment stage',
+                                  },
+                              ]
+                            : []),
+                        {
+                            id: EnvTriggerViewActionKey.DEPLOY,
+                            label: 'Trigger Deployment',
+                        },
+                        ...(showPostDeployment
+                            ? [
+                                  {
+                                      id: EnvTriggerViewActionKey.POST_DEPLOY,
+                                      label: 'Trigger Post-deployment stage',
+                                  },
+                              ]
+                            : []),
+                    ],
+                },
+            ]}
+            buttonProps={{
+                dataTestId: 'deploy-popup',
+                icon: <Dropdown className="icon-dim-20 fcn-0" />,
+                variant: ButtonVariantType.primary,
+                size: ComponentSizeType.medium,
+                ariaLabel: 'Deploy options',
+            }}
+        />
     )
 
     const renderBulkTriggerActionButtons = (): JSX.Element => {
@@ -625,7 +641,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                         data-testid="bulk-deploy-button"
                         onClick={onShowBulkCDModal}
                     >
-                        <DeployIcon className="icon-dim-16 dc__no-svg-fill" />
+                        <DeployIcon className="icon-dim-16 dc__no-svg-fill scn-0" />
                         Deploy
                     </button>
                     {_showPopupMenu && renderDeployPopupMenu()}
@@ -658,7 +674,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     )
 
     const revertToPreviousURL = () => {
-        history.push(match.url)
+        navigate(generatePath(ROUTER_URLS.APP_GROUP_DETAILS.TRIGGER, { envId }))
     }
 
     const getWebhookDetails = () => getExternalCIConfig(selectedWebhookNode.appId, selectedWebhookNode.id, false)
@@ -672,7 +688,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const openCIMaterialModal = (ciNodeId: string) => {
-        history.push(`${match.url}${URLS.BUILD}/${ciNodeId}`)
+        navigate(`build/${ciNodeId}`)
     }
 
     const renderWebhookAddImageModal = () => {
@@ -706,16 +722,16 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     isSelected={workflow.isSelected ?? false}
                     handleSelectionChange={handleSelectionChange}
                     fromAppGrouping
-                    history={history}
                     location={location}
-                    match={match}
                     index={index}
                     handleWebhookAddImageClick={handleWebhookAddImageClick(workflow.appId)}
                     openCIMaterialModal={openCIMaterialModal}
                     reloadTriggerView={reloadTriggerView}
+                    navigate={navigate}
+                    params={{ envId }}
                 />
             ))}
-            <LinkedCIDetail workflows={filteredWorkflows} handleClose={revertToPreviousURL} />
+            <LinkedCIDetail workflows={filteredWorkflows} />
             {renderWebhookAddImageModal()}
         </>
     )
@@ -735,23 +751,24 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     </Checkbox>
                 </div>
 
-                <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-
                 {renderWorkflow()}
 
-                <Switch>
-                    <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
-                        <BuildImageModal
-                            handleClose={revertToPreviousURL}
-                            isJobView={false}
-                            filteredCIPipelineMap={filteredCIPipelines}
-                            workflows={workflows}
-                            reloadWorkflows={getWorkflowsData}
-                            reloadWorkflowStatus={getWorkflowStatusData}
-                            environmentLists={[]}
-                        />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route
+                        path="build/:ciNodeId"
+                        element={
+                            <BuildImageModal
+                                handleClose={revertToPreviousURL}
+                                isJobView={false}
+                                filteredCIPipelineMap={filteredCIPipelines}
+                                workflows={workflows}
+                                reloadWorkflows={getWorkflowsData}
+                                reloadWorkflowStatus={getWorkflowStatusData}
+                                environmentLists={[]}
+                            />
+                        }
+                    />
+                </Routes>
                 <CDMaterial
                     workflows={filteredWorkflows}
                     handleClose={revertToPreviousURL}

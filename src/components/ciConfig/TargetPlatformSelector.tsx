@@ -15,7 +15,7 @@
  */
 
 import { SelectPicker, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import WarningIcon from '@Icons/ic-warning.svg?react'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { TARGET_PLATFORM_LIST } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'

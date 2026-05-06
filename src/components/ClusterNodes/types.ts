@@ -53,6 +53,7 @@ export interface ClusterDescriptionType {
     clusterCreatedBy: string
     clusterCreatedOn: string
     clusterNote?: ClusterNoteType
+    catalogSchemaResourceId?: number
 }
 
 export interface ClusterNoteType {
@@ -261,7 +262,7 @@ export interface DescriptionDataType {
     descriptionUpdatedOn: string
 }
 
-export interface ClusterDetailsType {
+export interface ClusterDetailsType extends Pick<ClusterDescriptionType, 'catalogSchemaResourceId'> {
     clusterName: string
     shortDescription: string
     serverURL: string
@@ -276,7 +277,6 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     selectedCluster: ClusterOptionType
-    addTab: UseTabsReturnType['addTab']
 }
 
 export enum TaintsTableHeaderKeys {

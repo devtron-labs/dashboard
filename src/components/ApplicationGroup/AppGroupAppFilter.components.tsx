@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import { cloneElement, type JSX } from 'react'
 import { components } from 'react-select'
 import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { getOptionBGClass } from './AppGroup.utils'
-import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
-import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
+import ShowIconFilter from '../../assets/icons/ic-group-filter.svg?react'
+import ShowIconFilterApplied from '../../assets/icons/ic-group-filter-applied.svg?react'
+import Search from '../../assets/icons/ic-search.svg?react'
+import Clear from '../../assets/icons/ic-error.svg?react'
+import InfoIcon from '../../assets/icons/ic-info-outlined.svg?react'
+import Edit from '../../assets/icons/ic-pencil.svg?react'
+import Trash from '../../assets/icons/ic-delete-interactive.svg?react'
+import CheckIcon from '../../assets/icons/ic-check.svg?react'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
@@ -78,7 +78,7 @@ export const ValueContainer = (props): JSX.Element => {
             ) : (
                 <Search className="icon-dim-16 mr-4 mw-18" />
             )}
-            {React.cloneElement(props.children[1])}
+            {cloneElement(props.children[1])}
         </components.ValueContainer>
     )
 }

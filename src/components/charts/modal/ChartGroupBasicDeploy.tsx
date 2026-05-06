@@ -17,11 +17,10 @@
 import { Component } from 'react'
 import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError, DEFAULT_ROUTE_PROMPT_MESSAGE, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
+import Edit from '../../../assets/icons/ic-edit.svg?react'
+import Error from '../../../assets/icons/ic-warning.svg?react'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { getEnvironmentListMin } from '../../../services/service'
-import { Prompt } from 'react-router-dom'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
@@ -227,7 +226,6 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     >
                         Advanced Options
                     </button>
-                    <Prompt when={this.props.loading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                     <DialogFormSubmit tabIndex={3}>Deploy Chart</DialogFormSubmit>
                 </div>
             </DialogForm>

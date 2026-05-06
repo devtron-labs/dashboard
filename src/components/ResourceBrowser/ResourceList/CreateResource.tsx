@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { type JSX, useEffect, useState } from 'react'
 
 import {
+    API_STATUS_CODES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -27,15 +28,19 @@ import {
     GenericEmptyState,
     handleAnalyticsEvent,
     InfoBlock,
+    ServerErrors,
     showError,
+    TOAST_ACCESS_DENIED,
+    ToastManager,
+    ToastVariantType,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
-import { ReactComponent as MechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
+import CloseIcon from '../../../assets/icons/ic-cross.svg?react'
+import Error from '../../../assets/icons/ic-error-exclamation.svg?react'
+import Edit from '../../../assets/icons/ic-pencil.svg?react'
+import Success from '../../../assets/icons/ic-success.svg?react'
+import MechanicalOperation from '../../../assets/img/ic-mechanical-operation.svg?react'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType } from '../Types'
@@ -89,7 +94,14 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                 setNeedsUpdate(true)
             }
         } catch (err) {
-            showError(err)
+            if ((err as ServerErrors).code === API_STATUS_CODES.PERMISSION_DENIED) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.notAuthorized,
+                    description: (err as ServerErrors).errors?.[0]?.userMessage || TOAST_ACCESS_DENIED.SUBTITLE,
+                })
+            } else {
+                showError(err)
+            }
         } finally {
             setLoader(false)
         }

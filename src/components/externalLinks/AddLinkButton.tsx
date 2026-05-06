@@ -16,7 +16,7 @@
 
 import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import Add from '@Icons/ic-add.svg?react'
 
 import { AddLinkButtonProps } from './ExternalLinks.type'
 

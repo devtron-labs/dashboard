@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { ReactComponent as CaretIcon } from '../../assets/icons/ic-chevron-down.svg'
+import { type JSX, useEffect, useState } from 'react'
+import CaretIcon from '../../assets/icons/ic-chevron-down.svg?react'
 import { MODES } from '../../config'
 import { getCIConfigDiffValues } from './CIConfig.utils'
 import { CIBuildConfigDiffProps, CIConfigDiffType } from './types'

@@ -23,20 +23,21 @@ import {
     getIsRequestAborted,
     logExceptionToSentry,
     OptionType,
+    SegmentedControl,
+    SegmentedControlProps,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
     SEMANTIC_VERSION_DOCUMENTATION_LINK,
     stopPropagation,
-    StyledRadioGroup,
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
-import { ReactComponent as ICLegoBlock } from '@Icons/ic-lego-block.svg'
-import { ReactComponent as ICTag } from '@Icons/ic-tag.svg'
-import { ReactComponent as ICVisibilityOn } from '@Icons/ic-visibility-on.svg'
+import ICHelp from '@Icons/ic-help.svg?react'
+import ICLegoBlock from '@Icons/ic-lego-block.svg?react'
+import ICTag from '@Icons/ic-tag.svg?react'
+import ICVisibilityOn from '@Icons/ic-visibility-on.svg?react'
 
 import CreatePluginFormField from './CreatePluginFormField'
 import CreatePluginInputVariableContainer from './CreatePluginInputVariableContainer'
@@ -65,16 +66,6 @@ const CreatePluginFormContent = ({
 
     const { currentTab, name, pluginIdentifier, docLink, pluginVersion, description, tags, inputVariables, icon } =
         pluginForm
-
-    const handleTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const targetMode = e.target.value as CreatePluginFormViewType
-
-        if (targetMode === currentTab) {
-            return
-        }
-
-        handleChange({ action: CreatePluginActionType.UPDATE_CURRENT_TAB, payload: targetMode })
-    }
 
     const handlePluginSelection: SelectPickerProps['onChange'] = (newValue: SelectPickerOptionType) => {
         handleChange({
@@ -209,20 +200,31 @@ const CreatePluginFormContent = ({
 
     const showPluginDetailFields = currentTab !== CreatePluginFormViewType.EXISTING_PLUGIN || !!name
 
+    const CREATE_PLUGIN_FORM_VIEW_TYPE_SEGMENTS = Object.values(CreatePluginFormViewType).map((tab) => ({
+        label: tab,
+        value: tab,
+    }))
+
+    const handleSegmentedControlChange: SegmentedControlProps['onChange'] = (selectedSegment) => {
+        const targetMode = selectedSegment.value as CreatePluginFormViewType
+
+        if (targetMode === currentTab) {
+            return
+        }
+
+        handleChange({ action: CreatePluginActionType.UPDATE_CURRENT_TAB, payload: targetMode })
+    }
+
     return (
         <div className="flexbox-col flex-grow-1 dc__overflow-auto p-20 dc__gap-16">
-            <StyledRadioGroup
-                className="gui-yaml-switch dc__no-shrink dc__content-start"
-                onChange={handleTabChange}
-                initialTab={currentTab}
-                name="create-plugin-control"
-            >
-                {Object.values(CreatePluginFormViewType).map((tab) => (
-                    <StyledRadioGroup.Radio value={tab} key={tab} className="fs-12 cn-7 fw-6 lh-20">
-                        {tab}
-                    </StyledRadioGroup.Radio>
-                ))}
-            </StyledRadioGroup>
+            <div className="dc__no-shrink">
+                <SegmentedControl
+                    segments={CREATE_PLUGIN_FORM_VIEW_TYPE_SEGMENTS}
+                    value={currentTab}
+                    onChange={handleSegmentedControlChange}
+                    name="create-plugin-control"
+                />
+            </div>
 
             {currentTab === CreatePluginFormViewType.NEW_PLUGIN && (
                 <EditImageFormField

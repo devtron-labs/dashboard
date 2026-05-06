@@ -19,12 +19,15 @@ import { GroupBase } from 'react-select'
 
 import {
     AppListConstants,
+    FiltersTypeEnum,
     GroupedFilterSelectPickerProps,
     GroupedOptionsType,
+    InfrastructureManagementAppListType,
     OptionType,
     SelectPickerOptionType,
     SERVER_MODE,
     stringComparatorBySortOrder,
+    TableColumnType,
     Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -32,46 +35,35 @@ import ArgoCDAppIcon from '@Icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
 import { Cluster } from '@Services/service.types'
 
-import { URLS } from '../../../config'
 import {
+    AppListFilterKey,
     AppListFilterMenuItemType,
+    AppListSortableKeys,
     AppListUrlFilters,
     AppListUrlFiltersType,
     AppStatuses,
     AppStatusesDTO,
+    GenericAppListRowType,
     GetAppListFiltersParams,
     useFilterOptionsProps,
 } from './AppListType'
-import { APPS_WITH_NO_PROJECT_OPTION, SELECT_CLUSTER_TIPPY } from './Constants'
+import { APP_LIST_HEADERS, ENVIRONMENT_HEADER_TIPPY_CONTENT, SELECT_CLUSTER_TIPPY } from './Constants'
 
-export const getChangeAppTabURL = (appTabType) => {
-    switch (appTabType) {
-        case AppListConstants.AppTabs.HELM_APPS:
-            return URLS.HELM_APP_LIST
-        case AppListConstants.AppTabs.ARGO_APPS:
-            return URLS.ARGO_APP_LIST
-        case AppListConstants.AppTabs.FLUX_APPS:
-            return URLS.FLUX_APP_LIST
-        default:
-            return URLS.DEVTRON_APP_LIST
-    }
-}
-
-export const getAppTabNameFromAppType = (appType: string) => {
+export const getAppTabNameFromAppType = (appType: InfrastructureManagementAppListType) => {
     switch (appType) {
-        case AppListConstants.AppType.HELM_APPS:
+        case InfrastructureManagementAppListType.HELM:
             return AppListConstants.AppTabs.HELM_APPS
-        case AppListConstants.AppType.ARGO_APPS:
+        case InfrastructureManagementAppListType.ARGO_CD:
             return AppListConstants.AppTabs.ARGO_APPS
-        case AppListConstants.AppType.FLUX_APPS:
+        case InfrastructureManagementAppListType.FLUX_CD:
             return AppListConstants.AppTabs.FLUX_APPS
         default:
             return AppListConstants.AppTabs.DEVTRON_APPS
     }
 }
 
-export const renderIcon = (appType: string): string => {
-    if (appType === AppListConstants.AppType.FLUX_APPS) {
+export const renderIcon = (appType: InfrastructureManagementAppListType): string => {
+    if (appType === InfrastructureManagementAppListType.FLUX_CD) {
         return FluxCDAppIcon
     }
     return ArgoCDAppIcon
@@ -84,6 +76,7 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [AppListUrlFilters.cluster]: searchParams.getAll(AppListUrlFilters.cluster),
     [AppListUrlFilters.namespace]: searchParams.getAll(AppListUrlFilters.namespace),
     [AppListUrlFilters.templateType]: searchParams.getAll(AppListUrlFilters.templateType),
+    [AppListUrlFilters.labelSelector]: searchParams.get(AppListUrlFilters.labelSelector) ?? '',
 })
 
 export const getFormattedFilterLabel = (filterType: AppListUrlFilters) => {
@@ -128,7 +121,6 @@ export const useFilterOptions = ({
 
     const projectOptions: GroupedOptionsType[] = useMemo(
         () => [
-            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
             {
                 label: 'Projects',
                 options: appListFiltersResponse
@@ -208,17 +200,18 @@ export const useFilterOptions = ({
 }
 
 export const getFilterChipConfig = (
-    filterConfig: AppListUrlFiltersType,
-    appType: string,
+    filterConfig: Omit<AppListUrlFiltersType, AppListUrlFilters.labelSelector>,
+    appType: InfrastructureManagementAppListType,
 ): Partial<AppListUrlFiltersType> => {
     const { cluster, namespace, templateType } = filterConfig
     switch (appType) {
-        case AppListConstants.AppType.ARGO_APPS:
+        case InfrastructureManagementAppListType.ARGO_CD:
             return { cluster, namespace }
-        case AppListConstants.AppType.FLUX_APPS:
+        case InfrastructureManagementAppListType.FLUX_CD:
             return { cluster, namespace, templateType }
-        default:
+        default: {
             return { ...filterConfig, templateType: [] }
+        }
     }
 }
 
@@ -229,7 +222,8 @@ export const getAppListFilters = ({
     isArgoInstalled,
     serverMode,
     selectedEnvironments,
-}: GetAppListFiltersParams): GroupedFilterSelectPickerProps<AppListUrlFilters>['options'] => [
+    isDevtronAppList,
+}: GetAppListFiltersParams): GroupedFilterSelectPickerProps<AppListFilterKey>['options'] => [
     {
         items: [
             ...((!(isExternalArgo || isExternalFlux)
@@ -295,6 +289,68 @@ export const getAppListFilters = ({
                 isDisabled: !clusterIdsCsv,
                 tooltipProps: { content: !clusterIdsCsv ? SELECT_CLUSTER_TIPPY : null },
             },
+            ...((isDevtronAppList
+                ? [
+                      {
+                          id: AppListUrlFilters.labelSelector,
+                          label: 'Tags',
+                          startIcon: { name: 'ic-tag' },
+                      },
+                  ]
+                : []) as AppListFilterMenuItemType[]),
         ],
     },
 ]
+
+export const getGenericAppListColumns = (isFluxCDAppList: boolean) =>
+    [
+        {
+            field: AppListSortableKeys.APP_NAME,
+            label: APP_LIST_HEADERS.AppName,
+            isSortable: true,
+            size: {
+                fixed: 250,
+            },
+            comparator: stringComparatorBySortOrder,
+        },
+        {
+            field: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
+            label: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
+            size: {
+                fixed: 164,
+            },
+        },
+        ...(isFluxCDAppList
+            ? [
+                  {
+                      field: APP_LIST_HEADERS.FluxCDTemplateType,
+                      label: APP_LIST_HEADERS.FluxCDTemplateType,
+                      size: {
+                          fixed: 120,
+                      },
+                  } as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>,
+              ]
+            : []),
+        {
+            field: APP_LIST_HEADERS.Environment,
+            label: APP_LIST_HEADERS.Environment,
+            size: {
+                fixed: 200,
+            },
+            infoTooltipText: ENVIRONMENT_HEADER_TIPPY_CONTENT,
+        },
+        {
+            field: APP_LIST_HEADERS.Cluster,
+            label: APP_LIST_HEADERS.Cluster,
+            size: {
+                fixed: 150,
+            },
+        },
+        {
+            field: APP_LIST_HEADERS.Namespace,
+            label: APP_LIST_HEADERS.Namespace,
+            size: {
+                fixed: 150,
+            },
+        },
+    ] as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[]

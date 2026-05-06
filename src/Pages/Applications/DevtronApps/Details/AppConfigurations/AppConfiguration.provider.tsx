@@ -54,7 +54,6 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
             deleteApp,
             canShowExternalLinks,
             showCannotDeleteTooltip,
-            isWorkflowEditorUnlocked: state.isUnlocked.workflowEditor,
             toggleRepoSelectionTippy,
             getRepo: showRepoOnDelete,
             isJobView: resourceKind === ResourceKindType.job,
