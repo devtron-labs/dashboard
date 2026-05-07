@@ -63,7 +63,7 @@ import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
 import React from 'react'
 import { AddNotificationButton } from './AddNotificationButton'
 
-const isEnterprise = importComponentFromFELibrary('isEnterprise', null, 'function')
+const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 export class NotificationTab extends Component<any, NotificationTabState> {
     bulkMultiSelectWidgetRef = React.createRef<HTMLDivElement>()
 

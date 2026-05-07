@@ -16,6 +16,7 @@
 
 import { type JSX, useEffect, useRef, useState } from 'react'
 import { generatePath, useLocation, useNavigate } from 'react-router-dom'
+import { ILink, Terminal } from '@xterm/xterm'
 
 import {
     Checkbox,
@@ -139,7 +140,7 @@ const ClusterTerminal = ({
     const [hideManagedFields, setHideManagedFields] = useState<boolean>(true)
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
-    const terminalRef = useRef(null)
+    const terminalRef = useRef<Terminal>(null)
     const prevNodeRef = useRef('')
     const currNodeRef = useRef('')
     const containerRef = useRef(null)
@@ -671,14 +672,38 @@ const ClusterTerminal = ({
         setHideManagedFields(!hideManagedFields)
     }
 
-    const renderRegisterLinkMatcher = (terminal) => {
-        const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
-        terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
-            if (text === POD_LINKS.POD_EVENTS) {
-                selectEventsTab()
-            } else if (text === POD_LINKS.POD_MANIFEST) {
-                selectManifestTab()
-            }
+    const registerLinkMatcher = (terminal: Terminal) => {
+        const podLinkTexts = [POD_LINKS.POD_MANIFEST, POD_LINKS.POD_EVENTS]
+        terminal.registerLinkProvider({
+            provideLinks: (bufferLineNumber, callback) => {
+                const line = terminal.buffer.active.getLine(bufferLineNumber - 1)
+                if (!line) {
+                    callback(undefined)
+                    return
+                }
+                const lineText = line.translateToString()
+                const links: ILink[] = []
+                podLinkTexts.forEach((linkText) => {
+                    const index = lineText.indexOf(linkText)
+                    if (index !== -1) {
+                        links.push({
+                            range: {
+                                start: { x: index + 1, y: bufferLineNumber },
+                                end: { x: index + 1 + linkText.length, y: bufferLineNumber },
+                            },
+                            text: linkText,
+                            activate: (_event, text) => {
+                                if (text === POD_LINKS.POD_EVENTS) {
+                                    selectEventsTab()
+                                } else if (text === POD_LINKS.POD_MANIFEST) {
+                                    selectManifestTab()
+                                }
+                            },
+                        })
+                    }
+                })
+                callback(links.length > 0 ? links : undefined)
+            },
         })
     }
 
@@ -1042,7 +1067,7 @@ const ClusterTerminal = ({
                 socketConnection,
                 isTerminalTab: selectedTabIndex === 0 && isAdminTerminalVisible,
                 sessionId,
-                registerLinkMatcher: renderRegisterLinkMatcher,
+                registerLinkMatcher,
             },
         },
         metadata: {

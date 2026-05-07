@@ -44,8 +44,11 @@ import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { AppType } from '../../appDetails.type'
 import { getInstalledChartDetailWithResourceTree } from '../../appDetails.api'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWorkloadsModalProps) {
+export default function ScaleWorkloadsModal({ appId, onClose }: ScaleWorkloadsModalProps) {
+    const navigate = useNavigate()
+    const { pathname } = useLocation()
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
         scaleDown: {
             isChecked: false,
@@ -331,7 +334,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
                 setFetchingLatestDetails(true)
                 _setWorkloadsList(_workloadsList)
-                history.push(`${history.location.pathname}?refetchData=true`)
+                navigate(`${pathname}?refetchData=true`)
             }
             await _getAndSetAppDetail()
         } catch (e) {

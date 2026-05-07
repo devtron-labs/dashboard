@@ -107,4 +107,5 @@ export interface GetEnvironmentsFromClusterNamespaceProps {
 export interface TableAdditionalPropsType extends Pick<DevtronAppListProps, 'filterConfig'> {
     noRows: boolean
     isSearchOrFilterApplied: boolean
+    redirectToAppDetails: (app: App, envId: number) => string
 }

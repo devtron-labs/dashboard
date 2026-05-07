@@ -287,10 +287,7 @@ const EnvironmentSelectorComponent = ({
                         isExternalFlux ||
                         isExternalArgo
                     ) && (
-                        <div
-                            data-testid="dot-button-app-details"
-                            className="ml-8"
-                        >
+                        <div data-testid="dot-button-app-details" className="ml-8">
                             <ActionMenu
                                 id="cluster-action-menu"
                                 onClick={handleActionMenuClick}
@@ -360,11 +357,7 @@ const EnvironmentSelectorComponent = ({
                 />
             )}
             {showWorkloadsModal && (
-                <ScaleWorkloadsModal
-                    appId={appIdentifier}
-                    onClose={() => setShowWorkloadsModal(false)}
-                    history={history}
-                />
+                <ScaleWorkloadsModal appId={appIdentifier} onClose={() => setShowWorkloadsModal(false)} />
             )}
         </div>
     )

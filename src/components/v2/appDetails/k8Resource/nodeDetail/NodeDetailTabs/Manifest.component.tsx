@@ -461,7 +461,7 @@ const ManifestComponent = ({
                     if (err.code === 403) {
                         ToastManager.showToast({
                             variant: ToastVariantType.notAuthorized,
-                            description: TOAST_ACCESS_DENIED.SUBTITLE,
+                            description: (err as ServerErrors).errors?.[0]?.userMessage || TOAST_ACCESS_DENIED.SUBTITLE,
                         })
                     } else if (err.code === 400 || err.code === 409 || err.code === 422) {
                         const er = err.errors && err.errors[0]

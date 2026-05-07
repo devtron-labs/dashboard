@@ -66,7 +66,7 @@ const EnvironmentNameCellComponent = ({ row, value }: TableCellComponentProps<En
 const ApplicationCountCellComponent = ({ value }: TableCellComponentProps<EnvAppList, FiltersTypeEnum.URL>) => {
     const count = (value as number) || 0
     return (
-        <div>
+        <div className="py-10">
             {count}&nbsp;
             {count === 0 || count === 1 ? GROUP_LIST_HEADER.APPLICATION : GROUP_LIST_HEADER.APPLICATIONS}
         </div>

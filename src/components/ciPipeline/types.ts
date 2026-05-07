@@ -294,6 +294,7 @@ export interface CIPipelineDataType {
     name: string
     linkedCount: number
     scanEnabled?: boolean
+    dockerfileScanEnabled?: boolean
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
     environmentId?: any

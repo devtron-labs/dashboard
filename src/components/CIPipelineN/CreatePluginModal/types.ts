@@ -21,10 +21,12 @@ import {
     ParentPluginDTO,
     PluginDataStoreType,
     PluginDetailType,
+    PluginStepConditionDTO,
     PortMapType,
     SelectPickerOptionType,
     ServerErrors,
     StepType,
+    ValueConstraintType,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -249,6 +251,9 @@ export interface CreatePluginPayloadPluginStepVariableItemType
     valueType: VariableType['variableType']
     referenceVariableName: VariableType['refVariableName']
     isExposed: true
+    valueConstraint?: ValueConstraintType
+    isRuntimeArg?: VariableType['isRuntimeArg']
+    pluginStepCondition?: Omit<PluginStepConditionDTO, 'id'>[]
 }
 
 interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath' | 'name' | 'description'> {

@@ -2301,6 +2301,34 @@ button.anchor {
 
 .xterm .xterm-viewport {
     width: initial !important;
+    background-color: var(--terminal-bg) !important;
+}
+
+.xterm {
+
+    .xterm-scrollable-element {
+        >.scrollbar.vertical {
+            width: 12px !important;
+
+            .slider {
+                border-radius: 10px !important; // pill shape
+                background: rgba(255, 255, 255, 0.2) !important;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.4) !important;
+                }
+            }
+        }
+
+        >.scrollbar.horizontal {
+            height: 6px !important;
+
+            .slider {
+                border-radius: 10px !important;
+                background: rgba(255, 255, 255, 0.2) !important;
+            }
+        }
+    }
 }
 
 // Radius

@@ -65,7 +65,9 @@ export function getInitData(
     includeWebhookData: boolean = false,
     isJobCard: boolean,
     isTemplateView: AppConfigProps['isTemplateView'],
+    forceDockerfileScan: boolean
 ): Promise<CIPipelineInitData> {
+
     return Promise.all([
         getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),
@@ -102,6 +104,7 @@ export function getInitData(
                         preBuildStage: emptyStepsData(),
                         postBuildStage: emptyStepsData(),
                         scanEnabled,
+                        dockerfileScanEnabled: forceDockerfileScan || false,
                         ciPipelineEditable: true,
                         workflowCacheConfig: pipelineMetaConfig.result.workflowCacheConfig ?? null,
                     },
@@ -420,6 +423,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         preBuildStage,
         postBuildStage,
         scanEnabled: formData.scanEnabled,
+        dockerfileScanEnabled: formData.dockerfileScanEnabled,
         dockerArgs: formData.args
             .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
             .reduce((agg, curr) => {
@@ -621,6 +625,7 @@ function parseCIResponse(
                 args: args.length ? args : [],
                 externalCiConfig: createCurlRequest(ciPipeline.externalCiConfig),
                 scanEnabled: ciPipeline.scanEnabled,
+                dockerfileScanEnabled: ciPipeline.dockerfileScanEnabled,
                 gitHost,
                 webhookEvents,
                 ciPipelineSourceTypeOptions,

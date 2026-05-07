@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import { getSecurityScan, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect } from 'react'
 
-import { UseGetAppSecurityDetailsProps, UseGetAppSecurityDetailsReturnType } from './appDetails.type'
+import { getSecurityScan, getSecurityScanRecommendations, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
+import {
+    UseGetAppSecurityDetailsProps,
+    UseGetAppSecurityDetailsReturnType,
+    UseSecurityRecommendationReturnType,
+} from './appDetails.type'
+
+const SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL = 5000
 
 export const useGetAppSecurityDetails = ({
     appId,
@@ -26,7 +34,7 @@ export const useGetAppSecurityDetails = ({
 }: UseGetAppSecurityDetailsProps): UseGetAppSecurityDetailsReturnType => {
     const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
         () => getSecurityScan({ appId, envId, artifactId, installedAppId }),
-        [appId, envId, installedAppId],
+        [appId, envId, artifactId, installedAppId],
         !!appId || !!installedAppId,
     )
 
@@ -35,5 +43,41 @@ export const useGetAppSecurityDetails = ({
         scanResultResponse,
         scanResultError,
         reloadScanResult,
+    }
+}
+
+export const useGetAppSecurityDetailsRecommendations = ({
+    appId,
+    buildId,
+}: UseGetAppSecurityDetailsProps): UseSecurityRecommendationReturnType => {
+    const [
+        scanRecommendationsResultLoading,
+        scanRecommendationsResultResponse,
+        scanRecommendationsResultError,
+        reloadScanRecommendationsResult,
+    ] = useAsync(() => getSecurityScanRecommendations({ appId, buildId }), [appId, buildId], !!appId && !!buildId)
+
+    const recommendationStatus = scanRecommendationsResultResponse?.result?.status
+    const isDockerfileScanEnabled = scanRecommendationsResultResponse?.result?.scanEnabled
+
+    useEffect(() => {
+        if (!appId || !buildId || !isDockerfileScanEnabled || ![0, 1].includes(recommendationStatus)) {
+            return undefined
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            reloadScanRecommendationsResult()
+        }, SECURITY_SCAN_RECOMMENDATIONS_POLLING_INTERVAL)
+
+        return () => {
+            window.clearTimeout(timeoutId)
+        }
+    }, [appId, buildId, isDockerfileScanEnabled, recommendationStatus, reloadScanRecommendationsResult])
+
+    return {
+        scanRecommendationsResultLoading,
+        scanRecommendationsResultResponse,
+        scanRecommendationsResultError,
+        reloadScanRecommendationsResult,
     }
 }

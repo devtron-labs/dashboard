@@ -9,7 +9,6 @@ import {
     stopPropagation,
     TableCellComponentProps,
     Tooltip,
-    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { App, Environment, TableAdditionalPropsType } from './types'
@@ -17,6 +16,7 @@ import { App, Environment, TableAdditionalPropsType } from './types'
 export const NameCellComponent = ({
     row: { data },
     filterConfig: { searchKey: searchText },
+    redirectToAppDetails,
     isExpandedRow,
 }: TableCellComponentProps<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>) => {
     if (isExpandedRow) {
@@ -34,7 +34,7 @@ export const NameCellComponent = ({
 
     const app = data as App
 
-    const { name, id } = app
+    const { name } = app
 
     return (
         <div className="flex left dc__gap-4 dc__visible-hover dc__visible-hover--parent">
@@ -42,7 +42,7 @@ export const NameCellComponent = ({
             <Tooltip content={name}>
                 <Link
                     className="dc__link cursor dc__truncate"
-                    to={`${URLS.APPLICATION_MANAGEMENT_APP}/${id}/trigger`}
+                    to={redirectToAppDetails(app, app.defaultEnv.id)}
                     onClick={stopPropagation}
                     // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{

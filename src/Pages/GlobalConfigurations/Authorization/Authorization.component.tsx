@@ -19,10 +19,13 @@ import { Route, Routes } from 'react-router-dom'
 
 import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
+
 import './authorization.scss'
 
 const UserAndGroupPermissions = lazy(() => import('./UserAndGroupPermissions'))
 const SSOLogin = lazy(() => import('./SSOLoginServices'))
+const UserGroupRouter = importComponentFromFELibrary('UserGroupRouter', null, 'function')
 
 const Authorization = () => {
     const authorizationContainerRef = useRef<HTMLDivElement>(null)
@@ -30,6 +33,9 @@ const Authorization = () => {
     return (
         <Routes>
             <Route path={BASE_ROUTES.GLOBAL_CONFIG.AUTH.LOGIN_SERVICE} element={<SSOLogin />} />
+            {UserGroupRouter && (
+                <Route path={`${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USER_GROUPS}/*`} element={<UserGroupRouter />} />
+            )}
             <Route
                 path="*"
                 element={
