@@ -86,14 +86,18 @@ const TerminalView = ({
         }
     }, [termDivRef.current])
 
-    const createNewTerminal = () => {
+    const createNewTerminal = async () => {
+        // Ensure the font is loaded before xterm measures character cell dimensions.
+        // Without this, xterm falls back to a system font and gets wrong cell widths.
+        await document.fonts.load('14px Inconsolata').catch(noop)
+
         // eslint-disable-next-line no-param-reassign
         terminalRef.current = new Terminal({
             scrollback: 99999,
             fontSize: 14,
             lineHeight: 1.4,
             cursorBlink: false,
-            fontFamily: 'Inconsolata',
+            fontFamily: 'Inconsolata, monospace',
             screenReaderMode: true,
             theme: {
                 // Cannot use variables here
@@ -208,9 +212,7 @@ const TerminalView = ({
     useEffect(() => {
         if (!terminalRef.current) {
             elementDidMount('#terminal-id')
-                .then(() => {
-                    createNewTerminal()
-                })
+                .then(() => createNewTerminal())
                 .catch(noop)
         }
         if (sessionId && terminalRef.current) {
