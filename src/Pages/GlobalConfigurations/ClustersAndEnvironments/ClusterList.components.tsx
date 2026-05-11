@@ -20,6 +20,7 @@ import { generatePath, Link, useLocation, useNavigate, useParams } from 'react-r
 import {
     ActionMenu,
     ActionMenuItemType,
+    Badge,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -203,7 +204,17 @@ export const ClusterListCellComponent: FunctionComponent<
 > = ({
     field,
     row: {
-        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
+        data: {
+            clusterId,
+            clusterName,
+            clusterType,
+            envCount,
+            serverUrl,
+            clusterCategory,
+            isVirtualCluster,
+            status,
+            autoscalerProfile,
+        },
     },
     isRowActive,
     signals,
@@ -250,6 +261,18 @@ export const ClusterListCellComponent: FunctionComponent<
             )
         case ClusterListFields.CLUSTER_TYPE:
             return <span className="flex left py-10">{clusterType}</span>
+        case ClusterListFields.AUTOSCALER_PROFILE:
+            return autoscalerProfile ? (
+                <div className="flex left py-10">
+                    <Badge
+                        variant="custom"
+                        fontColor="V500"
+                        bgColor="V200"
+                        label={autoscalerProfile}
+                        size={ComponentSizeType.xxs}
+                    />
+                </div>
+            ) : null
         case ClusterListFields.ENV_COUNT:
             return <span className="flex left py-10">{envCount ? `${envCount}` : 'No'} Environments</span>
         case ClusterListFields.CLUSTER_CATEGORY:
