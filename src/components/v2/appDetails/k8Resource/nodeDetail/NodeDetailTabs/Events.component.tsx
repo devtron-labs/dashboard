@@ -68,8 +68,7 @@ const EventsComponent = ({
             )
                 .then((response) => {
                     /* Sorting the EventList object on the basis of Last TimeStamp. */
-                    const eventResult =
-                        response.result.items || (response.result.events && response.result.events.items) || []
+                    const eventResult = response.result.items || response.result.events?.items || []
                     eventResult.sort((a, b) => {
                         if (a.lastTimestamp > b.lastTimestamp) {
                             return -1

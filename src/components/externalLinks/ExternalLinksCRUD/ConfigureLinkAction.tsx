@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
+import { type JSX, ReactNode } from 'react'
 import ReactSelect from 'react-select'
+
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
+    CustomInput,
     RadioGroup,
     RadioGroupItem,
-    CustomInput,
-    Tooltip,
     Textarea,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import CloseIcon from '../../../assets/icons/ic-cross.svg?react'
-import Error from '../../../assets/icons/ic-warning.svg?react'
+import ErrorIcon from '../../../assets/icons/ic-warning.svg?react'
+import { CONFIGURE_LINK_NO_NAME } from '../../../config'
+import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import {
     ConfigureLinkActionType,
     ExternalLinkScopeType,
@@ -33,10 +38,7 @@ import {
     OptionTypeWithIcon,
 } from '../ExternalLinks.type'
 import { ToolSelectStyles } from '../ExternalLinks.utils'
-import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import IdentifierSelector from './IdentifierSelector'
-import { CONFIGURE_LINK_NO_NAME } from '../../../config'
-import { ReactNode, type JSX } from 'react'
 
 export default function ConfigureLinkAction({
     isFullMode,
@@ -56,7 +58,7 @@ export default function ConfigureLinkAction({
             return (
                 <div className="error-label flex left dc__align-start fs-11 mt-4">
                     <div className="error-label-icon icon-dim-16">
-                        <Error className="icon-dim-16" />
+                        <ErrorIcon className="icon-dim-16" />
                     </div>
                     <div className="ml-4 cr-5">{label}</div>
                 </div>
@@ -70,6 +72,7 @@ export default function ConfigureLinkAction({
             case 'invalidProtocol':
                 return 'The url should start with http:// or https://'
             default:
+                // biome-ignore lint/complexity/noUselessFragments: Legacy
                 return <></>
         }
     }
@@ -117,11 +120,12 @@ export default function ConfigureLinkAction({
             case LinkValidationKeys.name:
                 link.invalidName = !link.name.trim()
                 break
-            case LinkValidationKeys.urlTemplate:
+            case LinkValidationKeys.urlTemplate: {
                 const trimmedURLTemplate = link.urlTemplate.replace(/\s+/g, '')
                 link.invalidUrlTemplate = !trimmedURLTemplate
                 link.invalidProtocol = trimmedURLTemplate && !trimmedURLTemplate.startsWith('http')
                 break
+            }
             default:
                 break
         }
@@ -169,6 +173,7 @@ export default function ConfigureLinkAction({
                 />
                 {!isAppConfigView && (
                     <div className="link-scope flex left">
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         <label className="mr-16">Show link in:</label>
                         <RadioGroup
                             className="external-link-scope__radio-group"

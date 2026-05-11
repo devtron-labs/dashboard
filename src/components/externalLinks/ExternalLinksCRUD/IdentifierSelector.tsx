@@ -17,16 +17,18 @@
 import { type JSX, useEffect, useState } from 'react'
 import { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
+
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ClearIndicator,
     MultiValueRemove,
     noop,
     ReactSelectInputAction,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
+
 import AddIcon from '../../../assets/icons/ic-add.svg?react'
+import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
 import { IdentifierSelectStyles } from '../ExternalLinks.utils'
 
 export default function IdentifierSelector({

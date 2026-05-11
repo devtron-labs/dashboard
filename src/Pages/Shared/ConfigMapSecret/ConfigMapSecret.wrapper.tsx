@@ -18,11 +18,11 @@ import { useParams } from 'react-router-dom'
 
 import { CMSecretComponentType, ErrorScreenManager, Progressing, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getAppChartRefForAppAndEnv } from '@Services/service'
-
 import { ConfigMapSecretContainer } from './ConfigMapSecretContainer'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { CMSecretWrapperProps } from './types'
+
+import { getAppChartRefForAppAndEnv } from '@Services/service'
 
 export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     // PROPS

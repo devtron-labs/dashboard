@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import dayjs from 'dayjs'
+import moment from 'moment'
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import dayjs from 'dayjs'
-import moment from 'moment'
 
 import {
     API_STATUS_CODES,
@@ -207,9 +207,9 @@ const EditAPIToken = ({
                 <div className="flex dc__content-space py-16 dc__gap-8">
                     <div className="flex row ml-0">
                         <div className="cn-9 fw-6 fs-16">
-                            <span className="cb-5 cursor" onClick={redirectToTokenList}>
+                            <button type="button" className="cb-5 dc__transparent" onClick={redirectToTokenList}>
                                 {API_COMPONENTS.TITLE}
-                            </span>
+                            </button>
                             {API_COMPONENTS.EDIT_API_TITLE}
                         </div>
                         {renderQuestionwithTippy()}
@@ -247,6 +247,7 @@ const EditAPIToken = ({
                         error={invalidDescription ? 'Max 350 characters allowed.' : null}
                     />
                     {!!editData?.token?.length && (
+                        // biome-ignore lint/a11y/noLabelWithoutControl: Legacy
                         <label className="form__row">
                             <span className="form__label">Token</span>
                             <div className="flex dc__content-space top cn-9">

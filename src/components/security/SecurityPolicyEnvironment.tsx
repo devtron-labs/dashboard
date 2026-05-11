@@ -16,16 +16,18 @@
 
 import { Component } from 'react'
 import { NavLink, useParams } from 'react-router-dom'
+
 import {
-    showError,
+    getEnvironmentListMinPublic,
     Progressing,
-    sortCallback,
     Reload,
     SearchBar,
-    getEnvironmentListMinPublic,
+    showError,
+    sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SecurityPolicyEdit } from './SecurityPolicyEdit'
+
 import { ViewType } from '../../config'
+import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { SecurityPolicyEnvironmentState } from './security.types'
 
 export class SecurityPolicyEnvironment extends Component<
@@ -88,7 +90,7 @@ export class SecurityPolicyEnvironment extends Component<
                                 handleEnter={this.handleSearchChange}
                                 inputProps={{
                                     placeholder: 'Search Environment',
-                                    autoFocus: true
+                                    autoFocus: true,
                                 }}
                                 dataTestId="security-policy-environment-search"
                             />

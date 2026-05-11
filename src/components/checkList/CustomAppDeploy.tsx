@@ -15,8 +15,10 @@
  */
 
 import { NavLink } from 'react-router-dom'
-import Deploy from '../../assets/img/ic-checklist-app@2x.png'
+
 import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import Deploy from '../../assets/img/ic-checklist-app@2x.png'
 
 interface CustomAppDeployType {
     parentClassName?: string
@@ -26,13 +28,10 @@ interface CustomAppDeployType {
 export default function CustomAppDeploy({ parentClassName, imageClassName }: CustomAppDeployType) {
     return (
         <div className={`bg__primary mb-8 br-4 ${parentClassName}`}>
-            <img className={`img-width pt-12 pl-16 ${imageClassName}`} src={Deploy} />
+            <img alt="" className={`img-width pt-12 pl-16 ${imageClassName}`} src={Deploy} />
             <div className="pl-16 pr-16 pt-12 pb-12 fs-13">
                 <div className="cn-9"> Create, build and deploy a custom application.</div>
-                <NavLink
-                    to={ROUTER_URLS.CREATE_DEVTRON_APP}
-                    className="dc__no-decor cb-5 fw-6"
-                >
+                <NavLink to={ROUTER_URLS.CREATE_DEVTRON_APP} className="dc__no-decor cb-5 fw-6">
                     Create Custom App
                 </NavLink>
             </div>

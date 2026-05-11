@@ -32,8 +32,6 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { deleteChartValues } from '@Components/charts/charts.service'
-import { URLS } from '@Config/routes'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 import {
@@ -49,6 +47,9 @@ import {
     PresetValuesTableAdditionalProps,
     PresetValuesTableProps,
 } from './types'
+
+import { deleteChartValues } from '@Components/charts/charts.service'
+import { URLS } from '@Config/routes'
 
 const renderEmptyStateButton = (path: string) => () => (
     <Button

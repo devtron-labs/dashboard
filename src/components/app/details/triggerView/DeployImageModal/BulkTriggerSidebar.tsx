@@ -18,13 +18,13 @@ import {
     TriggerBlockType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BulkCDDetailType } from '@Components/ApplicationGroup/AppGroup.types'
-import { BULK_CD_MESSAGING } from '@Components/ApplicationGroup/Constants'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { getIsMaterialApproved } from '../cdMaterials.utils'
 import { BulkTriggerSidebarProps } from './types'
 import { getIsExceptionUser } from './utils'
+
+import { BulkCDDetailType } from '@Components/ApplicationGroup/AppGroup.types'
+import { BULK_CD_MESSAGING } from '@Components/ApplicationGroup/Constants'
+import { importComponentFromFELibrary } from '@Components/common'
 
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
@@ -45,6 +45,7 @@ const BulkTriggerSidebar = ({
     const tagOptions: SelectPickerOptionType<string>[] = useMemo(() => {
         const tagNames = new Set<string>()
         Object.values(appInfoMap).forEach((app) => {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             app.materialResponse?.appReleaseTagNames?.forEach((tag) => tagNames.add(tag))
         })
 
@@ -234,6 +235,7 @@ const BulkTriggerSidebar = ({
             </div>
 
             {sortedAppValues.map((appDetails) => (
+                // biome-ignore lint/a11y/useSemanticElements: its fine here, since contains buttons inside
                 <div
                     key={`app-${appDetails.appId}`}
                     className={`p-16 dc__border-bottom-n1 cursor w-100 dc__tab-focus ${

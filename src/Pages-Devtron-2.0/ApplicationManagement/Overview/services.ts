@@ -1,8 +1,5 @@
 import { get, getUrlWithSearchParams, MetricsInfoCardProps, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '@Config/constants'
-import { RelativeTimeWindow, TIME_WINDOW } from '@PagesDevtron2.0/Shared/types'
-
 import { GLANCE_METRICS_CARDS_CONFIG, WORKFLOW_OVERVIEW_METRICS_CARDS_CONFIG } from './constants'
 import {
     AppOverviewDoraMetricsDTO,
@@ -25,6 +22,9 @@ import {
     getValueStringFromMetricItem,
     parseTimestampAccToWindow,
 } from './utils'
+
+import { Routes } from '@Config/constants'
+import { RelativeTimeWindow, TIME_WINDOW } from '@PagesDevtron2.0/Shared/types'
 
 export const useGetGlanceConfig = () =>
     useQuery<AppsGlanceMetricsSummaryDTO, MetricsInfoCardProps[]>({
@@ -120,7 +120,7 @@ export const useGetBuildDeploymentActivityDetailed = (
             ),
         select: ({ result }) => {
             const triggerTrend = getActivityKindTrendFromResult(activityKind, result)
-            const parsedResult = triggerTrend.map((item) => ({
+            const parsedResult = triggerTrend.map<BuildDeploymentActivityDetailed>((item) => ({
                 ...item,
                 timestampLabel: parseTimestampAccToWindow(item?.timestamp ?? '', timeWindow),
             }))

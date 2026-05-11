@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { Component, PropsWithChildren } from 'react'
 import * as Sentry from '@sentry/browser'
+import { Component, PropsWithChildren } from 'react'
+
 import { DISCORD_LINK, Reload } from '@devtron-labs/devtron-fe-common-lib'
+
 import bugFixing from '../../assets/img/bug-fixing.webp'
 
 interface errorBoundaryState {
@@ -25,7 +27,8 @@ interface errorBoundaryState {
     isChunkLoadError: boolean
 }
 
-interface ErrorBoundaryProps {}
+// biome-ignore lint/complexity/noBannedTypes: Legacy
+type ErrorBoundaryProps = {}
 
 export default class ErrorBoundary extends Component<PropsWithChildren<ErrorBoundaryProps>, errorBoundaryState> {
     constructor(props) {
@@ -33,7 +36,7 @@ export default class ErrorBoundary extends Component<PropsWithChildren<ErrorBoun
         this.state = { eventId: null, hasError: false, isChunkLoadError: false }
     }
 
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError() {
         return { hasError: true }
     }
 
@@ -50,7 +53,7 @@ export default class ErrorBoundary extends Component<PropsWithChildren<ErrorBoun
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (prevProps.children !== this.props.children) {
             this.setState({ hasError: false })
         }

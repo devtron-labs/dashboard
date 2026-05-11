@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import InfoIcon from '../../../assets/icons/info-filled.svg?react'
 
 const ReleaseStatusEmptyState = ({ message, description }) => {

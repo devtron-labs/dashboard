@@ -22,8 +22,8 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     CodeEditor,
-    createNewResource,
     CreateResourceDTO,
+    createNewResource,
     Drawer,
     GenericEmptyState,
     handleAnalyticsEvent,
@@ -37,7 +37,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import CloseIcon from '../../../assets/icons/ic-cross.svg?react'
-import Error from '../../../assets/icons/ic-error-exclamation.svg?react'
+import ErrorIcon from '../../../assets/icons/ic-error-exclamation.svg?react'
 import Edit from '../../../assets/icons/ic-pencil.svg?react'
 import Success from '../../../assets/icons/ic-success.svg?react'
 import MechanicalOperation from '../../../assets/img/ic-mechanical-operation.svg?react'
@@ -215,7 +215,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                             <div className="flexbox">
                                 {resource.error ? (
                                     <>
-                                        <Error
+                                        <ErrorIcon
                                             className="icon-dim-16 mt-3 mr-8"
                                             data-testid={`${CreateResourceStatus.failed}-status`}
                                         />

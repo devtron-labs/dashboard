@@ -15,9 +15,11 @@
  */
 
 import React, { Component } from 'react'
+
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import Warn from '../../../assets/icons/ic-warning.svg?react'
+
 import close from '../../../assets/icons/ic-close.svg'
+import Warn from '../../../assets/icons/ic-warning.svg?react'
 
 export class ValuesYamlConfirmDialog extends Component<{
     className: string
@@ -53,6 +55,7 @@ export class ValuesYamlConfirmDialog extends Component<{
                 <div className="modal__body">
                     <div className="flexbox flex-justify">
                         <Warn className="modal__main-img" />
+                        {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <img src={close} alt="close" className="icon-dim-24 cursor" onClick={this.props.close} />
                     </div>
                     <div className="modal__body-content">

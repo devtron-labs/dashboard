@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import dayjs from 'dayjs'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import dayjs from 'dayjs'
 
 import {
     CustomInput,
@@ -31,7 +31,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Error from '../../../../assets/icons/ic-warning.svg?react'
+import ErrorIcon from '../../../../assets/icons/ic-warning.svg?react'
 import { importComponentFromFELibrary } from '../../../../components/common'
 import { REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -259,9 +259,9 @@ const CreateAPIToken = ({
                 <div className="flex dc__content-space py-16 dc__gap-8">
                     <div className="flex row ml-0 h-32">
                         <div className="cn-9 fw-6 fs-16">
-                            <span className="cb-5 cursor" onClick={redirectToTokenList}>
+                            <button type="button" className="cb-5 cursor dc__transparent" onClick={redirectToTokenList}>
                                 {API_COMPONENTS.TITLE}
-                            </span>
+                            </button>
                             {API_COMPONENTS.NEW_API_TITLE}
                         </div>
                         {renderQuestionwithTippy()}
@@ -297,7 +297,7 @@ const CreateAPIToken = ({
                         </div>
                         {formData.dateType === 'Custom' && formDataErrorObj.invalidCustomDate && (
                             <span className="form__error">
-                                <Error className="form__icon form__icon--error" />
+                                <ErrorIcon className="form__icon form__icon--error" />
                                 {/* eslint-disable-next-line react/no-unescaped-entities */}
                                 Custom expiration can't be blank. Please select a date.
                             </span>

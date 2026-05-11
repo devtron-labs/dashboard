@@ -26,15 +26,15 @@ import {
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICBookOpen from '@Icons/ic-book-open.svg?react'
-import ICPencil from '@Icons/ic-pencil.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { MERGE_STRATEGY_OPTIONS } from '../constants'
 import { APPLICATION_METRICS_DROPDOWN_OPTIONS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 import { GUIView as DeploymentTemplateGUIView } from './GUIView'
 import { DeploymentTemplateFormProps } from './types'
 import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICBookOpen from '@Icons/ic-book-open.svg?react'
+import ICPencil from '@Icons/ic-pencil.svg?react'
 
 const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 

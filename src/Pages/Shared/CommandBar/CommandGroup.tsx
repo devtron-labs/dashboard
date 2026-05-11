@@ -37,10 +37,12 @@ const CommandGroup = ({
             const iconColorWithFallback = item.iconColor || 'N700'
 
             return (
+                // biome-ignore lint/a11y/useKeyWithClickEvents: Role option is used for accessibility and keyboard navigation, but the onClick event is still necessary for mouse users, and the onKeyDown event is handled at a higher level for keyboard users
                 <div
                     className={`flexbox px-16 ${item.subText ? 'py-8' : 'py-12'} cursor dc__align-items-center dc__gap-12 dc__content-space br-8 bg__hover ${getIsItemSelected(index) ? 'command-bar__container--selected-item' : ''}`}
                     role="option"
                     id={item.id}
+                    key={`command-bar-item-${item.id}`}
                     aria-selected={getIsItemSelected(index)}
                     ref={updateItemRef(item.id)}
                     onClick={getHandleItemClick(item)}
@@ -76,6 +78,7 @@ const CommandGroup = ({
                 </h2>
             </div>
 
+            {/** biome-ignore lint/a11y/useSemanticElements: Its semantically valid */}
             <div className="flexbox-col" role="group" aria-labelledby={id}>
                 {renderContent()}
             </div>

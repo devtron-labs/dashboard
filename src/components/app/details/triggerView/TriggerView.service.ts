@@ -2,13 +2,13 @@ import { useRef } from 'react'
 
 import { DEFAULT_ENV, getEnvironmentListMinPublic, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getWorkflowStatus } from '@Components/app/service'
-import { processWorkflowStatuses } from '@Components/ApplicationGroup/AppGroup.utils'
-import { sortObjectArrayAlphabetically } from '@Components/common'
-import { getHostURLConfiguration } from '@Services/service'
-
 import { UseTriggerViewServicesParams } from './types'
 import { getTriggerWorkflows } from './workflow.service'
+
+import { processWorkflowStatuses } from '@Components/ApplicationGroup/AppGroup.utils'
+import { getWorkflowStatus } from '@Components/app/service'
+import { sortObjectArrayAlphabetically } from '@Components/common'
+import { getHostURLConfiguration } from '@Services/service'
 
 const DEFAULT_POLLING_INTERVAL = 30000
 const PROGRESSING_POLLING_INTERVAL = 10000
@@ -26,6 +26,7 @@ export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: Use
         queryKey: ['triggerViewEnvList'],
         queryFn: ({ signal }) => getEnvironmentListMinPublic(false, { signal }),
         select: (response) => {
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             const list = []
             list.push({
                 id: 0,

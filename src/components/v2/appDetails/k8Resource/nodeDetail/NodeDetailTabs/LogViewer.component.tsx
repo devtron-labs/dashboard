@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
-import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
+import React, { useEffect, useRef, useState } from 'react'
+import { AutoSizer } from 'react-virtualized'
 
 import { Scroller } from '@devtron-labs/devtron-fe-common-lib'
 

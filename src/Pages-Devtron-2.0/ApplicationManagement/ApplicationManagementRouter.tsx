@@ -3,13 +3,14 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { DevtronAppRouter } from '@Components/common/navigation/NavRoutes.components'
 import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 
 import { Configurations } from './Configurations'
 import { ApplicationManagementOverview } from './Overview'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { DevtronAppRouter } from '@Components/common/navigation/NavRoutes.components'
 
 const BulkEdit = lazy(() => import('@Components/bulkEdits/BulkEdits'))
 const AppGroupRoute = lazy(() => import('@Components/ApplicationGroup/AppGroupRoute'))

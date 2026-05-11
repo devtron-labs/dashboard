@@ -15,24 +15,26 @@
  */
 
 import moment from 'moment'
-import { AggregationKeys } from '../../types'
-import { getVersionArr, isVersionLessThanOrEqualToTarget } from '../../../common'
-import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
+
 import {
-    ZERO_TIME_STRING,
+    ACTION_STATE,
+    AppEnvironment,
+    ButtonStyleType,
+    DateTimePickerProps,
+    IconsProps,
     Nodes,
     NodeType,
-    ACTION_STATE,
-    ButtonStyleType,
+    prefixZeroIfSingleDigit,
     SelectPicker,
+    SelectPickerOptionType,
     SelectPickerProps,
     SelectPickerVariantType,
-    prefixZeroIfSingleDigit,
-    AppEnvironment,
-    SelectPickerOptionType,
-    IconsProps,
-    DateTimePickerProps,
+    ZERO_TIME_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getVersionArr, isVersionLessThanOrEqualToTarget } from '../../../common'
+import { AggregationKeys } from '../../types'
+import { AppMetricsTabType, ChartTypes, StatusType, StatusTypes } from './appDetails.type'
 import { GetIFrameSrcParamsType, GrafanaPresetOptionHandlerType } from './types'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
@@ -140,7 +142,9 @@ export const LatencySelect = (props) => {
     )
 }
 
-export const getAppMetricsPresetOptions = (onClick: GrafanaPresetOptionHandlerType): DateTimePickerProps['rangeShortcutOptions'] => [
+export const getAppMetricsPresetOptions = (
+    onClick: GrafanaPresetOptionHandlerType,
+): DateTimePickerProps['rangeShortcutOptions'] => [
     { label: 'Last 5 minutes', onClick: () => onClick('now-5m', { magnitude: 5, unit: 'minutes' }) },
     { label: 'Last 30 minutes', onClick: () => onClick('now-30m', { magnitude: 30, unit: 'minutes' }) },
     { label: 'Last 1 hour', onClick: () => onClick('now-1h', { magnitude: 1, unit: 'hours' }) },

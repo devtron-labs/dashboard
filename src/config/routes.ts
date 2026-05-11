@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
+
+import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export const CREATE_CLUSTER_PATH = 'create/cluster/:type'
 

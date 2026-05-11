@@ -19,11 +19,11 @@ import { useParams } from 'react-router-dom'
 
 import { APIResponseHandler, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import ChartValuesView from '@Components/v2/values/chartValuesDiff/ChartValuesView'
-import { ChartInstalledConfig } from '@Components/v2/values/chartValuesDiff/ChartValuesView.type'
-
 import { fetchChartValuesList } from './services'
 import { ChartDetailsDeployProps, ChartDetailsRouteParams } from './types'
+
+import ChartValuesView from '@Components/v2/values/chartValuesDiff/ChartValuesView'
+import { ChartInstalledConfig } from '@Components/v2/values/chartValuesDiff/ChartValuesView.type'
 
 export const ChartDetailsDeploy = ({ chartDetails, chartVersions, selectedChartVersion }: ChartDetailsDeployProps) => {
     const { chartId } = useParams<ChartDetailsRouteParams>()

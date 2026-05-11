@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { useOnline } from '@Components/common/hooks'
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal'
 import { ConnectionStripMessageType, TerminalWrapperProps } from './terminal.type'
 import terminalStripTypeData from './terminal.utils'
+
+import { useOnline } from '@Components/common/hooks'
 
 export default function TerminalWrapper({
     selectionListData,

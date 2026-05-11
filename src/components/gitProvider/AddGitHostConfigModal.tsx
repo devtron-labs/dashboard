@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
+
 import { CustomInput, showError } from '@devtron-labs/devtron-fe-common-lib'
+
 import Close from '../../assets/icons/ic-close.svg?react'
 import { saveGitHost } from './gitProvider.service'
 
@@ -81,15 +83,10 @@ export class GitHostConfigModal extends Component<GitHostConfigModalProps, GitHo
                     />
                 </div>
                 <div className="flex right pt-12 pb-12 pl-20 pr-20">
-                    <button
-                        type="button"
-                        className="cta cancel mr-16"
-                        tabIndex={5}
-                        onClick={this.props.closeGitConfigModal}
-                    >
+                    <button type="button" className="cta cancel mr-16" onClick={this.props.closeGitConfigModal}>
                         Cancel
                     </button>
-                    <button type="submit" className="cta" tabIndex={4} onClick={() => this.onSaveGitProviderName()}>
+                    <button type="submit" className="cta" onClick={() => this.onSaveGitProviderName()}>
                         Save
                     </button>
                 </div>

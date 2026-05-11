@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, type JSX } from 'react'
+import React, { type JSX, useEffect, useState } from 'react'
 import { generatePath, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     Button,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ConfirmationModal,
     ConfirmationModalVariantType,
     DISCORD_LINK,
@@ -33,28 +33,13 @@ import {
     PageHeader,
     Progressing,
     RAISE_ISSUE,
+    ROUTER_URLS,
     showError,
     TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
     VisibleModal,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import SuccessIcon from '@Icons/appstatus/healthy.svg?react'
-import RetryInstallIcon from '@Icons/ic-arrow-clockwise.svg?react'
-import InstallIcon from '@Icons/ic-arrow-forward.svg?react'
-import UpToDateIcon from '@Icons/ic-celebration.svg?react'
-import Chat from '@Icons/ic-chat-circle-dots.svg?react'
-import InstalledIcon from '@Icons/ic-check.svg?react'
-import ICTrivy from '@Icons/ic-clair-to-trivy.svg?react'
-import CloseIcon from '@Icons/ic-close.svg?react'
-import DiscoverIcon from '@Icons/ic-compass.svg?react'
-import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
-import Note from '@Icons/ic-note.svg?react'
-import ICClair from '@Icons/ic-trivy-to-clair.svg?react'
-import Warning from '@Icons/ic-warning.svg?react'
-import Info from '@Icons/info-filled.svg?react'
 
 import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
@@ -79,12 +64,27 @@ import {
     handleEnableAction,
     isLatestVersionAvailable,
     MODULE_CONFIGURATION_DETAIL_MAP,
-    ModulesSection,
     MORE_MODULE_DETAILS,
+    ModulesSection,
     OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
 } from './DevtronStackManager.utils'
 import { SuccessModalComponent } from './SuccessModalComponent'
+
+import SuccessIcon from '@Icons/appstatus/healthy.svg?react'
+import RetryInstallIcon from '@Icons/ic-arrow-clockwise.svg?react'
+import InstallIcon from '@Icons/ic-arrow-forward.svg?react'
+import UpToDateIcon from '@Icons/ic-celebration.svg?react'
+import Chat from '@Icons/ic-chat-circle-dots.svg?react'
+import InstalledIcon from '@Icons/ic-check.svg?react'
+import ICTrivy from '@Icons/ic-clair-to-trivy.svg?react'
+import CloseIcon from '@Icons/ic-close.svg?react'
+import DiscoverIcon from '@Icons/ic-compass.svg?react'
+import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
+import Note from '@Icons/ic-note.svg?react'
+import ICClair from '@Icons/ic-trivy-to-clair.svg?react'
+import Warning from '@Icons/ic-warning.svg?react'
+import Info from '@Icons/info-filled.svg?react'
 
 import './devtronStackManager.component.scss'
 
@@ -311,7 +311,9 @@ export const StackPageHeader = ({
 
     const handleRedirectToModule = (detailsMode) => {
         const url =
-            detailsMode === 'discover' ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES
+            detailsMode === 'discover'
+                ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES
+                : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES
         navigate(url)
     }
 
@@ -598,10 +600,13 @@ const InstallationStatus = ({
                     >
                         {isUpgradeView && !canViewLogs && (
                             <NavLink
-                                to={`${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
-                                    appId: `1|devtroncd|${appName}`,
-                                    appName,
-                                })}/${URLS.APP_DETAILS}`}
+                                to={`${generatePath(
+                                    ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP,
+                                    {
+                                        appId: `1|devtroncd|${appName}`,
+                                        appName,
+                                    },
+                                )}/${URLS.APP_DETAILS}`}
                                 target="_blank"
                             >
                                 View details
@@ -609,10 +614,13 @@ const InstallationStatus = ({
                         )}
                         {((isUpgradeView && canViewLogs) || (!isUpgradeView && isCICDModule)) && logPodName && (
                             <NavLink
-                                to={`${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
-                                    appId: `1|devtroncd|${appName}`,
-                                    appName
-                                })}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
+                                to={`${generatePath(
+                                    ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP,
+                                    {
+                                        appId: `1|devtroncd|${appName}`,
+                                        appName,
+                                    },
+                                )}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
                                 target="_blank"
                             >
                                 View logs
@@ -993,7 +1001,9 @@ export const ModuleDetailsView = ({
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
             setDetailsMode('')
             navigate(
-                fromDiscoverModules ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES,
+                fromDiscoverModules
+                    ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES
+                    : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES,
             )
         }
     }, [])

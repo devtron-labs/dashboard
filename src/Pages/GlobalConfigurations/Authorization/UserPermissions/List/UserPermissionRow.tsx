@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import {
     BulkSelectionEvents,
@@ -25,17 +25,13 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     ConditionalWrap,
     getRandomColor,
     handleUTCTime,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import Trash from '@Icons/ic-delete-interactive.svg?react'
-import Lock from '@Icons/ic-locked.svg?react'
-import Edit from '@Icons/ic-pencil.svg?react'
 
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
@@ -46,6 +42,10 @@ import { DeleteUserPermission } from '../DeleteUserPermission'
 import { getIsAdminOrSystemUser } from '../utils'
 import { DEFAULT_USER_TOOLTIP_CONTENT } from './constants'
 import { UserPermissionRowProps } from './types'
+
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Lock from '@Icons/ic-locked.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 const UserGroupCell = importComponentFromFELibrary('UserGroupCell', null, 'function')

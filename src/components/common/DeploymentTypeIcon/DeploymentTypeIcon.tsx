@@ -18,11 +18,11 @@ import type { JSX } from 'react'
 
 import { DeploymentAppTypes, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '../helpers/Helpers'
+
 import ArgoCD from '@Icons/argo-cd-app.svg?react'
 import Helm from '@Icons/helm-app.svg?react'
 import FluxCD from '@Icons/ic-fluxcd.svg?react'
-
-import { importComponentFromFELibrary } from '../helpers/Helpers'
 
 export const DEPLOYMENT_TYPE_TO_TEXT_MAP: Record<
     Extract<DeploymentAppTypes, DeploymentAppTypes.ARGO | DeploymentAppTypes.FLUX | DeploymentAppTypes.HELM>,

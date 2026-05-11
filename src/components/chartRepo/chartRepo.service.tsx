@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { post, get, trash, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { APIOptions, get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
 
 export const getChartProviderConfig = (id: number): Promise<any> => {
@@ -22,12 +23,12 @@ export const getChartProviderConfig = (id: number): Promise<any> => {
     return get(URL)
 }
 
-export const updateChartProviderConfig = (request: any, id: number) => {
+export const updateChartProviderConfig = (request: any, _id: number) => {
     const URL = `${Routes.CHART_REPO}/update`
     return post(URL, request)
 }
 
-export const saveChartProviderConfig = (request: any, id: any) => {
+export const saveChartProviderConfig = (request: any, _id: any) => {
     const URL = `${Routes.CHART_REPO}/create`
     return post(URL, request)
 }

@@ -21,10 +21,10 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BulkCDDetailType } from '@Components/ApplicationGroup/AppGroup.types'
-
 import { FilterConditionViews, MATERIAL_TYPE, RuntimeParamsErrorState } from '../types'
 import { getBaseBulkCDDetailsMap } from './utils'
+
+import { BulkCDDetailType } from '@Components/ApplicationGroup/AppGroup.types'
 
 export type DeployImageModalProps = {
     appId: number

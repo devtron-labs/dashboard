@@ -236,7 +236,7 @@ export interface ChartGroupListProps {
 
 export interface DiscoverChartsContainerProps extends RouterV5Props<{}> {}
 
-export interface ChartGroupProviderProps {}
+export type ChartGroupProviderProps = {}
 
 export interface DiscoverChartsContainerState {
     statusCode: number

@@ -24,16 +24,16 @@ import {
     CMSecretConfigData,
     CMSecretExternalType,
     ConfigHeaderTabType,
-    configMapDataTypeOptions,
     ConfigMapSecretDataType,
-    configMapSecretMountDataMap,
     ConfigMapSecretUseFormProps,
-    decode,
+    configMapDataTypeOptions,
+    configMapSecretMountDataMap,
     DEFAULT_SECRET_PLACEHOLDER,
     DraftAction,
     DraftMetadataDTO,
     DraftState,
     DryRunEditorMode,
+    decode,
     ERROR_STATUS_CODE,
     getConfigMapSecretFormInitialValues,
     getConfigMapSecretPayload,
@@ -88,6 +88,7 @@ export const getLockedYamlString = (yaml: string) => {
             return agg
         }
 
+        // biome-ignore lint/performance/noAccumulatingSpread: Legacy
         return { ...agg, [k]: DEFAULT_SECRET_PLACEHOLDER }
     }, obj)
 
@@ -148,7 +149,7 @@ const getConfigMapSecretEncodedData = <IsDraft extends boolean = false>({
     configMapSecretData,
     isDraft,
 }: ConfigMapSecretEncodedDataProps<IsDraft>): ConfigMapSecretEncodedDataReturnType<IsDraft> => {
-    if (!configMapSecretData || !configMapSecretData.isDecoded) {
+    if (!configMapSecretData?.isDecoded) {
         return configMapSecretData
     }
 
@@ -565,7 +566,7 @@ export const getCMCSExpressEditComparisonDataDiffConfig = ({
     },
 ]
 
-export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
+export const getConfigMapSecretError = <T>(res: PromiseSettledResult<T>) =>
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
 
 export const parseConfigMapSecretSearchParams = (searchParams: URLSearchParams): ConfigMapSecretQueryParamsType => {

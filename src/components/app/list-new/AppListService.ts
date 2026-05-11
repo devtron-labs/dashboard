@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
 import { MutableRefObject } from 'react'
+
 import {
+    APIOptions,
+    EnvironmentListHelmResult,
     EnvListMinDTO,
     get,
-    ResponseType,
-    EnvironmentListHelmResult,
-    Teams,
     getUrlWithSearchParams,
-    APIOptions,
+    ResponseType,
+    Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { Cluster } from '@Services/service.types'
+
 import { Moment12HourFormat, Routes } from '../../../config'
+import { getDevtronAppListPayload } from '../list/appList.modal'
+import { getAppList } from '../service'
 import {
     AppListFilterConfig,
     AppListPayloadType,
@@ -37,13 +40,13 @@ import {
     GetDevtronHelmAppListParamsType,
     HelmAppListResponse,
 } from './AppListType'
-import { getAppList } from '../service'
-import { getDevtronAppListPayload } from '../list/appList.modal'
+
+import { Cluster } from '@Services/service.types'
 
 export const getDevtronInstalledHelmApps = (
     clusterIdsCsv: string,
     appStatuses: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
 ): Promise<HelmAppListResponse> => {
     const baseUrl = Routes.CHART_INSTALLED
     const params: GetDevtronHelmAppListParamsType = {
@@ -77,6 +80,7 @@ export const getDevtronAppListDataToExport = (
         size: appCount,
     } // Over riding size and offset as we need all list (no pagination)
     const clusterMap = new Map<string, number>()
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
     clusterList.forEach((cluster) => clusterMap.set(cluster.cluster_name, cluster.id))
     return getAppList(appListPayload, { signal }).then(({ result }) => {
         if (result.appContainers) {

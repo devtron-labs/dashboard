@@ -1,8 +1,8 @@
 import { NavigationGroupType, NavigationItemType, ROUTER_URLS, SERVER_MODE } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { filterNavGroupAndItem } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
     'APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM',

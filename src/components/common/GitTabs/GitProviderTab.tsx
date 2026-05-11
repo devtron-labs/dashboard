@@ -18,13 +18,13 @@ import React from 'react'
 
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import Check from '@Icons/ic-selected-corner.png'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { GitProvider } from './constants'
 import GitProviderTabIcons from './GitProviderTabIcons'
 import { GitProviderTabProps } from './types'
 import { getProviderNameFromEnum } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import Check from '@Icons/ic-selected-corner.png'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 const BitBucketDCCredentials = importComponentFromFELibrary('BitBucketDCCredentials', null, 'function')

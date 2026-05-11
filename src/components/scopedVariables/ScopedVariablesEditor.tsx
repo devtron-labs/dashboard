@@ -15,27 +15,29 @@
  */
 
 import { useState } from 'react'
+
 import {
-    ServerErrors,
-    ButtonWithLoader,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     CodeEditor,
+    ComponentSizeType,
+    InfoBlock,
+    MODES,
+    ServerErrors,
     ToastManager,
     ToastVariantType,
-    InfoBlock,
-    Button,
-    ComponentSizeType,
-    ButtonVariantType,
-    ButtonStyleType,
-    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { GET_SCOPED_VARIABLES_ERROR, SAVE_SUCCESS_TOAST_MESSAGE, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
 import Descriptor from './Descriptor'
-import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
-import { postScopedVariables, getScopedVariablesJSON } from './service'
+import { getScopedVariablesJSON, postScopedVariables } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
-import ICClose from '@Icons/ic-close.svg?react'
+import { parseIntoYAMLString, parseYAMLStringToObj, sortVariables } from './utils'
+
 import ICArrowRight from '@Icons/ic-arrow-right.svg?react'
+import ICClose from '@Icons/ic-close.svg?react'
 import ICPencil from '@Icons/ic-pencil.svg?react'
-import { SAVE_SUCCESS_TOAST_MESSAGE, GET_SCOPED_VARIABLES_ERROR, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
 
 export default function ScopedVariablesEditor({
     variablesData,
@@ -64,7 +66,7 @@ export default function ScopedVariablesEditor({
                 })
                 return null
             }
-        } catch (e) {
+        } catch {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: UPLOAD_FAILED_STANDARD_MESSAGE,
@@ -130,7 +132,7 @@ export default function ScopedVariablesEditor({
                 })
                 setShowSaveView(false)
             }
-        } catch (e) {
+        } catch {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: GET_SCOPED_VARIABLES_ERROR,

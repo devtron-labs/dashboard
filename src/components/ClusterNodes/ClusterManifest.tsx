@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2, YAMLStringify, CodeEditor, AppThemeType } from '@devtron-labs/devtron-fe-common-lib'
-import MessageUI, { MsgUIType } from '../v2/common/message.ui'
-import { getClusterManifest } from './clusterNodes.service'
-import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
-import { ClusterManifestType, ManifestPopuptype } from './types'
+
+import { AppThemeType, CodeEditor, VisibleModal2, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+
+import Close from '../../assets/icons/ic-cross.svg?react'
 import Pencil from '../../assets/icons/ic-pencil.svg?react'
 import WarningIcon from '../../assets/icons/ic-warning.svg?react'
-import Close from '../../assets/icons/ic-cross.svg?react'
-import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
+import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { getTrimmedManifestData } from '../v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
+import MessageUI, { MsgUIType } from '../v2/common/message.ui'
+import { getClusterManifest } from './clusterNodes.service'
+import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
+import { ClusterManifestType, ManifestPopuptype } from './types'
 
 export default function ClusterManifest({
     terminalAccessId,

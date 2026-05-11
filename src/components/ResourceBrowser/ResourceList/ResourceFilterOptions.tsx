@@ -20,8 +20,8 @@ import { SelectInstance } from 'react-select'
 
 import {
     ALL_NAMESPACE_OPTION,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKOptionValueType,
@@ -38,13 +38,13 @@ import {
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import NamespaceIcon from '@Icons/ic-env.svg?react'
-
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps } from '../Types'
 import { K8sResourceListURLParams } from './types'
+
+import NamespaceIcon from '@Icons/ic-env.svg?react'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 const ResourceRecommenderActionMenu = importComponentFromFELibrary('ResourceRecommenderActionMenu', null, 'function')

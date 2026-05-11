@@ -29,6 +29,7 @@ import {
     OptionType,
     PageHeader,
     Progressing,
+    ROUTER_URLS,
     showError,
     stopPropagation,
     TabGroup,
@@ -38,11 +39,7 @@ import {
     useAsync,
     useBreadcrumb,
     useMainContext,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ICSlidersVertical from '@Icons/ic-sliders-vertical.svg?react'
-import AppDetail from '@Components/app/details/appDetails/AppDetails'
 
 import EmptyFolder from '../../assets/img/empty-folder.webp'
 import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
@@ -54,11 +51,6 @@ import {
     sortOptionsByLabel,
     useAppContext,
 } from '../common'
-import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
-import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
-import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
-import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
-import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import {
     appGroupPermission,
     deleteEnvGroup,
@@ -81,7 +73,15 @@ import {
 import AppGroupAppFilter from './AppGroupAppFilter'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import CreateAppGroup from './CreateAppGroup'
+import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
+import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
+import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
+import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
+import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import { EnvSelector } from './EnvSelector'
+
+import AppDetail from '@Components/app/details/appDetails/AppDetails'
+import ICSlidersVertical from '@Icons/ic-sliders-vertical.svg?react'
 
 import '../app/details/app.scss'
 
@@ -434,8 +434,14 @@ function AppGroupDetails({ isSuperAdmin }: AppGroupAdminType) {
                         />
                         <Route
                             path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.APP_DETAILS}/:appId?/*`}
-                            element={<AppDetail detailsType="app-group" filteredResourceIds={_filteredAppsIds} resourceList={appListOptions}
-                                setSelectedResourceList={setSelectedAppList}  />}
+                            element={
+                                <AppDetail
+                                    detailsType="app-group"
+                                    filteredResourceIds={_filteredAppsIds}
+                                    resourceList={appListOptions}
+                                    setSelectedResourceList={setSelectedAppList}
+                                />
+                            }
                         />
                         <Route
                             path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.TRIGGER}/*`}
@@ -453,7 +459,12 @@ function AppGroupDetails({ isSuperAdmin }: AppGroupAdminType) {
                             path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.CONFIGURATIONS}/:appId?/*`}
                             element={<EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />}
                         />
-                        <Route path="*" element={<Navigate to={BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.OVERVIEW} />} />
+                        <Route
+                            path="*"
+                            element={
+                                <Navigate to={BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP.DETAIL.OVERVIEW} />
+                            }
+                        />
                     </Routes>
                 </Suspense>
             </ErrorBoundary>

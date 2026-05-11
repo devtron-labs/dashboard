@@ -26,16 +26,16 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICBookOpen from '@Icons/ic-book-open.svg?react'
-import ICCDStage from '@Icons/ic-cd-stage.svg?react'
-import ICHelp from '@Icons/ic-help.svg?react'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-
 import { INLINE_PLUGIN_TEXT } from '../Constants'
 import { PluginDetailHeaderProps } from '../types'
 import CreatePluginButton from './CreatePluginButton'
 import PluginVersionSelect from './PluginVersionSelect'
 import { PluginDetailTypes } from './types'
+
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import ICBookOpen from '@Icons/ic-book-open.svg?react'
+import ICCDStage from '@Icons/ic-cd-stage.svg?react'
+import ICHelp from '@Icons/ic-help.svg?react'
 
 const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderProps) => {
     const { formData, activeStageName, selectedTaskIndex, pluginDataStore } = useContext(pipelineContext)

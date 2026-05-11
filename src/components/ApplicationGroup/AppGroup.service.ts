@@ -15,29 +15,33 @@
  */
 
 import {
+    CiPipeline,
+    CommonNodeAttr,
     get,
+    getUrlWithSearchParams,
+    PipelineType,
     post,
     put,
     ResponseType,
     trash,
     WorkflowNodeType,
-    PipelineType,
-    CommonNodeAttr,
     WorkflowType,
-    getUrlWithSearchParams,
-    CiPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CdPipelineResult, CiPipelineResult, WorkflowResult } from '../app/details/triggerView/types'
-import { WebhookListResponse } from '../ciPipeline/Webhook/types'
-import { processWorkflow } from '../app/details/triggerView/workflow.service'
-import { WorkflowTrigger } from '../app/details/triggerView/config'
+
 import { ModuleNameMap, Routes, URLS } from '../../config'
+import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
+import { WorkflowTrigger } from '../app/details/triggerView/config'
+import { CdPipelineResult, CiPipelineResult, WorkflowResult } from '../app/details/triggerView/types'
+import { processWorkflow } from '../app/details/triggerView/workflow.service'
+import { WebhookListResponse } from '../ciPipeline/Webhook/types'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import {
     AppGroupFilterConfig,
     AppGroupList,
-    CIConfigListType,
     CheckPermissionResponse,
     CheckPermissionType,
+    CIConfigListType,
     ConfigAppListType,
     EditDescRequestResponse,
     EnvAppType,
@@ -47,9 +51,6 @@ import {
     GetEnvAppListParamsType,
     WorkflowsResponseType,
 } from './AppGroup.types'
-import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 const getFilteredAppQueryString = (appIds: string): string => {
     let _appIdsQueryParam = ''
@@ -137,8 +138,10 @@ export const getCIConfigList = (envID: string, appIds: string): Promise<CIConfig
     })
 }
 
-const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowType[]) => WorkflowType[] {
-    return (workflows: WorkflowType[]): WorkflowType[] => {
+const filterChildAndSiblingCD =
+    (envID: string): ((workflows: WorkflowType[]) => WorkflowType[]) =>
+    (workflows: WorkflowType[]): WorkflowType[] => {
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         workflows.forEach((wf) => {
             const nodes = new Map(wf.nodes.map((node) => [`${node.type}-${node.id}`, node] as [string, CommonNodeAttr]))
             let node = wf.nodes.find((node) => node.environmentId === +envID)
@@ -164,12 +167,13 @@ const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowTy
         })
         return workflows
     }
-}
 
 function getParentNode(nodes: Map<string, CommonNodeAttr>, node: CommonNodeAttr): CommonNodeAttr | undefined {
     let parentType = WorkflowNodeType.CD
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     if (node.parentPipelineType == PipelineType.CI_PIPELINE) {
         parentType = WorkflowNodeType.CI
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     } else if (node.parentPipelineType == PipelineType.WEBHOOK) {
         parentType = WorkflowNodeType.WEBHOOK
     }

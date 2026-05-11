@@ -15,44 +15,46 @@
  */
 
 import {
-    get,
-    post,
-    ResponseType,
     APIOptions,
-    sortCallback,
-    TeamList,
-    trash,
-    EnvironmentListHelmResponse,
-    TemplateListDTO,
-    getUrlWithSearchParams,
-    SERVER_MODE,
-    ModuleNameMap,
-    stringComparatorBySortOrder,
     AppConfigProps,
+    EnvironmentListHelmResponse,
     GetTemplateAPIRouteType,
+    get,
     getTemplateAPIRoute,
+    getUrlWithSearchParams,
+    ModuleNameMap,
+    post,
     ResourceVersionType,
+    ResponseType,
+    SERVER_MODE,
+    sortCallback,
+    stringComparatorBySortOrder,
+    TeamList,
+    TemplateListDTO,
+    trash,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../config'
-import {
-    CDPipelines,
-    AppListMin,
-    AppOtherEnvironment,
-    ClusterEnvironmentDetailList,
-    ClusterListResponse,
-    LoginCountType,
-    ConfigOverrideWorkflowDetailsResponse,
-    MinChartRefDTO,
-    ClusterEnvTeams,
-    GitAccountDTO,
-} from './service.types'
+
 import { Chart } from '../components/charts/charts.types'
+import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
-import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
-import { getProjectList } from '@Components/project/service'
+import { Routes } from '../config'
+import {
+    AppListMin,
+    AppOtherEnvironment,
+    CDPipelines,
+    ClusterEnvironmentDetailList,
+    ClusterEnvTeams,
+    ClusterListResponse,
+    ConfigOverrideWorkflowDetailsResponse,
+    GitAccountDTO,
+    LoginCountType,
+    MinChartRefDTO,
+} from './service.types'
+
 import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
 import { GitMaterialDTO } from '@Components/material/material.types'
+import { getProjectList } from '@Components/project/service'
 
 export function getAppConfigStatus(
     appId: number,
@@ -450,7 +452,7 @@ export function getAppChartRefForAppAndEnv(
     appId: number,
     envId: number | null,
     isTemplateView: AppConfigProps['isTemplateView'],
-    signal?: AbortSignal
+    signal?: AbortSignal,
 ): Promise<ResponseType> {
     return getChartReferencesForAppAndEnv(appId, envId, isTemplateView, signal).then((response) => {
         const {

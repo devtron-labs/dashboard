@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type JSX } from 'react'
+import { type JSX, useEffect, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
+    CHECKBOX_VALUE,
     Checkbox,
     Drawer,
-    CHECKBOX_VALUE,
+    InfoBlock,
     MODAL_TYPE,
+    Progressing,
+    showError,
     ToastManager,
     ToastVariantType,
-    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     RotatePodsModalProps,
     RotatePodsRequest,
@@ -34,16 +36,16 @@ import {
     WorkloadCheckType,
 } from './rotatePodsModal.type'
 import '../scaleWorkloads/scaleWorkloadsModal.scss'
+
+import RotateIcon from '../../../../../assets/icons/ic-arrows_clockwise.svg?react'
+import Close from '../../../../../assets/icons/ic-close.svg?react'
+import ICHelpOutline from '../../../../../assets/icons/ic-help-outline.svg?react'
+import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
+import { importComponentFromFELibrary } from '../../../../common'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
-import ICHelpOutline from '../../../../../assets/icons/ic-help-outline.svg?react'
-import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import RotateResponseModal from './RotateResponseModal'
-import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
-import Close from '../../../../../assets/icons/ic-close.svg?react'
-import RotateIcon from '../../../../../assets/icons/ic-arrows_clockwise.svg?react'
-
-import { importComponentFromFELibrary } from '../../../../common'
+import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
@@ -307,6 +309,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
                 </div>
                 <div className="w-100 dc__border-top flex right pb-16 pt-16 scale-workload-modal ">
                     <button
+                        type="button"
                         className={`cta flex h-36 mr-20  ${
                             rotatingInProgress || !isWorkloadPresent || !isAnySelected ? 'not-allowed' : ''
                         }`}

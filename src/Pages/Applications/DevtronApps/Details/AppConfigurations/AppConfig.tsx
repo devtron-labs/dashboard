@@ -19,6 +19,7 @@ import { generatePath, useLocation, useNavigate, useParams } from 'react-router-
 
 import {
     AppConfigProps,
+    URLS as CommonURLS,
     ConfirmationModal,
     ConfirmationModalVariantType,
     ErrorScreenManager,
@@ -30,11 +31,9 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
-    URLS as CommonURLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 import { importComponentFromFELibrary } from '../../../../../components/common'
@@ -44,8 +43,6 @@ import { getUserRole } from '../../../../GlobalConfigurations/Authorization/auth
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { getAppConfigStatus, getEnvConfig } from '../../service'
 import { AppConfigStatusItemType } from '../../service.types'
-import AppComposeRouter from './MainContent/AppComposeRouter'
-import { AppNavigation } from './Navigation/AppNavigation'
 import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 import { deleteApp } from './AppConfig.service'
 import {
@@ -57,6 +54,10 @@ import {
 } from './AppConfig.types'
 import { getNavItems, isCDPipelineCreated, isCIPipelineCreated, isUnlocked } from './AppConfig.utils'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
+import AppComposeRouter from './MainContent/AppComposeRouter'
+import { AppNavigation } from './Navigation/AppNavigation'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 import './appConfig.scss'
 
@@ -543,6 +544,7 @@ const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: Ap
             fetchEnvConfig={fetchEnvConfig}
             isTemplateView={isTemplateView}
         >
+            {/** biome-ignore lint/complexity/noUselessFragments: Keeping to due to type of children in parent */}
             <>
                 <div
                     className={`app-compose deploy-config-collapsible-layout flex-grow-1 ${getAdditionalParentClass()}`}

@@ -29,14 +29,14 @@ export const getOptions = (customDate: Date): SelectPickerOptionType<number | Da
 
 const millisecondsInDay = 86400000
 
-export const getDateInMilliseconds = (days) => 1 + new Date().valueOf() + (days ?? 0) * millisecondsInDay
+export const getDateInMilliseconds = (days) => 1 + Date.now() + (days ?? 0) * millisecondsInDay
 
 export const isTokenExpired = (expiredDate: number): boolean => {
     if (expiredDate === 0) {
         return false
     }
 
-    return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
+    return getDateInMilliseconds(Date.now()) > getDateInMilliseconds(expiredDate)
 }
 
 export const getApiTokenHeader = (hideApiToken: TokenListType['hideApiToken']) =>

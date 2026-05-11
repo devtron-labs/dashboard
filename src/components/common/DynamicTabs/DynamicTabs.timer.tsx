@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
 import dayjs from 'dayjs'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 

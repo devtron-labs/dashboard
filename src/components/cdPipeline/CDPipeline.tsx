@@ -14,60 +14,60 @@
  * limitations under the License.
  */
 
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
+
 import {
-    BuildStageVariable,
-    DeploymentAppTypes,
-    Drawer,
-    ErrorScreenManager,
-    OptionType,
-    ServerErrors,
-    showError,
-    VariableType,
-    VisibleModal,
-    PipelineType,
-    MODAL_TYPE,
     ACTION_STATE,
-    YAMLStringify,
-    PluginDataStoreType,
-    DEFAULT_PLUGIN_DATA_STORE,
-    getPluginsDetail,
-    getUpdatedPluginStore,
-    Environment,
-    PipelineFormType,
-    ReleaseMode,
-    TabGroup,
-    TabProps,
-    ToastVariantType,
-    ToastManager,
-    MandatoryPluginDataType,
-    ProcessPluginDataParamsType,
-    ProcessPluginDataReturnType,
-    ResourceKindType,
-    getEnvironmentListMinPublic,
-    uploadCDPipelineFile,
-    getGlobalVariables,
-    FloatingVariablesSuggestions,
-    saveCDPipeline,
-    TriggerType,
+    BuildStageVariable,
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    Icon,
-    SourceTypeMap,
+    DEFAULT_PLUGIN_DATA_STORE,
+    DeploymentAppTypes,
+    Drawer,
+    Environment,
+    ErrorScreenManager,
+    FloatingVariablesSuggestions,
+    getEnvironmentListMinPublic,
+    getGlobalVariables,
+    getPluginsDetail,
+    getUpdatedPluginStore,
     handleAnalyticsEvent,
+    Icon,
+    MandatoryPluginDataType,
+    MODAL_TYPE,
+    OptionType,
+    PipelineFormType,
+    PipelineType,
+    PluginDataStoreType,
+    ProcessPluginDataParamsType,
+    ProcessPluginDataReturnType,
+    ReleaseMode,
+    ResourceKindType,
+    ServerErrors,
+    SourceTypeMap,
+    saveCDPipeline,
+    showError,
+    TabGroup,
+    TabProps,
+    ToastManager,
+    ToastVariantType,
+    TriggerType,
+    uploadCDPipelineFile,
+    VariableType,
+    VisibleModal,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
+
 import { CDDeploymentTabText, RegistryPayloadType, ViewType } from '../../config'
+import { BOUNDARY_GAP } from '../CIPipelineN/Constants'
+import { PreBuild } from '../CIPipelineN/PreBuild'
+import { Sidebar } from '../CIPipelineN/Sidebar'
+import { ValidationRules } from '../ciPipeline/validationRules'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import {
-    CD_PATCH_ACTION,
-    GeneratedHelmPush,
-    MigrateArgoAppToCDPipelineRequiredPayloadType,
-    MigrateToDevtronFormState,
-} from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -76,12 +76,17 @@ import {
     getDeploymentStrategyList,
     updateCDPipeline,
 } from './cdPipeline.service'
-import { Sidebar } from '../CIPipelineN/Sidebar'
+import {
+    CD_PATCH_ACTION,
+    GeneratedHelmPush,
+    MigrateArgoAppToCDPipelineRequiredPayloadType,
+    MigrateToDevtronFormState,
+} from './cdPipeline.types'
 import DeleteCDNode from './DeleteCDNode'
-import { PreBuild } from '../CIPipelineN/PreBuild'
-import { BOUNDARY_GAP } from '../CIPipelineN/Constants'
-import { ValidationRules } from '../ciPipeline/validationRules'
 import './cdPipeline.scss'
+
+import { checkForGitOpsRepoNotConfigured } from '@Pages/App/Configurations'
+
 import {
     CHANGE_TO_EXTERNAL_SOURCE,
     CREATE_DEPLOYMENT_PIPELINE,
@@ -90,6 +95,13 @@ import {
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
 } from '../../config/constantMessaging'
+import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
+import { getDockerRegistryMinAuth } from '../ciConfig/service'
+import NoGitOpsRepoConfiguredWarning, {
+    ReloadNoGitOpsRepoConfiguredModal,
+} from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 import {
     calculateLastStepDetailsLogic,
     checkUniqueness,
@@ -98,17 +110,10 @@ import {
     handleDeleteCDNodePipeline,
     validateTask,
 } from './cdpipeline.util'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
-import { getDockerRegistryMinAuth } from '../ciConfig/service'
-import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
-import NoGitOpsRepoConfiguredWarning, {
-    ReloadNoGitOpsRepoConfiguredModal,
-} from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
+import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+
 import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
-import { checkForGitOpsRepoNotConfigured } from '@Pages/App/Configurations'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =

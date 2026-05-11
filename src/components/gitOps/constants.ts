@@ -16,9 +16,9 @@
 
 import { DocLinkProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GitProvider } from '@Components/common/GitTabs/constants'
-
 import { DefaultShortGitOpsType, GitOpsFormErrorType } from './gitops.type'
+
+import { GitProvider } from '@Components/common/GitTabs/constants'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react'
 import Tippy from '@tippyjs/react'
+import { useContext } from 'react'
 
 import { ActivityIndicator, PluginImageContainer, PluginType } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICFileEdit from '@Icons/ic-file-edit.svg?react'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-
 import ICCDStage from '../../assets/icons/ic-cd-stage.svg?react'
 import { TaskTitleProps, TaskTitleTippyContentProps } from './types'
+
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import ICFileEdit from '@Icons/ic-file-edit.svg?react'
 
 const TaskTitleTippyContent = ({ isLatest, pluginName, pluginVersion, displayName }: TaskTitleTippyContentProps) => (
     <div className="flexbox-col dc__gap-6">

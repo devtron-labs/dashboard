@@ -18,11 +18,11 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { SecurityCenterOverview } from '@PagesDevtron2.0/SecurityCenter'
-
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { VulnerabilitiesRouter } from './Vulnerabilities'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { SecurityCenterOverview } from '@PagesDevtron2.0/SecurityCenter'
 
 import './security.scss'
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
+import { useMemo, useState } from 'react'
 
 import {
     BulkSelectionEvents,
@@ -31,13 +31,13 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
-
 import { ClusterMapListSortableKeys, ClusterStatusByFilter } from '../constants'
 import { getSortedClusterList, parseSearchParams } from '../utils'
 import { ClusterFilters } from './ClusterFilters'
 import ClusterSelectionBody from './ClusterSelectionBody'
 import { ClusterViewType } from './types'
+
+import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 
 const getSelectAllDialogStatus = () => SelectAllDialogStatus.CLOSED
 
@@ -82,16 +82,18 @@ const ClusterListView = (props: ClusterViewType) => {
 
     const allOnThisPageIdentifiers = useMemo(
         () =>
-            filteredList?.reduce((acc, cluster) => {
-                // NOTE: clusters that are being created or deleted don't have corresponding id
-                // and should not be included in the bulk selection
-                if (!cluster.id) {
+            filteredList?.reduce(
+                (acc, cluster) => {
+                    // NOTE: clusters that are being created or deleted don't have corresponding id
+                    // and should not be included in the bulk selection
+                    if (!cluster.id) {
+                        return acc
+                    }
+                    acc[cluster.name] = cluster
                     return acc
-                }
-                acc[cluster.name] = cluster
-                return acc
-            }, {} as BulkSelectionIdentifiersType<ClusterDetail>) ??
-            ({} as BulkSelectionIdentifiersType<ClusterDetail>),
+                },
+                {} as BulkSelectionIdentifiersType<ClusterDetail>,
+            ) ?? ({} as BulkSelectionIdentifiersType<ClusterDetail>),
         [filteredList],
     )
 

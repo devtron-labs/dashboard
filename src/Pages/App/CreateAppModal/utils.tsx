@@ -18,14 +18,14 @@ import {
     Icon,
     IconsProps,
     SelectPickerOptionType,
+    ValidationResponseType,
     validateAppName,
     validateDescription,
-    ValidationResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 

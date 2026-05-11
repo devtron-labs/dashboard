@@ -16,29 +16,31 @@
 
 import { type JSX, useState } from 'react'
 import Select, { components } from 'react-select'
-import DropDownIcon from '../../assets/icons/appstatus/ic-chevron-down.svg?react'
-import { CredentialType, ManageRegistryType } from './dockerType'
-import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
+
 import {
-    ClearIndicator,
-    multiSelectStyles,
-    MultiValueRemove,
-    Option,
-    CustomInput,
-    ReactSelectInputAction,
-    InfoIconTippy,
-    InfoBlock,
-    DocLink,
-    stopPropagation,
-    SegmentedControl,
-    ComponentSizeType,
-    Icon,
     Button,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
+    ClearIndicator,
+    ComponentSizeType,
+    CustomInput,
+    DocLink,
+    Icon,
+    InfoBlock,
+    InfoIconTippy,
+    MultiValueRemove,
+    multiSelectStyles,
+    Option,
+    ReactSelectInputAction,
+    SegmentedControl,
     SegmentType,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import DropDownIcon from '../../assets/icons/appstatus/ic-chevron-down.svg?react'
+import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { CredentialType, ManageRegistryType } from './dockerType'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -263,7 +265,7 @@ const ManageRegistry = ({
                     }),
                     menu: (base) => ({
                         ...base,
-                        zIndex: 2
+                        zIndex: 2,
                     }),
                 }}
                 closeMenuOnSelect={false}
@@ -313,7 +315,7 @@ const ManageRegistry = ({
                         }),
                         menu: (base) => ({
                             ...base,
-                            zIndex: 2
+                            zIndex: 2,
                         }),
                     }}
                     closeMenuOnSelect={false}

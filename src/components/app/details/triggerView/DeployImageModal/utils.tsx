@@ -24,8 +24,8 @@ import {
     PromiseAllStatusType,
     SequentialCDCardTitleProps,
     ServerErrors,
-    showError,
     STAGE_TYPE,
+    showError,
     ToastManager,
     ToastVariantType,
     TriggerBlockType,
@@ -35,19 +35,6 @@ import {
     WorkflowNodeType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import {
-    BulkCDDetailDerivedFromNode,
-    ResponseRowType,
-    TriggerVirtualEnvResponseRowType,
-} from '@Components/ApplicationGroup/AppGroup.types'
-import {
-    BULK_CD_RESPONSE_STATUS_TEXT,
-    BULK_VIRTUAL_RESPONSE_STATUS,
-    BulkResponseStatus,
-} from '@Components/ApplicationGroup/Constants'
-import { getCDPipelineURL, importComponentFromFELibrary } from '@Components/common'
-import { TOAST_BUTTON_TEXT_VIEW_DETAILS } from '@Config/constantMessaging'
 
 import {
     LAST_SAVED_CONFIG_OPTION,
@@ -68,6 +55,19 @@ import {
     GetTriggerCDPromiseMethodsType,
     HelmManifestErrorHandlerProps,
 } from './types'
+
+import {
+    BulkCDDetailDerivedFromNode,
+    ResponseRowType,
+    TriggerVirtualEnvResponseRowType,
+} from '@Components/ApplicationGroup/AppGroup.types'
+import {
+    BULK_CD_RESPONSE_STATUS_TEXT,
+    BULK_VIRTUAL_RESPONSE_STATUS,
+    BulkResponseStatus,
+} from '@Components/ApplicationGroup/Constants'
+import { getCDPipelineURL, importComponentFromFELibrary } from '@Components/common'
+import { TOAST_BUTTON_TEXT_VIEW_DETAILS } from '@Config/constantMessaging'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')

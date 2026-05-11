@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import type { JSX } from 'react'
 import CreatableSelect from 'react-select/creatable'
-import Tippy from '@tippyjs/react'
 
 import {
     ComponentSizeType,
@@ -25,8 +25,6 @@ import {
     SelectPicker,
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { importComponentFromFELibrary } from '@Components/common'
 
 import Abort from '../../../../../../../assets/icons/ic-abort.svg?react'
 import Check from '../../../../../../../assets/icons/ic-check.svg?react'
@@ -52,6 +50,8 @@ import {
     SelectWrapperType,
     WrapperTitleType,
 } from './terminal.type'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const DownloadFileFolderButton = importComponentFromFELibrary('DownloadFileFolderButton', null, 'function')
 

@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+
 import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg?react'
 import './list.scss'
 
@@ -27,6 +28,7 @@ const Logo = ({ src = '', style = {}, className = '', children = null }) => {
     )
 }
 
+// biome-ignore lint/correctness/noUnusedFunctionParameters: Legacy
 const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) => {
     return (
         <div className="flex column left">

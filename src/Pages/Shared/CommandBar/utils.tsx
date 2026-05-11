@@ -9,11 +9,6 @@ import {
     URL_FILTER_KEYS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
-import { getNavigationList } from '@Components/Navigation'
-import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
-import { URLS } from '@Config/routes'
-
 import {
     CHART_LIST_COMMAND_GROUP_ID,
     CLUSTER_LIST_COMMAND_GROUP_ID,
@@ -23,6 +18,11 @@ import {
     RECENT_NAVIGATION_ITEM_ID_PREFIX,
 } from './constants'
 import { CommandBarActionIdType, CommandBarBackdropProps, CommandBarGroupType, CommandBarItemType } from './types'
+
+import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
+import { getNavigationList } from '@Components/Navigation'
+import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
+import { URLS } from '@Config/routes'
 
 export const sanitizeItemId = (item: CommandBarItemType) =>
     (item.id.startsWith(RECENT_NAVIGATION_ITEM_ID_PREFIX)
@@ -295,7 +295,7 @@ const getTopFiveAppListGroup = (
 ): CommandBarGroupType[] => {
     const lowerCaseSearchText = searchText.toLowerCase()
 
-    const filteredAppList = appList.filter((app) => app.name && app.name.toLowerCase().includes(lowerCaseSearchText))
+    const filteredAppList = appList.filter((app) => app.name?.toLowerCase().includes(lowerCaseSearchText))
     const parsedAppList = parseAppListToNavItems(filteredAppList)
     return parsedAppList[0]
         ? topFiveGroupParser(parsedAppList[0], {
@@ -311,8 +311,8 @@ const getTopFiveHelmAppListGroup = (
 ): CommandBarGroupType[] => {
     const lowerCaseSearchText = searchText.toLowerCase()
 
-    const filteredHelmAppList = helmAppList.filter(
-        (helmApp) => helmApp.appName && helmApp.appName.toLowerCase().includes(lowerCaseSearchText),
+    const filteredHelmAppList = helmAppList.filter((helmApp) =>
+        helmApp.appName?.toLowerCase().includes(lowerCaseSearchText),
     )
     const parsedHelmAppList = parseHelmAppListToNavItems(filteredHelmAppList)
     return parsedHelmAppList[0]
@@ -329,8 +329,8 @@ const getTopFiveClusterListGroup = (
 ): CommandBarGroupType[] => {
     const lowerCaseSearchText = searchText.toLowerCase()
 
-    const filteredClusterList = clusterList.filter(
-        (cluster) => cluster.name && cluster.name.toLowerCase().includes(lowerCaseSearchText),
+    const filteredClusterList = clusterList.filter((cluster) =>
+        cluster.name?.toLowerCase().includes(lowerCaseSearchText),
     )
     const parsedClusterList = parseClusterListToNavItems(filteredClusterList)
     return parsedClusterList[0]
@@ -349,9 +349,7 @@ const getTopFiveChartListGroup = (
 ): CommandBarGroupType[] => {
     const lowerCaseSearchText = searchText.toLowerCase()
 
-    const filteredChartList = chartList.filter(
-        (chart) => chart.name && chart.name.toLowerCase().includes(lowerCaseSearchText),
-    )
+    const filteredChartList = chartList.filter((chart) => chart.name?.toLowerCase().includes(lowerCaseSearchText))
     const parsedChartList = parseChartListToNavItems(filteredChartList)
     return parsedChartList[0]
         ? topFiveGroupParser(parsedChartList[0], {

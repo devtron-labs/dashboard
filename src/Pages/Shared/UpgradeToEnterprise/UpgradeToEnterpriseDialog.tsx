@@ -3,8 +3,8 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
-    ComponentSizeType,
     CONTACT_SALES_LINK,
+    ComponentSizeType,
     GenericModal,
     Icon,
 } from '@devtron-labs/devtron-fe-common-lib'

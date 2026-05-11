@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react'
-import { useParams, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
     BreadCrumb,
-    useBreadcrumb,
-    PageHeader,
+    BreadcrumbText,
     DetectBottom,
+    DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    Progressing,
+    ROUTER_URLS,
+    showError,
     ToastManager,
     ToastVariantType,
-    getInfrastructureManagementBreadcrumb,
-    BreadcrumbText,
-    DOCUMENTATION,
-    ROUTER_URLS,
+    useBreadcrumb,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ChartCard from './ChartCard'
-import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
-import MultiChartSummary from './MultiChartSummary'
-import AdvancedConfig from './AdvancedConfig'
-import { updateChartGroupEntries, getChartProviderList } from './charts.service'
-import useChartGroup from './useChartGroup'
-import CreateChartGroup from './modal/CreateChartGroup'
+
 import SaveIcon from '../../assets/icons/ic-save.svg?react'
-import ChartHeaderFilters from './ChartHeaderFilters'
-import { QueryParams } from './constants'
-import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import { sortOptionsByLabel } from '../common'
+import ChartEmptyState from '../common/emptyState/ChartEmptyState'
+import AdvancedConfig from './AdvancedConfig'
+import ChartCard from './ChartCard'
+import ChartHeaderFilters from './ChartHeaderFilters'
+import { getChartProviderList, updateChartGroupEntries } from './charts.service'
+import { Chart, ChartGroupEntry, ChartListType } from './charts.types'
+import { QueryParams } from './constants'
+import MultiChartSummary from './MultiChartSummary'
+import CreateChartGroup from './modal/CreateChartGroup'
+import useChartGroup from './useChartGroup'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId/edit`
 
@@ -286,7 +288,7 @@ export default function ChartGroupUpdate({}) {
         const newSearch = new URLSearchParams(location.search)
         newSearch.append(QueryParams.IncludeDeprecated, '1')
         navigate({
-            search: newSearch.toString()
+            search: newSearch.toString(),
         })
     }
 

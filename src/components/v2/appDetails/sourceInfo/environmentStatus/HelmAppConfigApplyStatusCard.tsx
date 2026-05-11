@@ -18,9 +18,9 @@ import Tippy from '@tippyjs/react'
 
 import { LoadingCard, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
-import QuestionIcon from '@Icons/ic-question.svg?react'
-
 import { HelmAppConfigApplyStatusCardType } from '../environment.type'
+
+import QuestionIcon from '@Icons/ic-question.svg?react'
 
 const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppConfigApplyStatusCardType) => {
     if (cardLoading) {

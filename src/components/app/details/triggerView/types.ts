@@ -37,11 +37,11 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CIPipelineBuildType } from '@Components/ciPipeline/types'
-import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
-
-import { DeployImageModalProps } from './DeployImageModal/types'
 import { Offset, WorkflowDimensions } from './config'
+import { DeployImageModalProps } from './DeployImageModal/types'
+
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 
 export interface RuntimeParamsErrorState {
     isValid: boolean

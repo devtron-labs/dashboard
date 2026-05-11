@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useRef, useState } from 'react'
+
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
 import moment from 'moment'
+import React, { useEffect, useRef, useState } from 'react'
 import SockJS from 'sockjs-client'
 
 import {
@@ -29,14 +30,14 @@ import {
     UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICDevtronLogo from '@Icons/ic-devtron.svg?react'
-
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { TERMINAL_STATUS } from './constants'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
+
+import ICDevtronLogo from '@Icons/ic-devtron.svg?react'
 
 import '@xterm/xterm/css/xterm.css'
 import './terminal.scss'
@@ -264,7 +265,7 @@ const TerminalView = ({
     useEffect(() => {
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
-            // @ts-ignore
+            // @ts-expect-error
             window.location.origin = `${window.location.protocol}//${
                 window.location.hostname
             }${window.location.port ? `:${window.location.port}` : ''}`

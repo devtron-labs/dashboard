@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import { get, post, trash, put, ResponseType, sortCallback, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, get, post, put, ResponseType, sortCallback, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config/constants'
-import { FilterOptions, NotificationConfiguration, NotificationPipelineType, PipelineType, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import {
+    FilterOptions,
+    NotificationConfiguration,
+    NotificationPipelineType,
+    PipelineType,
+    SMTPConfigResponseType,
+    WebhookAttributesResponseType,
+} from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -100,13 +108,13 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
             eventTypeIds.push(7)
         }
 
-        const teamId = config.appliedFilters
-            .filter((filter) => filter.type === FilterOptions.PROJECT)
-            .map((p) => p.id)
+        const teamId = config.appliedFilters.filter((filter) => filter.type === FilterOptions.PROJECT).map((p) => p.id)
         const appId = config.appliedFilters
             .filter((filter) => filter.type === FilterOptions.APPLICATION)
             .map((app) => app.id)
-        const envId = config.appliedFilters.filter((filter) => filter.type === FilterOptions.ENVIRONMENT).map((e) => e.id)
+        const envId = config.appliedFilters
+            .filter((filter) => filter.type === FilterOptions.ENVIRONMENT)
+            .map((e) => e.id)
         const clusterId = config.appliedFilters
             .filter((filter) => filter.type === FilterOptions.CLUSTER)
             .map((e) => e.id)
@@ -136,7 +144,10 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
 
 export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
     const payload = createSaveNotificationPayload(selectedPipelines, providers)
-    return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(`${Routes.NOTIFIER}/${Routes.API_VERSION_V2}`, payload)
+    return post<SaveNotificationResponseType['result'], SaveNotificationPayload>(
+        `${Routes.NOTIFIER}/${Routes.API_VERSION_V2}`,
+        payload,
+    )
 }
 
 export function getChannelConfigs(): Promise<ResponseType> {
@@ -410,7 +421,7 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
         teamId: filters.filter((p) => p.type === FilterOptions.PROJECT).map((p) => p.value),
         envId: filters.filter((p) => p.type === FilterOptions.ENVIRONMENT).map((p) => p.value),
         appId: filters.filter((p) => p.type === FilterOptions.APPLICATION).map((p) => p.value),
-        clusterId: filters.filter((p) => p.type === FilterOptions.CLUSTER).map(p => p.value),
+        clusterId: filters.filter((p) => p.type === FilterOptions.CLUSTER).map((p) => p.value),
         pipelineName: filters.find((p) => p.type == 'pipeline')?.value,
     }
     return post(URL, payload).then((response) => {

@@ -26,18 +26,18 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Info from '@Icons/ic-info-outline.svg?react'
-import ICObject from '@Icons/ic-object.svg?react'
-import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
-import { DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
-import { useSharedState } from '@Components/v2/utils/useSharedState'
-
 import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
 import IndexStore from '../index.store'
 import NodeComponent from './nodeType/Node.component'
 import NodeTreeComponent from './nodeType/NodeTree.component'
 import { doesNodeSatisfiesFilter } from './utils'
+
+import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
+import { DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
+import { useSharedState } from '@Components/v2/utils/useSharedState'
+import Info from '@Icons/ic-info-outline.svg?react'
+import ICObject from '@Icons/ic-object.svg?react'
 
 import './k8resources.scss'
 

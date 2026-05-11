@@ -110,6 +110,7 @@ const EnvironmentsListView = ({
 
     // Use getRows for backend pagination
     const getRows = useMemo(
+        // biome-ignore lint/suspicious/useAwait: Legacy, getRows should not even be here
         () => async () => {
             const envList = appListResponse?.result?.envList || []
             const totalRows = appListResponse?.result?.envCount || 0

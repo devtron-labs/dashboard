@@ -115,6 +115,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
         <div className="flex column dc__text-center">
             {renderSelectionState()}
             {showCancel && !errorMsg && (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents lint/a11y/noStaticElementInteractions: Legacy
                 <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
                     Cancel
                 </span>

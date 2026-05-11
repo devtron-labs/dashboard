@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
 import moment, { Moment } from 'moment'
+import { Component } from 'react'
+
 import { DateTimePicker, UpdateDateRangeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type'
-import {
-    getIframeSrc,
-    isK8sVersionValid,
-    ThroughputSelect,
-    LatencySelect,
-    AppInfo,
-    getAppMetricsPresetOptions,
-} from './utils'
 import GraphIcon from '../../../../assets/icons/ic-graph.svg?react'
 import { DEFAULTK8SVERSION } from '../../../../config'
+import { AppMetricsTab, AppMetricsTabType, ChartType, ChartTypes, StatusType, StatusTypes } from './appDetails.type'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
 import { GrafanaPresetOptionHandlerType } from './types'
+import {
+    AppInfo,
+    getAppMetricsPresetOptions,
+    getIframeSrc,
+    isK8sVersionValid,
+    LatencySelect,
+    ThroughputSelect,
+} from './utils'
 
 export const ChartNames = {
     cpu: 'CPU Usage',

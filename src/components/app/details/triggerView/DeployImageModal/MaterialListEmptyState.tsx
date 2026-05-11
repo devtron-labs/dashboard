@@ -10,10 +10,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import noArtifact from '@Images/no-artifact.webp'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { MaterialListEmptyStateProps } from './types'
 import { getAllowWarningWithTippyNodeTypeProp, getIsCDTriggerBlockedThroughConsequences } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')

@@ -15,6 +15,7 @@
  */
 
 import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+
 import CloseIcon from '../../assets/icons/ic-close.svg?react'
 import { WebhookConditionType } from './types'
 
@@ -38,6 +39,7 @@ export const WebhookSelectorCondition = ({
                 placeholder="Select Key"
                 isDisabled={!canEditSelectorCondition}
                 onChange={handleSelectorChange}
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 value={masterSelectorList.filter((_selector) => +_selector.value == selectorCondition.selectorId)}
                 options={masterSelectorList}
                 size={ComponentSizeType.large}
@@ -53,7 +55,7 @@ export const WebhookSelectorCondition = ({
                 value={selectorCondition.value}
             />
             {canEditSelectorCondition && (
-                <CloseIcon className="pointer icon-dim-20" onClick={(e) => deleteWebhookCondition(conditionIndex)} />
+                <CloseIcon className="pointer icon-dim-20" onClick={() => deleteWebhookCondition(conditionIndex)} />
             )}
         </div>
     )

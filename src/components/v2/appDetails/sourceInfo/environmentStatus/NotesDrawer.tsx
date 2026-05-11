@@ -16,8 +16,18 @@
 
 import { useEffect, useRef } from 'react'
 import './environmentStatus.scss'
+
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Drawer,
+    Icon,
+    MarkDown,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { NotesDrawerType } from './notesDrawer.type'
-import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType, Drawer, Icon, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 
 const NotesDrawer = ({ notes, close }: NotesDrawerType) => {
     const appNotesRef = useRef<HTMLDivElement>(null)

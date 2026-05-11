@@ -16,11 +16,12 @@
 
 import {
     AppConfigProps,
-    get,
     GetTemplateAPIRouteType,
+    get,
     getTemplateAPIRoute,
     getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../config'
 import { WebhookApiTokenResponse, WebhookDetailsResponse, WebhookListResponse } from './types'
 
@@ -72,7 +73,7 @@ export function getWebhookAPITokenList(
     )
 }
 
-export async function executeWebhookAPI(webhookUrl: string, token: string, data?: object): Promise<any> {
+export function executeWebhookAPI(webhookUrl: string, token: string, data?: object): Promise<any> {
     const options = {
         method: 'POST',
         headers: {
@@ -93,12 +94,10 @@ export async function executeWebhookAPI(webhookUrl: string, token: string, data?
             }
             return response.json()
         })
-        .then(function (data) {
-            return {
-                code: data['code'],
-                result: data['status'],
-                headers: responseHeaderString,
-                bodyText: JSON.stringify(data, null, 4),
-            }
-        })
+        .then((data) => ({
+            code: data['code'],
+            result: data['status'],
+            headers: responseHeaderString,
+            bodyText: JSON.stringify(data, null, 4),
+        }))
 }

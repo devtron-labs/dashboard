@@ -22,12 +22,12 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { reSyncChartRepo } from '@Components/chartRepo/chartRepo.service'
-import { TOAST_INFO } from '@Config/constantMessaging'
-
 import AddChartSource from './AddChartSource'
 import ChartListPopUpRow from './ChartListPopUpRow'
 import { ChartsListProps } from './types'
+
+import { reSyncChartRepo } from '@Components/chartRepo/chartRepo.service'
+import { TOAST_INFO } from '@Config/constantMessaging'
 
 export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
     // STATES

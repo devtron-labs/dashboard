@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, SyntheticEvent } from 'react'
 import Tippy from '@tippyjs/react'
+import React, { SyntheticEvent, useEffect, useState } from 'react'
+
 import {
     DeploymentAppTypes,
-    noop,
-    showError,
-    ResponseType,
-    ServerErrors,
-    renderErrorHeaderMessage,
-    ToastVariantType,
-    ToastManager,
     ForceDeleteConfirmationModal,
     LoadingCard,
+    noop,
+    ResponseType,
+    renderErrorHeaderMessage,
+    ServerErrors,
+    showError,
     stopPropagation,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import ICHelpOutline from '../../../../assets/icons/ic-help-outline.svg?react'
 import ErrorIcon from '../../../../assets/icons/ic-warning.svg?react'
-import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
-import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
+import { AppDetailsErrorType } from '../../../../config'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
 import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
-import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
+import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
+import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 
 const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
@@ -226,7 +228,9 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">
-                        <div className="fs-13 fw-6 lh-20 app-summary__status-name f-degraded dc__first-letter-capitalize--imp">{getErrorCountText()}</div>
+                        <div className="fs-13 fw-6 lh-20 app-summary__status-name f-degraded dc__first-letter-capitalize--imp">
+                            {getErrorCountText()}
+                        </div>
                     </div>
                 </div>
                 <ErrorIcon className="form__icon--error icon-dim-24" />

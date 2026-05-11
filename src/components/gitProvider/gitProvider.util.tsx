@@ -16,8 +16,9 @@
 
 import React from 'react'
 import { components } from 'react-select'
-import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
+
 import Check from '../../assets/icons/ic-check.svg?react'
+import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
 
 export const styles = {
     control: (base, state) => ({

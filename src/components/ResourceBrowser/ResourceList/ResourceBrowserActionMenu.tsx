@@ -34,16 +34,16 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import MenuDots from '@Icons/ic-more-vertical.svg?react'
-import {
-    getManifestResource,
-    updateManifestResourceHelmApps,
-} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
-
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../common'
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 import { ResourceBrowserActionMenuType } from '../Types'
 import DeleteResourcePopup from './DeleteResourcePopup'
+
+import {
+    getManifestResource,
+    updateManifestResourceHelmApps,
+} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import MenuDots from '@Icons/ic-more-vertical.svg?react'
 
 const getResourceScanDetails: ({
     name,
@@ -142,9 +142,6 @@ const ResourceBrowserActionMenu = forwardRef(
                 case ResourceBrowserActionMenuEnum.vulnerability:
                     handleShowVulnerabilityModal()
                     return
-                default:
-                    // eslint-disable-next-line no-console
-                    console.warn(`No action defined for menu item: ${item.id}`)
             }
         }
 

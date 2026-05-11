@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-    FiltersTypeEnum,
-    GenericFilterEmptyState,
-    PaginationEnum,
-    Table,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, GenericFilterEmptyState, PaginationEnum, Table } from '@devtron-labs/devtron-fe-common-lib'
+
 import { VariableType } from './types'
 import { DescriptionCellComponent, SensitiveValueCellComponent, VariableNameCellComponent } from './utils'
 
@@ -48,6 +44,7 @@ export default function VariablesList({
 
     return (
         <div className="w-100 flex-grow-1">
+            {/** biome-ignore lint/complexity/noBannedTypes: Legacy */}
             <Table<VariableType, FiltersTypeEnum.NONE, {}>
                 id="table__scoped-variables-list"
                 columns={[

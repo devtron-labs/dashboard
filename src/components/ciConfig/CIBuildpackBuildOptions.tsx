@@ -16,6 +16,8 @@
 
 import { type JSX, useEffect, useState } from 'react'
 import { components } from 'react-select'
+import CreatableSelect from 'react-select/creatable'
+
 import {
     CIBuildType,
     ComponentSizeType,
@@ -23,22 +25,30 @@ import {
     DOCUMENTATION,
     getUniqueId,
     InfoIconTippy,
+    OptionType,
     SelectPicker,
     stopPropagation,
-    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import BitBucket from '../../assets/icons/git/bitbucket.svg?react'
+import Git from '../../assets/icons/git/git.svg?react'
+import GitHub from '../../assets/icons/git/github.svg?react'
+import GitLab from '../../assets/icons/git/gitlab.svg?react'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
     getCustomOptionSelectionStyle,
     Option,
 } from '../v2/common/ReactSelect.utils'
-import GitLab from '../../assets/icons/git/gitlab.svg?react'
-import Git from '../../assets/icons/git/git.svg?react'
-import GitHub from '../../assets/icons/git/github.svg?react'
-import BitBucket from '../../assets/icons/git/bitbucket.svg?react'
 import { getAbsoluteProjectPath } from './CIConfig.utils'
-import { DockerConfigOverrideKeys } from '../ciPipeline/types'
+import {
+    AUTO_DETECT,
+    BUILDER_SELECT_STYLES,
+    CI_BUILDPACK_OPTION_TEXTS,
+    USE_CUSTOM_BUILDER,
+    VERSION_DETECT_OPTION,
+} from './ciConfigConstant'
 import {
     BuilderIdOptionType,
     CIBuildpackBuildOptionsProps,
@@ -47,15 +57,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import {
-    AUTO_DETECT,
-    BUILDER_SELECT_STYLES,
-    CI_BUILDPACK_OPTION_TEXTS,
-    USE_CUSTOM_BUILDER,
-    VERSION_DETECT_OPTION,
-} from './ciConfigConstant'
 import { getSelectStartIcon } from './utils'
-import CreatableSelect from 'react-select/creatable'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) {

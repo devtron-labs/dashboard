@@ -19,17 +19,17 @@ import { generatePath } from 'react-router-dom'
 import {
     AppConfigProps,
     BASE_CONFIGURATION_ENV_ID,
+    URLS as CommonURLS,
     ConfigResourceType,
     ResourceKindType,
     ROUTER_URLS,
     stringComparatorBySortOrder,
-    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/index'
 
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
 import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
+
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/index'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
@@ -322,6 +322,7 @@ export const isCDPipelineCreated = (responseArr: AppConfigStatusItemType[]) => {
 export const transformEnvConfig = ({ resourceConfig }: EnvConfigDTO) => {
     const updatedEnvConfig = resourceConfig.reduce<EnvConfigType>(
         (acc, curr) => ({
+            // biome-ignore lint/performance/noAccumulatingSpread: Legacy
             ...acc,
             deploymentTemplate: curr.type === ConfigResourceType.DeploymentTemplate ? curr : acc.deploymentTemplate,
             configmaps: curr.type === ConfigResourceType.ConfigMap ? [...acc.configmaps, curr] : acc.configmaps,

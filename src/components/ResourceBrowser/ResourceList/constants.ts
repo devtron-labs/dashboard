@@ -20,10 +20,10 @@ import {
     NodeActionMenuOptionIdEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CLUSTER_NODE_ACTIONS_LABELS } from '@Components/ClusterNodes/constants'
-
 import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { NODE_SEARCH_KEYS } from '../Types'
+
+import { CLUSTER_NODE_ACTIONS_LABELS } from '@Components/ClusterNodes/constants'
 
 export const getNodeActions = (unschedulable: boolean): ActionMenuItemType<NodeActionMenuOptionIdEnum>[] => [
     {

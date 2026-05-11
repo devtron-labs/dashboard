@@ -15,13 +15,15 @@
  */
 
 import type { JSX } from 'react'
-import { HibernateStatusRowType } from '../../AppGroup.types'
-import Error from '../../../../assets/icons/ic-error-exclamation.svg?react'
-import Success from '../../../../assets/icons/appstatus/healthy.svg?react'
-import UnAuthorized from '../../../../assets/icons/ic-locked.svg?react'
-import Skipped from '../../../../assets/icons/ic-info-filled.svg?react'
+
 import { ACTION_STATE, DEPLOYMENT_WINDOW_TYPE } from '@devtron-labs/devtron-fe-common-lib'
+
+import Success from '../../../../assets/icons/appstatus/healthy.svg?react'
+import ErrorIcon from '../../../../assets/icons/ic-error-exclamation.svg?react'
+import Skipped from '../../../../assets/icons/ic-info-filled.svg?react'
+import UnAuthorized from '../../../../assets/icons/ic-locked.svg?react'
 import { importComponentFromFELibrary } from '../../../common'
+import { HibernateStatusRowType } from '../../AppGroup.types'
 
 const ExcludedUsersDescription = importComponentFromFELibrary('ExcludedUsersDescription')
 
@@ -42,7 +44,7 @@ export const HibernateStatusRow = ({
         if (rowData.skipped) {
             return <Skipped className="mr-8 icon-dim-18" />
         }
-        return <Error className="mr-8 icon-dim-18" />
+        return <ErrorIcon className="mr-8 icon-dim-18" />
     }
 
     const getStatus = () => {

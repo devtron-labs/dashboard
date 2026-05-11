@@ -31,11 +31,6 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICAdd from '@Icons/ic-add.svg?react'
-import { PluginVariableType } from '@Components/ciPipeline/types'
-import { importComponentFromFELibrary } from '@Components/common'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-
 import {
     FILE_MOUNT_DIR,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
@@ -61,13 +56,18 @@ import {
     getVariableDataTableInitialCellError,
     getVariableDataTableRows,
 } from './utils'
+import { ValueConfigOverlay } from './ValueConfigOverlay'
+import { VariableConfigOverlay } from './VariableConfigOverlay'
 import {
     getVariableDataTableCellValidateState,
     getVariableDataTableRowEmptyValidationState,
     validateVariableDataTableVariableKeys,
 } from './validations'
-import { ValueConfigOverlay } from './ValueConfigOverlay'
-import { VariableConfigOverlay } from './VariableConfigOverlay'
+
+import { PluginVariableType } from '@Components/ciPipeline/types'
+import { importComponentFromFELibrary } from '@Components/common'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import ICAdd from '@Icons/ic-add.svg?react'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
@@ -172,8 +172,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
                     const isCurrentValueValid =
                         !blockCustomValue ||
-                        ((!customState.valColumnSelectedValue ||
-                            !customState.valColumnSelectedValue?.variableType ||
+                        ((!customState.valColumnSelectedValue?.variableType ||
                             customState.valColumnSelectedValue.variableType === RefVariableType.NEW) &&
                             choicesOptions.some((value) => value === data.val.value))
 
@@ -428,84 +427,82 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
     const handleRowAdd = () => {
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.ADD_ROW,
-            rowId: Math.floor(new Date().valueOf() * Math.random()),
+            rowId: Math.floor(Date.now() * Math.random()),
         })
     }
 
-    const handleRowEdit: DynamicDataTableProps<
-        InputOutputVariablesHeaderKeys,
-        VariableDataCustomState
-    >['onRowEdit'] = async (updatedRow, headerKey, value, extraData) => {
-        if (
-            headerKey === InputOutputVariablesHeaderKeys.VALUE &&
-            updatedRow.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT
-        ) {
-            handleRowUpdateAction({
-                actionType: VariableDataTableActionType.UPDATE_VAL_COLUMN,
-                actionValue: { value, valColumnSelectedValue: extraData.selectedValue },
-                rowId: updatedRow.id,
-            })
-        } else if (
-            headerKey === InputOutputVariablesHeaderKeys.VALUE &&
-            updatedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD
-        ) {
-            handleRowUpdateAction({
-                actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                actionValue: { fileReferenceId: null, fileName: value },
-                rowId: updatedRow.id,
-            })
+    const handleRowEdit: DynamicDataTableProps<InputOutputVariablesHeaderKeys, VariableDataCustomState>['onRowEdit'] =
+        async (updatedRow, headerKey, value, extraData) => {
+            if (
+                headerKey === InputOutputVariablesHeaderKeys.VALUE &&
+                updatedRow.data.val.type === DynamicDataTableRowDataType.SELECT_TEXT
+            ) {
+                handleRowUpdateAction({
+                    actionType: VariableDataTableActionType.UPDATE_VAL_COLUMN,
+                    actionValue: { value, valColumnSelectedValue: extraData.selectedValue },
+                    rowId: updatedRow.id,
+                })
+            } else if (
+                headerKey === InputOutputVariablesHeaderKeys.VALUE &&
+                updatedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD
+            ) {
+                handleRowUpdateAction({
+                    actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                    actionValue: { fileReferenceId: null, fileName: value },
+                    rowId: updatedRow.id,
+                })
 
-            if (extraData.files.length) {
-                try {
-                    idToIsFileUploadingMap.current[updatedRow.id] = true
-                    handleRowUpdateAction({
-                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                        actionValue: { fileReferenceId: null, fileName: value },
-                        rowId: updatedRow.id,
-                    })
+                if (extraData.files.length) {
+                    try {
+                        idToIsFileUploadingMap.current[updatedRow.id] = true
+                        handleRowUpdateAction({
+                            actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                            actionValue: { fileReferenceId: null, fileName: value },
+                            rowId: updatedRow.id,
+                        })
 
-                    const { id, name } = await uploadFile({
-                        file: extraData.files,
-                        ...getUploadFileConstraints({
-                            sizeUnit: updatedRow.customState.fileInfo.sizeUnit,
-                            allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
-                            maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
-                        }),
-                    })
+                        const { id, name } = await uploadFile({
+                            file: extraData.files,
+                            ...getUploadFileConstraints({
+                                sizeUnit: updatedRow.customState.fileInfo.sizeUnit,
+                                allowedExtensions: updatedRow.customState.fileInfo.allowedExtensions,
+                                maxUploadSize: updatedRow.customState.fileInfo.maxUploadSize,
+                            }),
+                        })
 
-                    idToIsFileUploadingMap.current[updatedRow.id] = false
-                    handleRowUpdateAction({
-                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                        actionValue: { fileReferenceId: id, fileName: name },
-                        rowId: updatedRow.id,
-                    })
-                } catch {
-                    idToIsFileUploadingMap.current[updatedRow.id] = false
-                    handleRowUpdateAction({
-                        actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                        actionValue: { fileReferenceId: null, fileName: '' },
-                        rowId: updatedRow.id,
-                    })
+                        idToIsFileUploadingMap.current[updatedRow.id] = false
+                        handleRowUpdateAction({
+                            actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                            actionValue: { fileReferenceId: id, fileName: name },
+                            rowId: updatedRow.id,
+                        })
+                    } catch {
+                        idToIsFileUploadingMap.current[updatedRow.id] = false
+                        handleRowUpdateAction({
+                            actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
+                            actionValue: { fileReferenceId: null, fileName: '' },
+                            rowId: updatedRow.id,
+                        })
+                    }
                 }
+            } else if (
+                headerKey === InputOutputVariablesHeaderKeys.FORMAT &&
+                updatedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN
+            ) {
+                handleRowUpdateAction({
+                    actionType: VariableDataTableActionType.UPDATE_FORMAT_COLUMN,
+                    actionValue: value as VariableTypeFormat,
+                    rowId: updatedRow.id,
+                })
+            } else {
+                handleRowUpdateAction({
+                    actionType: VariableDataTableActionType.UPDATE_ROW,
+                    actionValue: value,
+                    headerKey,
+                    rowId: updatedRow.id,
+                })
             }
-        } else if (
-            headerKey === InputOutputVariablesHeaderKeys.FORMAT &&
-            updatedRow.data.format.type === DynamicDataTableRowDataType.DROPDOWN
-        ) {
-            handleRowUpdateAction({
-                actionType: VariableDataTableActionType.UPDATE_FORMAT_COLUMN,
-                actionValue: value as VariableTypeFormat,
-                rowId: updatedRow.id,
-            })
-        } else {
-            handleRowUpdateAction({
-                actionType: VariableDataTableActionType.UPDATE_ROW,
-                actionValue: value,
-                headerKey,
-                rowId: updatedRow.id,
-            })
         }
-    }
 
     const handleRowDelete: DynamicDataTableProps<
         InputOutputVariablesHeaderKeys,

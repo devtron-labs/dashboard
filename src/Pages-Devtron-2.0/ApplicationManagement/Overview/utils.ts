@@ -2,8 +2,6 @@ import moment from 'moment'
 
 import { isNullOrUndefined } from '@devtron-labs/devtron-fe-common-lib'
 
-import { TIME_WINDOW } from '@PagesDevtron2.0/Shared/types'
-
 import {
     BuildDeploymentActivityDetailedDTO,
     BuildDeploymentTriggerTrend,
@@ -11,6 +9,8 @@ import {
     DoraMetricAverage,
     MetricValueDTO,
 } from './types'
+
+import { TIME_WINDOW } from '@PagesDevtron2.0/Shared/types'
 
 export const getValueStringFromMetricItem = (item: MetricValueDTO): string => {
     const { total, percentage } = item ?? { total: 0, percentage: 0 }
@@ -71,7 +71,9 @@ export const getValueStringForDoraMetric = (overallAverage: DoraMetricAverage): 
 
 export const parseTimestampAccToWindow = (timestamp: string, timeWindow: TIME_WINDOW) => {
     const momentObj = moment(timestamp).local()
+    // biome-ignore lint/suspicious/noEvolvingTypes: On switching to const the return type becomes string | string[] which causes type errors in components consuming this function
     let hour = null
+    // biome-ignore lint/suspicious/noEvolvingTypes: On switching to const the return type becomes string | string[] which causes type errors in components consuming this function
     let date = null
     switch (timeWindow) {
         case TIME_WINDOW.TODAY:

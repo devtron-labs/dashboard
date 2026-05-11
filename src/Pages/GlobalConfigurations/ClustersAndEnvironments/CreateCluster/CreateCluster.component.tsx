@@ -32,13 +32,14 @@ import {
     VirtualClusterSidebar,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
 import ClusterForm from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterForm/ClusterForm'
 import EnterpriseTrialDialog from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/EnterpriseTrialDialog'
 
 import ConnectClusterViaKubeconfig from '../ClusterForm/ConnectClusterViaKubeconfig'
 import { CREATE_CLUSTER_TITLE } from './constants'
 import { CreateClusterParams, CreateClusterProps, CreateClusterTypeEnum } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const CreateClusterForm = importComponentFromFELibrary(
     'CreateClusterForm',
@@ -148,6 +149,7 @@ const CreateCluster = ({ handleReloadClusterList }: CreateClusterProps) => {
 
     return (
         <Drawer position="right" width="1024px" onEscape={handleModalClose} onClose={handleModalClose}>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
             <div className="bg__primary h-100 cn-9 w-100 flexbox-col dc__overflow-hidden" onClick={stopPropagation}>
                 <header className="px-20 flexbox-col dc__border-bottom">
                     <div className="flex py-12 dc__content-space lh-24">

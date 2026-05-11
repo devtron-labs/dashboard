@@ -15,36 +15,39 @@
  */
 
 import { Component } from 'react'
+import { NavLink } from 'react-router-dom'
+
 import {
-    showError,
+    ConditionalWrap,
+    getCVEUrlFromCVEName,
+    Icon,
     Progressing,
     Reload,
-    Severity,
+    ResponseType,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerVariantType,
-    getCVEUrlFromCVEName,
-    ConditionalWrap,
-    Icon,
-    ROUTER_URLS,
+    Severity,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink } from 'react-router-dom'
-import {
-    VulnerabilityUIMetaData,
-    GetVulnerabilityPolicyResponse,
-    FetchPolicyQueryParams,
-    SeverityPolicy,
-    CvePolicy,
-    VulnerabilityAction,
-    ResourceLevel,
-    VulnerabilityPolicy,
-    SecurityPolicyEditState,
-} from './security.types'
-import { AddCveModal } from './AddCveModal'
-import Arrow from '../../assets/icons/ic-chevron-down.svg?react'
+
 import Add from '../../assets/icons/ic-add.svg?react'
-import { getVulnerabilities, savePolicy, updatePolicy } from './security.service'
-import { ViewType } from '../../config'
+import Arrow from '../../assets/icons/ic-chevron-down.svg?react'
 import Delete from '../../assets/icons/ic-delete.svg?react'
+import { ViewType } from '../../config'
+import { AddCveModal } from './AddCveModal'
+import { getVulnerabilities, savePolicy, updatePolicy } from './security.service'
+import {
+    CvePolicy,
+    FetchPolicyQueryParams,
+    GetVulnerabilityPolicyResponse,
+    ResourceLevel,
+    SecurityPolicyEditState,
+    SeverityPolicy,
+    VulnerabilityAction,
+    VulnerabilityPolicy,
+    VulnerabilityUIMetaData,
+} from './security.types'
 
 export class SecurityPolicyEdit extends Component<
     FetchPolicyQueryParams,
@@ -157,7 +160,7 @@ export class SecurityPolicyEdit extends Component<
     updateCVE(action: string, cve: CvePolicy, envId?: number): void {
         this.setState({ showLoadingOverlay: true })
         let payload = {}
-        let promise
+        let promise: Promise<ResponseType>
         if (cve.policy.inherited) {
             // create
             payload = this.createCVEPayload(this.props.level, cve.name, action, envId)
@@ -217,7 +220,7 @@ export class SecurityPolicyEdit extends Component<
         }
 
         let payload = {}
-        let promise
+        let promise: Promise<ResponseType>
 
         if (actionLowerCase === VulnerabilityAction.inherit) {
             // update
@@ -552,7 +555,7 @@ export class SecurityPolicyEdit extends Component<
                         </h2>
                     </div>
                 )
-            case 'application':
+            case 'application': {
                 const i = this.state.result?.policies[0]?.name?.search('/')
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
@@ -563,6 +566,7 @@ export class SecurityPolicyEdit extends Component<
                         </h2>
                     </div>
                 )
+            }
         }
     }
 

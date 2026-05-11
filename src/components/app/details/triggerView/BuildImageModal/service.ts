@@ -7,11 +7,11 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCIMaterialList, triggerCINode } from '@Components/app/service'
-import { handleSourceNotConfigured } from '@Components/ApplicationGroup/AppGroup.utils'
-import { NO_TASKS_CONFIGURED_ERROR } from '@Config/constantMessaging'
-
 import { GetCIMaterialsProps, TriggerBuildProps } from './types'
+
+import { handleSourceNotConfigured } from '@Components/ApplicationGroup/AppGroup.utils'
+import { getCIMaterialList, triggerCINode } from '@Components/app/service'
+import { NO_TASKS_CONFIGURED_ERROR } from '@Config/constantMessaging'
 
 export const triggerBuild = async ({ payload, redirectToCIPipeline, showToast = true }: TriggerBuildProps) => {
     try {

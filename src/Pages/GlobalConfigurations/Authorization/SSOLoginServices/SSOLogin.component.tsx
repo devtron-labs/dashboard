@@ -46,16 +46,12 @@ import {
     RouterV5Props,
     SegmentedControl,
     SegmentType,
-    showError,
     SSOProviderIcon,
+    showError,
     ToastManager,
     ToastVariantType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import InfoIcon from '@Icons/ic-info-warn.svg?react'
-import Check from '@Icons/ic-selected-corner.png'
-import UsersIcon from '@Icons/ic-users.svg?react'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
 import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, ViewType } from '../../../../config'
@@ -63,14 +59,18 @@ import { AutoAssignToggleTile, getAuthorizationGlobalConfig, UserPermissionConfi
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
-    ssoDocumentationMap,
     SSOProvider,
-    ssoProviderToDisplayNameMap,
     SsoSecretsToHide,
+    ssoDocumentationMap,
+    ssoProviderToDisplayNameMap,
 } from './constants'
 import sample from './sampleSSOConfig.json'
 import { createSSOList, getSSOConfig, getSSOConfigList, updateSSOList } from './service'
 import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
+
+import InfoIcon from '@Icons/ic-info-warn.svg?react'
+import Check from '@Icons/ic-selected-corner.png'
+import UsersIcon from '@Icons/ic-users.svg?react'
 
 import '@Components/login/login.scss'
 import './ssoLogin.scss'
@@ -348,16 +348,16 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
     }
 
     sanitiseSecretDataFromResponse(response): void {
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientID)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.clientID)) {
             response.result.config.config.clientID = ''
         }
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientSecret)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.clientSecret)) {
             response.result.config.config.clientSecret = ''
         }
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.bindPW)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.bindPW)) {
             response.result.config.config.bindPW = ''
         }
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.usernamePrompt)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.usernamePrompt)) {
             response.result.config.config.usernamePrompt = ''
         }
     }
@@ -599,16 +599,16 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
     }
 
     setDefaultSecretPlaceHolder(newConfig): void {
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientID) && !newConfig.clientID) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.clientID) && !newConfig.clientID) {
             newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientSecret) && !newConfig.clientSecret) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.clientSecret) && !newConfig.clientSecret) {
             newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.bindPW) && !newConfig.bindPW) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.bindPW) && !newConfig.bindPW) {
             newConfig.bindPW = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && !newConfig.usernamePrompt) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.usernamePrompt) && !newConfig.usernamePrompt) {
             newConfig.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
         }
     }

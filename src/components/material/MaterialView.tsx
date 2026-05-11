@@ -14,56 +14,58 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { Component, type JSX } from 'react'
+
 import {
-    ConditionalWrap,
-    Checkbox,
-    TippyCustomized,
-    TippyTheme,
-    stopPropagation,
-    CHECKBOX_VALUE,
-    CustomInput,
-    SelectPicker,
-    ComponentSizeType,
-    SelectPickerProps,
-    renderMaterialIcon,
-    isAWSCodeCommitURL,
+    AuthenticationType,
     Button,
+    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    CHECKBOX_VALUE,
+    Checkbox,
+    ComponentSizeType,
+    ConditionalWrap,
+    CustomInput,
     DeleteConfirmationModal,
-    Textarea,
     ERROR_STATUS_CODE,
-    ButtonComponentType,
+    GitProviderIcon,
     Icon,
     InfoBlock,
-    AuthenticationType,
-    GitProviderIcon,
+    isAWSCodeCommitURL,
     ROUTER_URLS,
+    renderMaterialIcon,
+    SelectPicker,
+    SelectPickerProps,
+    stopPropagation,
+    Textarea,
+    TippyCustomized,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { MaterialViewProps, MaterialViewState } from './material.types'
+
 import Add from '../../assets/icons/ic-add.svg?react'
-import Down from '../../assets/icons/ic-chevron-down.svg?react'
-import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
-import Help from '../../assets/icons/ic-help.svg?react'
 import Check from '../../assets/icons/ic-check-circle-green.svg?react'
+import Down from '../../assets/icons/ic-chevron-down.svg?react'
 import Wrong from '../../assets/icons/ic-close-circle.svg?react'
-import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
-import { deleteMaterial } from './material.service'
-import {
-    DeleteComponentsName,
-    DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
-    DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
-} from '../../config/constantMessaging'
+import Help from '../../assets/icons/ic-help.svg?react'
+import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
 import InfoOutlined from '../../assets/icons/ic-info-outlined.svg?react'
 import {
-    INCLUDE_EXCLUDE_COMMIT_TIPPY,
+    DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
+    DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
+    DeleteComponentsName,
+} from '../../config/constantMessaging'
+import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import {
     INCLUDE_EXCLUDE_COMMIT_INFO,
-    INFO_BAR,
+    INCLUDE_EXCLUDE_COMMIT_TIPPY,
     INCLUDE_EXCLUDE_PLACEHOLDER,
+    INFO_BAR,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
+import { deleteMaterial } from './material.service'
+import { MaterialViewProps, MaterialViewState } from './material.types'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -645,10 +647,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <form
                 key={`${this.props.material.id}`}
                 className={`flexbox-col dc__gap-16
-                    ${this.props.isCreateAppView
-                        ? ''
-                        : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'} `
-                }
+                    ${this.props.isCreateAppView ? '' : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'} `}
             >
                 {!this.props.isCreateAppView && (
                     <div
@@ -757,7 +756,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <div className="mt-8 ml-35">
                                         <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
                                             <p className="fw-4 fs-13 mb-0-imp">
-                                                Use following pattern to include/exclude specific files/folder in this repo.
+                                                Use following pattern to include/exclude specific files/folder in this
+                                                repo.
                                                 <a
                                                     data-testid={`${
                                                         !this.props.isLearnHowClicked

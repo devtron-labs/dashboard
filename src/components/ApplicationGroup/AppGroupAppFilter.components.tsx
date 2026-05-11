@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { cloneElement, type JSX } from 'react'
 import { components } from 'react-select'
+
 import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { getOptionBGClass } from './AppGroup.utils'
+
+import CheckIcon from '../../assets/icons/ic-check.svg?react'
+import Trash from '../../assets/icons/ic-delete-interactive.svg?react'
+import Clear from '../../assets/icons/ic-error.svg?react'
 import ShowIconFilter from '../../assets/icons/ic-group-filter.svg?react'
 import ShowIconFilterApplied from '../../assets/icons/ic-group-filter-applied.svg?react'
-import Search from '../../assets/icons/ic-search.svg?react'
-import Clear from '../../assets/icons/ic-error.svg?react'
 import InfoIcon from '../../assets/icons/ic-info-outlined.svg?react'
 import Edit from '../../assets/icons/ic-pencil.svg?react'
-import Trash from '../../assets/icons/ic-delete-interactive.svg?react'
-import CheckIcon from '../../assets/icons/ic-check.svg?react'
+import Search from '../../assets/icons/ic-search.svg?react'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
+import { getOptionBGClass } from './AppGroup.utils'
+import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { AppFilterTabs } from './Constants'
-import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
+
 import { setAppGroupFilterInLocalStorage } from '@Components/common'
+import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
 
 export const ValueContainer = (props): JSX.Element => {
     const {

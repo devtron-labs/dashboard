@@ -14,45 +14,48 @@
  * limitations under the License.
  */
 /* eslint-disable react/no-danger */
+
+import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
 import { Component } from 'react'
-import { Link, generatePath } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import { CINode } from './nodes/CINode'
-import { CDNode } from './nodes/CDNode'
-import { StaticNode } from './nodes/StaticNode'
+import { generatePath, Link } from 'react-router-dom'
+
+import {
+    AddCDPositions,
+    ChangeCIPayloadType,
+    CommonNodeAttr,
+    URLS as CommonURLS,
+    ConditionalWrap,
+    highlightSearchText,
+    noop,
+    PipelineType,
+    ROUTER_URLS,
+    WorkflowNodeType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import ICDelete from '../../assets/icons/ic-delete-interactive.svg?react'
+import ICInput from '../../assets/icons/ic-input.svg?react'
+import ICMoreOption from '../../assets/icons/ic-more-option.svg?react'
+import ICEdit from '../../assets/icons/ic-pencil.svg?react'
+import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
+import { WorkflowCreate } from '../app/details/triggerView/config'
 import {
     RectangularEdge as Edge,
-    getLinkedCIPipelineURL,
-    getCIPipelineURL,
     getCDPipelineURL,
+    getCIPipelineURL,
     getExCIPipelineURL,
+    getLinkedCIPipelineURL,
     getWebhookDetailsURL,
     importComponentFromFELibrary,
 } from '../common'
-import { PipelineSelect } from './PipelineSelect'
-import { WorkflowCreate } from '../app/details/triggerView/config'
+import { CHANGE_CI_TOOLTIP } from './constants'
+import { CDNode } from './nodes/CDNode'
+import { CINode } from './nodes/CINode'
+import { StaticNode } from './nodes/StaticNode'
 import { WebhookNode } from './nodes/WebhookNode'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
-import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
-import {
-    CommonNodeAttr,
-    AddCDPositions,
-    noop,
-    WorkflowNodeType,
-    PipelineType,
-    ConditionalWrap,
-    ChangeCIPayloadType,
-    URLS as CommonURLS,
-    highlightSearchText,
-    ROUTER_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
-import ICInput from '../../assets/icons/ic-input.svg?react'
-import ICMoreOption from '../../assets/icons/ic-more-option.svg?react'
-import ICDelete from '../../assets/icons/ic-delete-interactive.svg?react'
-import ICEdit from '../../assets/icons/ic-pencil.svg?react'
+import { PipelineSelect } from './PipelineSelect'
 import { WorkflowProps, WorkflowState } from './types'
-import { CHANGE_CI_TOOLTIP } from './constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')

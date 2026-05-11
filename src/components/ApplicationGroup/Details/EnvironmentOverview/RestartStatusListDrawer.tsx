@@ -45,9 +45,7 @@ export const RestartStatusListDrawer = ({
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
     const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
     const hasPartialDeploymentWindowAccess = (appId) =>
-        hibernateInfoMap[appId] &&
-        hibernateInfoMap[appId].userActionState &&
-        hibernateInfoMap[appId].userActionState === ACTION_STATE.PARTIAL
+        hibernateInfoMap[appId]?.userActionState && hibernateInfoMap[appId].userActionState === ACTION_STATE.PARTIAL
 
     const toggleWorkloadCollapse = (appId: number) => {
         if (expandedAppIds.includes(appId)) {
@@ -59,8 +57,7 @@ export const RestartStatusListDrawer = ({
 
     const getDeploymentMessage = (appId) => {
         if (
-            hibernateInfoMap[appId] &&
-            hibernateInfoMap[appId].userActionState &&
+            hibernateInfoMap[appId]?.userActionState &&
             hibernateInfoMap[appId].userActionState !== ACTION_STATE.ALLOWED
         ) {
             return (
@@ -164,6 +161,7 @@ export const RestartStatusListDrawer = ({
                     .filter((_appId) => bulkRotatePodsMap[_appId].isChecked)
                     .map((_appId: string) => (
                         <div key={_appId} className="dc__border-bottom-n1">
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <div
                                 className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 pl-16 pr-16 dc__hover-n50 dc__gap-8 cursor"
                                 onClick={() => toggleWorkloadCollapse(+_appId)}

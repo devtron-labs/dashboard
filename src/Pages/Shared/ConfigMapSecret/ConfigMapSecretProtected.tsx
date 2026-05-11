@@ -34,13 +34,14 @@ import {
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 import { ConfigMapSecretProtectedProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const ConfigMapSecretApproveButton = importComponentFromFELibrary('ConfigMapSecretApproveButton', null, 'function')
 
@@ -152,6 +153,7 @@ export const ConfigMapSecretProtected = ({
             currentEditorConfig: {
                 ...editorConfigData.reduce<CompareConfigViewProps['currentEditorConfig']>(
                     (acc, curr) => ({
+                        // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                         ...acc,
                         [curr.key]: {
                             displayName: curr.displayName,
@@ -204,6 +206,7 @@ export const ConfigMapSecretProtected = ({
             publishedEditorConfig: {
                 ...editorConfigData.reduce<CompareConfigViewProps['publishedEditorConfig']>(
                     (acc, curr) => ({
+                        // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                         ...acc,
                         [curr.key]: {
                             displayName: curr.displayName,

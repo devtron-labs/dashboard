@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
 import Tippy from '@tippyjs/react'
+import { useState } from 'react'
 
 import { copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ClusterStepModal } from './cluster.type'
+
 import ClipboardIcon from '@Icons/ic-copy.svg?react'
 import Help from '@Icons/ic-help.svg?react'
-
-import { ClusterStepModal } from './cluster.type'
 
 import 'tippy.js/themes/light.css'
 
@@ -65,9 +65,13 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
                         }}
                         interactive
                     >
-                        <div className="cluster-clipboard dc__position-abs cursor" onClick={copyClipboard}>
+                        <button
+                            type="button"
+                            className="cluster-clipboard dc__position-abs dc__transparent flex"
+                            onClick={copyClipboard}
+                        >
                             <ClipboardIcon className="icon-dim-16" />
-                        </div>
+                        </button>
                     </Tippy>
                 </div>
             ),
@@ -83,7 +87,8 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     return (
         <div className="p-12 fs-13 fw-4">
             {infoItems.map((item, key) => (
-                <div className="cluster-modal-wrapper ">
+                // biome-ignore lint/suspicious/noArrayIndexKey: Order is constant here
+                <div className="cluster-modal-wrapper" key={key}>
                     <div className="cluster-modal-number flex mr-16 bw-1 bg__primary en-2 icon-dim-24">{key + 1}</div>
                     <div className="cluster-inner-container flexbox-col dc__border-left pt-2 pr-44 pb-20 pl-28 lh-20 dc__align-start dc__content-start">
                         {item.info && <div>{item.info}</div>}

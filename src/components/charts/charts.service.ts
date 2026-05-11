@@ -16,24 +16,25 @@
 
 import {
     get,
+    getAPIOptionsWithTriggerTimeout,
+    getUrlWithSearchParams,
     post,
     put,
-    trash,
-    sortCallback,
     ResponseType,
-    getUrlWithSearchParams,
-    getAPIOptionsWithTriggerTimeout,
+    sortCallback,
+    trash,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DELETE_ACTION, Routes } from '../../config'
 import { handleUTCTime } from '../common'
 import {
-    ChartValuesType,
-    ChartGroup,
-    HelmTemplateChartRequest,
-    HelmProjectUpdatePayload,
-    DeleteInstalledChartParamsType,
     ChartDetailsDTO,
+    ChartGroup,
     ChartListType,
+    ChartValuesType,
+    DeleteInstalledChartParamsType,
+    HelmProjectUpdatePayload,
+    HelmTemplateChartRequest,
 } from './charts.types'
 
 interface RootObject {

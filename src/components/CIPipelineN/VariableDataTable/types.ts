@@ -85,11 +85,13 @@ export enum VariableDataTableActionType {
 }
 
 type VariableDataTableActionPropsMap = {
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     [VariableDataTableActionType.ADD_ROW]: {}
     [VariableDataTableActionType.UPDATE_ROW]: {
         actionValue: string
         headerKey: InputOutputVariablesHeaderKeys
     }
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     [VariableDataTableActionType.DELETE_ROW]: {}
     [VariableDataTableActionType.UPDATE_VAL_COLUMN]: {
         actionValue: {

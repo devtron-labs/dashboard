@@ -15,32 +15,35 @@
  */
 
 import { Component } from 'react'
+import AsyncSelect from 'react-select/async'
+
 import {
-    ServerErrors,
-    VisibleModal,
-    showError,
-    Progressing,
-    multiSelectStyles,
-    CustomInput,
+    AppSelectorNoOptionsMessage,
     ButtonWithLoader,
+    CustomInput,
+    multiSelectStyles,
+    Progressing,
+    ServerErrors,
+    showError,
     ToastManager,
     ToastVariantType,
-    AppSelectorNoOptionsMessage,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import AsyncSelect from 'react-select/async'
-import { saveLinkedCIPipeline } from './ciPipeline.service'
-import { ViewType } from '../../config'
-import { CIPipelineBuildType, LinkedCIPipelineEditProps, LinkedCIPipelineState } from './types'
-import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
-import { ValidationRules } from './validationRules'
-import { Info } from '../common/icons/Icons'
-import { getCIConfig } from '../../services/service'
-import error from '../../assets/icons/misc/errorInfo.svg'
+
 import Close from '../../assets/icons/ic-close.svg?react'
+import error from '../../assets/icons/misc/errorInfo.svg'
+import { ViewType } from '../../config'
+import { getCIConfig } from '../../services/service'
+import { Typeahead, TypeaheadErrorOption, TypeaheadOption } from '../common'
+import { Info } from '../common/icons/Icons'
+import { saveLinkedCIPipeline } from './ciPipeline.service'
+import { CIPipelineBuildType, LinkedCIPipelineEditProps, LinkedCIPipelineState } from './types'
+import { ValidationRules } from './validationRules'
 import './ciPipeline.scss'
-import { appListOptions } from '../AppSelector/AppSelectorUtil'
+
 import Warning from '../../assets/icons/ic-warning.svg?react'
 import { DUPLICATE_PIPELINE_NAME_VALIDATION, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { appListOptions } from '../AppSelector/AppSelectorUtil'
 
 export default class LinkedCIPipeline extends Component<LinkedCIPipelineEditProps, LinkedCIPipelineState> {
     validationRules
@@ -105,7 +108,7 @@ export default class LinkedCIPipeline extends Component<LinkedCIPipelineEditProp
             // Explicitly setting isTemplateView false to use the pipelines from app
             getCIConfig(this.state.form.parentAppId, false)
                 .then((response) => {
-                    let pipelines = response.result && response.result.ciPipelines ? response.result.ciPipelines : []
+                    let pipelines = response.result?.ciPipelines ? response.result.ciPipelines : []
                     pipelines = pipelines.filter(
                         (n) =>
                             n.parentCiPipeline === 0 || n.parentCiPipeline === undefined || n.parentCiPipeline === null,
@@ -355,6 +358,7 @@ export default class LinkedCIPipeline extends Component<LinkedCIPipelineEditProp
                 </div>
                 {this.renderCIPipelinesDropdown(null)}
                 {this.state.form.parentCIPipelineId ? (
+                    // biome-ignore lint/a11y/noLabelWithoutControl: Legacy
                     <label className="form__row">
                         <CustomInput
                             name="name"

@@ -11,11 +11,12 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CREATE_CLUSTER_PATH } from '@Config/routes'
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 import { UpgradeToEnterpriseDialog } from '../UpgradeToEnterprise'
+
+import { CREATE_CLUSTER_PATH } from '@Config/routes'
 
 enum ConnectClusterOptions {
     CONNECT_CLUSTER = 'connect-cluster',

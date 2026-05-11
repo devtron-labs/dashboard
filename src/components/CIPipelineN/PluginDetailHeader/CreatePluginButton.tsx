@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useContext, useState } from 'react'
 import ReactGA from 'react-ga4'
-import Tippy from '@tippyjs/react'
 
 import { RefVariableType, ToastManager, ToastVariantType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICSave from '@Icons/ic-save.svg?react'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-
 import { CreatePluginModal } from '../CreatePluginModal'
+
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import ICSave from '@Icons/ic-save.svg?react'
 
 const CreatePluginButton = () => {
     const { formData, formDataErrorObj, setFormDataErrorObj, activeStageName, selectedTaskIndex, validateTask } =

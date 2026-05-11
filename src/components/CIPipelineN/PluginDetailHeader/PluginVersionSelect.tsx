@@ -23,11 +23,11 @@ import {
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICUpdateAnimated from '@Icons/ic-update-animated.svg?react'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-
 import { PluginVersionSelectOptionType, PluginVersionSelectProps } from '../types'
 import { getPluginVersionSelectOption } from './utils'
+
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import ICUpdateAnimated from '@Icons/ic-update-animated.svg?react'
 
 // Here assumption is step type is always PLUGIN_REF
 const PluginVersionSelect = ({ handlePluginVersionChange }: PluginVersionSelectProps) => {

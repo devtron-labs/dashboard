@@ -28,15 +28,14 @@ import {
     PaginationEnum,
     Progressing,
     ROUTER_URLS,
-    Table,
     TARGET_K8S_VERSION_SEARCH_KEY,
+    Table,
     URL_FILTER_KEYS,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyCustomChart from '@Images/empty-noresult@2x.png'
 import NoOffendingPipeline from '@Images/no-offending-pipeline.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { ClusterDetailBaseParams } from '../Types'
 import ClusterUpgradeCompatibilityInfoTableCellComponent from './ClusterUpgradeCompatibilityInfoTableCellComponent'
@@ -47,6 +46,8 @@ import {
     ClusterUpgradeCompatibilityInfoTableProps,
 } from './types'
 import { dynamicSort } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
     'useClusterUpgradeCompatibilityInfo',

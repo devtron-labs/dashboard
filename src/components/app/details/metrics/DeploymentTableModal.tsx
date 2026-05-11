@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
+
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentTable } from './DeploymentTable'
+
 import Close from '../../../../assets/icons/ic-close.svg?react'
 import { ViewType } from '../../../../config'
+import { DeploymentTable } from './DeploymentTable'
 
 export interface DeploymentTableModalProps {
     close: (event) => void
     rows: any[]
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export class DeploymentTableModal extends Component<DeploymentTableModalProps, {}> {
+    // biome-ignore lint/complexity/noUselessConstructor: Legacy
     constructor(props) {
         super(props)
     }

@@ -23,26 +23,26 @@ import {
     getIsRequestAborted,
     logExceptionToSentry,
     OptionType,
+    SEMANTIC_VERSION_DOCUMENTATION_LINK,
     SegmentedControl,
     SegmentedControlProps,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
-    SEMANTIC_VERSION_DOCUMENTATION_LINK,
     stopPropagation,
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICHelp from '@Icons/ic-help.svg?react'
-import ICLegoBlock from '@Icons/ic-lego-block.svg?react'
-import ICTag from '@Icons/ic-tag.svg?react'
-import ICVisibilityOn from '@Icons/ic-visibility-on.svg?react'
-
 import CreatePluginFormField from './CreatePluginFormField'
 import CreatePluginInputVariableContainer from './CreatePluginInputVariableContainer'
 import { CreatePluginActionType, CreatePluginFormContentProps, CreatePluginFormViewType } from './types'
 import { getIsTagValid, getSelectPickerOptionsFromParentPluginList } from './utils'
+
+import ICHelp from '@Icons/ic-help.svg?react'
+import ICLegoBlock from '@Icons/ic-lego-block.svg?react'
+import ICTag from '@Icons/ic-tag.svg?react'
+import ICVisibilityOn from '@Icons/ic-visibility-on.svg?react'
 
 const CreatePluginFormContent = ({
     isLoadingParentPluginList,

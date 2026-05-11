@@ -31,17 +31,17 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
-    useMainContext,
     UserGroupType,
     UserStatus,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import PlusIcon from '../../../../../assets/icons/ic-delete-interactive.svg?react'
-import Error from '../../../../../assets/icons/ic-warning.svg?react'
+import ErrorIcon from '../../../../../assets/icons/ic-warning.svg?react'
 import { deepEqual, importComponentFromFELibrary, validateEmail } from '../../../../../components/common'
 import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING } from '../../../../../config'
-import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
+import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import {
@@ -380,7 +380,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     {!isAddMode &&
                         !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
                             <span className="flex dc__gap-4 cy-7">
-                                <Error className="icon-dim-20 warning-icon-y7" />
+                                <ErrorIcon className="icon-dim-20 warning-icon-y7" />
                                 Unsaved changes
                             </span>
                         )}

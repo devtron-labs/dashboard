@@ -19,11 +19,11 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import ClusterInstallationStatus from './ClusterInstallationStatus'
 import ResourceBrowser from './ResourceBrowser'
 import ResourceList from './ResourceList'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import './ResourceBrowser.scss'
 

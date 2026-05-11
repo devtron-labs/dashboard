@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
-import { showError, getAIAnalyticsEvents } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useState } from 'react'
+
+import { getAIAnalyticsEvents, showError } from '@devtron-labs/devtron-fe-common-lib'
+
 import { MESSAGING_UI } from '../../config'
 import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable'
 import { PodEventsType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
@@ -28,7 +30,7 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart, cluste
     const [errorValue, setErrorValue] = useState<PodEventsType>()
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
-    let timeoutId
+    let timeoutId: ReturnType<typeof setTimeout>
 
     const fetchEvents = async () => {
         try {

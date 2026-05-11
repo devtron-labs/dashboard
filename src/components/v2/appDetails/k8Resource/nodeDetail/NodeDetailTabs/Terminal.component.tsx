@@ -16,24 +16,24 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { get, showError, OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { NodeDetailTab, TerminalParamsType } from '../nodeDetail.type'
-import IndexStore from '../../../index.store'
-import MessageUI from '../../../../common/message.ui'
-import {
-    getK8sResourcePayloadAppType,
-    getGroupedContainerOptions,
-} from '../nodeDetail.util'
+
+import { get, OptionType, showError } from '@devtron-labs/devtron-fe-common-lib'
+
 import { shellTypes } from '../../../../../../config/constants'
+import MessageUI from '../../../../common/message.ui'
 import { AppType, TerminalComponentProps } from '../../../appDetails.type'
+import IndexStore from '../../../index.store'
+import { NodeDetailTab, TerminalParamsType } from '../nodeDetail.type'
+import { getGroupedContainerOptions, getK8sResourcePayloadAppType } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
+
+import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
+import { generateDevtronAppIdentiferForK8sRequest, getAppId } from '../nodeDetail.api'
+import { TerminalWrapperType } from './terminal/constants'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
-import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
-import { TerminalWrapperType } from './terminal/constants'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../nodeDetail.api'
 
-let clusterTimeOut
+let clusterTimeOut: ReturnType<typeof setTimeout>
 
 const TerminalComponent = ({
     selectedTab,
@@ -69,6 +69,7 @@ const TerminalComponent = ({
 
     const generateSessionURL = () => {
         const appId =
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             appDetails.appType == AppType.DEVTRON_APP
                 ? generateDevtronAppIdentiferForK8sRequest(
                       appDetails.clusterId,
@@ -176,14 +177,7 @@ const TerminalComponent = ({
     }
 
     if (isDeleted || !selectedContainerName.value.length) {
-        return (
-            showTerminal && (
-                <MessageUI
-                    msg="This resource no longer exists"
-                    size={32}
-                />
-            )
-        )
+        return showTerminal && <MessageUI msg="This resource no longer exists" size={32} />
     }
 
     const selectionListData: TerminalSelectionListDataType = {

@@ -35,10 +35,6 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { PluginVariableType } from '@Components/ciPipeline/types'
-import { PipelineContext } from '@Components/workflowEditor/types'
-import { BuildStageVariable } from '@Config/constants'
-
 import { excludeVariables } from '../Constants'
 import {
     FILE_MOUNT_DIR,
@@ -53,6 +49,10 @@ import {
     VariableDataRowType,
     VariableDataTableSelectPickerOptionType,
 } from './types'
+
+import { PluginVariableType } from '@Components/ciPipeline/types'
+import { PipelineContext } from '@Components/workflowEditor/types'
+import { BuildStageVariable } from '@Config/constants'
 
 const getOptionsForValColumn = ({
     inputVariablesListFromPrevStep,
@@ -75,10 +75,12 @@ const getOptionsForValColumn = ({
     Pick<VariableType, 'format' | 'valueConstraint'>) => {
     const isBuildStagePostBuild = activeStageName === BuildStageVariable.PostBuild
 
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, unable to put correct type without refactoring
     const previousStepVariables = []
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, unable to put correct type without refactoring
     const preBuildStageVariables = []
 
-    const supportedDataFormats = []
+    const supportedDataFormats: typeof IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS = []
     const choices = (valueConstraint?.choices || []).map<SelectPickerOptionType<string>>((value) => ({
         label: value,
         value,
@@ -490,6 +492,7 @@ export const getVariableDataTableInitialCellError = (
     rows.reduce((acc, curr) => {
         if (!acc[curr.id]) {
             acc[curr.id] = headers.reduce(
+                // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                 (headerAcc, { key }) => ({ ...headerAcc, [key]: { isValid: true, errorMessages: [] } }),
                 {},
             )

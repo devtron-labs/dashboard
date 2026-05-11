@@ -19,7 +19,7 @@ import { get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib
 import { Routes } from '../../../../config'
 import { GetExternalFluxCDAppDetailsParamsType } from './types'
 
-export const getExternalFluxCDAppDetails = async ({
+export const getExternalFluxCDAppDetails = ({
     clusterId,
     namespace,
     appName,

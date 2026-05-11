@@ -14,33 +14,36 @@
  * limitations under the License.
  */
 
-import { useState, useContext, Fragment, SyntheticEvent } from 'react'
+import { Fragment, SyntheticEvent, useContext, useState } from 'react'
+
 import {
-    BuildStageVariable,
-    PluginType,
-    RefVariableStageType,
-    RefVariableType,
-    PipelineFormType,
-    ValidationResponseType,
-    StepType,
-    PipelineStageTaskActionModalType,
-    PipelineStageTaskActionModalStateType,
-    ResourceKindType,
     ActionMenu,
+    ActionMenuProps,
+    BuildStageVariable,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    ActionMenuProps,
     Icon,
+    PipelineFormType,
+    PipelineStageTaskActionModalStateType,
+    PipelineStageTaskActionModalType,
+    PluginType,
+    RefVariableStageType,
+    RefVariableType,
+    ResourceKindType,
+    StepType,
+    ValidationResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
-import TaskTitle from './TaskTitle'
-import Add from '../../assets/icons/ic-add.svg?react'
+
 import Drag from '../../assets/icons/drag.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
 import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
 import { TaskListType } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { TaskActionMenuOptionIdEnum } from './Constants'
+import TaskTitle from './TaskTitle'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const getTaskActionPluginValidationStatus: (params) => ValidationResponseType = importComponentFromFELibrary(
     'getTaskActionPluginValidationStatus',

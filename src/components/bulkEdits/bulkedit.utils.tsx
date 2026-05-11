@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { CMandSecretImpactedObjects, DtOutputKeys, OutputTabType, CMandSecretOutputKeys } from './bulkEdits.type'
+
+import { CMandSecretImpactedObjects, CMandSecretOutputKeys, DtOutputKeys, OutputTabType } from './bulkEdits.type'
 import { OutputDivider } from './constants'
 
 export const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
@@ -32,12 +33,36 @@ export const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputNa
 const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOutputKeys) => {
     return (
         <div>
-            {!!CMandSecretOutputKeys.appId && <>App Id: {CMandSecretOutputKeys.appId} <br /></>}
-            {!!CMandSecretOutputKeys.appName && <>App Name: {CMandSecretOutputKeys.appName} <br /></>}
-            {!!CMandSecretOutputKeys.envId && <>Environment Id: {CMandSecretOutputKeys.envId} <br /></>}
-            {!!CMandSecretOutputKeys.envName && <>Environment Name: {CMandSecretOutputKeys.envName} <br /></>}
-            {CMandSecretOutputKeys.names && CMandSecretOutputKeys.names.length > 0 && <>Names : {CMandSecretOutputKeys.names.join(', ')} <br /></>}
-            {!!CMandSecretOutputKeys.message && <>Message: {CMandSecretOutputKeys.message} <br /></>}
+            {!!CMandSecretOutputKeys.appId && (
+                <>
+                    App Id: {CMandSecretOutputKeys.appId} <br />
+                </>
+            )}
+            {!!CMandSecretOutputKeys.appName && (
+                <>
+                    App Name: {CMandSecretOutputKeys.appName} <br />
+                </>
+            )}
+            {!!CMandSecretOutputKeys.envId && (
+                <>
+                    Environment Id: {CMandSecretOutputKeys.envId} <br />
+                </>
+            )}
+            {!!CMandSecretOutputKeys.envName && (
+                <>
+                    Environment Name: {CMandSecretOutputKeys.envName} <br />
+                </>
+            )}
+            {CMandSecretOutputKeys.names && CMandSecretOutputKeys.names.length > 0 && (
+                <>
+                    Names : {CMandSecretOutputKeys.names.join(', ')} <br />
+                </>
+            )}
+            {!!CMandSecretOutputKeys.message && (
+                <>
+                    Message: {CMandSecretOutputKeys.message} <br />
+                </>
+            )}
             <br />
         </div>
     )
@@ -73,7 +98,9 @@ export const renderConfigMapOutput = (configMap) => {
                 ) : (
                     <>
                         {configMap.failure.map((elm, index) => {
-                            return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            return (
+                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            )
                         })}
                     </>
                 )}
@@ -88,7 +115,9 @@ export const renderConfigMapOutput = (configMap) => {
                 ) : (
                     <>
                         {configMap.successful.map((elm, index) => {
-                            return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            return (
+                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            )
                         })}
                     </>
                 )}
@@ -101,11 +130,31 @@ export const renderConfigMapOutput = (configMap) => {
 export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
     return (
         <div>
-            {!!DTOutputKeys.appId && <>App Id: {DTOutputKeys.appId} <br /></>}
-            {!!DTOutputKeys.appName && <>App Name: {DTOutputKeys.appName} <br /></>}
-            {!!DTOutputKeys.envId && <>Environment Id: {DTOutputKeys.envId} <br /></>}
-            {!!DTOutputKeys.envName && <>Environment Name: {DTOutputKeys.envName} <br /></>}
-            {!!DTOutputKeys.message && <>Message: {DTOutputKeys.message} <br /></>}
+            {!!DTOutputKeys.appId && (
+                <>
+                    App Id: {DTOutputKeys.appId} <br />
+                </>
+            )}
+            {!!DTOutputKeys.appName && (
+                <>
+                    App Name: {DTOutputKeys.appName} <br />
+                </>
+            )}
+            {!!DTOutputKeys.envId && (
+                <>
+                    Environment Id: {DTOutputKeys.envId} <br />
+                </>
+            )}
+            {!!DTOutputKeys.envName && (
+                <>
+                    Environment Name: {DTOutputKeys.envName} <br />
+                </>
+            )}
+            {!!DTOutputKeys.message && (
+                <>
+                    Message: {DTOutputKeys.message} <br />
+                </>
+            )}
             <br />
         </div>
     )
@@ -114,11 +163,31 @@ export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
 export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretImpactedObjects) => {
     return (
         <div>
-            {!!CMandSecretImpactedObject.appId && <>App Id: {CMandSecretImpactedObject.appId} <br /></>}
-            {!!CMandSecretImpactedObject.appName && <>App Name: {CMandSecretImpactedObject.appName} <br /></>}
-            {!!CMandSecretImpactedObject.envId && <>Environment Id: {CMandSecretImpactedObject.envId} <br /></>}
-            {!!CMandSecretImpactedObject.envName && <>Environment Name: {CMandSecretImpactedObject.envName} <br /></>}
-            {CMandSecretImpactedObject.names && CMandSecretImpactedObject.names.length > 0 && <>Names : {CMandSecretImpactedObject.names.join(', ')} <br /></>}
+            {!!CMandSecretImpactedObject.appId && (
+                <>
+                    App Id: {CMandSecretImpactedObject.appId} <br />
+                </>
+            )}
+            {!!CMandSecretImpactedObject.appName && (
+                <>
+                    App Name: {CMandSecretImpactedObject.appName} <br />
+                </>
+            )}
+            {!!CMandSecretImpactedObject.envId && (
+                <>
+                    Environment Id: {CMandSecretImpactedObject.envId} <br />
+                </>
+            )}
+            {!!CMandSecretImpactedObject.envName && (
+                <>
+                    Environment Name: {CMandSecretImpactedObject.envName} <br />
+                </>
+            )}
+            {CMandSecretImpactedObject.names && CMandSecretImpactedObject.names.length > 0 && (
+                <>
+                    Names : {CMandSecretImpactedObject.names.join(', ')} <br />
+                </>
+            )}
             <br />
         </div>
     )
@@ -210,7 +279,9 @@ export const renderSecretOutput = (secret) => {
                 ) : (
                     <>
                         {secret.failure.map((elm, index) => {
-                            return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            return (
+                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            )
                         })}
                     </>
                 )}
@@ -226,7 +297,9 @@ export const renderSecretOutput = (secret) => {
                 ) : (
                     <>
                         {secret.successful.map((elm, index) => {
-                            return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            return (
+                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                            )
                         })}
                     </>
                 )}

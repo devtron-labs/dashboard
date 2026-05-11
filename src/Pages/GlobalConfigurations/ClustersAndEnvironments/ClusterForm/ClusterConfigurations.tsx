@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import TippyHeadless from '@tippyjs/react/headless'
+import { useState } from 'react'
 
 import {
     Button,
@@ -18,12 +18,12 @@ import {
     Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import ClusterInfoStepsModal from '../ClusterInfoStepsModal'
+import { DEFAULT_CLUSTER_ID, RemoteConnectionTypeCluster, SSHAuthenticationType } from '../cluster.type'
+import { ClusterConfigPages, ClusterConfigurationsProps } from './types'
+
 import { importComponentFromFELibrary } from '@Components/common'
 import { CLUSTER_COMMAND } from '@Config/constants'
-
-import { DEFAULT_CLUSTER_ID, RemoteConnectionTypeCluster, SSHAuthenticationType } from '../cluster.type'
-import ClusterInfoStepsModal from '../ClusterInfoStepsModal'
-import { ClusterConfigPages, ClusterConfigurationsProps } from './types'
 
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
 const AssignCategorySelect = importComponentFromFELibrary('AssignCategorySelect', null, 'function')
@@ -407,7 +407,6 @@ const ClusterConfigurations = ({
         case ClusterConfigPages.TLS_CONFIG:
             return renderTLSConnectionConfig()
 
-        case ClusterConfigPages.BASIC_CONFIG:
         default:
             return renderBasicClusterConfig()
     }

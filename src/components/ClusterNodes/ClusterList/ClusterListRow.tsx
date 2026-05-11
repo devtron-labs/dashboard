@@ -34,13 +34,13 @@ import {
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Error from '@Icons/ic-error-exclamation.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
-
 import { CLUSTER_PROD_TYPE } from '../constants'
 import { ClusterStatus } from './ClusterStatus'
 import { ClusterListRowTypes } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
+import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
 
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
@@ -155,7 +155,7 @@ const ClusterListRow = ({
                 {errorCount > 0 &&
                     hideDataOnLoad(
                         <>
-                            <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
+                            <ErrorIcon className="mr-3 icon-dim-16 dc__position-rel top-3" />
                             <span className="cr-5">{errorCount}</span>
                         </>,
                     )}

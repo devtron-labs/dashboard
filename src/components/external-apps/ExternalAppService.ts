@@ -15,20 +15,22 @@
  */
 
 import {
-    get,
-    put,
-    trash,
-    ResponseType,
-    AppType,
-    getUrlWithSearchParams,
-    getAPIOptionsWithTriggerTimeout,
     APIOptions,
-    ResourceTree
+    AppType,
+    get,
+    getAPIOptionsWithTriggerTimeout,
+    getUrlWithSearchParams,
+    put,
+    ResourceTree,
+    ResponseType,
+    trash,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
-import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
-import { getK8sResourcePayloadAppType } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
+import { AppEnvironmentDetail, HelmApp } from '../app/list-new/AppListType'
 import { GetArgoAppDetailParamsType } from './types'
+
+import { getK8sResourcePayloadAppType } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 
 export interface ReleaseInfoResponse extends ResponseType {
     result?: ReleaseAndInstalledAppInfo

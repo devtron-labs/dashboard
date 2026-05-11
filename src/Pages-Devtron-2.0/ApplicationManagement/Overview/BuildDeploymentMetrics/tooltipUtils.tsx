@@ -1,7 +1,5 @@
 import { ChartProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ChartColorIndicator, parseTimestampToDate, TIME_WINDOW } from '@PagesDevtron2.0/Shared'
-
 import { AppOverviewDoraMetricsKeys, BuildDeploymentActivityDetailed, PerformanceLevel } from '../types'
 import { parseMinutesInDayHourUnit } from '../utils'
 import {
@@ -9,6 +7,8 @@ import {
     DORA_METRIC_TOOLTIP_FOOTERS,
     DORA_METRICS_LABEL_MAP,
 } from './constants'
+
+import { ChartColorIndicator, parseTimestampToDate, TIME_WINDOW } from '@PagesDevtron2.0/Shared'
 
 const getPerformanceLevelByLabel = (label: string): PerformanceLevel =>
     (Object.entries(DORA_METRICS_LABEL_MAP) as [PerformanceLevel, string][]).find(([, value]) => value === label)?.[0]

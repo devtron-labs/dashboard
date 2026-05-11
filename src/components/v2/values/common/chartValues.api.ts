@@ -15,15 +15,18 @@
  */
 
 import React from 'react'
+
 import {
-    showError,
-    Teams,
-    sortCallback,
-    getTeamListMin,
     EnvironmentListHelmResult,
+    getTeamListMin,
+    showError,
+    sortCallback,
+    Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SERVER_MODE } from '../../../../config'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../../services/service'
+import { EnvironmentListMinType } from '../../../app/types'
 import {
     generateHelmManifest,
     getChartValuesCategorizedListParsed,
@@ -33,7 +36,6 @@ import {
 import { createClusterEnvGroup, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
-import { EnvironmentListMinType } from '../../../app/types'
 
 export async function fetchChartVersionsData(
     id: number,
@@ -175,6 +177,7 @@ export async function getGeneratedHelmManifest(
     }
 }
 
+// biome-ignore lint/suspicious/useAwait: Legacy
 export async function fetchProjectsAndEnvironments(
     serverMode: SERVER_MODE,
     dispatch: (action: ChartValuesViewAction) => void,
@@ -184,7 +187,9 @@ export async function fetchProjectsAndEnvironments(
         serverMode === SERVER_MODE.FULL ? getEnvironmentListMin(true) : getEnvironmentListHelmApps(),
     ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
         const projectListRes: Teams[] = responses[0].value?.result || []
-        const environmentListRes: EnvironmentListMinType[] | EnvironmentListHelmResult[] = responses[1].value?.result || []
+        const environmentListRes: EnvironmentListMinType[] | EnvironmentListHelmResult[] =
+            responses[1].value?.result || []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         let envList = []
 
         if (serverMode === SERVER_MODE.FULL) {
@@ -204,12 +209,13 @@ export async function fetchProjectsAndEnvironments(
                 'clusterName',
             )
         } else {
-            const _sortedResult = (
-                environmentListRes ? sortObjectArrayAlphabetically(environmentListRes as EnvironmentListHelmResult[], 'clusterName') : []
-            )
+            const _sortedResult = environmentListRes
+                ? sortObjectArrayAlphabetically(environmentListRes as EnvironmentListHelmResult[], 'clusterName')
+                : []
             envList = _sortedResult.map((cluster) => ({
                 label: cluster.clusterName,
                 options: [
+                    // biome-ignore lint/correctness/noUnsafeOptionalChaining: Legacy
                     ...cluster.environments?.map((env) => ({
                         label: env.environmentName,
                         value: env.environmentId,
@@ -239,6 +245,7 @@ export async function fetchProjectsAndEnvironments(
     })
 }
 
+// biome-ignore lint/suspicious/useAwait: Legacy
 export async function fetchProjects(dispatch: (action: ChartValuesViewAction) => void): Promise<void> {
     getTeamListMin().then((response) => {
         const projectListRes: Teams[] = response.result || []

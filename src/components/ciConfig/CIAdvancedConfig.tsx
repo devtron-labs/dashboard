@@ -15,12 +15,14 @@
  */
 
 import { useState } from 'react'
-import PluginIcon from '../../assets/icons/ic-plugin.svg?react'
-import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
-import { CIAdvancedConfigProps } from './types'
-import TargetPlatformSelector from './TargetPlatformSelector'
-import DockerArgs from '../CIPipelineN/DockerArgs'
+
 import { KeyValueTableProps } from '@devtron-labs/devtron-fe-common-lib'
+
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
+import PluginIcon from '../../assets/icons/ic-plugin.svg?react'
+import DockerArgs from '../CIPipelineN/DockerArgs'
+import TargetPlatformSelector from './TargetPlatformSelector'
+import { CIAdvancedConfigProps } from './types'
 
 export default function CIAdvancedConfig({
     configOverrideView,
@@ -79,6 +81,7 @@ export default function CIAdvancedConfig({
         />
     ) : (
         <>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 onClick={toggleCollapse}
                 className="flex left cursor mb-20"

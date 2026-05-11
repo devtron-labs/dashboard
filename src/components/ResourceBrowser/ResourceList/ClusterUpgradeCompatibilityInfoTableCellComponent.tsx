@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import DOMPurify from 'dompurify'
 import { useEffect, useRef } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
-import DOMPurify from 'dompurify'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -133,7 +133,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                     >
                         <span
                             className={!shouldHideContextMenu ? 'dc__link cursor' : ''}
-                            // eslint-disable-next-line react/no-danger
+                            // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized via DOMPurify
                             dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(
                                     highlightSearchText({
@@ -170,7 +170,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                 <span
                     className="dc__truncate fs-12 lh-20"
                     data-testid={`${columnName}-count`}
-                    // eslint-disable-next-line react/no-danger
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized via DOMPurify
                     dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(
                             highlightSearchText({

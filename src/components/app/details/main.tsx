@@ -15,41 +15,45 @@
  */
 
 import { lazy, PropsWithChildren, Suspense, useEffect, useState } from 'react'
-import { Route, useParams, Navigate, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { MultiValue } from 'react-select'
+
 import {
-    showError,
-    Progressing,
-    stopPropagation,
-    OptionType,
+    API_STATUS_CODES,
+    BASE_ROUTES,
+    DeleteConfirmationModal,
     ErrorScreenManager,
+    OptionType,
+    Progressing,
     ResourceKindType,
+    showError,
+    stopPropagation,
     ToastManager,
     ToastVariantType,
-    DeleteConfirmationModal,
-    API_STATUS_CODES,
-    useUserPreferences,
     useMainContext,
-    BASE_ROUTES,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { MultiValue } from 'react-select'
+
+import { APP_TYPE, URLS } from '../../../config'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import {
     ErrorBoundary,
     getAndSetAppGroupFilters,
     setAppGroupFilterInLocalStorage,
     sortOptionsByLabel,
 } from '../../common'
-import { APP_TYPE, URLS } from '../../../config'
-import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
+import Overview from '../Overview/Overview'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
-import Overview from '../Overview/Overview'
 import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
 import './app.scss'
-import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
+import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
+
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
@@ -153,7 +157,7 @@ export default function AppDetailsPage() {
                 const processedGroupData = {
                     value: group.id.toString(),
                     label: group.name,
-                    // @ts-ignore
+                    // @ts-expect-error
                     appIds: group.resourceIds,
                     description: group.description,
                 }

@@ -16,6 +16,7 @@
 
 import ReactGA from 'react-ga4'
 import { Link } from 'react-router-dom'
+
 import {
     BreadCrumb,
     BreadcrumbText,
@@ -27,10 +28,12 @@ import {
     TabProps,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../../config'
 import './header.scss'
-import IndexStore from '../appDetails/index.store'
+
 import Settings from '../../../assets/icons/ic-settings.svg?react'
+import IndexStore from '../appDetails/index.store'
 import { ChartHeaderComponentType } from './appHeader.type'
 
 const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {
@@ -43,10 +46,14 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 ...getInfrastructureManagementBreadcrumb(),
                 apps: {
                     component: (
-                    <Link to={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM} className="dc__devtron-breadcrumb__item">
-                        <div className="cb-5">Helm Apps</div>
-                    </Link>
-                )},
+                        <Link
+                            to={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM}
+                            className="dc__devtron-breadcrumb__item"
+                        >
+                            <div className="cb-5">Helm Apps</div>
+                        </Link>
+                    ),
+                },
                 deployments: {
                     component: <BreadcrumbText heading={appDetails.appName} isActive />,
                     linked: false,
@@ -60,7 +67,9 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
         [appDetails.appName],
     )
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART} />
+    const renderBreadcrumbs = () => (
+        <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.DEVTRON_CHART} />
+    )
 
     const renderHelmDetailsTabs = () => {
         const tabs: TabProps[] = [

@@ -19,9 +19,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { AppListConstants, Progressing, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-
 import EAHeaderComponent from '../../../../components/v2/headers/EAHeader.component'
+
+import { URLS } from '@Config/routes'
 
 const ExternalFluxAppDetails = lazy(() => import('./ExternalFluxAppDetails'))
 

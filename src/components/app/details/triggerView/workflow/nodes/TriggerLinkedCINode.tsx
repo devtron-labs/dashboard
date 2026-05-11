@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { Component } from 'react'
 import { generatePath, Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import { getWorkflowNodeStatusTitle, RouterV5Props, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getWorkflowNodeStatusTitle, ROUTER_URLS, RouterV5Props } from '@devtron-labs/devtron-fe-common-lib'
+
+import { DEFAULT_STATUS } from '../../../../../../config'
+import { TriggerStatus } from '../../../../config'
+
 import link from '@Icons/ic-link.svg'
 import ICLinkedCINode from '@Icons/ic-node-build-linked.svg?react'
-import { TriggerStatus } from '../../../../config'
-import { DEFAULT_STATUS } from '../../../../../../config'
 
 export interface CINodeProps extends RouterV5Props<{ appId: string }> {
     x: number
@@ -99,9 +102,10 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
         const hideDetails =
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
-                onClick={(e) => {
+                onClick={() => {
                     if (!hideDetails) {
                         this.redirectToCIDetails()
                     }

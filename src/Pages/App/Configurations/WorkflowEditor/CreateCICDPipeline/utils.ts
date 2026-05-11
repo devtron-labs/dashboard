@@ -22,12 +22,12 @@ import {
     TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CreateCICDPipelineData, CreateCICDPipelineFormError } from './types'
+
 import { GeneratedHelmPush } from '@Components/cdPipeline/cdPipeline.types'
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 import { createClusterEnvGroup, getDeploymentAppType } from '@Components/common'
 import { ENV_ALREADY_EXIST_ERROR } from '@Config/constants'
-
-import { CreateCICDPipelineData, CreateCICDPipelineFormError } from './types'
 
 export const getCiCdPipelineDefaultState = (): CreateCICDPipelineData => ({
     ci: {

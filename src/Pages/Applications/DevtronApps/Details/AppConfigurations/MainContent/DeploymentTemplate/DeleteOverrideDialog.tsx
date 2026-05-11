@@ -24,10 +24,10 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
 import { deleteOverrideDeploymentTemplate } from './service'
 import { DeleteOverrideDialogProps } from './types'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const DeleteOverrideDialog = ({
     environmentConfigId,

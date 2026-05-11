@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { useState, type JSX } from 'react'
+import Tippy from '@tippyjs/react'
+import { type JSX, useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { NavLink } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import { getChartsByKeyword } from '../../../charts/charts.service'
-import { ChartRepoDetailsType, ChartRepoOptions, ChartRepoSelectorType } from './ChartValuesView.type'
-import Error from '../../../../assets/icons/ic-warning.svg?react'
+
+import { getNoMatchingResultText, InfoBlock, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import Refetch from '../../../../assets/icons/ic-restore.svg?react'
+import Error from '../../../../assets/icons/ic-warning.svg?react'
+import { getChartsByKeyword } from '../../../charts/charts.service'
 import { getCommonSelectStyle } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
-import { getNoMatchingResultText, InfoBlock, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartRepoDetailsType, ChartRepoOptions, ChartRepoSelectorType } from './ChartValuesView.type'
 
 export const ChartRepoSelector = ({
     isExternal,
@@ -130,7 +132,11 @@ export const ChartRepoSelector = ({
                         description={
                             <div>
                                 {CONNECT_CHART_REPO_TEXTS.InfoText}
-                                <NavLink to={ROUTER_URLS.GLOBAL_CONFIG_CHART_REPOSITORIES} target="_blank" className="fw-6">
+                                <NavLink
+                                    to={ROUTER_URLS.GLOBAL_CONFIG_CHART_REPOSITORIES}
+                                    target="_blank"
+                                    className="fw-6"
+                                >
                                     {CONNECT_CHART_REPO_TEXTS.LinkText}
                                 </NavLink>
                             </div>

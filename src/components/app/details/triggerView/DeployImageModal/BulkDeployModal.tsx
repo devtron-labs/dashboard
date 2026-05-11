@@ -10,8 +10,8 @@ import {
     DeploymentNodeType,
     DeploymentStrategyTypeWithDefault,
     Drawer,
-    genericCDMaterialsService,
     GenericEmptyState,
+    genericCDMaterialsService,
     getIsApprovalPolicyConfigured,
     Icon,
     MODAL_TYPE,
@@ -31,19 +31,6 @@ import {
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
-import {
-    BULK_CD_DEPLOYMENT_STATUS,
-    BULK_CD_MATERIAL_STATUS,
-    BUTTON_TITLE,
-} from '@Components/ApplicationGroup/Constants'
-import TriggerResponseModalBody, {
-    TriggerResponseModalFooter,
-} from '@Components/ApplicationGroup/Details/TriggerView/TriggerResponseModal'
-import { getSelectedAppListForBulkStrategy } from '@Components/ApplicationGroup/Details/TriggerView/utils'
-import { importComponentFromFELibrary, useAppContext } from '@Components/common'
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-
 import { getIsMaterialApproved } from '../cdMaterials.utils'
 import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
@@ -57,6 +44,19 @@ import {
     getTriggerCDPromiseMethods,
     getUpdatedMaterialsForTagSelection,
 } from './utils'
+
+import { ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
+import {
+    BULK_CD_DEPLOYMENT_STATUS,
+    BULK_CD_MATERIAL_STATUS,
+    BUTTON_TITLE,
+} from '@Components/ApplicationGroup/Constants'
+import TriggerResponseModalBody, {
+    TriggerResponseModalFooter,
+} from '@Components/ApplicationGroup/Details/TriggerView/TriggerResponseModal'
+import { getSelectedAppListForBulkStrategy } from '@Components/ApplicationGroup/Details/TriggerView/utils'
+import { importComponentFromFELibrary, useAppContext } from '@Components/common'
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 const BulkCDStrategy = importComponentFromFELibrary('BulkCDStrategy', null, 'function')
 const SkipHibernatedCheckbox = importComponentFromFELibrary('SkipHibernatedCheckbox', null, 'function')
@@ -729,6 +729,7 @@ const BulkDeployModal = ({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
             <div
                 className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
                 onClick={stopPropagation}

@@ -25,14 +25,14 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
+import { getClusterListing } from './ResourceBrowser.service'
 import ClusterSelector from './ResourceList/ClusterSelector'
 import ResourcePageHeader from './ResourceList/ResourcePageHeader'
 import { getClusterOptions } from './ResourceList/utils'
-import { getClusterListing } from './ResourceBrowser.service'
 import { ClusterOptionType } from './Types'
 import { getClusterChangeRedirectionUrl } from './Utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const ClusterInstallationStatusDialog = importComponentFromFELibrary(
     'ClusterInstallationStatusDialog',

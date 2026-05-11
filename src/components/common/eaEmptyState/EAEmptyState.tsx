@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png'
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png'
+import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png'
 import './eaEmptyState.css'
 import { NavLink } from 'react-router-dom'
+
 import { ModuleNameMap, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum EAEmptyStateType {
@@ -33,7 +34,7 @@ interface EAEmptyStateProps {
     headerText?: string
 }
 
-export default function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText }: EAEmptyStateProps) {
+export default function EAEmptyState({ title, msg, stateType, headerText }: EAEmptyStateProps) {
     const getImage = () => {
         switch (stateType) {
             case EAEmptyStateType.BULKEDIT:

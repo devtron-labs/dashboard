@@ -15,12 +15,14 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import { ErrorScreenNotAuthorized, Progressing, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
 import SavedVariablesView from './SavedVariables'
-import UploadScopedVariables from './UploadScopedVariables'
-import { sortVariables } from './utils'
 import { getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesProps } from './types'
+import UploadScopedVariables from './UploadScopedVariables'
+import { sortVariables } from './utils'
 import './styles.scss'
 
 export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesProps) {
@@ -41,7 +43,7 @@ export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesProps) 
                     setScopedVariables(sortVariables(scopedVariablesData.result.manifest))
                 }
             }
-        } catch (e) {
+        } catch {
             setSchemaError(true)
         }
     }, [scopedVariablesData, loadingScopedVariables])

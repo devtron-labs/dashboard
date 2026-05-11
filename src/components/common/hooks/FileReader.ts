@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
-import { FileDataType, FileReaderStatus, FileReaderStatusType, ReadFileAs, ValidatorType } from './types'
-import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
+import { useEffect, useState } from 'react'
+
 import { getFileMimeType } from '../../scopedVariables/utils'
+import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
+import { FileDataType, FileReaderStatus, FileReaderStatusType, ReadFileAs, ValidatorType } from './types'
 
 export const useFileReader = () => {
     const [fileData, setFileData] = useState<FileDataType>(null)
@@ -108,7 +109,7 @@ export const useFileReader = () => {
                     reader.readAsText(file)
                     break
             }
-        } catch (e) {
+        } catch {
             reader.removeEventListener('load', handleFileRead)
             reader.removeEventListener('error', handleFileError)
             reader.removeEventListener('progress', handleFileProgress)

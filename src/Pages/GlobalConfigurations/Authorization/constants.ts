@@ -17,8 +17,8 @@
 import { ACCESS_TYPE_MAP, ActionTypes, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SELECT_ALL_VALUE } from '../../../config'
-import { AccessTypeToErrorMapType } from './Shared/components/PermissionConfigurationForm/types'
 import { getDefaultStatusAndTimeout } from './libUtils'
+import { AccessTypeToErrorMapType } from './Shared/components/PermissionConfigurationForm/types'
 import { APIRoleFilter } from './types'
 
 /**

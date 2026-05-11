@@ -25,6 +25,7 @@ import {
     ButtonVariantType,
     ClusterDetailListType,
     ClusterStatusIcon,
+    URLS as COMMON_URLS,
     ComponentSizeType,
     Drawer,
     FiltersTypeEnum,
@@ -38,12 +39,9 @@ import {
     TableCellComponentProps,
     TableSignalEnum,
     Tooltip,
-    URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
-
+import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import {
     ClusterEnvTabs,
     ClusterListFields,
@@ -51,9 +49,11 @@ import {
     DEFAULT_CLUSTER_ID,
     EditDeleteClusterProps,
 } from './cluster.type'
-import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import EditClusterDrawerContent from './EditClusterDrawerContent'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { URLS } from '@Config/routes'
 
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')

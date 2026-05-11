@@ -32,12 +32,12 @@ import {
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Dropdown from '@Icons/ic-chevron-down.svg?react'
-import { sortObjectArrayAlphabetically } from '@Components/common'
-import { DEPLOYMENT } from '@Config/constants'
-
 import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS } from './constants'
 import { ChartSelectorDropdownProps, DTChartSelectorProps } from './types'
+
+import { sortObjectArrayAlphabetically } from '@Components/common'
+import { DEPLOYMENT } from '@Config/constants'
+import Dropdown from '@Icons/ic-chevron-down.svg?react'
 
 const LoadingShimmer = () => <div className="shimmer-loading h-18 w-60" />
 

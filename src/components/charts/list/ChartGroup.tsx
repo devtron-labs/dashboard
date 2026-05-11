@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+
 import {
-    BreadcrumbText,
-    Progressing,
     BreadCrumb,
-    useBreadcrumb,
-    useAsync,
-    PageHeader,
-    getInfrastructureManagementBreadcrumb,
+    BreadcrumbText,
     DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    Progressing,
     ROUTER_URLS,
+    useAsync,
+    useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { useNavigate, useLocation, Route, Link, Routes } from 'react-router-dom'
-import { getChartGroups } from '../charts.service'
-import { ChartGroupCard } from '../ChartGroupCard'
-import CreateChartGroup from '../modal/CreateChartGroup'
-import ChartGroupUpdate from '../ChartGroupUpdate'
-import ChartGroupDetails from '../ChartGroupDetails'
-import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
 import Add from '../../../assets/icons/ic-add.svg?react'
+import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
+import { ChartGroupCard } from '../ChartGroupCard'
+import ChartGroupDetails from '../ChartGroupDetails'
+import ChartGroupUpdate from '../ChartGroupUpdate'
+import { getChartGroups } from '../charts.service'
+import CreateChartGroup from '../modal/CreateChartGroup'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group`
 

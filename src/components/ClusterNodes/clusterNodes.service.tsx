@@ -19,6 +19,7 @@ import moment from 'moment'
 import {
     APIOptions,
     ClusterDetail,
+    ROUTES as COMMON_ROUTES,
     get,
     getIsRequestAborted,
     getUrlWithSearchParams,
@@ -26,7 +27,6 @@ import {
     post,
     put,
     ResponseType,
-    ROUTES as COMMON_ROUTES,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -179,12 +179,13 @@ export const getClusterOverviewClusterCapacity = async ({
             requestAbortControllerRef.current.signal,
         )
 
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const _errorList = []
         const _nodeErrors = Object.keys(clusterCapacity.nodeErrors || {})
         const _nodeK8sVersions = clusterCapacity.nodeK8sVersions || []
         if (_nodeK8sVersions.length > 1) {
-            let majorVersion
-            let minorVersion
+            let majorVersion: string
+            let minorVersion: string
 
             const diffType = _nodeK8sVersions.reduce((dt, _nodeK8sVersion) => {
                 if (dt === 'Major') {

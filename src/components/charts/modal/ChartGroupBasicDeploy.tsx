@@ -15,12 +15,23 @@
  */
 
 import { Component } from 'react'
-import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError, DEFAULT_ROUTE_PROMPT_MESSAGE, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
-import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
+
+import {
+    ComponentSizeType,
+    CustomInput,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
+    DialogForm,
+    DialogFormSubmit,
+    handleAnalyticsEvent,
+    SelectPicker,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import Edit from '../../../assets/icons/ic-edit.svg?react'
-import Error from '../../../assets/icons/ic-warning.svg?react'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
+import Error from '../../../assets/icons/ic-warning.svg?react'
 import { getEnvironmentListMin } from '../../../services/service'
+import { ChartGroupEntry, EnvironmentType, ProjectType } from '../charts.types'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
@@ -70,7 +81,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
 
     toggleShowAppName(event): void {
         this.setState({ showAppNames: !this.state.showAppNames })
-        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_EDIT_APP_NAME'})
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_EDIT_APP_NAME' })
     }
 
     handleEnvironmentChange(envId: number) {
@@ -80,7 +91,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
 
     async deployChartGroup() {
         const validated = await this.props.validateData()
-        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_DEPLOY'})
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_DEPLOY' })
         if (validated) {
             await this.props.deployChartGroup()
         } else {
@@ -116,7 +127,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
     }
 
     handleAdvancedOptions = () => {
-        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_ADV_OPTIONS'})
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_ADV_OPTIONS' })
         this.props.redirectToAdvancedOptions()
     }
 
@@ -166,7 +177,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         <SelectPicker
                             autoFocus
                             classNamePrefix="group-deployment-project"
-                            inputId='chart-group-deployment-project'
+                            inputId="chart-group-deployment-project"
                             value={selectedProject}
                             placeholder="Select Project"
                             onChange={(selected) => {
@@ -189,7 +200,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     <div className="form__row">
                         <SelectPicker
                             name="chart-group-deployment-env"
-                            inputId='chart-group-deployment-env'
+                            inputId="chart-group-deployment-env"
                             value={selectedEnvironment}
                             classNamePrefix="group-deployment-env"
                             placeholder="Select Environment"

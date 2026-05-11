@@ -15,19 +15,22 @@
  */
 
 import { type JSX, ReactElement, useState } from 'react'
+import { Link } from 'react-router-dom'
+
 import {
-    WorkflowNodeType,
     ConditionalWrap,
     TARGET_IDS,
-    TippyTheme,
     TippyCustomized,
+    TippyTheme,
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
-import ToggleCDSelectButton from '../ToggleCDSelectButton'
+
 import Webhook from '../../../assets/icons/ic-CIWebhook.svg?react'
+import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { WebhookNodeProps } from '../types'
-import ICCIWebhook from '@Icons/ic-CIWebhook.svg?react'
+
 import { importComponentFromFELibrary } from '@Components/common'
+import ICCIWebhook from '@Icons/ic-CIWebhook.svg?react'
 
 const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')
 
@@ -115,6 +118,7 @@ export const WebhookNode = ({
 
         return (
             <ConditionalWrap condition={shouldWrap} wrap={renderWrapWithLinkOrTippy}>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div
                     className={`workflow-node ${showWebhookAddImageButton ? 'flexbox-col dc__gap-10 p-12' : 'pl-10'} ${shouldWrap ? 'cursor' : ''}`}
                     onClick={handleCardClick}

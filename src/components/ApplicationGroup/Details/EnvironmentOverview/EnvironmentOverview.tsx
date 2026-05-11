@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
 import { useEffect, useRef, useState } from 'react'
 import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
-import moment from 'moment'
 
 import {
     ACTION_STATE,
@@ -38,22 +38,6 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import GridIcon from '@Icons/ic-grid-view.svg?react'
-import GridIconBlue from '@Icons/ic-grid-view-blue.svg?react'
-import { renderCIListHeader } from '@Components/app/details/cdDetails/utils'
-import { getDeploymentStatus } from '@Components/ApplicationGroup/AppGroup.service'
-import {
-    AppGroupDetailDefaultType,
-    AppListDataType,
-    HibernateModalProps,
-    ManageAppsResponse,
-    StatusDrawer,
-} from '@Components/ApplicationGroup/AppGroup.types'
-import { parseAppListData } from '@Components/ApplicationGroup/AppGroup.utils'
-import { GROUP_LIST_HEADER } from '@Components/ApplicationGroup/Constants'
-import { importComponentFromFELibrary } from '@Components/common'
-import { Moment12HourFormat } from '@Config/constants'
-import { URLS } from '@Config/routes'
 import {
     EnvironmentOverviewBulkSelectionWidget,
     EnvironmentOverviewTable,
@@ -64,6 +48,23 @@ import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR, URL_SEARCH_PARAMS } from './const
 import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { RestartWorkloadModal } from './RestartWorkloadModal'
+
+import { getDeploymentStatus } from '@Components/ApplicationGroup/AppGroup.service'
+import {
+    AppGroupDetailDefaultType,
+    AppListDataType,
+    HibernateModalProps,
+    ManageAppsResponse,
+    StatusDrawer,
+} from '@Components/ApplicationGroup/AppGroup.types'
+import { parseAppListData } from '@Components/ApplicationGroup/AppGroup.utils'
+import { GROUP_LIST_HEADER } from '@Components/ApplicationGroup/Constants'
+import { renderCIListHeader } from '@Components/app/details/cdDetails/utils'
+import { importComponentFromFELibrary } from '@Components/common'
+import { Moment12HourFormat } from '@Config/constants'
+import { URLS } from '@Config/routes'
+import GridIcon from '@Icons/ic-grid-view.svg?react'
+import GridIconBlue from '@Icons/ic-grid-view-blue.svg?react'
 
 import './envOverview.scss'
 
@@ -315,6 +316,7 @@ const EnvironmentOverview = ({
             popUpMenuItems: [
                 ...((ClonePipelineMenuButton && appListData.environment
                     ? [
+                          // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                           <ClonePipelineMenuButton
                               sourceEnvironmentName={appListData.environment}
                               onClick={() => {
@@ -561,6 +563,7 @@ const EnvironmentOverview = ({
                                 : []),
                             ...(ClonePipelineMenuButton && appListData.environment
                                 ? [
+                                      // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                       <ClonePipelineMenuButton
                                           sourceEnvironmentName={appListData.environment}
                                           onClick={() => {

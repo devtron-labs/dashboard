@@ -31,11 +31,8 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
 import { SERVER_MODE } from '../../config'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
-import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import { AddLinkButton } from './AddLinkButton'
 import { ExternalLinkFilter } from './ExternalLinkFilter'
 import { ExternalLinkList } from './ExternalLinkList'
@@ -53,6 +50,9 @@ import {
     parseSearchParams,
 } from './ExternalLinks.type'
 import { sortByUpdatedOn } from './ExternalLinks.utils'
+import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 import './styles.scss'
 

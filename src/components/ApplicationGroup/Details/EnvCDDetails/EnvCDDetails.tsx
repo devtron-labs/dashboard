@@ -14,38 +14,41 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, type JSX } from 'react'
+import { type JSX, useEffect, useState } from 'react'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    Progressing,
-    showError,
-    sortCallback,
-    useAsync,
-    Sidebar,
-    TriggerOutput,
-    LogResizeButton,
+    asyncWrap,
     CICDSidebarFilterOptionType,
+    FetchIdDataStatus,
+    getTriggerHistory,
     History,
     HistoryComponentType,
-    FetchIdDataStatus,
-    useInterval,
+    LogResizeButton,
     mapByKey,
-    asyncWrap,
-    getTriggerHistory,
-    useScrollable,
-    TRIGGER_STATUS_PROGRESSING,
+    Progressing,
     ROUTER_URLS,
+    Sidebar,
+    showError,
+    sortCallback,
+    TRIGGER_STATUS_PROGRESSING,
+    TriggerOutput,
+    useAsync,
+    useInterval,
+    useScrollable,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, generatePath, useNavigate } from 'react-router-dom'
-import { useAppContext } from '../../../common'
+
 import { ModuleNameMap } from '../../../../config'
-import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { getAppsCDConfigMin } from '../../AppGroup.service'
-import { EmptyView } from '../../../app/details/cicdHistory/History.components'
-import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
+import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
+import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
+import { EmptyView } from '../../../app/details/cicdHistory/History.components'
+import { useAppContext } from '../../../common'
+import { getAppsCDConfigMin } from '../../AppGroup.service'
+import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
+
 import {
     getUpdatedTriggerId,
     processVirtualEnvironmentDeploymentData,

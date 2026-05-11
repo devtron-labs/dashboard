@@ -59,7 +59,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         [inputValue, appId, appName],
         isAppDataAvailable && shouldFetchAppOptions,
     )
-    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+    const onInputChange: SelectPickerProps['onInputChange'] = (val) => {
         setInputValue(val)
     }
 

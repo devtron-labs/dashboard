@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { default as DeploymentTypeIcon } from './DeploymentTypeIcon'
-export { DEPLOYMENT_TYPE_TO_TEXT_MAP } from './DeploymentTypeIcon'
+export { DEPLOYMENT_TYPE_TO_TEXT_MAP, default as DeploymentTypeIcon } from './DeploymentTypeIcon'

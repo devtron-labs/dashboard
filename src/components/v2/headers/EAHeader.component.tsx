@@ -16,6 +16,7 @@
 
 import ReactGA from 'react-ga4'
 import { Link, useParams } from 'react-router-dom'
+
 import {
     BreadCrumb,
     BreadcrumbText,
@@ -26,8 +27,10 @@ import {
     TabProps,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../../config'
 import './header.scss'
+
 import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { EAHeaderComponentType } from './appHeader.type'
 

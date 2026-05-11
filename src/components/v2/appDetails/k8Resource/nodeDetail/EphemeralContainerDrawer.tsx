@@ -15,45 +15,44 @@
  */
 
 import type { JSX } from 'react'
-import {
-    CustomInput,
-    Drawer,
-    OptionType,
-    showError,
-    ButtonWithLoader,
-    YAMLStringify,
-    InfoIconTippy,
-    CodeEditor,
-    ToastManager,
-    ToastVariantType,
-    TabGroup,
-    SelectPicker,
-    ComponentSizeType,
-    MODES,
-    SegmentedControl,
-    SegmentType,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
+
+import {
+    ButtonWithLoader,
+    CodeEditor,
+    ComponentSizeType,
+    CustomInput,
+    Drawer,
+    InfoIconTippy,
+    MODES,
+    OptionType,
+    SegmentedControl,
+    SegmentType,
+    SelectPicker,
+    showError,
+    TabGroup,
+    ToastManager,
+    ToastVariantType,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { DEFAULT_CONTAINER_NAME, EDITOR_VIEW, SWITCH_ITEM_SEGMENTS, SwitchItemValues } from '../../../../../config'
+import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
+import { getHostURLConfiguration } from '../../../../../services/service'
+import { CLUSTER_TERMINAL_MESSAGING, IMAGE_LIST } from '../../../../ClusterNodes/constants'
+import { convertToOptionsList, filterImageList } from '../../../../common'
+import Close from '../../../assets/icons/ic-close.svg?react'
+import { Options } from '../../appDetails.type'
+import IndexStore from '../../index.store'
+import { generateEphemeralUrl } from './nodeDetail.api'
 import {
     EphemeralContainerDrawerType,
     EphemeralForm,
     EphemeralFormAdvancedType,
     ResponsePayload,
 } from './nodeDetail.type'
-import Close from '../../../assets/icons/ic-close.svg?react'
-import {
-    convertToOptionsList,
-    filterImageList,
-} from '../../../../common'
 import sampleConfig from './sampleConfig.json'
-import IndexStore from '../../index.store'
-import { generateEphemeralUrl } from './nodeDetail.api'
-import { getHostURLConfiguration } from '../../../../../services/service'
-import { CLUSTER_TERMINAL_MESSAGING, IMAGE_LIST } from '../../../../ClusterNodes/constants'
-import { Options } from '../../appDetails.type'
-import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
-import { DEFAULT_CONTAINER_NAME, SwitchItemValues, EDITOR_VIEW, SWITCH_ITEM_SEGMENTS } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
@@ -133,7 +132,7 @@ const EphemeralContainerDrawer = ({
                 imageListOption.push(parsedImageOption)
             }
             setSelectedImageList(selectedimageValue || parsedImageOption)
-        } catch (err) {}
+        } catch {}
     }
 
     const getImageList = () => {
@@ -223,7 +222,7 @@ const EphemeralContainerDrawer = ({
                     [key]: selected?.value ?? defaultVal,
                 },
             })
-        } catch (err) {}
+        } catch {}
     }
 
     const getOptions = () => {

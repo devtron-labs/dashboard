@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import { useEffect, type JSX } from 'react'
+import { type JSX, useEffect } from 'react'
+
 import {
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     Drawer,
     GenericEmptyState,
     ImageType,
+    InfoBlock,
     Progressing,
     usePrompt,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
-    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { HibernateStatusRow } from './HibernateStatusRow'
+
 import Close from '../../../../assets/icons/ic-cross.svg?react'
 import MechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg?react'
+import { HibernateStatusRow } from './HibernateStatusRow'
 
 export default function HibernateStatusListDrawer({
     closePopup,
@@ -68,17 +70,15 @@ export default function HibernateStatusListDrawer({
     const renderBody = (): JSX.Element => {
         if (isHibernationStatusLoading) {
             return (
-                <>
-                    <GenericEmptyState
-                        classname="dc__text-center"
-                        title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected application(s) on ${envName}`}
-                        subTitle="It might take some time depending upon the number of applications"
-                        SvgImage={MechanicalOperation}
-                        imageType={ImageType.Large}
-                    >
-                        <InfoBlock variant="warning" description={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-                    </GenericEmptyState>
-                </>
+                <GenericEmptyState
+                    classname="dc__text-center"
+                    title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected application(s) on ${envName}`}
+                    subTitle="It might take some time depending upon the number of applications"
+                    SvgImage={MechanicalOperation}
+                    imageType={ImageType.Large}
+                >
+                    <InfoBlock variant="warning" description={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                </GenericEmptyState>
             )
         }
 
@@ -87,28 +87,28 @@ export default function HibernateStatusListDrawer({
         }
 
         return (
-                <div className="hibernate-status-body dc__overflow-auto pb-16 px-20">
-                    <div className="dc__position-sticky pt-24 pb-8 fs-12 fw-6 cn-7 dc__top-0 dc__border-bottom response-row dc__uppercase bg__tertiary">
-                        <div>Application</div>
-                        <div>Status</div>
-                        <div>Message</div>
-                    </div>
-                    {responseList.map((response, index) => (
-                        <HibernateStatusRow
-                            key={response.id}
-                            rowData={response}
-                            index={index}
-                            isHibernateOperation={isHibernating}
-                            hibernateInfoMap={hibernateInfoMap}
-                        />
-                    ))}
+            <div className="hibernate-status-body dc__overflow-auto pb-16 px-20">
+                <div className="dc__position-sticky pt-24 pb-8 fs-12 fw-6 cn-7 dc__top-0 dc__border-bottom response-row dc__uppercase bg__tertiary">
+                    <div>Application</div>
+                    <div>Status</div>
+                    <div>Message</div>
                 </div>
+                {responseList.map((response, index) => (
+                    <HibernateStatusRow
+                        key={response.id}
+                        rowData={response}
+                        index={index}
+                        isHibernateOperation={isHibernating}
+                        hibernateInfoMap={hibernateInfoMap}
+                    />
+                ))}
+            </div>
         )
     }
 
     const renderFooter = () => (
         <div className="dc__border-top dc__content-end flex py-16 px-20">
-            <button className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
+            <button type="button" className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
                 Close
             </button>
         </div>

@@ -15,30 +15,32 @@
  */
 
 import {
-    get,
-    savePipeline,
-    MaterialType,
+    AppConfigProps,
+    ChangeCIPayloadType,
+    GetTemplateAPIRouteType,
     Githost,
-    ScriptType,
+    get,
+    getModuleConfigured,
+    getTemplateAPIRoute,
+    MaterialType,
+    ModuleNameMap,
+    ModuleStatus,
+    PipelineBuildStageType,
     PluginType,
     RefVariableType,
-    PipelineBuildStageType,
-    getModuleConfigured,
-    ModuleNameMap,
-    VariableTypeFormat,
-    TriggerType,
-    ChangeCIPayloadType,
-    AppConfigProps,
-    GetTemplateAPIRouteType,
-    getTemplateAPIRoute,
+    ScriptType,
     SourceTypeMap,
-    ModuleStatus,
+    savePipeline,
+    TriggerType,
+    VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
+import { safeTrim } from '../../util/Util'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { CIPipelineBuildType, CIPipelineInitData, PatchAction } from './types'
-import { safeTrim } from '../../util/Util'
+
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 const emptyStepsData = () => {
@@ -65,9 +67,8 @@ export function getInitData(
     includeWebhookData: boolean = false,
     isJobCard: boolean,
     isTemplateView: AppConfigProps['isTemplateView'],
-    forceDockerfileScan: boolean
+    forceDockerfileScan: boolean,
 ): Promise<CIPipelineInitData> {
-
     return Promise.all([
         getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),

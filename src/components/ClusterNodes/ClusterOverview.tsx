@@ -29,16 +29,13 @@ import {
     noop,
     ResourceKindType,
     ROUTER_URLS,
-    showError,
     StatusComponent,
     StatusType,
+    showError,
     TARGET_K8S_VERSION_SEARCH_KEY,
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
-import { getAvailableCharts } from '@Services/service'
 
 import Error from '../../assets/icons/ic-error-exclamation.svg?react'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
@@ -56,6 +53,9 @@ import {
     defaultClusterShortDescription,
 } from './constants'
 import { ClusterOverviewProps, ERROR_TYPE } from './types'
+
+import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
+import { getAvailableCharts } from '@Services/service'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'function')

@@ -23,13 +23,13 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
 import { EVENT_TABLE_ITEM_CLASS } from './constants'
 import { EventTableType } from './node.type'
+import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
@@ -75,6 +75,7 @@ export const EventsTable = ({
                     {errorValue?.status === TERMINAL_STATUS.TERMINATED && (
                         <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
                             {TERMINAL_TEXT.POD_TERMINATED}&nbsp; {errorValue.errorReason}&nbsp;
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <u className="cursor" onClick={reconnect}>
                                 {TERMINAL_TEXT.INITIATE_CONNECTION}
                             </u>
@@ -84,8 +85,13 @@ export const EventsTable = ({
                         className={`dc__zi-1 dc__position-sticky dc__top-0 px-16 py-8 dc__grid dc__gap-16 event-row ${ExplainWithAIButton ? 'ai-widget' : ''}`}
                     >
                         {EVENTS_TABLE_HEADERS.map((header, idx) => (
-                            // eslint-disable-next-line react/no-array-index-key
-                            <span className="fs-12 lh-1-5 fw-6 dc__uppercase" key={`${header}-${idx}`}>
+                            <span
+                                className="fs-12 lh-1-5 fw-6 dc__uppercase"
+                                key={`${header}-${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    idx
+                                }`}
+                            >
                                 {header}
                             </span>
                         ))}

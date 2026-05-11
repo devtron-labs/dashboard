@@ -30,10 +30,6 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterListType } from '@Components/ClusterNodes/types'
-import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
-
 import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import {
     ClusterDetailBaseParams,
@@ -42,6 +38,10 @@ import {
     NODE_SEARCH_KEYS,
     ResourceFilterOptionsProps,
 } from '../Types'
+
+import { ClusterListType } from '@Components/ClusterNodes/types'
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ClusterListType, 'updateTabUrl'>,

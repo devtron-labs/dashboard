@@ -27,9 +27,6 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
-import { URLS } from '@Config/routes'
 import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
 import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DeploymentConfigCompareWrapper } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
@@ -39,6 +36,10 @@ import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOv
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ApplicationRouteType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+import { URLS } from '@Config/routes'
 
 const getApprovalPolicyConfigForEnv: (envId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
     importComponentFromFELibrary('getApprovalPolicyConfigForEnv', null, 'function')
@@ -65,7 +66,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
 
     const fetchEnvConfig = async (
-        propsEnvId?: number,
+        _propsEnvId?: number,
         callback?: Parameters<ApplicationRouteType['fetchEnvConfig']>[1],
     ) => {
         setEnvConfigLoading(true)

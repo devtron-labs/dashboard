@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 // Disabling due to react select issue
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent } from 'react'
-import Tippy from '@tippyjs/react'
 
 import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -77,6 +77,7 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
                     isSearchable={false}
                 />
 
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                 {repositoryError && <label className="form__error">{repositoryError}</label>}
             </div>
 

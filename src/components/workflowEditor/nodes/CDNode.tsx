@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React, { Component, ReactElement, type JSX } from 'react'
+import React, { Component, type JSX, ReactElement } from 'react'
 import { generatePath, Link } from 'react-router-dom'
+
 import {
     Button,
     ButtonStyleType,
@@ -27,15 +28,14 @@ import {
     DeploymentAppTypes,
     Icon,
     MODAL_TYPE,
+    ROUTER_URLS,
     ServerErrors,
     showError,
     ToastManager,
     ToastVariantType,
     WorkflowNodeType,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ICWarning from '@Icons/ic-warning.svg?react'
-import { CDNodeProps, CDNodeState } from '../types'
+
 import {
     BUTTON_TEXT,
     CONFIRMATION_DIALOG_MESSAGING,
@@ -44,12 +44,15 @@ import {
     VIEW_DELETION_STATUS,
 } from '../../../config/constantMessaging'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
+import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
+import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'
+import { handleDeleteCDNodePipeline } from '../../cdPipeline/cdpipeline.util'
 import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
 import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'
-import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'
-import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
 import { importComponentFromFELibrary } from '../../common'
-import { handleDeleteCDNodePipeline } from '../../cdPipeline/cdpipeline.util'
+import { CDNodeProps, CDNodeState } from '../types'
+
+import ICWarning from '@Icons/ic-warning.svg?react'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
@@ -120,6 +123,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         const _forceDeleteData = { ...this.state.forceDeleteData }
         this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 _forceDeleteData.forceDeleteDialogMessage = internalMessage
                 _forceDeleteData.forceDeleteDialogTitle = userMessage
@@ -174,6 +178,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (!force && error.code != 403 && error.code != 412) {
                     this.parseErrorIntoForceDelete(error)
                     this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
@@ -195,6 +200,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         <span className="workflow-node__text-light">Deploy</span>
                         <div className="flex left column fs-12 fw-6 lh-18 pt-6 pb-6">
                             {this.props.cdNamesList.map((_cdName) => (
+                                // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy not sure about unique identifier for key prop
                                 <span className="dc__ellipsis-right">{_cdName}</span>
                             ))}
                         </div>

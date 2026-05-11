@@ -20,11 +20,11 @@ import {
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import CleanBrush from '@Icons/ic-clean-brush-medium.svg?react'
-
 import { BulkSelectionModalTypes } from './constants'
 import { BulkSelectionClearConfirmationModalProps } from './types'
 import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
+
+import CleanBrush from '@Icons/ic-clean-brush-medium.svg?react'
 
 const config = {
     [BulkSelectionModalTypes.clearAllAcrossPages]: {

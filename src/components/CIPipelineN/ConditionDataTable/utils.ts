@@ -30,10 +30,10 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { PipelineContext } from '@Components/workflowEditor/types'
-
 import { CONDITION_DATA_TABLE_OPERATOR_OPTIONS, EQUAL_NOT_EQUAL_TO_OPERATOR_OPTIONS } from './constants'
 import { ConditionDataTableType } from './types'
+
+import { PipelineContext } from '@Components/workflowEditor/types'
 
 // DYNAMIC DATA TABLE UTILS
 export const getConditionDataTableHeaders = (conditionType: ConditionType): ConditionDataTableType['headers'] => [
@@ -81,8 +81,6 @@ const getOperatorOptionsBasedOnVariableTypeFormat = (variableType: VariableTypeF
         case VariableTypeFormat.BOOL:
         case VariableTypeFormat.FILE:
             return EQUAL_NOT_EQUAL_TO_OPERATOR_OPTIONS
-        case VariableTypeFormat.DATE:
-        case VariableTypeFormat.NUMBER:
         default:
             return CONDITION_DATA_TABLE_OPERATOR_OPTIONS
     }
@@ -217,6 +215,7 @@ export const getConditionDataTableInitialCellError = (
     rows.reduce((acc, curr) => {
         if (!acc[curr.id]) {
             acc[curr.id] = Object.values(ConditionDataTableHeaderKeys).reduce(
+                // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                 (headerAcc, key) => ({ ...headerAcc, [key]: { isValid: true, errorMessages: [] } }),
                 {},
             )

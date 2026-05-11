@@ -18,8 +18,8 @@ import { SyntheticEvent, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
-    abortPreviousRequests,
     APIResponseHandler,
+    abortPreviousRequests,
     BaseURLParams,
     ComponentSizeType,
     DeploymentAppTypes,

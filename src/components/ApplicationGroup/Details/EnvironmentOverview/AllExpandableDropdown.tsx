@@ -37,6 +37,7 @@ export const AllExpandableDropdown = ({
     }
 
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
         <div className="flex dc__gap-4 cursor" onClick={handleAllExpand}>
             {dropdownLabel}
             <SvgImage className={`rotate fcn-9 flex ${iconClassName}`} onClick={handleAllExpand} />

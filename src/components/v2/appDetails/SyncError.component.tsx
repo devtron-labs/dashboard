@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+
 import {
     DeploymentAppTypes,
-    ResponseType,
-    ServerErrors,
-    not,
-    showError,
-    renderErrorHeaderMessage,
-    ToastVariantType,
-    ToastManager,
     ForceDeleteConfirmationModal,
+    not,
+    ResponseType,
+    renderErrorHeaderMessage,
+    ServerErrors,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import DropDownIcon from '../../../assets/icons/ic-chevron-down.svg?react'
+
 import AlertTriangle from '../../../assets/icons/ic-alert-triangle.svg?react'
-import IndexStore from './index.store'
-import { AppType, SyncErrorType } from './appDetails.type'
+import DropDownIcon from '../../../assets/icons/ic-chevron-down.svg?react'
 import { AppDetailsErrorType } from '../../../config'
+import { TOAST_INFO } from '../../../config/constantMessaging'
 import {
     deleteArgoCDAppWithNonCascade,
     getClusterConnectionStatus,
 } from '../../app/details/appDetails/appDetails.service'
 import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
-import { TOAST_INFO } from '../../../config/constantMessaging'
 import ClusterNotReachableDialog from '../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
+import { AppType, SyncErrorType } from './appDetails.type'
+import IndexStore from './index.store'
 
 const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)

@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-import { type JSX, Fragment, useEffect, useState } from 'react'
+import { Fragment, type JSX, useEffect, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    Drawer,
-    ToastVariantType,
-    ToastManager,
-    ClipboardButton,
     Button,
-    ButtonVariantType,
+    ButtonComponentType,
     ButtonStyleType,
+    ButtonVariantType,
+    ClipboardButton,
     ComponentSizeType,
-    OptionType,
+    Drawer,
     getDocumentationUrl,
-    ButtonComponentType
+    OptionType,
+    Progressing,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DEVTRON_IFRAME_PRIMARY } from '@Config/constants'
+
+import AddIcon from '../../../assets/icons/ic-add.svg?react'
+import Close from '../../../assets/icons/ic-close.svg?react'
+import Help from '../../../assets/icons/ic-help.svg?react'
 import { createGroupedItemsByKey } from '../../common'
-import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
 import {
     AddExternalLinkType,
@@ -44,9 +47,9 @@ import {
     OptionTypeWithIcon,
 } from '../ExternalLinks.type'
 import { availableVariables, sortByUpdatedOn } from '../ExternalLinks.utils'
-import AddIcon from '../../../assets/icons/ic-add.svg?react'
-import Close from '../../../assets/icons/ic-close.svg?react'
-import Help from '../../../assets/icons/ic-help.svg?react'
+import ConfigureLinkAction from './ConfigureLinkAction'
+
+import { DEVTRON_IFRAME_PRIMARY } from '@Config/constants'
 import ICOpenBook from '@Icons/ic-book-open.svg?react'
 import './AddExternalLink.scss'
 
@@ -193,7 +196,7 @@ export default function AddExternalLink({
                 linksData[key].tool = value as OptionTypeWithIcon
                 break
             case 'onClusterSelection':
-            case 'onAppSelection':
+            case 'onAppSelection': {
                 const _selectedOption = value as IdentifierOptionType[]
                 const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '*') !== -1
                 const areAllOptionsAlredySeleted =
@@ -218,6 +221,7 @@ export default function AddExternalLink({
 
                 linksData[key].identifiers = _newSelections
                 break
+            }
             case 'onNameChange':
                 linksData[key].name = value as string
                 break
@@ -296,9 +300,7 @@ export default function AddExternalLink({
                                     handleLinksDataActions={handleLinksDataActions}
                                     showDelete={linksLen > 1}
                                 />
-                                {linksLen > 1 && idx !== linksLen - 1 && (
-                                    <div className="divider__primary" />
-                                )}
+                                {linksLen > 1 && idx !== linksLen - 1 && <div className="divider__primary" />}
                             </Fragment>
                         )
                     })}
@@ -322,7 +324,7 @@ export default function AddExternalLink({
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.small}
                         component={ButtonComponentType.anchor}
-                        anchorProps={{href: getDocumentationUrl({docLinkKey : "EXTERNAL_LINKS"}) }}
+                        anchorProps={{ href: getDocumentationUrl({ docLinkKey: 'EXTERNAL_LINKS' }) }}
                         showAriaLabelInTippy={false}
                         showTooltip
                         tooltipProps={{

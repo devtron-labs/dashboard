@@ -19,20 +19,20 @@ import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from
 
 import { DocLink, ErrorScreenManager, Progressing, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
-
 import { APP_DETAILS } from '../../../../config/constantMessaging'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
-import { importComponentFromFELibrary, InValidHostUrlWarningBlock, useAppContext } from '../../../common'
+import { InValidHostUrlWarningBlock, importComponentFromFELibrary, useAppContext } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { Workflow } from './workflow/Workflow'
 import { BuildImageModal } from './BuildImageModal'
 import CDMaterial from './CDMaterial'
 import { TRIGGER_VIEW_PARAMS } from './Constants'
 import { useTriggerViewServices } from './TriggerView.service'
 import { getSelectedNodeFromWorkflows, shouldRenderWebhookAddImageModal } from './TriggerView.utils'
 import { CIMaterialRouterProps, MATERIAL_TYPE, TriggerViewProps } from './types'
+import { Workflow } from './workflow/Workflow'
+
+import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')

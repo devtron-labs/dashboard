@@ -15,11 +15,13 @@
  */
 
 import { type JSX, useEffect, useState } from 'react'
+
+import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+
 import CaretIcon from '../../assets/icons/ic-chevron-down.svg?react'
 import { MODES } from '../../config'
 import { getCIConfigDiffValues } from './CIConfig.utils'
 import { CIBuildConfigDiffProps, CIConfigDiffType } from './types'
-import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 
 export const CIBuildConfigDiff = ({
     configOverridenWorkflows,
@@ -118,6 +120,7 @@ export const CIBuildConfigDiff = ({
                     </colgroup>
                     {renderHeader()}
 
+                    {/** biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy */}
                     {ciConfigDiffValues.map((val, idx) => {
                         if (val.baseValue || val.overridenValue) {
                             return renderValueDiff(val, lastIndex === idx)
@@ -125,6 +128,7 @@ export const CIBuildConfigDiff = ({
                     })}
                 </table>
             )}
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 className={`flex right p-10 bg__primary cursor dc__bottom-radius-4 fs-13 fw-4 lh-20 ${
                     showOverrides ? 'dc__border-top' : ''

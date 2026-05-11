@@ -14,60 +14,65 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, type JSX } from 'react'
+import moment from 'moment'
+import React, { type JSX, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    ServerErrors,
-    GenericEmptyState,
-    DetailsProgressing,
-    DeploymentAppTypes,
-    YAMLStringify,
-    DeploymentDetailSteps,
+    AppStatus,
+    Button,
     CodeEditor,
+    ComponentSizeType,
+    DEPLOYMENT_STATUS,
+    DeploymentAppTypes,
+    DeploymentDetailSteps,
+    DetailsProgressing,
+    EMPTY_STATE_STATUS,
+    ErrorScreenManager,
+    GenericEmptyState,
+    MODES,
+    Progressing,
+    ServerErrors,
+    ShowMoreText,
+    StatusType,
+    showError,
     TabGroup,
     ToastManager,
     ToastVariantType,
-    ShowMoreText,
-    DEPLOYMENT_STATUS,
-    EMPTY_STATE_STATUS,
-    AppStatus,
-    StatusType,
-    Button,
-    ComponentSizeType,
-    MODES,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { useNavigate, useParams } from 'react-router-dom'
-import docker from '@Icons/misc/docker.svg'
+
 import DataNotFound from '../../../assets/img/app-not-deployed.svg'
-import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
+import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
+
+import docker from '@Icons/misc/docker.svg'
 import '../../app/details/cIDetails/ciDetails.scss'
 import './chartDeploymentHistory.scss'
+
+import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderDeploymentApprovalInfo,
+} from '../../app/details/cdDetails/utils'
+import { importComponentFromFELibrary } from '../../common'
+import IndexStore from '../appDetails/index.store'
 import MessageUI from '../common/message.ui'
-import DockerListModal from './DockerListModal'
 import {
     ChartDeploymentDetail,
     ChartDeploymentHistoryResponse,
     ChartDeploymentManifestDetail,
     getDeploymentHistory,
     getDeploymentManifestDetails,
-    rollbackApplicationDeployment,
     RollbackReleaseRequest,
+    rollbackApplicationDeployment,
 } from './chartDeploymentHistory.service'
-import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
-import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
+import DockerListModal from './DockerListModal'
 import RollbackConfirmationDialog from './RollbackConfirmationDialog'
-import {
-    processVirtualEnvironmentDeploymentData,
-    renderDeploymentApprovalInfo,
-} from '../../app/details/cdDetails/utils'
-import Rocket from '@Icons/ic-nav-rocket.svg?react'
+
 import ICLines from '@Icons/ic-lines.svg?react'
+import Rocket from '@Icons/ic-nav-rocket.svg?react'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')

@@ -15,6 +15,7 @@
  */
 
 import { Component } from 'react'
+
 import triangleAlert from '../../assets/icons/ic-alert-triangle.svg'
 
 export class DeprecatedWarn extends Component {

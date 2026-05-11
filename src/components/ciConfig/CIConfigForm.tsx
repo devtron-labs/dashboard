@@ -15,23 +15,36 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import {
+    Button,
+    ButtonVariantType,
     CIBuildConfigType,
     CIBuildType,
-    showError,
-    ToastVariantType,
-    ToastManager,
+    ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    Button,
-    OptionType,
     DocLink,
     Icon,
-    ButtonVariantType,
-    ComponentSizeType,
+    OptionType,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import NextIcon from '../../assets/icons/ic-arrow-right.svg?react'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getGitProviderIcon, useForm } from '../common'
+import {
+    CI_CONFIG_FORM_VALIDATION,
+    getCIConfigFormState,
+    getTargetPlatformMap,
+    initCurrentCIBuildConfig,
+    processBuildArgs,
+} from './CIConfig.utils'
+import CIConfigDiffView from './CIConfigDiffView'
+import CIContainerRegistryConfig from './CIContainerRegistryConfig'
+import CIDockerFileConfig from './CIDockerFileConfig'
 import { saveCIConfig, updateCIConfig } from './service'
 import {
     CIBuildArgType,
@@ -41,17 +54,6 @@ import {
     SelectedGitMaterialType,
     SourceConfigType,
 } from './types'
-import NextIcon from '../../assets/icons/ic-arrow-right.svg?react'
-import CIConfigDiffView from './CIConfigDiffView'
-import CIContainerRegistryConfig from './CIContainerRegistryConfig'
-import CIDockerFileConfig from './CIDockerFileConfig'
-import {
-    CI_CONFIG_FORM_VALIDATION,
-    getCIConfigFormState,
-    getTargetPlatformMap,
-    initCurrentCIBuildConfig,
-    processBuildArgs,
-} from './CIConfig.utils'
 
 export default function CIConfigForm({
     parentReloading,

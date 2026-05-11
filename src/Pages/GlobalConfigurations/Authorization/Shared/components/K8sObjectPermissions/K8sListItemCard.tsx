@@ -34,7 +34,6 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import {
     getUserAccessClusterList,
     getUserAccessK8sResourceList,
@@ -62,6 +61,8 @@ import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8S_PERMISSION_INFO_MESSAGE, K8sPermissionActionType } from './constants'
 import { K8sItemCardLoadingState, K8sListItemCardType } from './types'
 import { multiSelectAllState } from './utils'
+
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
@@ -170,7 +171,7 @@ const K8sListItemCard = ({
     }
 
     const createKindData = (selected, _allKindMapping, _k8SObjectMap = null) => {
-        const kind = []
+        const kind: (SelectPickerOptionType<GVKType['Kind'], string> & { gvk: GVKType })[] = []
         let selectedGvk: GVKType
         const isAllNamespaceSelected = k8sPermission.namespace.some((option) => option.value === SELECT_ALL_VALUE)
         if (_k8SObjectMap ?? processedData) {
@@ -235,8 +236,8 @@ const K8sListItemCard = ({
                 const namespacedGvkList = resourceGroupList.apiResources.filter((item) => item.namespaced)
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
 
-                const _allApiGroupMapping = []
-                const _allKindMapping = []
+                const _allApiGroupMapping: SelectPickerOptionType<string, string>[] = []
+                const _allKindMapping: SelectPickerOptionType<string, string>[] = []
                 if (resourceGroupList.allowedAll) {
                     _allApiGroupMapping.push(
                         { label: 'All API groups', value: SELECT_ALL_VALUE },

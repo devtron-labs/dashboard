@@ -14,51 +14,53 @@
  * limitations under the License.
  */
 
-import React, { type JSX, useState, useEffect, useRef, useMemo } from 'react'
+import * as jsonpatch from 'fast-json-patch'
+import { applyPatch } from 'fast-json-patch'
+import React, { type JSX, useEffect, useMemo, useRef, useState } from 'react'
+import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import YAML from 'yaml'
+
 import {
-    showError,
-    Progressing,
-    ServerErrors,
-    ErrorScreenManager,
+    AppThemeType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     ClipboardButton,
-    YAMLStringify,
-    Nodes,
     CodeEditor,
+    ComponentSizeType,
+    ErrorScreenManager,
     GVKType,
+    getUrlWithSearchParams,
+    Icon,
+    NodeDetailTabsInfoType,
+    Nodes,
+    noop,
+    Progressing,
+    ResourceBrowserActionMenuEnum,
+    ResourceDetail,
+    ROUTER_URLS,
+    ServerErrors,
     SortableTableHeaderCell,
     SortingOrder,
-    Tooltip,
+    showError,
     TabGroup,
-    ComponentSizeType,
     TabProps,
     ToastManager,
     ToastVariantType,
-    ResourceDetail,
-    noop,
-    AppThemeType,
-    Icon,
-    NodeDetailTabsInfoType,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
-    getUrlWithSearchParams,
-    ResourceBrowserActionMenuEnum,
+    Tooltip,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
     usePrompt,
-    ROUTER_URLS,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, generatePath, useNavigate, Routes, Route, Navigate } from 'react-router-dom'
-import YAML from 'yaml'
-import * as jsonpatch from 'fast-json-patch'
-import { applyPatch } from 'fast-json-patch'
-import Info from '@Icons/ic-info-filled.svg?react'
-import Error from '@Icons/ic-error-exclamation.svg?react'
-import AlertTriangle from '@Icons/ic-alert-triangle.svg?react'
-import Storage from '@Icons/ic-storage.svg?react'
-import Edit from '@Icons/ic-pencil.svg?react'
-import Dropdown from '@Icons/ic-chevron-down.svg?react'
-import Success from '@Icons/appstatus/healthy.svg?react'
+
+import { MODES } from '../../config'
+import { OrderBy } from '../app/list/types'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
+import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
+import CordonNodeModal from './NodeActions/CordonNodeModal'
+import DeleteNodeModal from './NodeActions/DeleteNodeModal'
+import DrainNodeModal from './NodeActions/DrainNodeModal'
+import EditTaintsModal from './NodeActions/EditTaintsModal'
 import {
     ClusterListType,
     NodeDetail,
@@ -67,17 +69,19 @@ import {
     TEXT_COLOR_CLASS,
     UpdateNodeRequestBody,
 } from './types'
-import { OrderBy } from '../app/list/types'
-import { MODES } from '../../config'
-import EditTaintsModal from './NodeActions/EditTaintsModal'
-import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
-import CordonNodeModal from './NodeActions/CordonNodeModal'
-import DrainNodeModal from './NodeActions/DrainNodeModal'
-import DeleteNodeModal from './NodeActions/DeleteNodeModal'
+
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
+import Success from '@Icons/appstatus/healthy.svg?react'
+import AlertTriangle from '@Icons/ic-alert-triangle.svg?react'
+import Dropdown from '@Icons/ic-chevron-down.svg?react'
+import Error from '@Icons/ic-error-exclamation.svg?react'
+import Info from '@Icons/ic-info-filled.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
+import Storage from '@Icons/ic-storage.svg?react'
 import './clusterNodes.scss'
-import ResourceBrowserActionMenu from '@Components/ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
+
 import { importComponentFromFELibrary } from '@Components/common'
+import ResourceBrowserActionMenu from '@Components/ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { unauthorizedInfoText } from '@Components/ResourceBrowser/ResourceList/utils'
 
 const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')

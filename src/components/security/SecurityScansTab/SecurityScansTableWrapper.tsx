@@ -21,17 +21,14 @@ import {
     FilterChips,
     GroupedFilterSelectPicker,
     GroupedFilterSelectPickerProps,
+    SEVERITY_LABEL_MAP,
     SearchBar,
     SecurityModal,
     SegmentedControl,
     SegmentedControlProps,
     SelectPickerOptionType,
     Severity,
-    SEVERITY_LABEL_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { VulnerabilitySummary, VulnerabilityViewTypeSelect } from '../Vulnerabilities'
 import { INITIAL_SCAN_DETAILS, SCANNED_UNSCANNED_CONTROL_SEGMENTS } from './constants'
@@ -42,6 +39,9 @@ import {
     SecurityScansTabMultiFilterKeys,
 } from './types'
 import { getGroupFilterItems } from './utils'
+
+import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
+import { importComponentFromFELibrary } from '@Components/common'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 

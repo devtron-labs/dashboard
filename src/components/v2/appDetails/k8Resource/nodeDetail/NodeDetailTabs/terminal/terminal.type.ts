@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { Terminal } from '@xterm/xterm'
 import type { JSX, RefObject } from 'react'
 import { ActionMeta, GroupBase, OptionsOrGroups, StylesConfig } from 'react-select'
 import { SelectComponents } from 'react-select/dist/declarations/src/components'
-import { Terminal } from '@xterm/xterm'
 
 import { AppDetails } from '@devtron-labs/devtron-fe-common-lib'
 

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState, type JSX } from 'react'
+import Tippy from '@tippyjs/react'
+import { type JSX, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ConditionalWrap,
     CustomInput,
     Drawer,
@@ -33,15 +36,14 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import Close from '../../assets/icons/ic-close.svg?react'
-import CheckIcon from '../../assets/icons/ic-check.svg?react'
+
 import Abort from '../../assets/icons/ic-abort.svg?react'
+import CheckIcon from '../../assets/icons/ic-check.svg?react'
+import Close from '../../assets/icons/ic-close.svg?react'
 import Info from '../../assets/icons/ic-info-outline-grey.svg'
-import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
-import { CreateGroupTabs, CREATE_GROUP_TABS, FILTER_NAME_REGEX } from './Constants'
 import { createEnvGroup } from './AppGroup.service'
+import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
+import { CREATE_GROUP_TABS, CreateGroupTabs, FILTER_NAME_REGEX } from './Constants'
 
 export default function CreateAppGroup({
     appList,

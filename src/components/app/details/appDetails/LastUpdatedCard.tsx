@@ -19,11 +19,11 @@ import { generatePath, useNavigate } from 'react-router-dom'
 
 import { LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
 
-import Timer from '@Icons/ic-clock-counterclockwise.svg?react'
-
 import { URLS } from '../../../../config'
 import { LastUpdatedCardType } from './appDetails.type'
 import { validateMomentDate } from './utils'
+
+import Timer from '@Icons/ic-clock-counterclockwise.svg?react'
 
 const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: LastUpdatedCardType) => {
     const navigate = useNavigate()
@@ -38,6 +38,7 @@ const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: La
     }
 
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
         <div
             data-testid="last-updated-card"
             className="app-details-info-card cursor flex left bg__primary br-8 lh-20 w-200"

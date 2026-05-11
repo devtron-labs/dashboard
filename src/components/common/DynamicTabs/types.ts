@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { type JSX, ReactElement } from 'react'
 import { Dayjs } from 'dayjs'
+import { type JSX, ReactElement } from 'react'
 
 import { DynamicTabType, InitTabType } from '@devtron-labs/devtron-fe-common-lib'
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, getTemplateAPIRoute, GetTemplateAPIRouteType, post } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, GetTemplateAPIRouteType, getTemplateAPIRoute, post } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../config'
 

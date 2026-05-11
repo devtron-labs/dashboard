@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type JSX, useMemo, useState } from 'react'
 import { compare as JSONPatchCompare } from 'fast-json-patch'
+import React, { type JSX, useMemo, useState } from 'react'
 
 import {
     EMPTY_STATE_STATUS,
@@ -26,10 +26,10 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICError from '@Icons/ic-error-exclamation.svg?react'
-
 import { ChartValuesGUIFormProps } from './ChartValuesView.type'
 import { updateYamlDocument } from './ChartValuesView.utils'
+
+import ICError from '@Icons/ic-error-exclamation.svg?react'
 
 const ChartValuesGUIForm = ({
     schemaJson,

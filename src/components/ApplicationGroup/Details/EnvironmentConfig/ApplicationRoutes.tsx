@@ -19,11 +19,12 @@ import { generatePath, Route, Routes, useParams } from 'react-router-dom'
 
 import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/Navigation.helper'
 
 import { ApplicationRouteType } from '../../AppGroup.types'
+
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 
 const path = `${ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}/:appId?`
 

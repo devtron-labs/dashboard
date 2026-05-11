@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { ChartColorKey, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
+
+import { ChartColorKey, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../../config'
 import { BenchmarkType } from './deploymentMetrics.types'
 
@@ -153,7 +155,7 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
     const meanLeadTime = responseResult.average_lead_time
     const meanTimeToRecovery = responseResult.average_recovery_time
     const changeFailureRate = responseResult.change_failure_rate
-    
+
     const stats = {
         avgFrequency: responseResult.average_cycle_time?.toFixed(2) || 0,
         totalDeployments: allDeployments.length,

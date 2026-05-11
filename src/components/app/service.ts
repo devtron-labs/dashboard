@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
 import moment from 'moment'
+import { useEffect } from 'react'
 
 import {
     ACTION_STATE,
@@ -30,13 +30,13 @@ import {
     DeploymentWindowProfileMetaData,
     get,
     getUrlWithSearchParams,
-    handleUTCTime,
     History,
+    handleUTCTime,
     IndexStore,
     noop,
     numberComparatorBySortOrder,
-    post,
     PromiseAllStatusType,
+    post,
     put,
     ReleaseMode,
     ResponseType,
@@ -45,15 +45,6 @@ import {
     useQueryClient,
     WFR_STATUS_DTO_TO_DEPLOYMENT_STATUS_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { importComponentFromFELibrary } from '@Components/common'
-import { getExternalLinks } from '@Components/externalLinks/ExternalLinks.service'
-import {
-    ExternalLinkIdentifierType,
-    ExternalLinkResponse,
-    ExternalLinksAndToolsType,
-} from '@Components/externalLinks/ExternalLinks.type'
-import { sortByUpdatedOn } from '@Components/externalLinks/ExternalLinks.utils'
 
 import { Moment12HourFormat, NO_COMMIT_SELECTED, Routes } from '../../config'
 import { BULK_VIRTUAL_RESPONSE_STATUS, BulkResponseStatus } from '../ApplicationGroup/Constants'
@@ -67,6 +58,15 @@ import {
     UseGetDTAppDetailsParams,
     UseGetDTAppDetailsReturnType,
 } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { getExternalLinks } from '@Components/externalLinks/ExternalLinks.service'
+import {
+    ExternalLinkIdentifierType,
+    ExternalLinkResponse,
+    ExternalLinksAndToolsType,
+} from '@Components/externalLinks/ExternalLinks.type'
+import { sortByUpdatedOn } from '@Components/externalLinks/ExternalLinks.utils'
 
 const DEPLOYMENT_STATUS_QUERY_KEY = 'deployment-status-detail'
 
@@ -371,7 +371,6 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
                                 response.status = BulkResponseStatus.UNAUTHORIZE
                                 response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
                                 break
-                            case 409:
                             default:
                                 response.status = BulkResponseStatus.FAIL
                                 response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]

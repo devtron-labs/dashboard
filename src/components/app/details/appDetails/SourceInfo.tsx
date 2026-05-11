@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { useMemo, useState, type JSX } from 'react'
+import moment from 'moment'
+import { type JSX, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Link, useParams } from 'react-router-dom'
-import moment from 'moment'
 
 import {
     Button,
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    URLS as CommonURLS,
     ComponentSizeType,
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
@@ -32,32 +33,31 @@ import {
     LoadingCard,
     logExceptionToSentry,
     ReleaseMode,
+    ROUTER_URLS,
     showError,
     Tooltip,
-    URLS as CommonURLS,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ICCamera from '@Icons/ic-camera.svg?react'
-import Trash from '@Icons/ic-delete-dots.svg?react'
-import LinkIcon from '@Icons/ic-link.svg?react'
-import ICRollback from '@Icons/ic-rollback.svg?react'
-import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '../../../../config'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import { Nodes, SourceInfoType } from '../../types'
 import AppEnvSelector from './AppDetails.components'
-import { HibernationModalTypes } from './appDetails.type'
 import AppStatusCard from './AppStatusCard'
+import { HibernationModalTypes } from './appDetails.type'
 import { ACTION_DISABLED_TEXT, AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import DeployedCommitCard from './DeployedCommitCard'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import { getDeployButtonConfig } from './utils'
+
 import { useGetDTAppDeploymentStatusDetail } from '@Components/app/service'
+import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
+import ICCamera from '@Icons/ic-camera.svg?react'
+import Trash from '@Icons/ic-delete-dots.svg?react'
+import LinkIcon from '@Icons/ic-link.svg?react'
+import ICRollback from '@Icons/ic-rollback.svg?react'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -160,7 +160,7 @@ export const SourceInfo = ({
     }
 
     const shimmerLoaderBlocks = () => {
-        const loadingCards = []
+        const loadingCards: JSX.Element[] = []
         for (let i = 0; i < 4; i++) {
             loadingCards.push(<LoadingCard key={i} />)
         }
@@ -269,134 +269,126 @@ export const SourceInfo = ({
                                 </div>
                             </Tooltip>
                         )}
-                        {!loadingResourceTree && environment && (
-                            <>
-                                {!isdeploymentAppDeleting && (
-                                    <div style={{ marginLeft: 'auto' }} className="flex dc__gap-8">
-                                        <div className="app-details-action-buttons flexbox border__primary br-6 dc__overflow-hidden">
-                                            {!isVirtualEnvironment && showUrlInfo && (
-                                                <>
-                                                    <Button
-                                                        dataTestId="app-details-urls"
-                                                        size={ComponentSizeType.medium}
-                                                        variant={ButtonVariantType.secondary}
-                                                        icon={<LinkIcon />}
-                                                        onClick={onClickShowUrlInfo}
-                                                        style={ButtonStyleType.neutral}
-                                                        ariaLabel="URLs"
+                        {!loadingResourceTree && environment && !isdeploymentAppDeleting && (
+                            <div style={{ marginLeft: 'auto' }} className="flex dc__gap-8">
+                                <div className="app-details-action-buttons flexbox border__primary br-6 dc__overflow-hidden">
+                                    {!isVirtualEnvironment && showUrlInfo && (
+                                        <>
+                                            <Button
+                                                dataTestId="app-details-urls"
+                                                size={ComponentSizeType.medium}
+                                                variant={ButtonVariantType.secondary}
+                                                icon={<LinkIcon />}
+                                                onClick={onClickShowUrlInfo}
+                                                style={ButtonStyleType.neutral}
+                                                ariaLabel="URLs"
+                                            />
+                                            <div className="divider__secondary" />
+                                        </>
+                                    )}
+
+                                    {!isVirtualEnvironment && showHibernateModal && (
+                                        <>
+                                            <Button
+                                                dataTestId="app-details-hibernate-modal-button"
+                                                size={ComponentSizeType.medium}
+                                                variant={ButtonVariantType.secondary}
+                                                isLoading={hibernationPatchResponseLoading}
+                                                icon={
+                                                    <Icon
+                                                        name={isHibernated ? 'ic-sun' : 'ic-hibernate-circle'}
+                                                        color={null}
                                                     />
-                                                    <div className="divider__secondary" />
-                                                </>
-                                            )}
+                                                }
+                                                onClick={onClickShowHibernateModal}
+                                                disabled={isApprovalConfigured || hibernationPatchResponseLoading}
+                                                style={ButtonStyleType.neutral}
+                                                showTooltip={isApprovalConfigured}
+                                                tooltipProps={{
+                                                    content: (
+                                                        <div className="flexbox-col">
+                                                            <span className="fw-6">
+                                                                Cannot&nbsp;
+                                                                {isHibernated ? 'unhibernate' : 'hibernate'}
+                                                            </span>
+                                                            <span className="fw-4 dc__word-break">
+                                                                {ACTION_DISABLED_TEXT}
+                                                            </span>
+                                                        </div>
+                                                    ),
+                                                    placement: 'bottom',
+                                                }}
+                                                ariaLabel={isHibernated ? 'Unhibernate' : 'Hibernate'}
+                                            />
+                                            <div className="divider__secondary" />
+                                        </>
+                                    )}
+                                    {!isVirtualEnvironment && setRotateModal && (
+                                        <>
+                                            <Button
+                                                dataTestId="app-details-rotate-pods-modal-button"
+                                                size={ComponentSizeType.medium}
+                                                variant={ButtonVariantType.secondary}
+                                                onClick={() => setRotateModal(true)}
+                                                disabled={isApprovalConfigured}
+                                                icon={<Icon name="ic-arrows-clockwise" color={null} />}
+                                                style={ButtonStyleType.neutral}
+                                                showTooltip
+                                                tooltipProps={{
+                                                    content: isApprovalConfigured ? (
+                                                        <div className="flexbox-col">
+                                                            <span className="fw-6">Cannot restart workloads</span>
+                                                            <span className="fw-4 dc__word-break">
+                                                                {ACTION_DISABLED_TEXT}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        'Restart workloads'
+                                                    ),
+                                                    placement: 'top',
+                                                }}
+                                                ariaLabel="restart workloads"
+                                            />
+                                            <div className="divider__secondary" />
+                                        </>
+                                    )}
 
-                                            {!isVirtualEnvironment && showHibernateModal && (
-                                                <>
-                                                    <Button
-                                                        dataTestId="app-details-hibernate-modal-button"
-                                                        size={ComponentSizeType.medium}
-                                                        variant={ButtonVariantType.secondary}
-                                                        isLoading={hibernationPatchResponseLoading}
-                                                        icon={
-                                                            <Icon
-                                                                name={isHibernated ? 'ic-sun' : 'ic-hibernate-circle'}
-                                                                color={null}
-                                                            />
-                                                        }
-                                                        onClick={onClickShowHibernateModal}
-                                                        disabled={
-                                                            isApprovalConfigured || hibernationPatchResponseLoading
-                                                        }
-                                                        style={ButtonStyleType.neutral}
-                                                        showTooltip={isApprovalConfigured}
-                                                        tooltipProps={{
-                                                            content: (
-                                                                <div className="flexbox-col">
-                                                                    <span className="fw-6">
-                                                                        Cannot&nbsp;
-                                                                        {isHibernated ? 'unhibernate' : 'hibernate'}
-                                                                    </span>
-                                                                    <span className="fw-4 dc__word-break">
-                                                                        {ACTION_DISABLED_TEXT}
-                                                                    </span>
-                                                                </div>
-                                                            ),
-                                                            placement: 'bottom',
-                                                        }}
-                                                        ariaLabel={isHibernated ? 'Unhibernate' : 'Hibernate'}
-                                                    />
-                                                    <div className="divider__secondary" />
-                                                </>
-                                            )}
-                                            {!isVirtualEnvironment && setRotateModal && (
-                                                <>
-                                                    <Button
-                                                        dataTestId="app-details-rotate-pods-modal-button"
-                                                        size={ComponentSizeType.medium}
-                                                        variant={ButtonVariantType.secondary}
-                                                        onClick={() => setRotateModal(true)}
-                                                        disabled={isApprovalConfigured}
-                                                        icon={<Icon name="ic-arrows-clockwise" color={null} />}
-                                                        style={ButtonStyleType.neutral}
-                                                        showTooltip
-                                                        tooltipProps={{
-                                                            content: isApprovalConfigured ? (
-                                                                <div className="flexbox-col">
-                                                                    <span className="fw-6">
-                                                                        Cannot restart workloads
-                                                                    </span>
-                                                                    <span className="fw-4 dc__word-break">
-                                                                        {ACTION_DISABLED_TEXT}
-                                                                    </span>
-                                                                </div>
-                                                            ) : (
-                                                                'Restart workloads'
-                                                            ),
-                                                            placement: 'top',
-                                                        }}
-                                                        ariaLabel="restart workloads"
-                                                    />
-                                                    <div className="divider__secondary" />
-                                                </>
-                                            )}
+                                    {renderRollbackButton(true)}
+                                </div>
 
-                                            {renderRollbackButton(true)}
-                                        </div>
-
-                                        {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
-                                            SwapTraffic &&
-                                            !!appDetails.pcoId &&
-                                            !appDetails.trafficSwitched && (
-                                                <SwapTraffic
-                                                    appName={appDetails.appName}
-                                                    envName={appDetails.environmentName}
-                                                    appId={appDetails.appId}
-                                                    envId={appDetails.environmentId}
-                                                    pcoId={appDetails.pcoId}
-                                                />
-                                            )}
-
-                                        <div className="border__primary--left w-1 h-16" />
-
-                                        {renderAppDetailsCDButton()}
-
-                                        <Button
-                                            dataTestId="app-details-env-config-button"
-                                            size={ComponentSizeType.medium}
-                                            icon={<Icon name="ic-sliders-vertical" color={null} />}
-                                            variant={ButtonVariantType.secondary}
-                                            onClick={onClickSliderVerticalButton}
-                                            component={ButtonComponentType.link}
-                                            style={ButtonStyleType.neutral}
-                                            ariaLabel="Go to Environment Config"
-                                            linkProps={{
-                                                to: isAppView
-                                                    ? `${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`
-                                                    : `${ROUTER_URLS.APP_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
-                                            }}
+                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
+                                    SwapTraffic &&
+                                    !!appDetails.pcoId &&
+                                    !appDetails.trafficSwitched && (
+                                        <SwapTraffic
+                                            appName={appDetails.appName}
+                                            envName={appDetails.environmentName}
+                                            appId={appDetails.appId}
+                                            envId={appDetails.environmentId}
+                                            pcoId={appDetails.pcoId}
                                         />
-                                    </div>
-                                )}
-                            </>
+                                    )}
+
+                                <div className="border__primary--left w-1 h-16" />
+
+                                {renderAppDetailsCDButton()}
+
+                                <Button
+                                    dataTestId="app-details-env-config-button"
+                                    size={ComponentSizeType.medium}
+                                    icon={<Icon name="ic-sliders-vertical" color={null} />}
+                                    variant={ButtonVariantType.secondary}
+                                    onClick={onClickSliderVerticalButton}
+                                    component={ButtonComponentType.link}
+                                    style={ButtonStyleType.neutral}
+                                    ariaLabel="Go to Environment Config"
+                                    linkProps={{
+                                        to: isAppView
+                                            ? `${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`
+                                            : `${ROUTER_URLS.APP_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
+                                    }}
+                                />
+                            </div>
                         )}
                     </>
                 )}
@@ -433,8 +425,6 @@ export const SourceInfo = ({
                       <div className="app-details-info-card-container flex left w-100 dc__gap-12 pb-16 dc__overflow-auto pt-4">
                           {status && (
                               <AppStatusCard
-                                  // TODO: Fix and remove
-                                  // @ts-ignore
                                   appDetails={appDetails}
                                   status={status}
                                   cardLoading={cardLoading}

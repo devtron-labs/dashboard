@@ -32,8 +32,6 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICExpand from '@Icons/ic-expand.svg?react'
-
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
@@ -49,6 +47,8 @@ import NodeDeleteComponent from './NodeDelete.component'
 import { getNodeStatus, nodeRowClassModifierMap } from './nodeType.util'
 import PodHeaderComponent from './PodHeader.component'
 import { NoPodProps } from './types'
+
+import ICExpand from '@Icons/ic-expand.svg?react'
 
 import './nodeType.scss'
 
@@ -471,9 +471,7 @@ const NodeComponent = ({
                                         <span
                                             data-testid="node-resource-status"
                                             className={`app-summary__status-name f-${(
-                                                node?.status ||
-                                                node?.health?.status ||
-                                                ''
+                                                node?.status || node?.health?.status || ''
                                             ).toLowerCase()}`}
                                         >
                                             {nodeStatus}

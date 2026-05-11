@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent, useMemo, useState, type JSX } from 'react'
+import { type JSX, SyntheticEvent, useMemo, useState } from 'react'
 import './environmentStatus.scss'
-import IndexStore from '../../index.store'
-import { URLS } from '../../../../../config'
-import { AppType } from '../../appDetails.type'
-import { useSharedState } from '../../../utils/useSharedState'
 import { useNavigate, useParams } from 'react-router-dom'
-import NotesDrawer from './NotesDrawer'
-import { getInstalledChartNotesDetail } from '../../appDetails.api'
-import { importComponentFromFELibrary } from '../../../../common'
+
 import {
     AppStatusModal,
     AppStatusModalTabType,
@@ -32,16 +26,24 @@ import {
     stopPropagation,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { EnvironmentStatusComponentType } from '../environment.type'
-import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
+
+import { URLS } from '../../../../../config'
 import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
-import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
-import ChartUsedCard from './ChartUsedCard'
-import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
-import IssuesCard from '../../../../app/details/appDetails/IssuesCard'
 import { ErrorItem } from '../../../../app/details/appDetails/appDetails.type'
+import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
+import IssuesCard from '../../../../app/details/appDetails/IssuesCard'
 import IssuesListingModal from '../../../../app/details/appDetails/IssuesListingModal'
+import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
 import SecurityVulnerabilityCard from '../../../../app/details/appDetails/SecurityVulnerabilityCard'
+import { importComponentFromFELibrary } from '../../../../common'
+import { useSharedState } from '../../../utils/useSharedState'
+import { getInstalledChartNotesDetail } from '../../appDetails.api'
+import { AppType } from '../../appDetails.type'
+import IndexStore from '../../index.store'
+import { EnvironmentStatusComponentType } from '../environment.type'
+import ChartUsedCard from './ChartUsedCard'
+import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
+import NotesDrawer from './NotesDrawer'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
@@ -78,7 +80,7 @@ const EnvironmentStatusComponent = ({
     const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
 
     const shimmerLoaderBlocks = () => {
-        const loadingCards = []
+        const loadingCards: JSX.Element[] = []
         for (let i = 0; i < 4; i++) {
             loadingCards.push(<LoadingCard key={i} />)
         }
@@ -205,10 +207,7 @@ const EnvironmentStatusComponent = ({
             {showAppStatusDetail && (
                 <AppStatusModal
                     type="other-apps"
-                    titleSegments={[
-                        appDetails?.appName,
-                        appDetails?.environmentName || appDetails?.namespace,
-                    ]}
+                    titleSegments={[appDetails?.appName, appDetails?.environmentName || appDetails?.namespace]}
                     handleClose={handleCloseAppStatusModal}
                     appDetails={appDetails}
                     isConfigDriftEnabled={false}

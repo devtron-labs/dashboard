@@ -16,9 +16,12 @@
 
 import { Component } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ChartCheckListProps } from './checklist.type'
+
 import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ChartCheckListProps } from './checklist.type'
+
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export class ChartCheckList extends Component<ChartCheckListProps, {}> {
     render() {
         const { environment, project } = this.props.chartChecklist

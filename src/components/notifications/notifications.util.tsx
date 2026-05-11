@@ -15,14 +15,7 @@
  */
 
 import { components } from 'react-select'
-import ArrowDown from '@Icons/ic-chevron-down.svg?react'
-import Email from '@Icons/ic-mail.svg?react'
-import RedWarning from '@Icons/ic-error-medium.svg?react'
-import CI from '@Icons/ic-CI.svg?react'
-import CD from '@Icons/ic-CD.svg?react'
-import Rocket from '@Icons/ic-paper-rocket.svg?react'
-import Slack from '@Icons/slack-logo.svg?react'
-import Webhook from '@Icons/ic-CIWebhook.svg?react'
+
 import {
     commonSelectStyles,
     DynamicDataTableHeaderType,
@@ -33,8 +26,9 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText, EVENTS } from './constants'
+
 import { validateEmail } from '../common'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText, EVENTS } from './constants'
 import {
     FormError,
     NotificationPipelineType,
@@ -43,7 +37,16 @@ import {
     WebhookDataRowType,
     WebhookHeaderKeyType,
 } from './types'
+
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
+import CD from '@Icons/ic-CD.svg?react'
+import CI from '@Icons/ic-CI.svg?react'
+import Webhook from '@Icons/ic-CIWebhook.svg?react'
+import ArrowDown from '@Icons/ic-chevron-down.svg?react'
+import RedWarning from '@Icons/ic-error-medium.svg?react'
+import Email from '@Icons/ic-mail.svg?react'
+import Rocket from '@Icons/ic-paper-rocket.svg?react'
+import Slack from '@Icons/slack-logo.svg?react'
 
 export const multiSelectStyles = {
     ...commonSelectStyles,

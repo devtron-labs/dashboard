@@ -16,13 +16,13 @@
 
 import { ConfirmationModal, ConfirmationModalVariantType, DocLink } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GitProvider } from '@Components/common/GitTabs/constants'
-import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
-
 import ICArrowRight from '../../assets/icons/ic-arrow-right.svg?react'
 import ICWarning from '../../assets/icons/ic-warning.svg?react'
 import GitProviderTabIcons from '../common/GitTabs/GitProviderTabIcons'
 import { UpdateConfirmationDialogProps } from './gitops.type'
+
+import { GitProvider } from '@Components/common/GitTabs/constants'
+import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
 
 const UpdateConfirmationDialog = ({
     providerTab,

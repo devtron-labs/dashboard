@@ -14,36 +14,39 @@
  * limitations under the License.
  */
 
+import { generatePath } from 'react-router-dom'
+
 import {
-    ServerErrors,
-    showError,
+    BaseRecentlyVisitedEntitiesTypes,
     BlockedStateData,
-    ConsequenceType,
-    ConsequenceAction,
-    WorkflowType,
-    getIsRequestAborted,
     CIMaterialType,
-    SourceTypeMap,
+    ConsequenceAction,
+    ConsequenceType,
     DEPLOYMENT_STATUS,
-    WorkflowStatusEnum,
+    DeploymentNodeType,
+    getIsRequestAborted,
     RecentlyVisitedGroupedOptionsType,
     RecentlyVisitedOptions,
-    BaseRecentlyVisitedEntitiesTypes,
     ROUTER_URLS,
-    DeploymentNodeType,
+    ServerErrors,
+    SourceTypeMap,
+    showError,
+    WorkflowStatusEnum,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getParsedBranchValuesForPlugin } from '@Components/common'
+
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
 import {
+    AppGroupListType,
     AppGroupUrlFilters,
     CDWorkflowStatusType,
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
-    AppGroupListType,
 } from './AppGroup.types'
+
 import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
-import { generatePath } from 'react-router-dom'
+import { getParsedBranchValuesForPlugin } from '@Components/common'
 
 let timeoutId
 
@@ -405,4 +408,3 @@ export const parseAppListData = (
 
     return parsedData
 }
-    

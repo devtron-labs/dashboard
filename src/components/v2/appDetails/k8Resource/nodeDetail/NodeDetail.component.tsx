@@ -20,11 +20,11 @@ import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-do
 import {
     Button,
     ButtonVariantType,
-    capitalizeFirstLetter,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     ConfigurationType,
+    capitalizeFirstLetter,
     DeploymentAppTypes,
     FormProps,
     getAIAnalyticsEvents,
@@ -39,14 +39,6 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
-import ICCheck from '@Icons/ic-check.svg?react'
-import ICPencil from '@Icons/ic-pencil.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
-import { K8sResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
-import { EDITOR_VIEW } from '@Config/constants'
 
 import DeleteIcon from '../../../../../assets/icons/ic-delete-interactive.svg?react'
 import EphemeralIcon from '../../../../../assets/icons/ic-ephemeral.svg?react'
@@ -65,14 +57,22 @@ import {
     Options,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
+import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
-import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import { getManifestResource, updateManifestResourceHelmApps } from './nodeDetail.api'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
+import { K8sResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
+import { EDITOR_VIEW } from '@Config/constants'
+import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
+import ICCheck from '@Icons/ic-check.svg?react'
+import ICPencil from '@Icons/ic-pencil.svg?react'
 
 import './nodeDetail.css'
 
@@ -169,7 +169,7 @@ const NodeDetailComponent = ({
         (currentResource as unknown as Node)?.health?.status === 'Missing'
 
     const [containers, setContainers] = useState<Options[]>(
-        (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
+        (isResourceBrowserView ? (selectedResource?.containers ?? []) : getContainersData(podMetaData)) as Options[],
     )
     const [startTerminal, setStartTerminal] = useState<boolean>(false)
 

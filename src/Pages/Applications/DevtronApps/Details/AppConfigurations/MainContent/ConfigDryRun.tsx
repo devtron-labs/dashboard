@@ -17,8 +17,8 @@
 import { useParams } from 'react-router-dom'
 
 import {
-    abortPreviousRequests,
     APIResponseHandler,
+    abortPreviousRequests,
     BaseURLParams,
     CodeEditor,
     DryRunEditorMode,
@@ -30,14 +30,14 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-// FIXME: Placeholder icon since no sense of git merge icon as of now
-import ICFileCode from '@Icons/ic-file-code.svg?react'
-import ICFilePlay from '@Icons/ic-file-play.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import NoPublishedVersionEmptyState from './NoPublishedVersionEmptyState'
 import SelectMergeStrategy from './SelectMergeStrategy'
 import { ConfigDryRunProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+// FIXME: Placeholder icon since no sense of git merge icon as of now
+import ICFileCode from '@Icons/ic-file-code.svg?react'
+import ICFilePlay from '@Icons/ic-file-play.svg?react'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
 

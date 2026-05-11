@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { table } from 'console'
-import { useReducer, useEffect } from 'react'
+import { useEffect, useReducer } from 'react'
+
 import { iLink, iLinks } from './link.type'
 
 export const TabActions = {
@@ -57,9 +57,11 @@ const reducer = (state: any, action: any) => {
             return { ...state, tabs: state.tabs }
         }
 
-        case TabActions.RemoveTab:
+        case TabActions.RemoveTab: {
+            // biome-ignore lint/suspicious/noSelfCompare: Legacy
             const rc = state.tabs.filter(action.tab.name === action.tab.name)
             return { ...state, tabs: rc }
+        }
 
         case TabActions.MarkActive: {
             state.tabs.forEach((tab: iLink) => {

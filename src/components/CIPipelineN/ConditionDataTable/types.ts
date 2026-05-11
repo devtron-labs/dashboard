@@ -44,11 +44,13 @@ export enum ConditionDataTableActionType {
 }
 
 type ConditionDataTableActionPropsMap = {
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     [ConditionDataTableActionType.ADD_ROW]: {}
     [ConditionDataTableActionType.UPDATE_ROW]: {
         actionValue: string
         headerKey: ConditionDataTableHeaderKeys
     }
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     [ConditionDataTableActionType.DELETE_ROW]: {}
 }
 

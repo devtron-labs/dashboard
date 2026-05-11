@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
+
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { GitProviderTabProps, GitProviderType } from '@Components/common/GitTabs/types'
 

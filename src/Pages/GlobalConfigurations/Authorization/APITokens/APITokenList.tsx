@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 
 import {
     Button,
@@ -122,9 +122,14 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                           }`}
                                       />
                                   </button>
-                                  <div className="flexbox cb-5 cursor" data-index={index} onClick={handleEditRowAction}>
+                                  <button
+                                      type="button"
+                                      className="flexbox cb-5 dc__transparent"
+                                      data-index={index}
+                                      onClick={handleEditRowAction}
+                                  >
                                       <span className="dc__ellipsis-right">{list.name}</span>
-                                  </div>
+                                  </button>
                                   <div className="dc__ellipsis-right">
                                       {list.lastUsedAt
                                           ? moment(list.lastUsedAt).format(

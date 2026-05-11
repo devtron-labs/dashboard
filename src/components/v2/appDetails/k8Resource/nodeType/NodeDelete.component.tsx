@@ -18,8 +18,8 @@ import { useState } from 'react'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ConfirmationModal,
     ConfirmationModalVariantType,
     GetResourceScanDetailsPayloadType,

@@ -14,14 +14,31 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { Component } from 'react'
 
 import {
+    BASE_ROUTES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     Chip,
     CiPipelineSourceConfig,
     ComponentSizeType,
@@ -34,21 +51,21 @@ import {
     Pagination,
     Progressing,
     Reload,
-    showError,
-    SourceTypeMap,
     RouterV5Props,
-    BASE_ROUTES,
+    SourceTypeMap,
+    showError,
     stopPropagation,
     TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '@Components/common'
-
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import { ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
+import { AddNotificationButton } from './AddNotificationButton'
+import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
+import { EVENT_ID, EVENT_LABEL, EVENTS } from './constants'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import {
     deleteNotifications,
@@ -58,10 +75,8 @@ import {
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
 import { NotificationConfiguration, NotificationPipelineType, NotificationTabState } from './types'
-import { EVENT_ID, EVENT_LABEL, EVENTS } from './constants'
-import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
-import React from 'react'
-import { AddNotificationButton } from './AddNotificationButton'
+
+import { InValidHostUrlWarningBlock, importComponentFromFELibrary } from '@Components/common'
 
 const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 export class NotificationTab extends Component<any, NotificationTabState> {

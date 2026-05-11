@@ -1,0 +1,193 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.4.11/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "includes": [
+            "src/**/*.{ts,tsx,js,jsx}",
+            "!src/components/app/details/appDetails/AppMetrics.tsx",
+            "!src/components/app/details/appDetails/GraphsModal.tsx",
+            "!src/components/app/details/appDetails/IssuesCard.tsx",
+            "!src/components/app/details/appDetails/utils.tsx",
+            "!src/components/app/details/main.tsx",
+            "!src/components/app/details/metrics/deploymentMetrics.service.ts",
+            "!src/components/app/details/metrics/deploymentMetrics.util.tsx",
+            "!src/components/app/details/metrics/DeploymentTable.tsx",
+            "!src/components/app/details/triggerView/MaterialSource.tsx",
+            "!src/components/app/details/triggerView/workflow.service.ts",
+            "!src/components/app/details/triggerView/workflow/nodes/triggerCINode.tsx",
+            "!src/components/app/details/triggerView/workflow/nodes/triggerPrePostCDNode.tsx",
+            "!src/components/app/grepSSEworker.ts",
+            "!src/components/app/list/TriggerUrl.tsx",
+            "!src/components/ApplicationGroup/AppGroup.utils.ts",
+            "!src/components/ApplicationGroup/AppGroupAppFilter.components.tsx",
+            "!src/components/ApplicationGroup/AppGroupDetailsRoute.tsx",
+            "!src/components/ApplicationGroup/CreateAppGroup.tsx",
+            "!src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateModal.tsx",
+            "!src/components/ApplicationGroup/Details/EnvironmentOverview/RestartWorkloadModal.tsx",
+            "!src/components/ApplicationGroup/Details/TriggerView/EnvTriggerView.tsx",
+            "!src/components/bulkEdits/bulkedit.utils.tsx",
+            "!src/components/cdPipeline/BuildCD.tsx",
+            "!src/components/cdPipeline/cdPipeline.service.ts",
+            "!src/components/cdPipeline/CDPipeline.tsx",
+            "!src/components/chartRepo/ChartRepo.tsx",
+            "!src/components/charts/AdvancedConfig.tsx",
+            "!src/components/charts/ChartGroupUpdate.tsx",
+            "!src/components/charts/charts.service.ts",
+            "!src/components/charts/charts.types.tsx",
+            "!src/components/charts/list/DiscoverCharts.tsx",
+            "!src/components/charts/modal/ChartGroupBasicDeploy.tsx",
+            "!src/components/charts/MultiChartSummary.tsx",
+            "!src/components/charts/useChartGroup.ts",
+            "!src/components/ciConfig/CIBuildpackBuildOptions.tsx",
+            "!src/components/ciConfig/CIConfig.utils.ts",
+            "!src/components/ciConfig/CIConfigForm.tsx",
+            "!src/components/ciConfig/CIDockerFileConfig.tsx",
+            "!src/components/ciPipeline/ciPipeline.service.ts",
+            "!src/components/ciPipeline/ConfigureWebhook.tsx",
+            "!src/components/ciPipeline/Webhook/WebhookDetailsModal.tsx",
+            "!src/components/CIPipelineN/TaskList.tsx",
+            "!src/components/ClusterNodes/ClusterManifest.tsx",
+            "!src/components/ClusterNodes/ClusterOverview.tsx",
+            "!src/components/ClusterNodes/ClusterTerminal.tsx",
+            "!src/components/ClusterNodes/NodeDetails.tsx",
+            "!src/components/common/Carousel/Carousel.tsx",
+            "!src/components/common/formFields/Typeahead.tsx",
+            "!src/components/common/helpers/Helpers.tsx",
+            "!src/components/common/icons/Icons.tsx",
+            "!src/components/common/Select/Select.tsx",
+            "!src/components/dockerRegistry/Docker.tsx",
+            "!src/components/dockerRegistry/ManageRegistry.tsx",
+            "!src/components/externalLinks/ExternalLinks.component.tsx",
+            "!src/components/externalLinks/ExternalLinksCRUD/AddExternalLink.tsx",
+            "!src/components/externalLinks/ExternalLinksCRUD/IdentifierSelector.tsx",
+            "!src/components/gitOps/GitOpsConfiguration.tsx",
+            "!src/components/gitProvider/GitProvider.tsx",
+            "!src/components/gitProvider/gitProvider.util.tsx",
+            "!src/components/material/MaterialView.tsx",
+            "!src/components/notifications/AddNotification.tsx",
+            "!src/components/notifications/notifications.service.ts",
+            "!src/components/notifications/notifications.util.tsx",
+            "!src/components/notifications/NotificationTab.tsx",
+            "!src/components/project/ProjectList.tsx",
+            "!src/components/security/AddCveModal.tsx",
+            "!src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api.ts",
+            "!src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component.tsx",
+            "!src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.tsx",
+            "!src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CustomLogsModal/CustomLogsModal.tsx",
+            "!src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Logs.component.tsx",
+            "!src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.utils.tsx",
+            "!src/components/v2/appDetails/k8Resource/nodeType/Node.component.tsx",
+            "!src/components/v2/appDetails/SyncError.component.tsx",
+            "!src/components/v2/chartDeploymentHistory/ChartDeploymentHistory.component.tsx",
+            "!src/components/v2/common/ReactSelectCustomization.tsx",
+            "!src/components/v2/devtronStackManager/DevtronStackManager.component.tsx",
+            "!src/components/v2/devtronStackManager/DevtronStackManager.tsx",
+            "!src/components/v2/values/chartValuesDiff/ChartRepoSelector.tsx",
+            "!src/components/v2/values/chartValuesDiff/ChartValuesEditor.tsx",
+            "!src/components/v2/values/chartValuesDiff/ChartValuesView.tsx",
+            "!src/components/workflowEditor/PipelineSelect.tsx",
+            "!src/components/workflowEditor/Workflow.tsx",
+            "!src/components/workflowEditor/workflowEditor.tsx",
+            "!src/Pages-Devtron-2.0/InfrastructureManagement/Overview/ClusterAndNodes/NodeViewGroupList.tsx",
+            "!src/Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentTemplate/DTChartSelector.tsx",
+            "!src/Pages/GlobalConfigurations/Authorization/Shared/components/AppPermissions/AppPermissionDetail.tsx",
+            "!src/Pages/GlobalConfigurations/Authorization/Shared/components/AppPermissions/AppPermissions.component.tsx",
+            "!src/Pages/GlobalConfigurations/Authorization/Shared/components/K8sObjectPermissions/K8sPermissionModal.tsx",
+            "!src/Pages/GlobalConfigurations/Authorization/SSOLoginServices/SSOLogin.component.tsx",
+            "!src/Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterForm/ConnectClusterViaKubeconfig.tsx",
+            "!src/Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterList.components.tsx",
+            "!src/util/MurmurHash3.ts"
+        ]
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 120
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "correctness": {
+                "noUnusedVariables": "error",
+                "noUndeclaredVariables": "error",
+                "useExhaustiveDependencies": "off",
+                "noConstantMathMinMaxClamp": "error",
+                "noUnusedImports": "error",
+                "noUnusedFunctionParameters": "error"
+            },
+            "style": {
+                "useConst": "error",
+                "useSelfClosingElements": "error",
+                "noNonNullAssertion": "off",
+                "noYodaExpression": "error",
+                "useFragmentSyntax": "error",
+                "useImportType": "off",
+                "useLiteralEnumMembers": "off"
+            },
+            "suspicious": {
+                "useAwait": "error",
+                "noConsole": "error",
+                "noShadowRestrictedNames": "error",
+                "noExplicitAny": "off",
+                "noVar": "error",
+                "noArrayIndexKey": "error",
+                "noEvolvingTypes": "error"
+            },
+            "a11y": {
+                "noStaticElementInteractions": "error",
+                "noNoninteractiveElementInteractions": "error",
+                "useKeyWithClickEvents": "error",
+                "useButtonType": "error",
+                "noLabelWithoutControl": "error",
+                "noAutofocus": "off"
+            },
+            "complexity": {
+                "useLiteralKeys": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "semicolons": "asNeeded",
+            "trailingCommas": "all"
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": {
+                    "level": "on",
+                    "options": {
+                        "groups": [
+                            [
+                                ":URL:",
+                                ":NODE:",
+                                ":BUN:",
+                                ":PACKAGE_WITH_PROTOCOL:",
+                                ":PACKAGE:",
+                                "!@devtron-labs",
+                                "!@devtron-labs/**"
+                            ],
+                            ":BLANK_LINE:",
+                            ["@devtron-labs", "@devtron-labs/**"],
+                            ":BLANK_LINE:",
+                            ["@Images", "@Images/**", "@Shared", "@Shared/**", "@Pages", "@Pages/**"],
+                            ":BLANK_LINE:",
+                            [":PATH:", "!**/*.css", "!**/*.scss"],
+                            ":BLANK_LINE:",
+                            ["**/*.css", "**/*.scss"]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

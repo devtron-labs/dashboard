@@ -24,11 +24,11 @@ import {
     usePopover,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { VariableDataTablePopupMenuProps } from './types'
+
 import ICClose from '@Icons/ic-close.svg?react'
 import ICDot from '@Icons/ic-dot.svg?react'
 import ICSlidersVertical from '@Icons/ic-sliders-vertical.svg?react'
-
-import { VariableDataTablePopupMenuProps } from './types'
 
 export const VariableDataTablePopupMenu = ({
     showHeaderIcon,

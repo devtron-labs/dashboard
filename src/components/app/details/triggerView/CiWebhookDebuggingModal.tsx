@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
 import moment from 'moment'
+import { useState } from 'react'
 
 import {
     Button,
@@ -36,18 +36,18 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Edit from '@Icons/ic-pencil.svg?react'
-
 import { Moment12HourFormat } from '../../../../config'
 import { getCIPipelineURL } from '../../../common'
 import { getCIWebhookPayload, getCIWebhookRes } from './ciWebhook.service'
 import {
-    CiWebhookModalProps,
     CIWebhookPayload,
+    CiWebhookModalProps,
     WebhookPayload,
     WebhookPayloadType,
     WebhookReceivedFiltersType,
 } from './types'
+
+import Edit from '@Icons/ic-pencil.svg?react'
 
 import './TriggerWebhook.scss'
 

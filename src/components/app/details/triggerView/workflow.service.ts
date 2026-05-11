@@ -15,35 +15,36 @@
  */
 
 import {
-    CommonNodeAttr,
-    TriggerTypeMap,
-    WorkflowNodeType,
-    PipelineType,
-    DownstreamNodesEnvironmentsType,
-    WorkflowType,
-    CiPipeline,
+    AppConfigProps,
     CdPipeline,
+    CiPipeline,
+    CommonNodeAttr,
+    DownstreamNodesEnvironmentsType,
     getIsApprovalPolicyConfigured,
+    PipelineType,
     sanitizeApprovalConfigData,
     TriggerType,
-    AppConfigProps,
+    TriggerTypeMap,
+    WorkflowNodeType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
-import {
-    CdPipelineResult,
-    CiPipelineResult,
-    Workflow,
-    WorkflowResult,
-    AddDimensionsToDownstreamDeploymentsParams,
-    GetInitialWorkflowsParamsType,
-} from './types'
-import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
+
 import { DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
-import { importComponentFromFELibrary, isEmpty } from '../../../common'
+import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
-import { CIPipelineBuildType } from '../../../ciPipeline/types'
+import { importComponentFromFELibrary, isEmpty } from '../../../common'
 import { BlackListedCI } from '../../../workflowEditor/types'
+import { Offset, WorkflowCreate, WorkflowDimensions, WorkflowDimensionType, WorkflowTrigger } from './config'
+import {
+    AddDimensionsToDownstreamDeploymentsParams,
+    CdPipelineResult,
+    CiPipelineResult,
+    GetInitialWorkflowsParamsType,
+    Workflow,
+    WorkflowResult,
+} from './types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
@@ -255,7 +256,7 @@ export function processWorkflow(
         (externalCIResponse ?? []).map((externalCI) => [externalCI.id, externalCI] as [number, WebhookDetailsType]),
     )
     const { appName } = workflow
-    let workflows = new Array<WorkflowType>()
+    let workflows: WorkflowType[] = []
 
     // populate workflows with CI and CD nodes, sourceNodes are inside CI nodes and PreCD and PostCD nodes are inside CD nodes
     workflow.workflows
@@ -385,7 +386,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             })
         }
 
-        const finalWorkflow = new Array<CommonNodeAttr>()
+        const finalWorkflow: CommonNodeAttr[] = []
         workflow.nodes.forEach((node) => {
             if (node.type == WorkflowNodeType.CI && !node.isLinkedCD) {
                 node.sourceNodes && finalWorkflow.push(...node.sourceNodes)
@@ -534,7 +535,7 @@ function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): Workf
         id: `${workflow.id}`,
         appId: workflow.appId,
         name: workflow.name,
-        nodes: new Array<CommonNodeAttr>(),
+        nodes: [] as CommonNodeAttr[],
         gitMaterials: ciResponse?.materials ?? [],
         ciConfiguredGitMaterialId: ciResponse?.ciGitConfiguredId,
         startX: 0,
@@ -624,7 +625,7 @@ function ciPipelineToNode(
         isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes,
-        downstreamNodes: new Array<CommonNodeAttr>(),
+        downstreamNodes: [] as CommonNodeAttr[],
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
         isTriggerBlocked: ciPipeline.isCITriggerBlocked,
         pluginBlockState: getParsedPluginPolicyConsequenceData(ciPipeline.ciBlockState),
@@ -656,7 +657,7 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
         isLinkedCI: false,
         linkedCount: 0,
         sourceNodes: [],
-        downstreamNodes: new Array<CommonNodeAttr>(),
+        downstreamNodes: [] as CommonNodeAttr[],
     } as CommonNodeAttr
 }
 
@@ -746,7 +747,7 @@ function cdPipelineToNode(
         isRoot: false,
         preNode: undefined,
         postNode: undefined,
-        downstreamNodes: new Array<CommonNodeAttr>(),
+        downstreamNodes: [] as CommonNodeAttr[],
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,

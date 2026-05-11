@@ -15,12 +15,16 @@
  */
 
 import React from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+
 import { AppType, InstallationType, ModuleStatus, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import InstalledIcon from '../../../assets/icons/ic-check.svg?react'
 import DiscoverIcon from '../../../assets/icons/ic-compass.svg?react'
 import DevtronIcon from '../../../assets/icons/ic-devtron.svg?react'
-import InstalledIcon from '../../../assets/icons/ic-check.svg?react'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
-import { CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
+import { CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION } from '../../../config'
+import { AppDetails } from '../appDetails/appDetails.type'
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeModuleEnableAction, executeServerAction } from './DevtronStackManager.service'
 import {
@@ -30,8 +34,6 @@ import {
     ModuleResourceStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
-import { AppDetails } from '../appDetails/appDetails.type'
-import { useLocation, useNavigate } from 'react-router-dom'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreIntegrations',
@@ -118,7 +120,7 @@ export const handleEnableAction = async (
             setDialog(false)
             moduleNotEnabledState(false)
         }
-    } catch (e) {
+    } catch {
         setRetryFlag(true)
     }
     setProgressing(false)
@@ -142,7 +144,6 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
 
     for (const [idx, level] of minLevels.entries()) {
         if (level === newVersionLevels[idx]) {
-            continue
         } else if (level > newVersionLevels[idx]) {
             return false
         } else if (level < newVersionLevels[idx]) {
@@ -181,7 +182,9 @@ export const getAppDetailsFromResourceStatusData = (
     moduleResourcesStatus: ModuleResourceStatus[],
     installationStatus: ModuleStatus,
 ): AppDetails => {
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, no types
     const _nodes = []
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, no types
     const _resources = []
     const resourceStatusDetails = {}
     moduleResourcesStatus?.forEach((moduleResourceStatus) => {

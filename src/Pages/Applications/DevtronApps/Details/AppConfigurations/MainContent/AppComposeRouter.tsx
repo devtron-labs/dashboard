@@ -26,15 +26,16 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Next from '@Icons/ic-arrow-forward.svg?react'
-import { ErrorBoundary, useAppContext } from '@Components/common'
-import ExternalLinks from '@Components/externalLinks/ExternalLinks'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '@Config/index'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
 import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 import { DeploymentConfigCompareWrapper } from './DeploymentConfigCompare'
+
+import { ErrorBoundary, useAppContext } from '@Components/common'
+import ExternalLinks from '@Components/externalLinks/ExternalLinks'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '@Config/index'
+import Next from '@Icons/ic-arrow-forward.svg?react'
 
 import '../appConfig.scss'
 

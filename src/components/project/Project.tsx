@@ -27,12 +27,12 @@ import {
     preventDefault,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Trash from '@Icons/ic-delete-interactive.svg?react'
-import folder from '@Icons/ic-folder.svg'
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
 import { deleteProject } from './service'
 import { ProjectProps } from './types'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import folder from '@Icons/ic-folder.svg'
 
 import './project.scss'
 

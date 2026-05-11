@@ -131,14 +131,7 @@ const AboutAppInfoModal = ({
                     !isJobOverview && <InfoBlock variant="warning" description={projectChangeMessage()} />}
             </div>
             <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
-                <button
-                    className="cta cancel flex h-36 mr-12"
-                    type="button"
-                    disabled={submitting}
-                    onClick={onClose}
-                    // eslint-disable-next-line jsx-a11y/tabindex-no-positive
-                    tabIndex={6}
-                >
+                <button className="cta cancel flex h-36 mr-12" type="button" disabled={submitting} onClick={onClose}>
                     Cancel
                 </button>
                 <button
@@ -146,8 +139,6 @@ const AboutAppInfoModal = ({
                     type="submit"
                     disabled={submitting}
                     onClick={handleSaveAction}
-                    // eslint-disable-next-line jsx-a11y/tabindex-no-positive
-                    tabIndex={5}
                     data-testid="overview-project-save-button"
                 >
                     {submitting ? <Progressing /> : 'Save'}

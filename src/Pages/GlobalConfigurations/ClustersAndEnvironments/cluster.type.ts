@@ -273,6 +273,7 @@ export enum ClusterListFields {
 
 export type ClusterEnvFilterType = Record<ClusterEnvFilterKeys, string>
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export type ClusterTableProps = TableProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
 
 export type EnvNamespaceRowType = {

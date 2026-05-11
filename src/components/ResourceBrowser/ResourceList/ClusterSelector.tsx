@@ -37,7 +37,6 @@ import {
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
@@ -45,6 +44,8 @@ import { ResourceBrowserGAEvent } from '../Constants'
 import { ClusterSelectorType } from '../Types'
 import { ClusterActionMenuOptionIdEnum } from './constants'
 import { getClusterSelectOptions } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const RBPageHeaderPopup = importComponentFromFELibrary('RBPageHeaderPopup', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
@@ -101,7 +102,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
 
     const [inputValue, setInputValue] = useState('')
 
-    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+    const onInputChange: SelectPickerProps['onInputChange'] = (val) => {
         setInputValue(val)
     }
 

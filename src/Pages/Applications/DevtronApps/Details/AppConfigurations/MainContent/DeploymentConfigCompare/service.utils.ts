@@ -17,9 +17,9 @@
 import {
     AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
+    GetDeploymentManifestProps,
     getAppEnvDeploymentConfig,
     getDeploymentManifest,
-    GetDeploymentManifestProps,
     ResolvedDeploymentTemplateDTO,
     ResponseType,
     TemplateListType,

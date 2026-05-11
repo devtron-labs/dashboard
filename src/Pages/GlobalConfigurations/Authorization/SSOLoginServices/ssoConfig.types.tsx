@@ -16,10 +16,10 @@
 
 import { RouterV5Props } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SwitchItemValues } from '@Config/constants'
-
 import { GlobalConfiguration } from '../../../../components/globalConfigurations/types'
 import { SSOProvider } from './constants'
+
+import { SwitchItemValues } from '@Config/constants'
 
 export interface SSOConfigDTO {
     active: boolean

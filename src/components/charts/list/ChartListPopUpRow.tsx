@@ -15,6 +15,7 @@
  */
 
 import { useState } from 'react'
+
 import {
     Button,
     ButtonStyleType,
@@ -28,12 +29,13 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import Helm from '../../../assets/icons/ic-helmchart.svg?react'
+import { TOAST_INFO } from '../../../config/constantMessaging'
+import { getNonEditableChartRepoText } from '../../common'
 import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { updateChartProviderList, updateSyncSpecificChart } from '../charts.service'
-import Helm from '../../../assets/icons/ic-helmchart.svg?react'
 import { ChartListType } from '../charts.types'
-import { getNonEditableChartRepoText } from '../../common'
-import { TOAST_INFO } from '../../../config/constantMessaging'
 
 const ChartListPopUpRow = ({
     index,
@@ -57,7 +59,7 @@ const ChartListPopUpRow = ({
         setSpecificChartRefetchLoading(true)
 
         try {
-            updateSyncSpecificChart(payload).then((response) => {
+            updateSyncSpecificChart(payload).then(() => {
                 setSpecificChartRefetchLoading(false)
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
@@ -81,7 +83,7 @@ const ChartListPopUpRow = ({
             setToggleLoading(true)
 
             await updateChartProviderList(payload)
-                .then((response) => {
+                .then(() => {
                     toggleEnabled(_toggleEnabled)
                     setToggleLoading(false)
                 })

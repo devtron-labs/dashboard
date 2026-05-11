@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { Component } from 'react'
+
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import React, { Component } from 'react'
+
 import Close from '../../assets/icons/ic-close.svg?react'
 
 export interface DeleteCVEModalProps {
@@ -106,6 +108,7 @@ export class DeleteCVEModal extends Component<DeleteCVEModalProps, any> {
                     </p>
                     <ul>
                         {this.state.clusters.map((cluster) => {
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                             return <li>{cluster.name}</li>
                         })}
                     </ul>

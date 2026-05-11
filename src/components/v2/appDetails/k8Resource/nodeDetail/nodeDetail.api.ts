@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, post, put, trash, HandleDownloadProps, createResourceRequestBody, GVKType, ResourceManifestDTO, SelectedResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    createResourceRequestBody,
+    DeploymentAppTypes,
+    GVKType,
+    HandleDownloadProps,
+    post,
+    put,
+    ResourceManifestDTO,
+    SelectedResourceType,
+    trash,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
 import { AppDetails, AppType } from '../../appDetails.type'
 import {
@@ -24,6 +35,7 @@ import {
     ParamsType,
 } from './nodeDetail.type'
 import { getDeploymentType, getK8sResourcePayloadAppType } from './nodeDetail.util'
+
 import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -65,7 +77,12 @@ export const getManifestResource = (
         selectedResource,
     })
 
-    if (!isResourceBrowserView && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP) {
+    if (
+        !isResourceBrowserView &&
+        window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+        getDesiredAndLiveManifest &&
+        ad.appType === AppType.DEVTRON_APP
+    ) {
         return getDesiredAndLiveManifest(requestData, signal)
     }
 
@@ -127,7 +144,7 @@ export function createBody(appDetails: AppDetails, nodeName: string, nodeType: s
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
 
-    let requestBody = {
+    const requestBody = {
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -158,14 +175,14 @@ export const getResourceRequestPayload = ({
 }: GetResourceRequestPayloadParamsType) => {
     return isResourceBrowserView
         ? createResourceRequestBody({
-            clusterId: selectedResource.clusterId,
-            group: selectedResource.group,
-            version: selectedResource.version,
-            kind: selectedResource.kind as GVKType['Kind'],
-            name: selectedResource.name,
-            namespace: selectedResource.namespace,
-            updatedManifest,
-        })
+              clusterId: selectedResource.clusterId,
+              group: selectedResource.group,
+              version: selectedResource.version,
+              kind: selectedResource.kind as GVKType['Kind'],
+              name: selectedResource.name,
+              namespace: selectedResource.namespace,
+              updatedManifest,
+          })
         : createBody(appDetails, nodeName, nodeType, updatedManifest)
 }
 

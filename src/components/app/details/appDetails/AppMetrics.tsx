@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import Tippy from '@tippyjs/react'
+import moment, { Moment } from 'moment'
+import React, { useEffect, useState } from 'react'
+import { Link, NavLink, useParams } from 'react-router-dom'
+
 import {
     ComponentSizeType,
     DateTimePicker,
@@ -29,41 +33,39 @@ import {
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, Link, NavLink } from 'react-router-dom'
-import moment, { Moment } from 'moment'
-import Tippy from '@tippyjs/react'
+
+import DropDownIcon from '../../../../assets/icons/appstatus/ic-chevron-down.svg?react'
+import Fullscreen from '../../../../assets/icons/ic-fullscreen-2.svg?react'
+import GraphIcon from '../../../../assets/icons/ic-graph.svg?react'
+import OpenInNew from '../../../../assets/icons/ic-open-in-new.svg?react'
+import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
+import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
+import { APP_COMPOSE_STAGE, DEFAULTK8SVERSION, getAppComposeURL, ModuleNameMap, URLS } from '../../../../config'
+import { getHostURLConfiguration } from '../../../../services/service'
+import { InValidHostUrlWarningBlock } from '../../../common'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import { getDataSourceDetailsFromEnvironment, isDatasourceHealthy } from './appDetails.service'
 import {
-    getIframeSrc,
-    ThroughputSelect,
-    isK8sVersionValid,
-    LatencySelect,
-    AppInfo,
-    getAppMetricsPresetOptions,
-} from './utils'
-import {
-    ChartTypes,
+    AppDetailsPathParams,
     AppMetricsTab,
     AppMetricsTabType,
     ChartType,
-    StatusTypes,
+    ChartTypes,
     StatusType,
-    AppDetailsPathParams,
+    StatusTypes,
 } from './appDetails.type'
-import { GraphModal, GraphModalProps } from './GraphsModal'
-import { InValidHostUrlWarningBlock } from '../../../common'
-import GraphIcon from '../../../../assets/icons/ic-graph.svg?react'
-import Fullscreen from '../../../../assets/icons/ic-fullscreen-2.svg?react'
-import OpenInNew from '../../../../assets/icons/ic-open-in-new.svg?react'
-import { getAppComposeURL, APP_COMPOSE_STAGE, DEFAULTK8SVERSION, ModuleNameMap, URLS } from '../../../../config'
-import { getDataSourceDetailsFromEnvironment, isDatasourceHealthy } from './appDetails.service'
-import { getHostURLConfiguration } from '../../../../services/service'
-import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
-import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
-import DropDownIcon from '../../../../assets/icons/appstatus/ic-chevron-down.svg?react'
-import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
+import { GraphModal, GraphModalProps } from './GraphsModal'
 import { GrafanaPresetOptionHandlerType } from './types'
+import {
+    AppInfo,
+    getAppMetricsPresetOptions,
+    getIframeSrc,
+    isK8sVersionValid,
+    LatencySelect,
+    ThroughputSelect,
+} from './utils'
 
 export const AppMetrics: React.FC<{
     appName: string

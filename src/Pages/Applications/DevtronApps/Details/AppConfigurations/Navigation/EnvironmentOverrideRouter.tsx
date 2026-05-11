@@ -38,8 +38,6 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICStamp from '@Icons/ic-stamp.svg?react'
-
 import Add from '../../../../../../assets/icons/ic-add.svg?react'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
 import { URLS } from '../../../../../../config'
@@ -47,6 +45,8 @@ import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../.
 import { AppConfigState, JobEnvOverrideRouteProps } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 import { renderNavItem } from './Navigation.helper'
+
+import ICStamp from '@Icons/ic-stamp.svg?react'
 
 const EnvOverridesHelpNote = () => (
     <div className="fs-12 fw-4 lh-18">
@@ -131,7 +131,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
 
     const showDeleteDialog = (pipeline): JSX.Element => {
         const workFlows = workflowsRes?.workflows
-        let workFlow
+        let workFlow: (typeof workFlows)[number]['tree'][number] | undefined
         if (pipeline) {
             workFlows?.forEach((workflow) => {
                 workflow.tree.forEach((ciPipeline) => {
@@ -229,6 +229,7 @@ const EnvironmentOverrideRouter = ({
                 getEnvironmentListMinPublic(),
                 getCIConfig(Number(appId), isTemplateView),
             ])
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             const list = []
             envListMinRes?.forEach((env) => {
                 if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {

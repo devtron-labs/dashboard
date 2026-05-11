@@ -16,12 +16,12 @@
 
 import { useParams } from 'react-router-dom'
 
+import { K8S_EMPTY_GROUP } from '../Constants'
+import { NodeDetailURLParams } from './types'
+
 import NodeDetails from '@Components/ClusterNodes/NodeDetails'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-
-import { K8S_EMPTY_GROUP } from '../Constants'
-import { NodeDetailURLParams } from './types'
 
 const NodeDetailWrapper = ({
     getTabId,

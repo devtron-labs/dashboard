@@ -15,18 +15,19 @@
  */
 
 import {
-    multiSelectStyles,
     CIBuildType,
     DockerConfigOverrideType,
     getUniqueId,
+    multiSelectStyles,
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { deepEqual } from '../common'
-import { CIBuildArgType, CIConfigDiffType, CurrentMaterialType } from './types'
 import { RootBuildContext } from './ciConfigConstant'
+import { CIBuildArgType, CIConfigDiffType, CurrentMaterialType } from './types'
 
 export const _multiSelectStyles = {
     ...multiSelectStyles,

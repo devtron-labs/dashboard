@@ -17,10 +17,11 @@
 // @ts-nocheck
 
 import React, { useEffect } from 'react'
-import { showError, Progressing, PopupMenu, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
-import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types'
+
+import { PopupMenu, Progressing, showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 
 import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
+import { OptionGroupProps, SelectAsync, SelectComposition, SelectProps } from './types'
 
 import './select.css'
 

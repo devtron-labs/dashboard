@@ -24,16 +24,12 @@ import {
     GroupedOptionsType,
     InfrastructureManagementAppListType,
     OptionType,
-    SelectPickerOptionType,
     SERVER_MODE,
+    SelectPickerOptionType,
     stringComparatorBySortOrder,
     TableColumnType,
     Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ArgoCDAppIcon from '@Icons/ic-argocd-app.svg'
-import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
-import { Cluster } from '@Services/service.types'
 
 import {
     AppListFilterKey,
@@ -48,6 +44,10 @@ import {
     useFilterOptionsProps,
 } from './AppListType'
 import { APP_LIST_HEADERS, ENVIRONMENT_HEADER_TIPPY_CONTENT, SELECT_CLUSTER_TIPPY } from './Constants'
+
+import ArgoCDAppIcon from '@Icons/ic-argocd-app.svg'
+import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
+import { Cluster } from '@Services/service.types'
 
 export const getAppTabNameFromAppType = (appType: InfrastructureManagementAppListType) => {
     switch (appType) {

@@ -14,38 +14,40 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { type JSX, useEffect, useState } from 'react'
+import { generatePath, Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    Drawer,
-    noop,
-    DockerConfigOverrideType,
-    Reload,
-    WorkflowNodeType,
     CommonNodeAttr,
-    WorkflowType,
-    ToastVariantType,
-    ToastManager,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    DockerConfigOverrideType,
+    Drawer,
+    noop,
+    Progressing,
+    Reload,
     ROUTER_URLS,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    WorkflowNodeType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath, Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+
 import CloseIcon from '../../assets/icons/ic-cross.svg?react'
-import EditIcon from '../../assets/icons/ic-pencil.svg?react'
 import DeleteIcon from '../../assets/icons/ic-delete-interactive.svg?react'
-import { Workflow } from '../workflowEditor/Workflow'
+import EditIcon from '../../assets/icons/ic-pencil.svg?react'
 import { URLS } from '../../config'
-import { CIConfigDiffViewProps, GetCIPipelineModalURLType, ProcessedWorkflowsType } from './types'
-import { CIBuildConfigDiff } from './CIBuildConfigDiff'
-import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
-import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
+import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
+import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
 import { getLinkedCIPipelineURL } from '../common'
+import { Workflow } from '../workflowEditor/Workflow'
+import { CIBuildConfigDiff } from './CIBuildConfigDiff'
+import { CIConfigDiffViewProps, GetCIPipelineModalURLType, ProcessedWorkflowsType } from './types'
 
 export default function CIConfigDiffView({
     parentReloading,
@@ -98,6 +100,7 @@ export default function CIConfigDiffView({
 
     const wfCIMap = new Map<number, number>()
     // NOTE: Even on reload after delete the data is going to be stale since we are not updating configOverrideWorkflows
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
     const _configOverridenWorkflows = configOverrideWorkflows.filter((_cwf) => {
         const _ciPipeline = configOverridenPipelines?.find((_ci) => _ci.id === _cwf.ciPipelineId)
         if (_ciPipeline) {
@@ -151,6 +154,7 @@ export default function CIConfigDiffView({
     }
 
     const renderViewBuildPipelineRow = (_wfId: number, nodes: CommonNodeAttr[]): JSX.Element => {
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const ciNode = nodes?.find((node) => node.type == WorkflowNodeType.CI)
 
         return (
@@ -186,6 +190,7 @@ export default function CIConfigDiffView({
             return _wf.height
         }
 
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const ci = _wf.nodes.find((node) => node.type == 'CI')
         if (ci) {
             const _cdNamesList =

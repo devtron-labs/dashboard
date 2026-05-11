@@ -26,7 +26,6 @@ import {
 
 import { Routes } from '../../config'
 import { ScanListPayloadType, SecurityScansTabMultiFilterKeys } from './SecurityScansTab/types'
-import { SEVERITY_FILTER_OPTIONS } from './Vulnerabilities/constants'
 import {
     CVEControlList,
     CVEControlListPayload,
@@ -34,6 +33,7 @@ import {
     ResourceLevel,
     SecurityScanListResponseType,
 } from './security.types'
+import { SEVERITY_FILTER_OPTIONS } from './Vulnerabilities/constants'
 
 export function getClusterListMinNoAuth() {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`

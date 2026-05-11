@@ -16,20 +16,23 @@
 
 import { Component } from 'react'
 import { generatePath, Link } from 'react-router-dom'
+
 import {
     DeploymentAppTypes,
-    stopPropagation,
     getWorkflowNodeStatusTitle,
     Icon,
     ROUTER_URLS,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
-import { TriggerStatus } from '../../../../config'
-import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
-import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import { getNodeSideHeadingAndClass } from './workflow.utils'
-import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
+
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '@Pages/App/Configurations'
+
+import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
+import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
+import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { TriggerStatus } from '../../../../config'
+import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
+import { getNodeSideHeadingAndClass } from './workflow.utils'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     gitOpsRepoWarningCondition =

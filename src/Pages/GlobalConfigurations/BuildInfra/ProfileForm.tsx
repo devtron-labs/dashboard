@@ -60,6 +60,7 @@ const ProfileForm: FunctionComponent = () => {
     const showActionItems = !isLoading && !responseError && profileInput?.configurations
 
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: Used for form submission and to prevent default enter key behavior, which is to submit the form
         <form
             className="h-100 flexbox-col build-infra pl pr pt pb dc__content-space bg__primary"
             onKeyDown={handleKeyDown}

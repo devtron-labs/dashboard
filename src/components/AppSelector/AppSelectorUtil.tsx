@@ -27,7 +27,7 @@ import { getAppListMin } from '../../services/service'
 import { AppListOptionsTypes } from './AppSelector.types'
 import { appSelectorGAEvents, getMinCharSearchPlaceholderGroup } from './constants'
 
-let timeoutId
+let timeoutId: ReturnType<typeof setTimeout>
 
 export const appListOptions = ({
     inputValue,

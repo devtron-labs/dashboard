@@ -15,8 +15,10 @@
  */
 
 import React, { Component, createContext, PropsWithChildren } from 'react'
+
 import dropdown from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { isArrayEqual } from '../helpers/utils'
+
 // id must exist
 const TypeaheadContext = createContext({
     name: '',

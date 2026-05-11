@@ -28,12 +28,13 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
 
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { DeployImageModalProps } from './details/triggerView/DeployImageModal/types'
+
+import { APP_TYPE } from '@Config/constants'
 
 interface CDModalProps {
     cdPipelineId?: number

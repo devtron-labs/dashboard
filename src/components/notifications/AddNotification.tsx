@@ -15,69 +15,73 @@
  */
 
 import { Component } from 'react'
-import {
-    showError,
-    Progressing,
-    getTeamListMin,
-    Checkbox,
-    ClearIndicator,
-    MultiValueRemove,
-    RadioGroup,
-    RadioGroupItem,
-    CHECKBOX_VALUE,
-    getIsRequestAborted,
-    CiPipelineSourceConfig,
-    SelectAllGroupedResourceIdentifiers,
-    ToastVariantType,
-    ToastManager,
-    NO_MATCHING_RESULT,
-    TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS,
-    TYPE_TO_SEE_MATCHING_RESULTS,
-    SourceTypeMap,
-    ROUTER_URLS,
-    Button,
-    ButtonStyleType,
-    ButtonVariantType,
-    ComponentSizeType,
-    Icon,
-    IconsProps,
-    ButtonComponentType,
-    stopPropagation,
-    BreadCrumb,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import SESConfigModal from './SESConfigModal'
-import { SlackConfigModal } from './SlackConfigModal'
-import { Select, validateEmail, ErrorBoundary, importComponentFromFELibrary } from '../common'
-import Slack from '../../assets/icons/slack-logo.svg?react'
+
+import {
+    BreadCrumb,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
+    CHECKBOX_VALUE,
+    Checkbox,
+    CiPipelineSourceConfig,
+    ClearIndicator,
+    ComponentSizeType,
+    getIsRequestAborted,
+    getTeamListMin,
+    Icon,
+    IconsProps,
+    MultiValueRemove,
+    NO_MATCHING_RESULT,
+    Progressing,
+    RadioGroup,
+    RadioGroupItem,
+    ROUTER_URLS,
+    SelectAllGroupedResourceIdentifiers,
+    SourceTypeMap,
+    showError,
+    stopPropagation,
+    ToastManager,
+    ToastVariantType,
+    TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS,
+    TYPE_TO_SEE_MATCHING_RESULTS,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import Add from '../../assets/icons/ic-add.svg?react'
+import Webhook from '../../assets/icons/ic-CIWebhook.svg?react'
 import Filter from '../../assets/icons/ic-filter.svg?react'
 import Folder from '../../assets/icons/img-folder-empty.svg?react'
-import Webhook from '../../assets/icons/ic-CIWebhook.svg?react'
-import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service'
+import Slack from '../../assets/icons/slack-logo.svg?react'
 import { ViewType } from '../../config'
+import { ErrorBoundary, importComponentFromFELibrary, Select, validateEmail } from '../common'
+import { getAddNotificationInitData, getChannelConfigs, getPipelines, saveNotification } from './notifications.service'
 import {
-    multiSelectStyles,
     DropdownIndicator,
-    Option,
-    MultiValueContainer,
-    renderPipelineTypeIcon,
     getNotificationEvents,
+    MultiValueContainer,
+    multiSelectStyles,
+    Option,
+    renderPipelineTypeIcon,
 } from './notifications.util'
+import SESConfigModal from './SESConfigModal'
+import { SlackConfigModal } from './SlackConfigModal'
 import './notifications.scss'
+
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
+import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import {
-    AddNotificationsProps,
     AddNotificationState,
+    AddNotificationsProps,
     EMAIL_AGENT,
     FilterOptions,
     NotificationPipelineType,
 } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
+
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
-import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
 
 const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
@@ -817,13 +821,13 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                   } else {
                                                       return (
                                                           <div className="flexbox flex-justify dc__gap-12">
-                                                              <div key={event} className="icon-dim-24"></div>
+                                                              <div key={event} className="icon-dim-24" />
                                                           </div>
                                                       )
                                                   }
                                               })
-                                            : 
-                                                  getNotificationEvents(isEnterprise).filter((event) => {
+                                            : getNotificationEvents(isEnterprise)
+                                                  .filter((event) => {
                                                       return (
                                                           row.type !== NotificationPipelineType.CI ||
                                                           (event !== EVENTS.CONFIG_APPROVAL &&

@@ -21,12 +21,12 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { ClusterMapListSortableKeys, ClusterMapListSortableTitle } from '../constants'
 import { parseSearchParams } from '../utils'
 import ClusterListRow from './ClusterListRow'
 import { ClusterListTypes } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const KubeConfigRowCheckbox = importComponentFromFELibrary('KubeConfigRowCheckbox', null, 'function')
 

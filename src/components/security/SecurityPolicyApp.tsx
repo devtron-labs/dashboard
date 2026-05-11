@@ -15,14 +15,19 @@
  */
 
 import { Component } from 'react'
-import {  NavLink, useParams } from 'react-router-dom'
-import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
-import { SecurityPolicyEdit } from './SecurityPolicyEdit'
-import { getAppListMin } from '../../services/service'
+import { NavLink, useParams } from 'react-router-dom'
+
+import { Progressing, Reload, SearchBar, showError, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ViewType } from '../../config'
+import { getAppListMin } from '../../services/service'
+import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { SecurityPolicyAppState } from './security.types'
 
-class SecurityPolicyApp extends Component<{ params: ReturnType< typeof useParams<{ appId: string }>>}, SecurityPolicyAppState> {
+class SecurityPolicyApp extends Component<
+    { params: ReturnType<typeof useParams<{ appId: string }>> },
+    SecurityPolicyAppState
+> {
     constructor(props) {
         super(props)
         this.state = {

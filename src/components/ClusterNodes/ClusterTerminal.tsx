@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { ILink, Terminal } from '@xterm/xterm'
 import { type JSX, useEffect, useRef, useState } from 'react'
 import { generatePath, useLocation, useNavigate } from 'react-router-dom'
-import { ILink, Terminal } from '@xterm/xterm'
 
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     get,
     getIsRequestAborted,
@@ -37,7 +37,6 @@ import {
     TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ResourceBrowserTabsId } from '@Components/ResourceBrowser/Constants'
 import { getClusterTerminalParamsData } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
@@ -48,8 +47,8 @@ import {
     TERMINAL_TEXT,
     TerminalWrapperType,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
+import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 import { menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
 import ClusterEvents from './ClusterEvents'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
@@ -76,6 +75,8 @@ import {
     SocketConnectionType,
 } from './constants'
 import { ClusterTerminalType } from './types'
+
+import { ResourceBrowserTabsId } from '@Components/ResourceBrowser/Constants'
 
 const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 

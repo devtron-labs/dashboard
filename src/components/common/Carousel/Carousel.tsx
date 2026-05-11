@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect } from 'react'
+
 import ArrowIcon from '../../../assets/icons/ic-arrow-left.svg?react'
 import './Carousel.scss'
 

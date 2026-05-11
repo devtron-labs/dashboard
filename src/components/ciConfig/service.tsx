@@ -16,23 +16,30 @@
 
 import {
     AppConfigProps,
-    get,
     GetTemplateAPIRouteType,
-    post,
+    get,
     getTemplateAPIRoute,
+    post,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
 
 export function saveCIConfig(request, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CI_BUILD_CONFIG, queryParams: { id: String(request.appId) } })
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CI_BUILD_CONFIG,
+              queryParams: { id: String(request.appId) },
+          })
         : Routes.CI_CONFIG_GET
     return post(URL, request)
 }
 
 export function updateCIConfig(request, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CI_BUILD_CONFIG, queryParams: { id: String(request.appId) } })
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CI_BUILD_CONFIG,
+              queryParams: { id: String(request.appId) },
+          })
         : Routes.CI_CONFIG_UPDATE
     return post(URL, request)
 }

@@ -15,14 +15,16 @@
  */
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { useNavigate, useLocation, NavLink } from 'react-router-dom'
-import ICExpand from '@Icons/ic-expand.svg?react'
-import { getTreeNodesWithChild } from './useNodeTreeReducer'
-import IndexStore from '../../index.store'
-import { useSharedState } from '../../../utils/useSharedState'
-import { AggregationKeys, getAggregator, NodeType, iNode, iNodes, NodeStatus } from '../../appDetails.type'
-import { URLS } from '../../../../../config'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+
 import ErrorImage from '../../../../../assets/icons/misc/errorInfo.svg?react'
+import { URLS } from '../../../../../config'
+import { useSharedState } from '../../../utils/useSharedState'
+import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type'
+import IndexStore from '../../index.store'
+import { getTreeNodesWithChild } from './useNodeTreeReducer'
+
+import ICExpand from '@Icons/ic-expand.svg?react'
 
 const NodeTreeComponent = ({
     clickedNodes,
@@ -73,7 +75,8 @@ const NodeTreeComponent = ({
         } else {
             navigate({
                 pathname:
-                    pathname.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _filteredTreeNodes, isDevtronApp),
+                    pathname.replace(/\/$/, '') +
+                    getRedirectURLExtension(clickedNodes, _filteredTreeNodes, isDevtronApp),
                 search: location.search,
             })
         }
@@ -89,9 +92,11 @@ const NodeTreeComponent = ({
     const makeNodeTree = (treeNodes: iNodes, parents: string[], isDevtronApp) => {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
+                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                 <div key={index + treeNode.name}>
                     {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === NodeType.Pod) ? (
                         <button
+                            type="button"
                             className="dc__transparent flex dc__gap-2 fs-13 lh-20 fw-6 py-6 px-0 w-100 left"
                             onClick={(e) => handleClickOnNodes(treeNode.name.toLowerCase(), parents, e)}
                         >
@@ -212,6 +217,7 @@ export function generateSelectedNodes(
                 }
             }
         }
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         parents.forEach((_p) => clickedNodes.set(_p.toLowerCase(), ''))
         if (
             !isDevtronApp &&
@@ -238,6 +244,7 @@ export function generateSelectedNodes(
             )
 
             if (_clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase())) {
+                // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                 _clickedNodes.forEach((_node) => clickedNodes.delete(_node))
             }
             /** End: Revisit this */

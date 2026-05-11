@@ -1,8 +1,8 @@
 import { getUrlWithSearchParams, MetricsInfoCardProps, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { TIME_WINDOW } from '@PagesDevtron2.0/Shared/types'
-
 import { GlanceMetricKeys, WorkflowOverviewMetricKeys } from './types'
+
+import { TIME_WINDOW } from '@PagesDevtron2.0/Shared/types'
 
 export const GLANCE_METRICS_CARDS_CONFIG: Record<
     GlanceMetricKeys,

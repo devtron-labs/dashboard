@@ -18,11 +18,11 @@ import { ReactElement } from 'react'
 
 import { DeploymentAppTypes, GenericSectionErrorStateProps } from '@devtron-labs/devtron-fe-common-lib'
 
+import { MigrateToDevtronFormState } from '../cdPipeline.types'
+
 import ICArgoCDApp from '@Icons/ic-argocd-app.svg?react'
 import ICDefaultChart from '@Icons/ic-default-chart.svg?react'
 import ICFluxCDApp from '@Icons/ic-fluxcd-app.svg?react'
-
-import { MigrateToDevtronFormState } from '../cdPipeline.types'
 
 export const GENERIC_SECTION_ERROR_STATE_COMMON_PROPS: Readonly<
     Pick<GenericSectionErrorStateProps, 'rootClassName' | 'description'>

@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
+import React, { Fragment, useEffect, useState } from 'react'
+
 import {
     CIBuildType,
     ConditionalWrap,
-    showError,
     Progressing,
+    showError,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CIAdvancedConfig from './CIAdvancedConfig'
-import BuildContext from './BuildContext'
-import CISelfDockerBuildOption from './CISelfDockerBuildOption'
-import CICreateDockerfileOption from './CICreateDockerfileOption'
-import CIBuildpackBuildOptions from './CIBuildpackBuildOptions'
-import { CI_BUILDTYPE_ALIAS } from './CIConfig.utils'
-import { getBuildpackMetadata, getDockerfileTemplate } from './service'
-import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
-import { RootBuildContext, CI_BUILD_TYPE_OPTIONS } from './ciConfigConstant'
-import { FEATURE_DISABLED } from '../../config/constantMessaging'
+
 import CheckIcon from '../../assets/icons/ic-check.svg?react'
 import ErrorIcon from '../../assets/icons/ic-error-exclamation.svg?react'
+import { FEATURE_DISABLED } from '../../config/constantMessaging'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
+import BuildContext from './BuildContext'
+import CIAdvancedConfig from './CIAdvancedConfig'
+import CIBuildpackBuildOptions from './CIBuildpackBuildOptions'
+import { CI_BUILDTYPE_ALIAS } from './CIConfig.utils'
+import CICreateDockerfileOption from './CICreateDockerfileOption'
+import CISelfDockerBuildOption from './CISelfDockerBuildOption'
+import { CI_BUILD_TYPE_OPTIONS, RootBuildContext } from './ciConfigConstant'
+import { getBuildpackMetadata, getDockerfileTemplate } from './service'
+import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
 
 export default function CIDockerFileConfig({
     configOverrideView,

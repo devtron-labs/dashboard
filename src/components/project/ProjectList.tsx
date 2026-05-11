@@ -15,20 +15,23 @@
  */
 
 import React, { Component } from 'react'
+
 import {
-    showError,
-    Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    ToastVariantType,
+    Progressing,
+    showError,
     ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config'
-import { createProject, getProjectList } from './service'
-import { Project } from './Project'
-import { ProjectListState, ProjectType, ProjectListProps } from './types'
+
 import Add from '../../assets/icons/ic-add.svg?react'
+import { ViewType } from '../../config'
+import { Project } from './Project'
+import { createProject, getProjectList } from './service'
+import { ProjectListProps, ProjectListState, ProjectType } from './types'
 import './project.scss'
+
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {

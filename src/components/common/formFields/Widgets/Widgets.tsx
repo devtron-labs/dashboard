@@ -28,7 +28,7 @@ export const StyledProgressBar = ({
     progress,
 }: StyledProgressBarProps) => {
     const [progressValue, setProgressValue] = useState(progress ?? 0)
-    let progressTimer = null
+    let progressTimer: ReturnType<typeof setTimeout> = null
 
     useEffect(() => {
         progressTimer = setInterval(() => {
@@ -70,6 +70,7 @@ export const StyledProgressBar = ({
 }
 
 export const ShortcutKeyBadge = ({ rootClassName, shortcutKey, onClick }: ShortcutKeyBadgeProps) => (
+    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
     <div
         className={`shortcut-key-badge dc__position-abs flex fs-12 lh-20 icon-dim-20 bg__primary cn-7 fw-6 dc__border br-2 ${
             rootClassName ?? ''

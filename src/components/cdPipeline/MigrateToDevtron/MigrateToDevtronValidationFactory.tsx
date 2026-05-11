@@ -32,11 +32,7 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArgoCDApp from '@Icons/ic-argocd-app.svg?react'
-import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
-import ICDefaultChart from '@Icons/ic-default-chart.svg?react'
-import ICFluxCDApp from '@Icons/ic-fluxcd-app.svg?react'
-import { URLS } from '@Config/routes'
+import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 import {
     AddClusterFormPrefilledInfoType,
     AddEnvironmentFormPrefilledInfoType,
@@ -45,7 +41,6 @@ import {
     ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY,
     ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
 } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
-import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import {
@@ -59,6 +54,12 @@ import {
     getTargetNamespaceTooltipInfo,
     renderGitOpsNotConfiguredDescription,
 } from './utils'
+
+import { URLS } from '@Config/routes'
+import ICArgoCDApp from '@Icons/ic-argocd-app.svg?react'
+import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
+import ICDefaultChart from '@Icons/ic-default-chart.svg?react'
+import ICFluxCDApp from '@Icons/ic-fluxcd-app.svg?react'
 
 import './MigrateToDevtronValidationFactory.scss'
 

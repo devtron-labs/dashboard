@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
+
 import { BASE_ROUTES, useStateFilters } from '@devtron-labs/devtron-fe-common-lib'
-import ScopedVariablesLoader from './ScopedVariablesLoader'
-import ScopedVariablesEditor from './ScopedVariablesEditor'
-import SavedVariablesContent from './SavedVariablesContent'
-import Descriptor from './Descriptor'
+
 import { importComponentFromFELibrary, useFileReader } from '../common'
 import { FileReaderStatus } from '../common/hooks/types'
-import { parseIntoYAMLString } from './utils'
+import Descriptor from './Descriptor'
+import SavedVariablesContent from './SavedVariablesContent'
+import ScopedVariablesEditor from './ScopedVariablesEditor'
+import ScopedVariablesLoader from './ScopedVariablesLoader'
 import { SavedVariablesViewProps, VariableType } from './types'
+import { parseIntoYAMLString } from './utils'
 
 const ScopedVariablesEnvironmentDetailsForm = importComponentFromFELibrary(
     'ScopedVariablesEnvironmentDetailsForm',
@@ -128,7 +130,9 @@ export default function SavedVariablesView({
                 {ScopedVariablesEnvironmentDetailsForm &&
                     window._env_.FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE && (
                         <Route
-                            path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.SCOPED_VARIABLES.ENVIRONMENT_DETAILS}
+                            path={
+                                BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.SCOPED_VARIABLES.ENVIRONMENT_DETAILS
+                            }
                             element={
                                 <ScopedVariablesEnvironmentDetailsForm reloadScopedVariables={reloadScopedVariables} />
                             }

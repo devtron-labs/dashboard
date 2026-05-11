@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-export async function fetchWithFullRoute(
-    fullRoute: string,
-    type: string,
-    data?: object,
-    signal?: AbortSignal,
-): Promise<any> {
+export function fetchWithFullRoute(fullRoute: string, type: string, data?: object, signal?: AbortSignal): Promise<any> {
     const options = {
         method: type,
         headers: {

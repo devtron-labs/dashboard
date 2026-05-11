@@ -15,12 +15,22 @@
  */
 
 import { useEffect, useState } from 'react'
-import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
-import { AddWorkflowProps } from './types'
-import { createWorkflow, updateWorkflow } from './service'
-import { getWorkflowList } from '../../services/service'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { useParams } from 'react-router-dom'
+
+import {
+    CustomInput,
+    DialogForm,
+    DialogFormSubmit,
+    ServerErrors,
+    showError,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { getWorkflowList } from '../../services/service'
+import { createWorkflow, updateWorkflow } from './service'
+import { AddWorkflowProps } from './types'
 
 const AddWorkflow = ({ onClose, getWorkflows, isTemplateView }: AddWorkflowProps) => {
     const params = useParams<{ appId: string; workflowId: string }>()
@@ -94,14 +104,8 @@ const AddWorkflow = ({ onClose, getWorkflows, isTemplateView }: AddWorkflowProps
     const title = params.workflowId ? 'Edit Workflow' : 'Add Workflow'
 
     return (
-        <DialogForm
-            title={title}
-            className=""
-            close={onClose}
-            onSave={saveWorkflow}
-            isLoading={false}
-            closeOnESC
-        >
+        <DialogForm title={title} className="" close={onClose} onSave={saveWorkflow} isLoading={false} closeOnESC>
+            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
             <label className="form__row">
                 <CustomInput
                     name="workflow-name"
@@ -114,7 +118,7 @@ const AddWorkflow = ({ onClose, getWorkflows, isTemplateView }: AddWorkflowProps
                     error={showValidationError && !isNameValid && REQUIRED_FIELD_MSG}
                 />
             </label>
-            <DialogFormSubmit tabIndex={2}>Save</DialogFormSubmit>
+            <DialogFormSubmit tabIndex={0}>Save</DialogFormSubmit>
         </DialogForm>
     )
 }

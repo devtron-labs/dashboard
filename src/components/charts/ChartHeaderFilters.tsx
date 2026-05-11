@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { CHECKBOX_VALUE, Checkbox, SearchBar, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useNavigate } from 'react-router-dom'
+
+import { CHECKBOX_VALUE, Checkbox, handleAnalyticsEvent, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+
 import Grid from '../../assets/icons/ic-grid-view.svg?react'
 import List from '../../assets/icons/ic-list-view.svg?react'
-import { QueryParams } from './constants'
 import { ChartSourceAccordion } from './ChartSourceAccordion'
-import { CHART_KEYS } from './constants'
 import { ChartHeaderFilterProps } from './charts.types'
+import { CHART_KEYS, QueryParams } from './constants'
+
 import { importComponentFromFELibrary } from '@Components/common'
 
 const ChartCategoryFilters = importComponentFromFELibrary('ChartCategoryFilters', null, 'function')
@@ -42,6 +44,7 @@ const ChartHeaderFilter = ({
     const location = useLocation()
 
     const handleSelection = (event): void => {
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const chartRepoList = selectedChartRepo.filter((e) => e.value != event.value)
         setSelectedChartRepo(chartRepoList)
         if (selectedChartRepo.length === chartRepoList.length) {
@@ -60,7 +63,7 @@ const ChartHeaderFilter = ({
         const registryId = searchParams.get(QueryParams.RegistryId)
         const chartCategoryIdsCsv = searchParams.get(QueryParams.ChartCategoryId)
 
-        let isOCIRegistry
+        let isOCIRegistry: boolean
         if (key === CHART_KEYS.CHART_REPO) {
             const paramsChartRepoIds = selected
                 .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
@@ -217,7 +220,7 @@ const ChartHeaderFilter = ({
                         autoFocus: true,
                     }}
                     dataTestId="chart-store-search-box"
-                    keyboardShortcut='/'
+                    keyboardShortcut="/"
                 />
             </div>
             <div className="pl-12 pr-12 flexbox-col flex-grow-1 dc__overflow-auto">
@@ -225,6 +228,7 @@ const ChartHeaderFilter = ({
                     <span className="fs-12 cn-6 fw-6 lh-20">VIEW AS</span>
                     <div className="cursor flex dc__gap-8">
                         <button
+                            type="button"
                             onClick={setGrid}
                             className={`flex dc__unset-button-styles ${isGrid ? 'scb-5' : ''}`}
                             data-testid="chart-store-grid-view"
@@ -232,6 +236,7 @@ const ChartHeaderFilter = ({
                             <Grid className="icon-dim-20" />
                         </button>
                         <button
+                            type="button"
                             onClick={setList}
                             className={`flex dc__unset-button-styles ${!isGrid ? 'scb-5' : ''}`}
                             data-testid="chart-store-list-view"

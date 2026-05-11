@@ -16,9 +16,9 @@
 
 import { DeploymentConfigDiffRadioSelect, Icon, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICWarning from '@Icons/ic-warning.svg?react'
-
 import { PipelineConfigDiffStatusTileProps } from './types'
+
+import ICWarning from '@Icons/ic-warning.svg?react'
 
 import './PipelineConfigDiff.scss'
 

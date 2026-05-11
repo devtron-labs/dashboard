@@ -31,8 +31,6 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AppFilterTabs } from '@Components/ApplicationGroup/Constants'
-
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
@@ -40,6 +38,8 @@ import { AppSelector } from '../../AppSelector'
 import { useAppContext } from '../../common'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { AppHeaderType } from '../types'
+
+import { AppFilterTabs } from '@Components/ApplicationGroup/Constants'
 
 import './appDetails/appDetails.scss'
 import './app.scss'
@@ -154,15 +154,13 @@ export const AppHeader = ({
     )
 
     const renderAppDetailsTabs = () => {
-        const showWarning =
-            MandatoryTagWarning &&
-            MandatoryTagWarning({
-                labelTags: appMetaInfo?.labels,
-                handleAddTag: noop,
-                selectedProjectId: appMetaInfo?.projectId,
-                showOnlyIcon: true,
-                reloadProjectTags: reloadMandatoryProjects,
-            })
+        const showWarning = MandatoryTagWarning?.({
+            labelTags: appMetaInfo?.labels,
+            handleAddTag: noop,
+            selectedProjectId: appMetaInfo?.projectId,
+            showOnlyIcon: true,
+            reloadProjectTags: reloadMandatoryProjects,
+        })
 
         const tabs: TabProps[] = [
             {

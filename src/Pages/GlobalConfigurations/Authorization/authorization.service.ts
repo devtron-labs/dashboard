@@ -38,15 +38,11 @@ import {
     UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ChartGroup } from '@Components/charts/charts.types'
-import { JobList } from '@Components/Jobs/Types'
-import { AppIdWorkflowNamesMapping, Cluster, ProjectFilteredApps } from '@Services/service.types'
-
 import { importComponentFromFELibrary } from '../../../components/common'
 import { Routes } from '../../../config'
+import { getUserGroupsPayload } from './libUtils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { EnvironmentsListType, ProjectsListType } from './Shared/components/AppPermissions/types'
-import { getUserGroupsPayload } from './libUtils'
 import {
     GetUserAccessAllWorkflowsParams,
     GetUserPermissionResourcesPayload,
@@ -64,6 +60,10 @@ import {
     UserRole,
 } from './types'
 import { transformPermissionGroupResponse, transformUserResponse } from './utils'
+
+import { ChartGroup } from '@Components/charts/charts.types'
+import { JobList } from '@Components/Jobs/Types'
+import { AppIdWorkflowNamesMapping, Cluster, ProjectFilteredApps } from '@Services/service.types'
 
 const getUserStatusAndTimeoutPayload: (
     userStatus: UserStatus,

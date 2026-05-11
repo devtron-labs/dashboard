@@ -15,6 +15,8 @@
  */
 
 import type { JSX } from 'react'
+import { GroupBase } from 'react-select'
+
 import {
     ComponentSizeType,
     Environment,
@@ -22,9 +24,9 @@ import {
     SelectPicker,
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { createClusterEnvGroup } from '../common'
 import { EnvironmentListType, EnvironmentWithSelectPickerType } from './types'
-import { GroupBase } from 'react-select'
 
 export const EnvironmentList = ({
     isBuildStage,
@@ -46,6 +48,7 @@ export const EnvironmentList = ({
         envList.reduce((acc, _elm) => {
             if (_elm.label) {
                 return [
+                    // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                     ...acc,
                     {
                         label: `Cluster: ${_elm.label}`,
@@ -60,7 +63,9 @@ export const EnvironmentList = ({
             }
 
             return [
+                // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                 ...acc,
+                // biome-ignore lint/correctness/noUnsafeOptionalChaining: Legacy
                 ..._elm?.options?.map((_option) => {
                     return {
                         ..._option,
@@ -73,11 +78,11 @@ export const EnvironmentList = ({
         }, [])
 
     const getSelectedEnvironment = (): EnvironmentWithSelectPickerType => {
-        let _selectedEnv: EnvironmentWithSelectPickerType = {
+        const _selectedEnv: EnvironmentWithSelectPickerType = {
             ...selectedEnv,
             label: selectedEnv?.name,
             value: selectedEnv?.id, // assuming the whole object is set as value
-            startIcon: !isBuildStage ? <Icon name='ic-env' size={18} color={null} /> : null,
+            startIcon: !isBuildStage ? <Icon name="ic-env" size={18} color={null} /> : null,
         }
 
         return _selectedEnv

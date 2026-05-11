@@ -15,16 +15,26 @@
  */
 
 import { useContext, useEffect, useState } from 'react'
-import { CIBuildConfigType, CIBuildType, KeyValueTableProps, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import {
+    CIBuildConfigType,
+    CIBuildType,
+    KeyValueTableProps,
+    noop,
+    OptionType,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import CIConfig from '../ciConfig/CIConfig'
-import DockerArgs from './DockerArgs'
-import CustomImageTags from './CustomImageTags'
+import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import CustomImageTags from './CustomImageTags'
+import DockerArgs from './DockerArgs'
 import '../ciConfig/CIConfig.scss'
+
 import { ComponentStates } from './types'
 
 export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateView }: AdvancedConfigOptionsProps) {
@@ -67,7 +77,7 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
         setTargetPlatforms(_targetPlatforms)
 
         let _customTargetPlatform = false
-        let _selectedPlatforms = []
+        let _selectedPlatforms: SelectPickerOptionType<string, string>[] = []
         if (_targetPlatforms?.length > 0) {
             _selectedPlatforms = _targetPlatforms.split(',').map((platformValue) => {
                 if (!_customTargetPlatform) {
@@ -148,6 +158,7 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
             }
 
             // No need to pass the id in the request
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
                 delete _form.dockerConfigOverride.ciBuildConfig.id
             }
@@ -169,6 +180,7 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
     return (
         <div className="ci-advanced-options__container mb-20">
             <hr />
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div className="ci-advanced-options__toggle flex left pointer" onClick={toggleAdvancedOptions}>
                 <div>
                     <h2 className="fs-14 fw-6 cn-9 lh-20 m-0">Override Options</h2>

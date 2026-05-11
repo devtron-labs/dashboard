@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
+
 import {
-    showError,
-    DetailsProgressing,
-    YAMLStringify,
     CodeEditor,
-    versionComparatorBySortOrder,
+    ComponentSizeType,
+    DetailsProgressing,
     MODES,
     SelectPicker,
     SelectPickerVariantType,
-    ComponentSizeType,
+    showError,
+    versionComparatorBySortOrder,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
+import Lock from '../../../../assets/icons/ic-locked.svg?react'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import Lock from '../../../../assets/icons/ic-locked.svg?react'
+import {
+    GROUPED_OPTION_LABELS,
+    ListToTraverseKeys,
+    MANIFEST_OUTPUT_INFO_TEXT,
+    MANIFEST_OUTPUT_TIPPY_CONTENT,
+} from './ChartValuesView.constants'
 import {
     ChartGroupOptionType,
     ChartKind,
@@ -40,13 +49,6 @@ import {
     CompareWithDropdownProps,
     ValuesForDiffStateType,
 } from './ChartValuesView.type'
-import Edit from '../../../../assets/icons/ic-pencil.svg?react'
-import {
-    GROUPED_OPTION_LABELS,
-    ListToTraverseKeys,
-    MANIFEST_OUTPUT_INFO_TEXT,
-    MANIFEST_OUTPUT_TIPPY_CONTENT,
-} from './ChartValuesView.constants'
 import { getFormattedChartValuesDiffOptionLabel } from './ChartValuesView.utils'
 
 const CompareWithDropdown = ({

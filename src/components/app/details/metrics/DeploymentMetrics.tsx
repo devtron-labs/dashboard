@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
 import { useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
-import moment from 'moment'
 
 import {
     Chart,
@@ -35,16 +35,14 @@ import {
     UpdateDateRangeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Success from '@Icons/appstatus/healthy.svg?react'
-import Fail from '@Icons/ic-error-exclamation.svg?react'
-import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
-import Deploy from '@Icons/ic-nav-rocket.svg?react'
 import SelectEnvImage from '@Images/ic-empty-dep-metrics@2x.png'
 
 import { ViewType } from '../../../../config'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import { useAppContext } from '../../../common'
 import { BenchmarkModal } from './BenchmarkModal'
+import { DeploymentTable } from './DeploymentTable'
+import { DeploymentTableModal } from './DeploymentTableModal'
 import { getDeploymentMetrics } from './deploymentMetrics.service'
 import {
     DeploymentMetricsProps,
@@ -60,9 +58,12 @@ import {
     ReferenceLineLegend,
     renderCategoryTag,
 } from './deploymentMetrics.util'
-import { DeploymentTable } from './DeploymentTable'
-import { DeploymentTableModal } from './DeploymentTableModal'
 import { getRangeShortcutOptions } from './utils'
+
+import Success from '@Icons/appstatus/healthy.svg?react'
+import Fail from '@Icons/ic-error-exclamation.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import Deploy from '@Icons/ic-nav-rocket.svg?react'
 
 import './deploymentMetrics.scss'
 

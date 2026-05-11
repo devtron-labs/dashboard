@@ -18,9 +18,9 @@ import {
     APIOptions,
     AppConfigProps,
     BaseURLParams,
+    GetTemplateAPIRouteType,
     get,
     getTemplateAPIRoute,
-    GetTemplateAPIRouteType,
     getUrlWithSearchParams,
     post,
     put,
@@ -28,9 +28,6 @@ import {
     trash,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { Routes } from '@Config/constants'
-import { getChartReferencesForAppAndEnv } from '@Services/service'
 
 import {
     DeploymentTemplateConfigDTO,
@@ -40,6 +37,9 @@ import {
     UpdateEnvironmentDTPayloadType,
 } from './types'
 import { addGUISchemaIfAbsent } from './utils'
+
+import { Routes } from '@Config/constants'
+import { getChartReferencesForAppAndEnv } from '@Services/service'
 
 export const updateBaseDeploymentTemplate = (
     request: UpdateBaseDTPayloadType,

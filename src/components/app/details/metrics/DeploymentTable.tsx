@@ -15,14 +15,16 @@
  */
 
 import { Component } from 'react'
-import { Progressing, DEFAULT_BASE_PAGE_SIZE, Pagination } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import Sort from '../../../../assets/icons/ic-sort.svg?react'
-import SortUp from '../../../../assets/icons/ic-sort-up.svg?react'
-import SortDown from '../../../../assets/icons/ic-sort-down.svg?react'
+
+import { DEFAULT_BASE_PAGE_SIZE, Pagination, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+
 import Success from '../../../../assets/icons/appstatus/healthy.svg?react'
-import Help from '../../../../assets/icons/ic-info-outline.svg?react'
 import Fail from '../../../../assets/icons/ic-error-exclamation.svg?react'
+import Help from '../../../../assets/icons/ic-info-outline.svg?react'
+import Sort from '../../../../assets/icons/ic-sort.svg?react'
+import SortDown from '../../../../assets/icons/ic-sort-down.svg?react'
+import SortUp from '../../../../assets/icons/ic-sort-up.svg?react'
 import { ViewType } from '../../../../config'
 
 export interface DeploymentTableCellType {

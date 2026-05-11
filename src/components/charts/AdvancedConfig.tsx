@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    VisibleModal,
-    useAsync,
-    CustomInput,
     CodeEditor,
+    CustomInput,
     MarkDown,
     MODES,
+    Progressing,
+    showError,
+    useAsync,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useNavigate } from 'react-router-dom'
-import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
-import { getEnvironmentListMin } from '../../services/service'
-import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
-import { getReadme, getChartValues } from './charts.service'
-import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
-import LockIcon from '../../assets/icons/ic-locked.svg?react'
+
 import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
+import LockIcon from '../../assets/icons/ic-locked.svg?react'
+import { getEnvironmentListMin } from '../../services/service'
+import { Info, mapByKey, Pencil, Select, useKeyDown } from '../common'
 import { getSavedValuesListURL } from './charts.helper'
+import { getChartValues, getReadme } from './charts.service'
+import { AdvancedConfigHelpers, ChartGroupEntry, ChartValuesNativeType, ChartVersionType } from './charts.types'
+import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 
 interface AdvancedConfigProps extends AdvancedConfigHelpers {
     chart: ChartGroupEntry

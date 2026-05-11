@@ -199,7 +199,7 @@ export const getDisplayTextByName = (
 
     const count = selectedOptionsLength === optionsLength ? 'All' : selectedOptionsLength
 
-    let Item
+    let Item: string
     if (name === DirectPermissionFieldName.apps) {
         Item = 'application'
     } else if (name === DirectPermissionFieldName.jobs) {

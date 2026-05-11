@@ -14,42 +14,46 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback, useRef, RefObject, useLayoutEffect } from 'react'
+import React, { RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import YAML from 'yaml'
+
 import {
-    showError,
-    OptionType,
-    DeploymentAppTypes,
-    useWindowSize,
     APPROVAL_MODAL_TYPE,
-    YAMLStringify,
-    DEFAULT_SECRET_PLACEHOLDER,
     ApiResourceGroupType,
-    PluginDetailServiceParamsType,
-    PipelineBuildStageType,
-    useMainContext,
-    SelectPickerOptionType,
+    DEFAULT_SECRET_PLACEHOLDER,
+    DeploymentAppTypes,
     InfoBlock,
+    OptionType,
+    PipelineBuildStageType,
+    PluginDetailServiceParamsType,
+    ROUTER_URLS,
+    SelectPickerOptionType,
+    showError,
     ToastManager,
     ToastVariantType,
-    ROUTER_URLS,
+    useMainContext,
+    useWindowSize,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
-import { Link } from 'react-router-dom'
+
 import { getDateInMilliseconds } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
+
+import { PATTERNS } from '../../../config/constants'
+import { getAggregator } from '../../app/details/appDetails/utils'
+import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
+import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { K8SObjectType } from '../../ResourceBrowser/Types'
 import {
-    getAggregator as getAppDetailsAggregator,
     AggregationKeys,
+    getAggregator as getAppDetailsAggregator,
     NodeType,
 } from '../../v2/appDetails/appDetails.type'
-import { getAggregator } from '../../app/details/appDetails/utils'
-import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
-import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { PATTERNS } from '../../../config/constants'
+import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
+
 import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
-import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
 import { HOST_ERROR_MESSAGE } from '@Config/constantMessaging'
 
 let module
@@ -65,7 +69,7 @@ export type IntersectionOptions = {
 
 export function validateEmail(email) {
     const re =
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     const result = re.test(String(email).toLowerCase())
     return result
 }
@@ -636,7 +640,7 @@ export function getRandomString() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
-export const sortObjectArrayAlphabetically = <T extends unknown>(arr: T[], compareKey: string) => {
+export const sortObjectArrayAlphabetically = <T,>(arr: T[], compareKey: string) => {
     return arr.sort((a, b) => a[compareKey].localeCompare(b[compareKey]))
 }
 

@@ -7,6 +7,7 @@ import {
 
 import { CVEDetails } from './types'
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const SeverityCellComponent = ({ row }: TableCellComponentProps<CVEDetails, FiltersTypeEnum.URL, {}>) => {
     const { data } = row
     return (
@@ -16,6 +17,7 @@ export const SeverityCellComponent = ({ row }: TableCellComponentProps<CVEDetail
     )
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const CVENameCellComponent = ({ row }: TableCellComponentProps<CVEDetails, FiltersTypeEnum.URL, {}>) => {
     const { data } = row
     return (

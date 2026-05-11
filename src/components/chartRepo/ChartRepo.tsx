@@ -14,48 +14,51 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenNotAuthorized,
-    Checkbox,
-    CHECKBOX_VALUE,
-    useAsync,
-    RadioGroup,
-    RadioGroupItem,
-    CustomInput,
-    FeatureTitleWithInfo,
-    ToastManager,
-    ToastVariantType,
-    PasswordField,
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
-    ERROR_STATUS_CODE,
+    CustomInput,
     DeleteConfirmationModal,
+    ERROR_STATUS_CODE,
+    ErrorScreenNotAuthorized,
+    FeatureTitleWithInfo,
+    PasswordField,
+    Progressing,
+    RadioGroup,
+    RadioGroupItem,
     ROUTER_URLS,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { NavLink } from 'react-router-dom'
-import Add from '@Icons/ic-add.svg?react'
-import Helm from '@Icons/ic-helmchart.svg?react'
-import Trash from '@Icons/ic-delete-interactive.svg?react'
-import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
 
+import { CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, CHART_REPO_TYPE, HEADER_TEXT, PATTERNS } from '../../config'
+import { getChartRepoList } from '../../services/service'
 import { useForm } from '../common'
+import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
+    deleteChartRepo,
     saveChartProviderConfig,
     updateChartProviderConfig,
     validateChartRepoConfiguration,
-    deleteChartRepo,
 } from './chartRepo.service'
-import { getChartRepoList } from '../../services/service'
-import { PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, HEADER_TEXT } from '../../config'
-import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
+
+import Add from '@Icons/ic-add.svg?react'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Helm from '@Icons/ic-helmchart.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
 import './chartRepo.scss'
+
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import { ChartRepoType } from './chartRepo.types'

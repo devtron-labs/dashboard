@@ -33,11 +33,11 @@ import {
     TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-
 import { ClusterListType } from '../ClusterNodes/types'
 import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
 import { K8sResourceListFilterType } from './ResourceList/types'
+
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]

@@ -19,14 +19,14 @@ import {
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SORT_ORDER_OPTIONS, TIME_WINDOW, TIME_WINDOW_SELECT_OPTIONS } from '@PagesDevtron2.0/Shared'
-
 import { DEFAULT_TIME_WINDOW } from '../constants'
 import { SectionLoadingCard } from '../Overview.components'
 import { useGetPipelineInsights } from '../services'
 import { PipelineType } from '../types'
 import { MIN_X_AXIS_VALUE } from './constants'
 import { getPipelineInsightsChartTooltip } from './tooltipUtils'
+
+import { SORT_ORDER_OPTIONS, TIME_WINDOW, TIME_WINDOW_SELECT_OPTIONS } from '@PagesDevtron2.0/Shared'
 
 const PipelineTriggerInsights = () => {
     const [selectedWindowOption, setSelectedWindowOption] = useState(DEFAULT_TIME_WINDOW)

@@ -22,18 +22,18 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArrowSquareIn from '@Icons/ic-arrow-square-in.svg?react'
-import ICDeleteInteractive from '@Icons/ic-delete-interactive.svg?react'
-import ICFileCode from '@Icons/ic-file-code.svg?react'
-import ICFilePlay from '@Icons/ic-file-play.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import {
     CompareConfigViewEditorConfigType,
     ConfigHeaderTabConfigType,
     ConfigToolbarProps,
     GetConfigToolbarPopupConfigProps,
 } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICArrowSquareIn from '@Icons/ic-arrow-square-in.svg?react'
+import ICDeleteInteractive from '@Icons/ic-delete-interactive.svg?react'
+import ICFileCode from '@Icons/ic-file-code.svg?react'
+import ICFilePlay from '@Icons/ic-file-play.svg?react'
 
 const getToggleViewLockedKeysPopupButtonConfig = importComponentFromFELibrary(
     'getToggleViewLockedKeysPopupButtonConfig',

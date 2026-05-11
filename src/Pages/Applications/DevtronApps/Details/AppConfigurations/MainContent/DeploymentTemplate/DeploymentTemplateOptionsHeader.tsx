@@ -15,8 +15,8 @@
  */
 
 import {
-    ComponentSizeType,
     CONFIGURATION_TYPE_OPTIONS,
+    ComponentSizeType,
     ConfigurationType,
     InvalidYAMLTippyWrapper,
     SegmentedControl,

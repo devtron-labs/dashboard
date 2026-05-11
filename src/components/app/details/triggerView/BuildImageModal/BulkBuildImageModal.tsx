@@ -25,6 +25,19 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { getModuleConfigured } from '../../appDetails/appDetails.service'
+import { IGNORE_CACHE_INFO } from '../Constants'
+import BuildImageHeader from './BuildImageHeader'
+import GitInfoMaterial from './GitInfoMaterial'
+import { getCIMaterials } from './service'
+import { BulkBuildImageModalProps, GitInfoMaterialProps } from './types'
+import {
+    getBulkCIDataPromiseGetterList,
+    getBulkCIErrorMessage,
+    getTriggerCIPromiseListAndSkippedResources,
+    parseBulkCIResponseIntoBulkCIDetail,
+} from './utils'
+
 import { BulkCIDetailType, ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
 import {
     BULK_CI_BUILD_STATUS,
@@ -38,19 +51,6 @@ import TriggerResponseModalBody, {
 } from '@Components/ApplicationGroup/Details/TriggerView/TriggerResponseModal'
 import { importComponentFromFELibrary } from '@Components/common'
 import { SOURCE_NOT_CONFIGURED } from '@Config/constants'
-
-import { getModuleConfigured } from '../../appDetails/appDetails.service'
-import { IGNORE_CACHE_INFO } from '../Constants'
-import BuildImageHeader from './BuildImageHeader'
-import GitInfoMaterial from './GitInfoMaterial'
-import { getCIMaterials } from './service'
-import { BulkBuildImageModalProps, GitInfoMaterialProps } from './types'
-import {
-    getBulkCIDataPromiseGetterList,
-    getBulkCIErrorMessage,
-    getTriggerCIPromiseListAndSkippedResources,
-    parseBulkCIResponseIntoBulkCIDetail,
-} from './utils'
 
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
@@ -451,6 +451,7 @@ const BulkBuildImageModal = ({
 
     return (
         <Drawer position="right" width="1080px" onClose={handleClose} onEscape={handleClose}>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
             <div
                 className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
                 onClick={stopPropagation}

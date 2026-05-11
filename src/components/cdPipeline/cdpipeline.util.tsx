@@ -15,10 +15,15 @@
  */
 
 import { components } from 'react-select'
+
 import {
     BuildStageVariable,
+    ConditionDataTableHeaderKeys,
+    ConditionDetails,
     ConditionType,
     DeploymentAppTypes,
+    InputOutputVariablesHeaderKeys,
+    PipelineFormType,
     PluginType,
     RefVariableStageType,
     RefVariableType,
@@ -26,23 +31,21 @@ import {
     StepType,
     TaskErrorObj,
     VariableType,
-    PipelineFormType,
-    InputOutputVariablesHeaderKeys,
-    ConditionDataTableHeaderKeys,
-    ConditionDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
 import Search from '../../assets/icons/ic-nav-search.svg?react'
+import { DELETE_ACTION } from '../../config'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { PipelineFormDataErrorType } from '../workflowEditor/types'
-import { DELETE_ACTION } from '../../config'
-import { PluginVariableType } from '@Components/ciPipeline/types'
 import {
     MigrateArgoAppToCDPipelineRequiredBasePayloadType,
     MigrateArgoAppToCDPipelineRequiredPayloadType,
     MigrateToDevtronFormState,
 } from './cdPipeline.types'
 import { SELECTED_FORM_STATE_KEY } from './MigrateToDevtron'
+
+import { PluginVariableType } from '@Components/ciPipeline/types'
 
 export const DropdownIndicator = (props) => {
     return (

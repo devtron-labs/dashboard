@@ -15,67 +15,71 @@
  */
 
 import { Component, createContext, type JSX } from 'react'
-import { Route, Routes, generatePath } from 'react-router-dom'
+import { generatePath, Route, Routes } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    WorkflowNodeType,
-    PipelineType,
     AddPipelineType,
-    SelectedNode,
-    InfoIconTippy,
-    ToastVariantType,
-    ToastManager,
-    TARGET_IDS,
-    CIPipelineNodeType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     ChangeCIPayloadType,
-    WorkflowOptionsModal,
+    CIPipelineNodeType,
     URLS as CommonURLS,
+    ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    deleteWorkflow,
-    InfoBlock,
     DocLink,
-    Button,
-    Icon,
-    ComponentSizeType,
-    ButtonVariantType,
-    ButtonStyleType,
-    handleAnalyticsEvent,
+    deleteWorkflow,
+    ErrorScreenManager,
     GenericEmptyState,
-    SearchBar,
-    URL_FILTER_KEYS,
     GenericFilterEmptyState,
+    handleAnalyticsEvent,
+    Icon,
+    InfoBlock,
+    InfoIconTippy,
+    PipelineType,
+    Progressing,
     ROUTER_URLS,
+    SearchBar,
+    SelectedNode,
+    showError,
+    TARGET_IDS,
+    ToastManager,
+    ToastVariantType,
+    URL_FILTER_KEYS,
+    WorkflowNodeType,
+    WorkflowOptionsModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
-import { URLS, AppConfigStatus, ViewType } from '../../config'
-import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '../common'
-import { Workflow } from './Workflow'
+
+import ICClose from '../../assets/icons/ic-close.svg?react'
+import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
+import ICHelpOutline from '../../assets/img/ic-help-outline.svg?react'
+import { AppConfigStatus, URLS, ViewType } from '../../config'
+import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import {
     getAllChildDownstreams,
     getCreateWorkflows,
     getMaxYFromFirstLevelDownstream,
 } from '../app/details/triggerView/workflow.service'
-import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'
-import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
-import ICHelpOutline from '../../assets/img/ic-help-outline.svg?react'
-import ICClose from '../../assets/icons/ic-close.svg?react'
-import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
+import { InValidHostUrlWarningBlock, importComponentFromFELibrary } from '../common'
+import AddWorkflow from './CreateWorkflow'
+import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
+import { Workflow } from './Workflow'
 import './workflowEditor.scss'
-import CDSuccessModal from './CDSuccessModal'
-import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
-import nojobs from '../../assets/img/empty-joblist.webp'
-import CDPipeline from '../cdPipeline/CDPipeline'
-import EmptyWorkflow from './EmptyWorkflow'
-import { WorkflowCreate } from '../app/details/triggerView/config'
-import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
-import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
+
 import { CreateCICDPipeline } from '@Pages/App/Configurations'
+
+import nojobs from '../../assets/img/empty-joblist.webp'
+import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
+import { WorkflowCreate } from '../app/details/triggerView/config'
+import CDPipeline from '../cdPipeline/CDPipeline'
+import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
+import CDSuccessModal from './CDSuccessModal'
+import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
+import EmptyWorkflow from './EmptyWorkflow'
 import { getAnalyticsAction } from './utils'
 
 export const pipelineContext = createContext<PipelineContext>(null)

@@ -20,13 +20,13 @@ import ReactSelect, { SelectInstance } from 'react-select'
 
 import { OptionType, ReactSelectInputAction, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 
-import { setAppGroupFilterInLocalStorage } from '@Components/common'
-
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { appGroupAppSelectorStyle } from './AppGroup.utils'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { AppFilterTabs } from './Constants'
+
+import { setAppGroupFilterInLocalStorage } from '@Components/common'
 
 const AppGroupAppFilter = () => {
     const {

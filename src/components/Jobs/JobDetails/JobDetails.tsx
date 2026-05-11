@@ -37,12 +37,12 @@ import {
 import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { APP_TYPE } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
+import { AppSelector } from '../../AppSelector'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
 import Overview from '../../app/Overview/Overview'
 import { getAppMetaInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
-import { AppSelector } from '../../AppSelector'
 import { ErrorBoundary } from '../../common'
 
 import '../../app/details/appDetails/appDetails.scss'

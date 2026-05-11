@@ -15,7 +15,14 @@
  */
 
 import moment from 'moment'
+
+import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AppListViewType } from '../app/config'
+import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { OrderBy, SortBy } from '../app/list/types'
+import { JobPipeline } from '../app/types'
+import { handleUTCTime } from '../common'
 import {
     JobCIPipeline,
     JobListState,
@@ -25,11 +32,6 @@ import {
     JobListStatusDTO,
     JobListUrlFilters,
 } from './Types'
-import { OrderBy, SortBy } from '../app/list/types'
-import { handleUTCTime } from '../common'
-import { JobPipeline } from '../app/types'
-import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
-import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 
 export const getInitialJobListState = (payloadParsedFromUrl): JobListState => {
     return {
@@ -92,6 +94,7 @@ export const jobListModal = (jobContainers) => {
 const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
     return (
         ciPipelines?.map((ciPipeline) => {
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (ciPipeline.status.toLocaleLowerCase() == 'deployment initiated') {
                 ciPipeline.status = 'Progressing'
             }
@@ -149,7 +152,7 @@ const getLastTriggeredJob = (jobList) => {
     let selectedJob = jobList[0]
     let ms = moment(new Date(0)).valueOf()
     for (const job of jobList) {
-        const time = job.lastDeployedTime && job.lastDeployedTime.length ? job.lastDeployedTime : new Date(0)
+        const time = job.lastDeployedTime?.length ? job.lastDeployedTime : new Date(0)
         const tmp = moment(time).utc(true).subtract(5, 'hours').subtract(30, 'minutes').valueOf()
         if (tmp > ms) {
             ms = tmp
@@ -160,6 +163,7 @@ const getLastTriggeredJob = (jobList) => {
 }
 
 const handleDeploymentInitiatedStatus = (status: string): string => {
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') {
         return 'progressing'
     }

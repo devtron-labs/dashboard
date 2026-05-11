@@ -10,10 +10,6 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BulkCIDetailType } from '@Components/ApplicationGroup/AppGroup.types'
-import { CIPipelineBuildType } from '@Components/ciPipeline/types'
-import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
-
 import {
     BuildImageModalProps,
     CIPipelineMaterialDTO,
@@ -23,6 +19,10 @@ import {
     MaterialSourceProps,
     RuntimeParamsErrorState,
 } from '../types'
+
+import { BulkCIDetailType } from '@Components/ApplicationGroup/AppGroup.types'
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 
 export interface TriggerBuildSidebarProps {
     currentSidebarTab: CIMaterialSidebarType

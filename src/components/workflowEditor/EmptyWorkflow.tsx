@@ -16,11 +16,21 @@
 
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
-import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
-import { createWorkflow } from './service'
+
+import {
+    CustomInput,
+    DialogForm,
+    DialogFormSubmit,
+    ServerErrors,
+    showError,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { FILTER_NAME_REGEX } from '../ApplicationGroup/Constants'
-import { NO_WORKFLOW_NAME, INVALID_WORKFLOW_NAME, MIN_3CHARS, MAX_30CHARS, SUCCESS_CREATION } from './constants'
+import { INVALID_WORKFLOW_NAME, MAX_30CHARS, MIN_3CHARS, NO_WORKFLOW_NAME, SUCCESS_CREATION } from './constants'
+import { createWorkflow } from './service'
+import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
 
 export default function EmptyWorkflow(props: EmptyWorkflowProps) {
     const params = useParams<{ appId: string }>()
@@ -106,7 +116,7 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
         <DialogForm
             title="Create job workflow"
             className=""
-            close={(event) => props.onClose()}
+            close={(_event) => props.onClose()}
             onSave={saveWorkflow}
             isLoading={state.loading}
             closeOnESC
@@ -125,13 +135,13 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
                 <button
                     type="button"
                     className="flex cta cancel h-40 dc__align-right"
-                    onClick={(event) => props.onClose()}
+                    onClick={(_event) => props.onClose()}
                     data-testid="close-export-csv-button"
                 >
                     Cancel
                 </button>
                 <div className="flex ml-0">
-                    <DialogFormSubmit tabIndex={2}>Create Workflow</DialogFormSubmit>
+                    <DialogFormSubmit tabIndex={0}>Create Workflow</DialogFormSubmit>
                 </div>
             </div>
         </DialogForm>

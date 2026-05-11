@@ -17,8 +17,8 @@
 import { ChangeEvent } from 'react'
 
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     CustomInput,
     InputOutputVariablesHeaderKeys,
     Textarea,

@@ -15,11 +15,13 @@
  */
 
 import React, { Component } from 'react'
-import { Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { CVE_ID_NOT_FOUND, ViewType } from '../../config'
-import { AddCveModalProps, AddCveModalState, ClusterEnvironment, VulnerabilityAction } from './security.types'
+
+import { CustomInput, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+
 import Close from '../../assets/icons/ic-close.svg?react'
 import Info from '../../assets/icons/ic-info-outline.svg?react'
+import { CVE_ID_NOT_FOUND, ViewType } from '../../config'
+import { AddCveModalProps, AddCveModalState, ClusterEnvironment, VulnerabilityAction } from './security.types'
 export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
     constructor(props) {
         super(props)

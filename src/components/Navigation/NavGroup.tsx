@@ -36,6 +36,7 @@ export const NavGroup = ({
     }
 
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions: Fine for hover
         <div className="flex" onMouseEnter={() => onHover?.(true)} onMouseLeave={() => onHover?.(false)}>
             <Tooltip
                 alwaysShowTippyOnHover={showTooltip}

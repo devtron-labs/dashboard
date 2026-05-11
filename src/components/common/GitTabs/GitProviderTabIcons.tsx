@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { GitProviderTabIconsProps } from '../../gitOps/gitops.type'
+import { GitProvider } from './constants'
+
 import Bitbucket from '@Icons/git/bitbucket.svg?react'
 import ICGit from '@Icons/git/git.svg?react'
 import GitHub from '@Icons/git/github.svg?react'
 import GitLab from '@Icons/git/gitlab.svg?react'
 import ICAwsCodeCommit from '@Icons/ic-aws-codecommit.svg?react'
 import Azure from '@Icons/ic-azure.svg?react'
-
-import { GitProviderTabIconsProps } from '../../gitOps/gitops.type'
-import { GitProvider } from './constants'
 
 const GitProviderTabIcons = ({ provider, rootClassName }: GitProviderTabIconsProps) => {
     switch (provider) {

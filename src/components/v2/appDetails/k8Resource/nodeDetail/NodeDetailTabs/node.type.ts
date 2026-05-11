@@ -18,10 +18,10 @@ import { Moment } from 'moment'
 
 import { SelectedResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ResourceInfoActionPropsType } from '@Components/v2/appDetails/appDetails.type'
-
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
+
+import { ResourceInfoActionPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 export interface TerminalViewProps {
     dataTestId?: string

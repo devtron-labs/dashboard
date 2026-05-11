@@ -4,8 +4,8 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     GenericFilterEmptyState,
     Icon,
     InfoBlock,
@@ -14,14 +14,14 @@ import {
     YAMLtoJSON,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ErrorIcon from '@Icons/ic-warning-y6.svg?react'
-
 import { saveClusters, validateCluster } from '../cluster.service'
 import { DataListType, SaveClusterPayloadType, UserDetails } from '../cluster.type'
 import UserNameDropDownList from '../UseNameListDropdown'
 import KubeConfigEditor from './KubeConfigEditor'
 import { ConnectClusterViaKubeconfigProps } from './types'
 import { renderKubeConfigClusterCountInfo } from './utils'
+
+import ErrorIcon from '@Icons/ic-warning-y6.svg?react'
 
 const ConnectClusterViaKubeconfig = ({ reload, handleModalClose }: ConnectClusterViaKubeconfigProps) => {
     const [isLoading, setIsLoading] = useState(false)

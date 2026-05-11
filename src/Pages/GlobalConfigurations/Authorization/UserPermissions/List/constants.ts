@@ -16,12 +16,12 @@
 
 import { DefaultUserKey, ExportToCsvProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../../../config'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
 import { User } from '../../types'
 import { ExportUserPermissionCSVDataType } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 

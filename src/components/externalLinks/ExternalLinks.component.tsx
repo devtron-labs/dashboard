@@ -14,11 +14,29 @@
  * limitations under the License.
  */
 
-import React, { type JSX, Fragment, useEffect, useState } from 'react'
-import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
+import React, { Fragment, type JSX, useEffect, useState } from 'react'
+import { components } from 'react-select'
+
+import {
+    ConditionalWrap,
+    DocLink,
+    EMPTY_STATE_STATUS,
+    GenericEmptyState,
+    GenericFilterEmptyState,
+    getHandleOpenURL,
+    ImageWithFallback,
+    InfoBlock,
+    ROUTER_URLS,
+    SelectPicker,
+    SelectPickerVariantType,
+    TippyCustomized,
+    TippyTheme,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import LinkIcon from '../../assets/icons/ic-link.svg?react'
+import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import {
     AppLevelExternalLinksType,
     ExternalLink,
@@ -29,28 +47,15 @@ import {
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
 import { getMonitoringToolIcon, getParsedURL, MONITORING_TOOL_ICONS, onImageLoadError } from './ExternalLinks.utils'
-import {
-    TippyCustomized,
-    TippyTheme,
-    GenericEmptyState,
-    ConditionalWrap,
-    GenericFilterEmptyState,
-    SelectPicker,
-    SelectPickerVariantType,
-    getHandleOpenURL,
-    EMPTY_STATE_STATUS,
-    InfoBlock,
-    DocLink,
-    useMainContext,
-    ImageWithFallback,
-    ROUTER_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
+import { Link } from 'react-router-dom'
+
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
+
+import { AddLinkButton } from './AddLinkButton'
+
 import ICArrowOut from '@Icons/ic-arrow-square-out.svg?react'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
-import { AddLinkButton } from './AddLinkButton'
-import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
     return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" fontWeight="normal" fullWidth />

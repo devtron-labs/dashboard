@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { Component } from 'react'
 import { Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+
 import {
     CIMaterialType,
     ConsequenceType,
+    getWorkflowNodeStatusTitle,
     Icon,
     RouterV5Props,
-    getWorkflowNodeStatusTitle,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerStatus } from '../../../../config'
-import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
+
 import IcLink from '../../../../../../assets/icons/ic-link.svg?react'
-import { DEFAULT_ENV } from '../../Constants'
+import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { TriggerStatus } from '../../../../config'
+import { DEFAULT_ENV } from '../../Constants'
 import { WorkflowProps } from '../../types'
 
 export interface TriggerCINodeProps
-    extends RouterV5Props<{ appId: string }>, Pick<WorkflowProps, 'openCIMaterialModal'> {
+    extends RouterV5Props<{ appId: string }>,
+        Pick<WorkflowProps, 'openCIMaterialModal'> {
     x: number
     y: number
     height: number

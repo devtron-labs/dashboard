@@ -16,10 +16,10 @@
 
 import { GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
-import InfoFill from '@Icons/ic-info-filled.svg?react'
-
 import { AskToClearFiltersProps } from './AppListType'
 import { APP_LIST_EMPTY_STATE_MESSAGING } from './Constants'
+
+import InfoFill from '@Icons/ic-info-filled.svg?react'
 
 const AskToClearFilters = ({ clearAllFilters, showTipToSelectCluster = false }: AskToClearFiltersProps) => (
     <GenericFilterEmptyState

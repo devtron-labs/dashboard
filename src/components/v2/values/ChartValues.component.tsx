@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+
 import { DetailsProgressing, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getChartVersionDetailsV2 } from '../../charts/charts.service'
 import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'

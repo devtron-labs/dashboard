@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import DOMPurify from 'dompurify'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
-import DOMPurify from 'dompurify'
 
 import {
     capitalizeFirstLetter,
@@ -169,7 +169,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
             ) : (
                 <span
                     className="w-100 dc__ellipsis-right"
-                    /* eslint-disable react/no-danger */
+                    /* biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized via DOMPurify */
                     dangerouslySetInnerHTML={{
                         // sanitize necessary to prevent XSS attacks
                         __html: DOMPurify.sanitize(

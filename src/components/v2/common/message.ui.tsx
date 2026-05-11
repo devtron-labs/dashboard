@@ -99,6 +99,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
             </div>
             <div className={`fs-14 ${!theme ? 'text__white' : ''}`}>{msg}</div>
             {isShowActionButton && (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <div
                     className="cursor dc__underline fs-14 cb-3"
                     onClick={onActionButtonClick}

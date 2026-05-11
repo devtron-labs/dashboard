@@ -16,30 +16,33 @@
 
 import { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
+
+import {
+    ComponentSizeType,
+    CustomInput,
+    getPluginsDetail,
+    getUpdatedPluginStore,
+    PluginDataStoreType,
+    PluginType,
+    Progressing,
+    ScriptType,
+    SegmentedControl,
+    SegmentType,
+    StepType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { BuildStageVariable } from '../../config'
 import { ConditionContainerType, PluginVariableType, VariableType } from '../ciPipeline/types'
-import { VariableContainer } from './VariableContainer'
-import { ConditionContainer } from './ConditionContainer'
-import {
-    CustomInput,
-    PluginType,
-    ScriptType,
-    Progressing,
-    getPluginsDetail,
-    StepType,
-    PluginDataStoreType,
-    getUpdatedPluginStore,
-    SegmentedControl,
-    ComponentSizeType,
-    SegmentType,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { PluginDetailHeader } from './PluginDetailHeader'
-import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { ConditionContainer } from './ConditionContainer'
+import { PluginDetailHeader } from './PluginDetailHeader'
+import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { PluginDetailHeaderProps, TaskDetailComponentParamsType } from './types'
-import { filterInvalidConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
+import { VariableContainer } from './VariableContainer'
 import { VariableDataTable } from './VariableDataTable'
+
+import { filterInvalidConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
 
 export const TaskDetailComponent = () => {
     const {
@@ -90,8 +93,7 @@ export const TaskDetailComponent = () => {
 
     const handleSegmentedControlChange = (selectedSegment: SegmentType<ScriptType>) => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType =
-            selectedSegment.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType = selectedSegment.value
         setFormData(_formData)
     }
 
@@ -189,7 +191,7 @@ export const TaskDetailComponent = () => {
 
             handlePluginDataStoreUpdate(clonedPluginDataStore)
             setFormData(_formData)
-        } catch (error) {
+        } catch {
             // Do nothing
         } finally {
             setIsLoadingPluginVersionDetails(false)

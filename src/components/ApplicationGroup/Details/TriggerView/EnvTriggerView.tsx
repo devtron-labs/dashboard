@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useEffect, useState, type JSX } from 'react'
-import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { type JSX, MouseEvent, useEffect, useState } from 'react'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -24,13 +24,14 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     CommonNodeAttr,
     ComponentSizeType,
     DeploymentNodeType,
     ErrorScreenManager,
     Progressing,
+    ROUTER_URLS,
     ServerErrors,
     showError,
     sortCallback,
@@ -39,14 +40,7 @@ import {
     usePrompt,
     WorkflowNodeType,
     WorkflowType,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
-import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
-import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImageModal'
-import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
-import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
 import Dropdown from '../../../../assets/icons/ic-chevron-down.svg?react'
 import Close from '../../../../assets/icons/ic-cross.svg?react'
@@ -61,7 +55,7 @@ import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import { triggerBranchChange } from '../../../app/service'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { getWorkflowStatus, getWorkflows } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
     ProcessWorkFlowStatusType,
@@ -78,7 +72,14 @@ import {
 import BulkSourceChange from './BulkSourceChange'
 import { getSelectedNodeAndAppId } from './utils'
 
+import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
+import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
+import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImageModal'
+import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
+import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+
 import './EnvTriggerView.scss'
+
 import { EnvTriggerViewActionKey } from './types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')

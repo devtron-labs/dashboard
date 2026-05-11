@@ -44,4 +44,3 @@ export const CURL_PREFIX = `curl --location --request POST \\
 export const GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS = 'Generate token with required permissions'
 export const SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS =
     'Select or auto-generate token with required permissions'
-

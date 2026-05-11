@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { CIMaterialType, CiPipelineSourceConfig, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+
+import { MaterialSourceProps } from './types'
+
+import { getGitProviderIcon } from '@Components/common'
 import Refresh from '@Icons/ic-restore.svg?react'
 import Error from '@Icons/ic-warning.svg?react'
-import { MaterialSourceProps } from './types'
-import { CIMaterialType, CiPipelineSourceConfig, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
-import { getGitProviderIcon } from '@Components/common'
 
 export default function MaterialSource({
     material,

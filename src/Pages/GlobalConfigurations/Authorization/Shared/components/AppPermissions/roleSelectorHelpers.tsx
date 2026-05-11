@@ -18,8 +18,6 @@ import { components } from 'react-select'
 
 import { noop, RadioGroup, Tooltip, UserRoleConfig } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 import {
     RoleSelectorGroupHeaderProps,
@@ -27,6 +25,8 @@ import {
     RoleSelectorGroupParams,
     RoleSelectorOptionParams,
 } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const ToggleEnableRole = importComponentFromFELibrary('ToggleEnableRole', null, 'function')
 
@@ -173,6 +173,7 @@ export const renderOption = ({
 
     return (
         <components.Option {...props}>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 className="px-8 py-6"
                 onClick={roleType === 'baseRole' ? handleUpdateBaseRole : handleChangeAdditionalOrAccessRole}

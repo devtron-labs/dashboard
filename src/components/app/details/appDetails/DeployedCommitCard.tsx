@@ -17,9 +17,9 @@
 import { memo } from 'react'
 
 import {
+    GitProviderIcon,
     getCITriggerInfo,
     getParsedCIMaterialInfo,
-    GitProviderIcon,
     Icon,
     LoadingCard,
     Tooltip,
@@ -51,6 +51,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                 const commitMessage = lastCommit?.message ?? ''
 
                 return (
+                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents lint/correctness/useJsxKeyInIterable: Legacy
                     <div
                         data-testid="deployed-commit-card"
                         onClick={showCommitInfoDrawer}

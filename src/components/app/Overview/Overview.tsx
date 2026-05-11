@@ -14,49 +14,52 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
 import moment from 'moment'
-import { generatePath, Link, useNavigate, useLocation, useParams } from 'react-router-dom'
-import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
-import { getJobCIPipeline, getTeamList } from '../../../services/service'
+import { useEffect, useState } from 'react'
+import ReactGA from 'react-ga4'
+import { generatePath, Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    TagType,
-    stopPropagation,
-    useAsync,
-    getRandomColor,
-    EditableTextArea,
-    ToastManager,
-    ToastVariantType,
     AppStatus,
-    StatusType,
-    SegmentedControl,
     Button,
     ComponentSizeType,
-    SegmentType,
-    ROUTER_URLS,
+    EditableTextArea,
     GenericDescription,
+    getRandomColor,
+    Progressing,
+    ROUTER_URLS,
+    SegmentedControl,
+    SegmentType,
+    StatusType,
+    showError,
+    stopPropagation,
+    TagType,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactGA from 'react-ga4'
-import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
-import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
+
+import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import EditIcon from '../../../assets/icons/ic-pencil.svg?react'
 import TagIcon from '../../../assets/icons/ic-tag.svg?react'
-import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
+import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { getJobCIPipeline, getTeamList } from '../../../services/service'
+import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
+import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
-import { environmentName } from '../../Jobs/Utils'
-import { DEFAULT_ENV } from '../details/triggerView/Constants'
-import { patchApplicationNote } from '../../ClusterNodes/clusterNodes.service'
-import { editApp } from '../service'
-import { getAppConfig, getOverviewSegmentControlOptions, getResourceKindFromAppType } from './utils'
-import { EnvironmentList } from './EnvironmentList'
+
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
+import { patchApplicationNote } from '../../ClusterNodes/clusterNodes.service'
+import { environmentName } from '../../Jobs/Utils'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { DEFAULT_ENV } from '../details/triggerView/Constants'
+import { editApp } from '../service'
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
+import { EnvironmentList } from './EnvironmentList'
+import { getAppConfig, getOverviewSegmentControlOptions, getResourceKindFromAppType } from './utils'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
@@ -323,7 +326,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                         href={codeSource.redirectionUrl}
                                         target="_blank"
                                         rel="external no-referrer noreferrer"
-                                        key={`${codeSource.displayName}-${index}`}
+                                        key={`${codeSource.displayName}-${
+                                            // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                            index
+                                        }`}
                                     >
                                         {getGitProviderIcon(codeSource.redirectionUrl)}
                                         <span className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right dc__word-break">

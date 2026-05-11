@@ -18,8 +18,8 @@ import {
     AddPipelineType,
     AppConfigProps,
     ChangeCIPayloadType,
-    CiPipeline,
     CIPipelineNodeType,
+    CiPipeline,
     CommonNodeAttr,
     DeploymentAppTypes,
     MandatoryPluginDataType,
@@ -143,6 +143,7 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     reload: () => void
 }
 export interface CDNodeProps
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     extends RouterV5Props<{}>,
         Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
         Pick<CommonNodeAttr, 'showPluginWarning'>,

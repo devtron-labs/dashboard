@@ -14,85 +14,82 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { KeyboardEventHandler, useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    sortCallback,
-    ErrorScreenNotAuthorized,
-    Reload,
-    RadioGroup,
-    RadioGroupItem,
-    not,
-    CHECKBOX_VALUE,
-    Checkbox,
-    REGISTRY_TYPE_MAP,
-    ConditionalWrap,
-    RepositoryAction,
-    ServerErrors,
-    useAsync,
-    CustomInput,
-    noop,
-    InfoIconTippy,
-    DEFAULT_SECRET_PLACEHOLDER,
-    OptionType,
-    SelectPicker,
-    ToastVariantType,
-    ToastManager,
+    AuthenticationType,
+    BASE_ROUTES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    ERROR_STATUS_CODE,
-    DeleteConfirmationModal,
-    Textarea,
-    Tooltip,
+    CHECKBOX_VALUE,
+    Checkbox,
     RegistryType as CommonRegistryType,
-    RegistryIcon,
     ComponentSizeType,
+    ConditionalWrap,
+    CustomInput,
+    DEFAULT_SECRET_PLACEHOLDER,
+    DeleteConfirmationModal,
+    ERROR_STATUS_CODE,
+    ErrorScreenNotAuthorized,
+    InfoIconTippy,
+    noop,
+    not,
+    OptionType,
     PasswordField,
+    Progressing,
+    RadioGroup,
+    RadioGroupItem,
+    REGISTRY_TYPE_MAP,
     RegistryCredentialsType,
+    RegistryIcon,
+    Reload,
     RemoteConnectionType,
-    AuthenticationType,
-    BASE_ROUTES,
+    RepositoryAction,
     ROUTER_URLS,
+    SelectPicker,
+    ServerErrors,
+    showError,
+    sortCallback,
+    Textarea,
+    ToastManager,
+    ToastVariantType,
+    Tooltip,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary, Trash } from '../common'
+
+import Add from '../../assets/icons/ic-add.svg?react'
+import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
+import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
+import InfoFilled from '../../assets/icons/ic-info-filled.svg?react'
+import Info from '../../assets/icons/ic-info-outlined.svg?react'
+import Error from '../../assets/icons/ic-warning.svg?react'
+import {
+    EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
+    OCIRegistryConfigConstants,
+    OCIRegistryStorageActionType,
+    OCIRegistryStorageConfigType,
+    PATTERNS,
+    REGISTRY_TITLE_DESCRIPTION_CONTENT,
+    RegistryPayloadType,
+    RegistryStorageType,
+    RegistryType,
+    RegistryTypeName,
+} from '../../config'
+import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import {
     getClusterListMinWithoutAuth,
     getDockerRegistryList,
     validateContainerConfiguration,
 } from '../../services/service'
-import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
-import { List } from '../globalConfigurations/GlobalConfiguration'
-import {
-    RegistryTypeName,
-    OCIRegistryConfigConstants,
-    OCIRegistryStorageConfigType,
-    RegistryStorageType,
-    RegistryPayloadType,
-    REGISTRY_TITLE_DESCRIPTION_CONTENT,
-    RegistryType,
-    EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
-    PATTERNS,
-    OCIRegistryStorageActionType,
-} from '../../config'
-import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
-import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
-import Add from '../../assets/icons/ic-add.svg?react'
-import Info from '../../assets/icons/ic-info-outlined.svg?react'
-import Error from '../../assets/icons/ic-warning.svg?react'
-import InfoFilled from '../../assets/icons/ic-info-filled.svg?react'
-import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import ManageRegistry from './ManageRegistry'
-import {
-    CredentialType,
-    CustomCredential,
-    RemoteConnectionTypeRegistry,
-    SSHAuthenticationType,
-} from './dockerType'
+import { handleOnBlur, handleOnFocus, importComponentFromFELibrary, parsePassword, Trash, useForm } from '../common'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
+import { List } from '../globalConfigurations/GlobalConfiguration'
+import { CredentialType, CustomCredential, RemoteConnectionTypeRegistry, SSHAuthenticationType } from './dockerType'
+import ManageRegistry from './ManageRegistry'
+import { deleteDockerReg, saveRegistryConfig, updateRegistryConfig } from './service'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
@@ -472,13 +469,13 @@ const DockerForm = ({
         proxyUrl: [
             {
                 error: 'Please provide a valid URL. URL must start with http:// or https://',
-                regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+                regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/,
             },
         ],
         sshServerAddress: [
             {
                 error: 'Please provide a valid URL. URL must start with http:// or https://',
-                regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+                regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/,
             },
         ],
         sshUsername: [
@@ -569,7 +566,9 @@ const DockerForm = ({
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
     const [repositoryError, setRepositoryError] = useState<string>('')
-    const ChartStoreRedirectionUrl: string = id ? `${ROUTER_URLS.CHART_STORE}?registryId=${id}` : ROUTER_URLS.CHART_STORE
+    const ChartStoreRedirectionUrl: string = id
+        ? `${ROUTER_URLS.CHART_STORE}?registryId=${id}`
+        : ROUTER_URLS.CHART_STORE
 
     const customHandleChange = (e): void => {
         updateWithCustomStateValidation(e.target.name, e.target.value)
@@ -649,7 +648,7 @@ const DockerForm = ({
     }
 
     const handleOnChangeConfig = (e) => {
-        let { name, value } = e.target
+        const { name, value } = e.target
 
         if (name.startsWith('proxy')) {
             setCustomState((_state) => ({
@@ -1001,7 +1000,7 @@ const DockerForm = ({
                 }
                 break
             case RegistryType.ARTIFACT_REGISTRY:
-            case RegistryType.GCR:
+            case RegistryType.GCR: {
                 const isValidJsonFile: boolean = isValidJson(customState.password.value) || !!id
                 const isValidJsonStr: string = isValidJsonFile ? '' : 'Invalid JSON'
                 if (
@@ -1019,10 +1018,11 @@ const DockerForm = ({
                     return false
                 }
                 break
+            }
             case RegistryType.ACR:
             case RegistryType.QUAY:
             case RegistryType.GITLAB:
-            case RegistryType.OTHER:
+            case RegistryType.OTHER: {
                 let error = false
                 if (
                     registryStorageType === RegistryStorageType.OCI_PRIVATE &&
@@ -1055,6 +1055,7 @@ const DockerForm = ({
                     return false
                 }
                 break
+            }
         }
 
         // Default validation for OCI registries

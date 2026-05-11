@@ -15,12 +15,15 @@
  */
 
 import { Component } from 'react'
-import { GIT_BRANCH_NOT_CONFIGURED } from '../../../config'
+
 import { CiPipelineSourceConfig, GitProviderIcon, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../../config'
 import { StaticNodeProps } from './types'
 export class StaticNode extends Component<StaticNodeProps> {
     renderCardContent() {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className={`workflow-node workflow-node--static ${
                     this.props.branch === GIT_BRANCH_NOT_CONFIGURED ? 'cursor dashed' : ''
@@ -55,7 +58,7 @@ export class StaticNode extends Component<StaticNodeProps> {
         return (
             <foreignObject
                 className="data-hj-whitelist"
-                key={`static-${this.props.id}`}
+                key={`static-$this.props.id`}
                 x={this.props.x}
                 y={this.props.y}
                 width={this.props.width}

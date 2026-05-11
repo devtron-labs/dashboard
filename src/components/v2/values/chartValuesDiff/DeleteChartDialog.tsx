@@ -16,10 +16,11 @@
 
 import { ConfirmationModal, ConfirmationModalVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DELETE_ACTION } from '@Config/constants'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 import { DeleteChartDialogProps } from './ChartValuesView.type'
+
+import { DELETE_ACTION } from '@Config/constants'
 
 export const DeleteChartDialog = ({
     appName,

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
+import commandLineParser from 'command-line-parser'
 import { type JSX, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { useLocation, useParams } from 'react-router-dom'
 import Select from 'react-select'
-import Tippy from '@tippyjs/react'
-import commandLineParser from 'command-line-parser'
 
 import {
     AppThemeType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     getComponentSpecificThemeClass,
     Host,
     noop,
@@ -35,13 +35,6 @@ import {
     useDownload,
     useKeyDown,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import Abort from '@Icons/ic-abort.svg?react'
-import Download from '@Icons/ic-arrow-line-down.svg?react'
-import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
-import LinesIcon from '@Icons/ic-lines.svg?react'
-import PlayButton from '@Icons/ic-play-filled.svg?react'
-import StopButton from '@Icons/ic-stop-filled.svg?react'
 
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { Subject } from '../../../../../../util/Subject'
@@ -68,6 +61,13 @@ import {
 import CustomLogsModal from './CustomLogsModal/CustomLogsModal'
 import LogViewerComponent from './LogViewer.component'
 import { SelectedCustomLogFilterType } from './node.type'
+
+import Abort from '@Icons/ic-abort.svg?react'
+import Download from '@Icons/ic-arrow-line-down.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import LinesIcon from '@Icons/ic-lines.svg?react'
+import PlayButton from '@Icons/ic-play-filled.svg?react'
+import StopButton from '@Icons/ic-stop-filled.svg?react'
 
 import './nodeDetailTab.scss'
 

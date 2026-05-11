@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../config'
 import { generatePath } from 'react-router-dom'
+
+import { AppConfigProps, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '../../../config'
 
 export function getCDPipelineURL(
     appId: string,
@@ -64,7 +66,7 @@ export function getCIPipelineURL(
     return `${prefixURL}${workflowId}/${ciPipelineType}${ciPipelineSuffix}`
 }
 
-export function getExCIPipelineURL(appId: string, workflowId: string, ciPipelineId: string = null) {
+export function getExCIPipelineURL(_appId: string, workflowId: string, ciPipelineId: string = null) {
     return `${workflowId}/external-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
 }
 

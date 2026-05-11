@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import DOMPurify from 'dompurify'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
-import DOMPurify from 'dompurify'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -38,10 +38,8 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICErrorExclamation from '@Icons/ic-error-exclamation.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
+import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
 import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
@@ -52,6 +50,9 @@ import NodeActionsMenu from './NodeActionsMenu'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { K8sResourceListTableCellComponentProps } from './types'
 import { getClassNameForColumn, getFirstResourceFromKindResourceMap, getShowAIButton, getStatusClass } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICErrorExclamation from '@Icons/ic-error-exclamation.svg?react'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
@@ -302,7 +303,7 @@ const K8sResourceListTableCellComponent = ({
                             >
                                 <span
                                     className="dc__link cursor"
-                                    // eslint-disable-next-line react/no-danger
+                                    // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized via DOMPurify
                                     dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(
                                             highlightSearchText({
@@ -342,7 +343,7 @@ const K8sResourceListTableCellComponent = ({
                             <span
                                 className={getClassNameForColumn(columnName, isNodeUnschedulable)}
                                 data-testid={`${columnName}-count`}
-                                // eslint-disable-next-line react/no-danger
+                                // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized via DOMPurify
                                 dangerouslySetInnerHTML={{
                                     __html: DOMPurify.sanitize(
                                         highlightSearchText({

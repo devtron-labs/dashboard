@@ -32,16 +32,16 @@ import {
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { Routes } from '../../config'
+import { SIDEBAR_KEYS } from './Constants'
+import { ClusterDetailBaseParams, GetResourceDataType, NodeRowDetail } from './Types'
+import { parseNodeList, removeDefaultForStorageClass } from './Utils'
+
 import {
     getClusterListMinWithInstalledClusters,
     getClusterListWithInstalledClusters,
 } from '@Components/ClusterNodes/clusterNodes.service'
 import { importComponentFromFELibrary } from '@Components/common'
-
-import { Routes } from '../../config'
-import { SIDEBAR_KEYS } from './Constants'
-import { ClusterDetailBaseParams, GetResourceDataType, NodeRowDetail } from './Types'
-import { parseNodeList, removeDefaultForStorageClass } from './Utils'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
@@ -165,9 +165,9 @@ export const getClusterListing = async (
     abortControllerRef?: APIOptions['abortControllerRef'],
 ): Promise<ClusterDetail[]> => {
     try {
-        const { result: clusterList } = await (
-            minified ? getClusterListMinWithInstalledClusters : getClusterListWithInstalledClusters
-        )(abortControllerRef)
+        const { result: clusterList } = await (minified
+            ? getClusterListMinWithInstalledClusters
+            : getClusterListWithInstalledClusters)(abortControllerRef)
 
         return clusterList
     } catch (err) {

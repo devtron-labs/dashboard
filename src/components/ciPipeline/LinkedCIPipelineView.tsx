@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, useCallback } from 'react'
+import Tippy from '@tippyjs/react'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    URLS as CommonURLS,
     ConditionalWrap,
-    VisibleModal,
-    ServerErrors,
+    CustomInput,
+    DeleteCINodeButton,
+    noop,
+    Progressing,
     RadioGroup,
     RadioGroupItem,
-    CustomInput,
-    noop,
-    TriggerType,
-    URLS as CommonURLS,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
-    DeleteCINodeButton,
     ROUTER_URLS,
+    ServerErrors,
+    showError,
+    TriggerType,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import { getInitDataWithCIPipeline } from './ciPipeline.service'
-import { ViewType, URLS } from '../../config'
-import { LinkedCIPipelineViewProps, CIPipelineState } from './types'
-import { getCIPipelineURL, Info } from '../common'
-import { getWorkflowList } from '../../services/service'
+
 import Close from '../../assets/icons/ic-close.svg?react'
 import Warning from '../../assets/icons/ic-warning.svg?react'
+import { URLS, ViewType } from '../../config'
+import { getWorkflowList } from '../../services/service'
+import { getCIPipelineURL, Info } from '../common'
+import { getInitDataWithCIPipeline } from './ciPipeline.service'
 import { SourceMaterials } from './SourceMaterials'
+import { CIPipelineState, LinkedCIPipelineViewProps } from './types'
 import './ciPipeline.scss'
 
 const LinkedCIPipelineView = ({
@@ -87,6 +89,7 @@ const LinkedCIPipelineView = ({
             try {
                 const parentCiPipelineId = pipeline.parentCiPipeline
                 const { result } = await getWorkflowList(pipeline.parentAppId, null, isTemplateView)
+                // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
                 let wf
                 if (result.workflows) {
                     const allWorkflows = result.workflows
@@ -153,6 +156,7 @@ const LinkedCIPipelineView = ({
 
     const renderTriggerType = () => (
         <div className="form__row">
+            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
             <label className="form__label form__label--sentence dc__required-field">
                 When do you want the pipeline to execute?
             </label>
@@ -237,6 +241,7 @@ const LinkedCIPipelineView = ({
 
         return (
             <>
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                 <label className="form__row">
                     <CustomInput
                         name="name"
@@ -255,7 +260,7 @@ const LinkedCIPipelineView = ({
     }
 
     return (
-        <VisibleModal className="" onEscape={close} >
+        <VisibleModal className="" onEscape={close}>
             <div className="modal__body p-0 br-0 modal__body--ci">
                 {renderHeader()}
                 <div className="px-20 py-16">

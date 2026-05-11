@@ -19,11 +19,11 @@ import { generatePath, useLocation, useParams } from 'react-router-dom'
 
 import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-
 import { DeploymentConfigCompareProps, DeploymentConfigParams } from '../../AppConfig.types'
 import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 import { DeploymentConfigCompareWrapperProps } from './types'
+
+import { URLS } from '@Config/routes'
 
 const DeploymentConfigCompareWrapper = ({
     routePath,

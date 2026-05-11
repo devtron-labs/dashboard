@@ -30,9 +30,9 @@ import { Chart, ChartDetailsDTO } from '@Components/charts/charts.types'
 export type ChartSelectorOptionType = SelectPickerOptionType & Chart
 
 export enum ChartDetailsSegment {
-    'README' = 'readme',
-    'PRESET_VALUES' = 'preset-values',
-    'DEPLOYMENTS' = 'deployments',
+    README = 'readme',
+    PRESET_VALUES = 'preset-values',
+    DEPLOYMENTS = 'deployments',
 }
 
 export interface ChartDetailsSearchParams {

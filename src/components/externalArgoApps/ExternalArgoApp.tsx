@@ -15,10 +15,12 @@
  */
 
 import { Suspense } from 'react'
-import { Route, Routes, Navigate, useParams } from 'react-router-dom'
-import { Progressing, AppListConstants, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
-import EAHeaderComponent from '../v2/headers/EAHeader.component'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+
+import { AppListConstants, Progressing, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../config'
+import EAHeaderComponent from '../v2/headers/EAHeader.component'
 import ExternalArgoAppDetail from './ExternalArgoAppDetail'
 
 export default function ExternalArgoApp() {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { GroupBase } from 'react-select'
 import moment from 'moment'
+import { GroupBase } from 'react-select'
 
 import {
     ACCESS_TYPE_MAP,
@@ -40,15 +40,14 @@ import {
 import { importComponentFromFELibrary } from '../../../components/common'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
+import { DEFAULT_ACCESS_TYPE_TO_ERROR_MAP, PermissionType, ViewChartGroupPermission } from './constants'
+import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
 import {
     AccessTypeToErrorMapType,
     PermissionConfigurationFormContext,
 } from './Shared/components/PermissionConfigurationForm/types'
-import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
-import { DEFAULT_ACCESS_TYPE_TO_ERROR_MAP, PermissionType, ViewChartGroupPermission } from './constants'
-import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 import {
     APIRoleFilter,
     APIRoleFilterDto,
@@ -59,6 +58,7 @@ import {
     UserCreateOrUpdateParamsType,
     UserDto,
 } from './types'
+import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',
@@ -336,7 +336,9 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
     roleFilters: APIRoleFilter[]
     accessRoleFilters: APIRoleFilterDto[]
 } => {
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     const roleFilters = []
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     const accessRoleFilters = []
 
     directPermission.forEach((permission) => {

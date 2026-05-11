@@ -15,10 +15,14 @@
  */
 
 import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TIME_STAMP_ORDER } from './Constants'
 import { WebhookPayloadType } from './types'
 
-export function getCIWebhookRes(pipelineMaterialId: number, timestampOrder = TIME_STAMP_ORDER.DESCENDING): Promise<ResponseType<WebhookPayloadType>> {
+export function getCIWebhookRes(
+    pipelineMaterialId: number,
+    timestampOrder = TIME_STAMP_ORDER.DESCENDING,
+): Promise<ResponseType<WebhookPayloadType>> {
     const URL = `app/ci-pipeline/webhook-payload/${pipelineMaterialId}?limit=1000&offset=0&timeSort=${timestampOrder}`
     return get(URL)
 }

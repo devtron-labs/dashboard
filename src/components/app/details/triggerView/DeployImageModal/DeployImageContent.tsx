@@ -9,10 +9,10 @@ import {
     ComponentSizeType,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
+    GitCommitInfoGeneric,
     getGitCommitInfo,
     getIsApprovalPolicyConfigured,
     getIsMaterialInfoAvailable,
-    GitCommitInfoGeneric,
     handleUTCTime,
     Icon,
     ImageCard,
@@ -29,8 +29,6 @@ import {
     TriggerBlockType,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
 import { getCDNodeActionSearch } from '../TriggerView.utils'
@@ -52,6 +50,8 @@ import {
     getSequentialCDCardTitleProps,
     getTriggerArtifactInfoProps,
 } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ApprovedImagesMessage = importComponentFromFELibrary('ApprovedImagesMessage')
@@ -398,7 +398,7 @@ const DeployImageContent = ({
                 ) {
                     return (
                         <CDMaterialInfo
-                            // eslint-disable-next-line react/no-array-index-key
+                            // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                             key={index}
                             commitTimestamp={handleUTCTime(materialData.createdTime)}
                             appliedFiltersTimestamp={handleUTCTime(materialData.appliedFiltersTimestamp)}
@@ -436,7 +436,7 @@ const DeployImageContent = ({
                         _gitCommit.Message ||
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
-                        // eslint-disable-next-line react/no-array-index-key
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                         <div key={index} className="bg__primary br-4 en-2 bw-1 m-12">
                             <GitCommitInfoGeneric
                                 index={index}

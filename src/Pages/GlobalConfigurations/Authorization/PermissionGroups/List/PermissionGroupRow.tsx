@@ -23,20 +23,20 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     getRandomColor,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import Trash from '@Icons/ic-delete-interactive.svg?react'
-import Edit from '@Icons/ic-pencil.svg?react'
 
 import { deletePermissionGroup } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 import { PermissionGroupIcon } from './PermissionGroupList.component'
 import { PermissionGroupRowProps } from './types'
+
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 const PermissionGroupRow = ({
     id,

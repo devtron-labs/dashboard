@@ -14,33 +14,36 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type JSX } from 'react'
+import moment from 'moment'
+import { type JSX, useEffect, useState } from 'react'
+import Select from 'react-select'
+
 import {
-    RadioGroupItem,
-    VisibleModal,
-    RadioGroup,
-    SelectPicker,
     ComponentSizeType,
     CustomInput,
-    InfoBlock,
     DateTimePicker,
+    InfoBlock,
+    RadioGroup,
+    RadioGroupItem,
+    SelectPicker,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select from 'react-select'
-import moment from 'moment'
-import { Option } from '../../../../../common/ReactSelect.utils'
-import Close from '../../../../../../../assets/icons/ic-close.svg?react'
+
 import ClockIcon from '../../../../../../../assets/icons/ic-clock.svg?react'
+import Close from '../../../../../../../assets/icons/ic-close.svg?react'
 import Info from '../../../../../../../assets/icons/ic-info-outline-grey.svg?react'
+import { Option } from '../../../../../common/ReactSelect.utils'
 import './customLogsModal.scss'
-import { CustomLogsModalProps, InputSelectionProps } from '../../nodeDetail.type'
+
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, CUSTOM_LOGS_OPTIONS } from '../../../../../../../config'
+import { multiSelectStyles } from '../../../../../common/ReactSelectCustomization'
+import { CustomLogsModalProps, InputSelectionProps } from '../../nodeDetail.type'
 import {
     excludeFutureTimingsOptions,
     getDurationUnits,
     getTimeFromTimestamp,
     getTimeStamp,
 } from '../../nodeDetail.util'
-import { multiSelectStyles } from '../../../../../common/ReactSelectCustomization'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from '../node.type'
 
 const DropdownIndicator = () => {

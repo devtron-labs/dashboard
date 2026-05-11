@@ -15,65 +15,70 @@
  */
 
 import React, { Component, ComponentType, Fragment, SyntheticEvent } from 'react'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    RadioGroup,
-    RadioGroupItem,
     CustomInput,
-    GitOpsFieldKeyType,
-    GitOpsAuthModeType,
-    handleDisableSubmitOnEnter,
-    DEFAULT_SECRET_PLACEHOLDER,
-    FeatureTitleWithInfo,
-    ToastVariantType,
-    ToastManager,
-    useMainContext,
     CustomInputProps,
-    InfoBlock,
-    PasswordField,
+    DEFAULT_SECRET_PLACEHOLDER,
     DocLink,
     DocLinkProps,
+    ErrorScreenManager,
+    FeatureTitleWithInfo,
+    GitOpsAuthModeType,
+    GitOpsFieldKeyType,
+    handleDisableSubmitOnEnter,
+    InfoBlock,
+    PasswordField,
+    Progressing,
+    RadioGroup,
+    RadioGroupItem,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { HEADER_TEXT, repoType, ViewType } from '../../config'
 import {
-    TLSConnectionFormActionType,
-    TLSConnectionFormProps,
+    getGitOpsConfigurationList,
+    saveGitOpsConfiguration,
+    updateGitOpsConfiguration,
+    validateGitOpsConfiguration,
+} from './gitops.service'
+import { GitOpsConfig, GitOpsOrganisationIdType, GitOpsProps, GitOpsState } from './gitops.type'
+
+import {
     getCertificateAndKeyDependencyError,
     getIsTLSDataPresent,
     getTLSConnectionPayloadValues,
     importComponentFromFELibrary,
     parsePassword,
     TLSConnectionForm,
+    TLSConnectionFormActionType,
+    TLSConnectionFormProps,
 } from '@Components/common'
-import { ViewType, repoType, HEADER_TEXT } from '../../config'
-import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsOrganisationIdType } from './gitops.type'
-import {
-    updateGitOpsConfiguration,
-    saveGitOpsConfiguration,
-    getGitOpsConfigurationList,
-    validateGitOpsConfiguration,
-} from './gitops.service'
 import '../login/login.scss'
 import './gitops.scss'
-import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
+
 import Error from '../../assets/icons/ic-warning.svg?react'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
+import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import {
-    GitHost,
-    ShortGitHosts,
-    GitLink,
+    DefaultErrorFields,
     DefaultGitOpsConfig,
     DefaultShortGitOps,
+    GitHost,
+    GitLink,
     LinkAndLabelSpec,
-    DefaultErrorFields,
     PROVIDER_DOC_LINK_MAP,
+    ShortGitHosts,
 } from './constants'
-import { getGitOpsLabelText } from './utils'
-import { GitProvider } from '@Components/common/GitTabs/constants'
-import { GitProviderType } from '@Components/common/GitTabs/types'
-import { GitProviderTab } from '@Components/common/GitTabs/GitProviderTab'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
+import { getGitOpsLabelText } from './utils'
+
+import { GitProvider } from '@Components/common/GitTabs/constants'
+import { GitProviderTab } from '@Components/common/GitTabs/GitProviderTab'
+import { GitProviderType } from '@Components/common/GitTabs/types'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 const BitBucketDCCredentials = importComponentFromFELibrary('BitBucketDCCredentials', null, 'function')
@@ -692,17 +697,15 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                         validationSkipped: resp.validationSkipped,
                         showUpdateConfirmationDialog: false,
                     })
-                    {
-                        this.state.selectedRepoType === repoType.DEFAULT
-                            ? ToastManager.showToast({
-                                  variant: ToastVariantType.error,
-                                  description: 'Configuration failed',
-                              })
-                            : ToastManager.showToast({
-                                  variant: ToastVariantType.success,
-                                  description: 'Configuration saved successfully',
-                              })
-                    }
+                    this.state.selectedRepoType === repoType.DEFAULT
+                        ? ToastManager.showToast({
+                              variant: ToastVariantType.error,
+                              description: 'Configuration failed',
+                          })
+                        : ToastManager.showToast({
+                              variant: ToastVariantType.success,
+                              description: 'Configuration saved successfully',
+                          })
                 }
             })
             .catch((error) => {
@@ -1210,7 +1213,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                                     'Bitbucket Workspace ID',
                                     GitLink.BITBUCKET_WORKSPACE,
                                     'How to create workspace in bitbucket?',
-                                    true
+                                    true,
                                 )}
                             />
                         </div>

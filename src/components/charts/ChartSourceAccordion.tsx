@@ -16,12 +16,12 @@
 
 import { useState } from 'react'
 
-import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
-
-import Dropdown from '@Icons/ic-chevron-down.svg?react'
-import AddChartSource from '@Components/charts/list/AddChartSource'
+import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ChartSourceAccordionProps, SelectedChartRepositoryType } from './charts.types'
+
+import AddChartSource from '@Components/charts/list/AddChartSource'
+import Dropdown from '@Icons/ic-chevron-down.svg?react'
 
 export const ChartSourceAccordion = ({ header, options, value, onChange, dataTestId }: ChartSourceAccordionProps) => {
     const [collapsed, setCollapse] = useState<boolean>(true)
@@ -35,6 +35,7 @@ export const ChartSourceAccordion = ({ header, options, value, onChange, dataTes
 
     return (
         <div>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 dc__content-space cursor"
                 data-testid={dataTestId}
@@ -53,6 +54,7 @@ export const ChartSourceAccordion = ({ header, options, value, onChange, dataTes
                         <AddChartSource text="Add chart source" />
                     </div>
                     {options.map((option) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                         <div
                             className="dc__position-rel flex left cursor dc__hover-n50"
                             data-testid={`${option.label}-chart-repo`}

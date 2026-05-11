@@ -15,29 +15,31 @@
  */
 
 import { Moment } from 'moment'
+
 import {
-    decode,
     DeploymentAppTypes,
+    decode,
     K8sResourcePayloadAppType,
-    YAMLStringify,
     OptionsBase,
     PodMetaData,
     SelectedResourceType,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { sortOptionsByLabel } from '../../../../common'
 import {
     AppType,
     EnvType,
+    K8sResourcePayloadDeploymentType,
     LogState,
+    NodeType,
     Options,
     PodContainerOptions,
-    NodeType,
-    K8sResourcePayloadDeploymentType,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
-import { EphemeralContainerOptionsType, ManifestData, NodeDetailTab } from './nodeDetail.type'
-import { sortOptionsByLabel } from '../../../../common'
-import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { DeleteEphemeralButton } from './DeleteEphemeralButton'
+import { EphemeralContainerOptionsType, ManifestData, NodeDetailTab } from './nodeDetail.type'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {

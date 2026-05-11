@@ -59,7 +59,7 @@ export default () => {
                         if (this.indexFromLastMatch <= 1 * (a + b)) {
                             const size = Math.min(1 * (this.indexFromLastMatch - b), this.trailingLines.length)
                             bufferedLogs = bufferedLogs.concat(this.trailingLines.slice(0, size))
-                            this.trailingLines = new Array<string>()
+                            this.trailingLines = [] as string[]
                         }
                         this.indexFromLastMatch = 0
                         bufferedLogs = bufferedLogs.concat(this.buffer.concat(log))
@@ -110,7 +110,7 @@ export default () => {
             return
         }
         switch (e.data.type) {
-            case 'start':
+            case 'start': {
                 const { urls, grepTokens, pods } = e.data.payload
                 wrappers.forEach((wrapper) => {
                     try {
@@ -125,19 +125,19 @@ export default () => {
                     wrappers[index].grepTokens = grepTokens
                     const eventListener = wrappers[index].eventListener.bind(wrappers[index])
                     wrappers[index].eventSrc.addEventListener('message', eventListener)
-                    wrappers[index].eventSrc.addEventListener('open', function (ev) {
+                    wrappers[index].eventSrc.addEventListener('open', (ev) => {
                         self.postMessage(
                             { result: [], signal: 'open', readyState: wrappers[index].eventSrc.readyState },
                             null,
                         ) // eslint-disable-line no-restricted-globals
                     })
-                    wrappers[index].eventSrc.addEventListener('error', function (ev) {
+                    wrappers[index].eventSrc.addEventListener('error', (ev) => {
                         self.postMessage(
                             { result: [], signal: 'close', readyState: wrappers[index].eventSrc.readyState },
                             null,
                         ) // eslint-disable-line no-restricted-globals
                     })
-                    wrappers[index].eventSrc.addEventListener('CUSTOM_ERR_STREAM', function (ev) {
+                    wrappers[index].eventSrc.addEventListener('CUSTOM_ERR_STREAM', (ev) => {
                         self.postMessage(
                             {
                                 result: [ev.data],
@@ -149,6 +149,7 @@ export default () => {
                     })
                 }
                 break
+            }
             case 'stop':
                 // wrapper.filteredArray = logFilter.stop()
                 respond()

@@ -23,10 +23,11 @@ import {
     SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import { deploymentConfigDiffTabs } from '@Pages/Shared'
 
 import { PipelineConfigDiffProps } from './types'
+
+import { URLS } from '@Config/routes'
 
 export const PipelineConfigDiff = ({
     radioSelectConfig,

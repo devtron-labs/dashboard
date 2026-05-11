@@ -14,43 +14,58 @@
  * limitations under the License.
  */
 
-import { type JSX, Fragment, MouseEvent, useEffect, useRef, useState } from 'react'
+import Tippy from '@tippyjs/react'
+import { Fragment, type JSX, MouseEvent, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    Drawer,
-    Reload,
-    copyToClipboard,
-    CustomInput,
+    ACCESS_TYPE_MAP,
+    ActionTypes,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     ClipboardButton,
     CodeEditor,
-    TabGroup,
     ComponentSizeType,
-    ToastVariantType,
-    ToastManager,
-    ACCESS_TYPE_MAP,
-    EntityTypes,
-    Button,
-    ButtonVariantType,
-    ActionTypes,
-    InfoBlock,
+    CustomInput,
+    copyToClipboard,
     DocLink,
-    stopPropagation,
-    ButtonStyleType,
+    Drawer,
+    EntityTypes,
     Icon,
+    InfoBlock,
+    Progressing,
+    Reload,
     SelectPicker,
+    showError,
+    stopPropagation,
+    TabGroup,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+
+import Add from '../../../assets/icons/ic-add.svg?react'
 import Close from '../../../assets/icons/ic-close.svg?react'
 import Help from '../../../assets/icons/ic-help.svg?react'
 import ICHelpOutline from '../../../assets/icons/ic-help-outline.svg?react'
-import Add from '../../../assets/icons/ic-add.svg?react'
 import Tag from '../../../assets/icons/ic-tag.svg?react'
 import './webhookDetails.scss'
-import { getUserRole, createOrUpdateUser } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
-import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+
+import { getApiTokenHeader } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorization/APITokens/service'
+import { createOrUpdateUser, getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+import { PermissionType } from '@Pages/GlobalConfigurations/Authorization/constants'
+import {
+    getDefaultStatusAndTimeout,
+    getDefaultUserStatusAndTimeout,
+} from '@Pages/GlobalConfigurations/Authorization/libUtils'
+import { ChartGroupPermissionsFilter } from '@Pages/GlobalConfigurations/Authorization/types'
+import { createUserPermissionPayload } from '@Pages/GlobalConfigurations/Authorization/utils'
+
+import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
+import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
+import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import {
     CURL_PREFIX,
     GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
@@ -60,17 +75,6 @@ import {
     SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
-import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
-import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
-import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
-import { createUserPermissionPayload } from '@Pages/GlobalConfigurations/Authorization/utils'
-import { ChartGroupPermissionsFilter } from '@Pages/GlobalConfigurations/Authorization/types'
-import { PermissionType } from '@Pages/GlobalConfigurations/Authorization/constants'
-import {
-    getDefaultStatusAndTimeout,
-    getDefaultUserStatusAndTimeout,
-} from '@Pages/GlobalConfigurations/Authorization/libUtils'
-import { getApiTokenHeader } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 
 export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -131,7 +135,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         const toReturn = {}
         toReturn[tableName] = {}
         for (const key in ob) {
-            if (!ob.hasOwnProperty(key)) {
+            if (!Object.hasOwn(ob, key)) {
                 continue
             }
             const currentElement = ob[key]
@@ -144,7 +148,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 currentElement.dataType = key
                 delete currentElement.child
                 for (const x in flatObject) {
-                    if (!flatObject.hasOwnProperty(x)) {
+                    if (!Object.hasOwn(flatObject, x)) {
                         continue
                     }
                     toReturn[key] = flatObject[x]
@@ -543,7 +547,9 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
         return (
             <div
-                ref={(el) => { schemaRef.current[schemaName] = el }}
+                ref={(el) => {
+                    schemaRef.current[schemaName] = el
+                }}
                 className={`dc__border-top ${selectedSchema === schemaName ? 'bcy-1' : ''}`}
             >
                 <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">

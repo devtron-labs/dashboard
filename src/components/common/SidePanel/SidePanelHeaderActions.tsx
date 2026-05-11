@@ -19,6 +19,7 @@ import { createPortal } from 'react-dom'
 
 import { logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const SidePanelHeaderActions = ({ children }: PropsWithChildren<{}>) => {
     const [hasComponentRenderedOnce, setHasComponentRenderedOnce] = useState(false)
 

@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
+
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+
 import Trash from '../../assets/icons/ic-delete.svg?react'
 
 interface KeyValueFileInputProps {
@@ -34,7 +36,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = (props) => {
         <div className="form__key-value-file">
             <Trash
                 className="icon-n4 dc__block dc__align-right icon-delete cursor"
-                onClick={(event) => {
+                onClick={() => {
                     props.handleDelete(props.index)
                 }}
             />
@@ -85,7 +87,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = (props) => {
                         name={`${props.index}isBinary`}
                         checked={props.isBinary}
                         disabled={props.disabled}
-                        onClick={(event) => props.handleChange(props.index, 'isBinary', !props.isBinary)}
+                        onClick={() => props.handleChange(props.index, 'isBinary', !props.isBinary)}
                     />
                     <span className="ml-16 fw-4">Already Encoded</span>
                 </label>
@@ -95,7 +97,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = (props) => {
                         name={`${props.index}isBinary`}
                         checked={!props.isBinary}
                         disabled={props.disabled}
-                        onClick={(event) => props.handleChange(props.index, 'isBinary', !props.isBinary)}
+                        onClick={() => props.handleChange(props.index, 'isBinary', !props.isBinary)}
                     />
                     <span className="ml-16 fw-4">Encode</span>
                 </label>

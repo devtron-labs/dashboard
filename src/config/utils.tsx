@@ -16,9 +16,9 @@
 
 import { Icon, IconBaseSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AppOverviewProps } from '@Components/app/types'
-
 import { APP_TYPE, DEVTRON_DEFAULT_CLUSTER_ID, DEVTRON_DEFAULT_NAMESPACE, DEVTRON_DEFAULT_RELEASE_NAME } from '.'
+
+import { AppOverviewProps } from '@Components/app/types'
 
 export const checkIfDevtronOperatorHelmRelease = (releaseName: string, namespace: string, clusterId: string): boolean =>
     releaseName === DEVTRON_DEFAULT_RELEASE_NAME &&

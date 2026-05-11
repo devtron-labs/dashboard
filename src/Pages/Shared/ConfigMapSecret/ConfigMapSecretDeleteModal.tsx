@@ -26,12 +26,12 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
 import { deleteConfigMap, deleteEnvConfigMap, deleteEnvSecret, deleteSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME, DELETE_OVERRIDE_CONFIG_SUBTITLE } from './constants'
 import { ConfigMapSecretDeleteModalProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')

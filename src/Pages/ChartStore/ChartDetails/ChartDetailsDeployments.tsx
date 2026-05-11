@@ -35,8 +35,6 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ClusterNotReachableDialog from '@Components/common/ClusterNotReachableDialog/ClusterNotReachableDialog'
-import { DELETE_ACTION } from '@Config/constants'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 import { DEPLOYMENTS_TABLE_COLUMNS, DeploymentsTableViewWrapper } from './ChartDetailsTableComponents'
@@ -48,6 +46,9 @@ import {
     DeploymentsTableAdditionalProps,
     DeploymentsTableProps,
 } from './types'
+
+import ClusterNotReachableDialog from '@Components/common/ClusterNotReachableDialog/ClusterNotReachableDialog'
+import { DELETE_ACTION } from '@Config/constants'
 
 export const ChartDetailsDeployments = ({ chartIcon }: ChartDetailsDeploymentsProps) => {
     // STATES

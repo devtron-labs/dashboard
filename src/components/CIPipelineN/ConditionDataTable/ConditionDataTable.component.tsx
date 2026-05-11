@@ -29,9 +29,6 @@ import {
     RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ConditionContainerType } from '@Components/ciPipeline/types'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-
 import {
     CONDITION_DATA_TABLE_ADD_BUTTON_TIPPY_MAP,
     CONDITION_DATA_TABLE_OPERATOR_OPTIONS,
@@ -54,6 +51,9 @@ import {
     getConditionDataTableRows,
     getConditionVariableTypeFormat,
 } from './utils'
+
+import { ConditionContainerType } from '@Components/ciPipeline/types'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
 export const ConditionDataTable = ({ type, conditionType, handleConditionTypeChange }: ConditionDataTableProps) => {
     // CONTEXTS
@@ -218,7 +218,7 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
     const handleRowAdd = () => {
         handleRowUpdateAction({
             actionType: ConditionDataTableActionType.ADD_ROW,
-            rowId: Math.floor(new Date().valueOf() * Math.random()),
+            rowId: Math.floor(Date.now() * Math.random()),
         })
     }
 

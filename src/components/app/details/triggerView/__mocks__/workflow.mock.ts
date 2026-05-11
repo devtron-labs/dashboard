@@ -18,7 +18,7 @@
 import { CIBuildType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DEFAULT_STATUS } from '../../../../../config'
-import { CdPipelineResult, CDStage, CiPipelineResult } from '../types'
+import { CDStage, CdPipelineResult, CiPipelineResult } from '../types'
 
 export const ciConfigResp = {
     code: 200,

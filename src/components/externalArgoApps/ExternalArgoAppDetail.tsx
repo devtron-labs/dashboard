@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    ServerErrors,
-    DeploymentAppTypes,
-    getIsRequestAborted,
-    abortPreviousRequests,
-    API_STATUS_CODES,
-    useMainContext,
     AIAgentContextSourceType,
+    API_STATUS_CODES,
+    abortPreviousRequests,
+    DeploymentAppTypes,
+    ErrorScreenManager,
+    getIsRequestAborted,
+    Progressing,
+    ServerErrors,
+    showError,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import AppDetailsComponent from '../v2/appDetails/AppDetails.component'
@@ -35,7 +37,7 @@ import { AppDetails, AppType } from '../v2/appDetails/appDetails.type'
 import IndexStore from '../v2/appDetails/index.store'
 import { ExternalArgoAppDetailType } from './externalArgoApp.type'
 
-let initTimer = null
+let initTimer: ReturnType<typeof setTimeout> = null
 
 const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }: ExternalArgoAppDetailType) => {
     const { setAIAgentContext } = useMainContext()
@@ -99,6 +101,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
         }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
@@ -120,7 +123,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                         appName: genericAppDetail.appName,
                         clusterId: genericAppDetail.clusterId,
                         namespace: genericAppDetail.namespace,
-                    }
+                    },
                 })
 
                 isAPICallInProgress = false

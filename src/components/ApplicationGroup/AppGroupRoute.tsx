@@ -20,9 +20,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AppContext } from '../common'
-import EnvironmentsList from './List/EnvironmentsList'
 import { AppGroupAdminType } from './AppGroup.types'
 import AppGroupDetailsRoute from './AppGroupDetailsRoute'
+import EnvironmentsList from './List/EnvironmentsList'
 
 const APP_GROUP_ROUTES = BASE_ROUTES.APPLICATION_MANAGEMENT.APPLICATION_GROUP
 

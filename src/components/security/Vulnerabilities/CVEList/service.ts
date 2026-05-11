@@ -2,13 +2,13 @@ import dayjs from 'dayjs'
 
 import { DATE_TIME_FORMATS, post, stringComparatorBySortOrder, TableProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getVulnerabilityFilterData } from '@Components/security/security.service'
-import { SeverityFilterValues } from '@Components/security/SecurityScansTab/types'
-import { Routes } from '@Config/constants'
-import { getAppListMin } from '@Services/service'
-
 import { DISCOVERY_AGE_FILTER_OPTIONS, FIX_AVAILABLE_FILTER_OPTIONS } from '../constants'
 import { CVEDetails, CVEListFilterData, CVEListFilters, VulnerabilityDTO } from './types'
+
+import { SeverityFilterValues } from '@Components/security/SecurityScansTab/types'
+import { getVulnerabilityFilterData } from '@Components/security/security.service'
+import { Routes } from '@Config/constants'
+import { getAppListMin } from '@Services/service'
 
 export const getCVEListFilters = async (): Promise<CVEListFilterData> => {
     const [appListResponse, filtersResponse] = await Promise.allSettled([getAppListMin(), getVulnerabilityFilterData()])
@@ -20,14 +20,14 @@ export const getCVEListFilters = async (): Promise<CVEListFilterData> => {
     }
 
     return {
-        application: (appListResponse.status === 'fulfilled' ? appListResponse?.value?.result ?? [] : [])
+        application: (appListResponse.status === 'fulfilled' ? (appListResponse?.value?.result ?? []) : [])
             .map((app) => ({
                 label: app.name,
                 value: `${app.id}`,
             }))
             .sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
         ...(filtersResponse.status === 'fulfilled'
-            ? filtersResponse?.value ?? emptyFiltersResponse
+            ? (filtersResponse?.value ?? emptyFiltersResponse)
             : emptyFiltersResponse),
         ageOfDiscovery: DISCOVERY_AGE_FILTER_OPTIONS,
         fixAvailability: FIX_AVAILABLE_FILTER_OPTIONS,

@@ -43,6 +43,7 @@ export const clusterEnvironmentDrawerFormValidationSchema = (): UseFormValidatio
     },
     isProduction: {
         required: true,
+        // biome-ignore lint/correctness/noEmptyCharacterClassInRegex: Legacy
         pattern: { message: 'token is required', value: /[^]+/ },
     },
     description: {

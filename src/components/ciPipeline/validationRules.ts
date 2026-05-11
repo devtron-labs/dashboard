@@ -16,19 +16,20 @@
 
 import { PATTERNS } from '../../config'
 import {
-    CHARACTER_ERROR_MIN,
     CHARACTER_ERROR_MAX,
-    REQUIRED_FIELD_MSG,
-    ERROR_MESSAGE_FOR_VALIDATION,
+    CHARACTER_ERROR_MIN,
     CustomErrorMessage,
+    ERROR_MESSAGE_FOR_VALIDATION,
     MAX_LENGTH_30,
     REPO_NAME_VALIDATION,
+    REQUIRED_FIELD_MSG,
     RESERVED_DIRECTORY_PATH_MSG,
     RESERVED_OUTPUT_DIRECTORY_PATH,
 } from '../../config/constantMessaging'
-import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
-import { validateConditionDataCell } from '@Components/CIPipelineN/ConditionDataTable/utils'
 import { ValidationRulesType } from './types'
+
+import { validateConditionDataCell } from '@Components/CIPipelineN/ConditionDataTable/utils'
+import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
@@ -99,7 +100,7 @@ export class ValidationRules {
 
                 new RegExp(value)
                 return { message: null, isValid: true }
-            } catch (err) {
+            } catch {
                 return { message: 'This is not a valid regular expression.', isValid: false }
             }
         } else {
@@ -141,7 +142,7 @@ export class ValidationRules {
     }
 
     customTag = (value: string): { message: string[] | []; isValid: boolean } => {
-        const _message = []
+        const _message: string[] = []
         const regExp = new RegExp(PATTERNS.CUSTOM_TAG)
         function checkIfOne(string) {
             return string.split('{x}').length === 2

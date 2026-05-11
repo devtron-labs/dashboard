@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type JSX } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
+
 import {
+    asyncWrap,
+    CICDSidebarFilterOptionType,
+    CiPipeline,
+    FetchIdDataStatus,
+    History,
+    HistoryComponentType,
+    LogResizeButton,
+    mapByKey,
+    PipelineType,
     Progressing,
+    ROUTER_URLS,
+    Sidebar,
     showError,
     sortCallback,
+    TRIGGER_STATUS_PROGRESSING,
     useAsync,
-    PipelineType,
-    Sidebar,
-    LogResizeButton,
-    HistoryComponentType,
-    History,
-    CICDSidebarFilterOptionType,
-    FetchIdDataStatus,
-    asyncWrap,
-    mapByKey,
     useInterval,
     useScrollable,
-    TRIGGER_STATUS_PROGRESSING,
-    CiPipeline,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
-import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Details } from '../../../app/details/cIDetails/CIDetails'
+import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { getTriggerHistory } from '../../../app/service'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { getCIConfigList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
-import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId, pipelineId, buildId } = useParams<{
@@ -78,6 +80,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setCiGroupLoading(true)
             getCIConfigList(envId, filteredAppIds).then((result) => {
                 if (result?.pipelineList.length) {
+                    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, on deriving type from result its breaking in lines below
                     const _filteredPipelines = []
                     let selectedPipelineExist = false
                     result.pipelineList.forEach((pipeline) => {

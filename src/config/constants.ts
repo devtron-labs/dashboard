@@ -15,13 +15,13 @@
  */
 
 import {
+    PATTERNS as COMMON_PATTERNS,
+    ROUTES as COMMON_ROUTES,
+    DOCUMENTATION,
+    RegistryCredentialsType,
+    SegmentType,
     SelectPickerOptionType,
     ToastManager,
-    ROUTES as COMMON_ROUTES,
-    RegistryCredentialsType,
-    DOCUMENTATION,
-    SegmentType,
-    PATTERNS as COMMON_PATTERNS,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -303,14 +303,14 @@ export const AppConfigStatus = {
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
     APP_NAME: COMMON_PATTERNS.APP_NAME,
-    CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
+    CD_PIPELINE_NAME: `^[a-z]+[a-z0-9-?]*[a-z0-9]+$`,
     APP_LABEL_CHIP: /^.+:.+$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
-    URL: /^(http:\/\/|https:\/\/)?[A-Za-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
+    URL: /^(http:\/\/|https:\/\/)?[A-Za-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
     KUBERNETES_KEY:
-        /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
+        /^((http:\/\/|https:\/\/)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
     KUBERNETES_KEY_PREFIX: /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/,
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
@@ -329,49 +329,49 @@ export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 export const MomentInvalidDate = 'Invalid date'
 
-export const HEADER_TEXT: Record<string, { title: string; description: string; docLink: keyof typeof DOCUMENTATION }> = {
-
-    API_TOKEN: {
-        title: 'API Token',
-        description: 'Tokens you have generated that can be used to access the Devtron API.',
-        docLink: "GLOBAL_CONFIG_API_TOKEN"
-    },
-    CHART_REPOSITORY: {
-        title: 'Chart Repository',
-        description: 'Manage your organization’s chart repositories.',
-        docLink: "GLOBAL_CONFIG_CHART"
-    },
-    HOST_URL: {
-        title: 'Host URL',
-        description: 'Host URL is the domain address at which your devtron dashboard can be reached.',
-        docLink: "GLOBAL_CONFIG_HOST_URL"
-    },
-    GITOPS: {
-        title: 'GitOps',
-        description: 'Devtron uses GitOps configuration to store kubernetes configuration files of applications.',
-        docLink: "GLOBAL_CONFIG_GITOPS"
-    },
-    GIT_ACCOUNTS: {
-        title: 'Git Accounts',
-        description: 'Manage your organization’s git accounts.',
-        docLink: "GLOBAL_CONFIG_GIT"
-    },
-    NOTIFICATIONS: {
-        title: 'Notifications',
-        description: 'Manage notifications for build and deployment pipelines.',
-        docLink: "GLOBAL_CONFIG_NOTIFICATION"
-    },
-    SSO_LOGIN: {
-        title: 'SSO Login Service',
-        description: 'Configure and manage login service for your organization.',
-        docLink: "GLOBAL_CONFIG_SSO"
-    },
-    SCOPED_VARIABLES: {
-        title: 'Scoped Variables',
-        description: 'Scoped variables are used to define environment-specific variables.',
-        docLink: "GLOBAL_CONFIG_SCOPED_VARIABLES"
-    },
-}
+export const HEADER_TEXT: Record<string, { title: string; description: string; docLink: keyof typeof DOCUMENTATION }> =
+    {
+        API_TOKEN: {
+            title: 'API Token',
+            description: 'Tokens you have generated that can be used to access the Devtron API.',
+            docLink: 'GLOBAL_CONFIG_API_TOKEN',
+        },
+        CHART_REPOSITORY: {
+            title: 'Chart Repository',
+            description: 'Manage your organization’s chart repositories.',
+            docLink: 'GLOBAL_CONFIG_CHART',
+        },
+        HOST_URL: {
+            title: 'Host URL',
+            description: 'Host URL is the domain address at which your devtron dashboard can be reached.',
+            docLink: 'GLOBAL_CONFIG_HOST_URL',
+        },
+        GITOPS: {
+            title: 'GitOps',
+            description: 'Devtron uses GitOps configuration to store kubernetes configuration files of applications.',
+            docLink: 'GLOBAL_CONFIG_GITOPS',
+        },
+        GIT_ACCOUNTS: {
+            title: 'Git Accounts',
+            description: 'Manage your organization’s git accounts.',
+            docLink: 'GLOBAL_CONFIG_GIT',
+        },
+        NOTIFICATIONS: {
+            title: 'Notifications',
+            description: 'Manage notifications for build and deployment pipelines.',
+            docLink: 'GLOBAL_CONFIG_NOTIFICATION',
+        },
+        SSO_LOGIN: {
+            title: 'SSO Login Service',
+            description: 'Configure and manage login service for your organization.',
+            docLink: 'GLOBAL_CONFIG_SSO',
+        },
+        SCOPED_VARIABLES: {
+            title: 'Scoped Variables',
+            description: 'Scoped variables are used to define environment-specific variables.',
+            docLink: 'GLOBAL_CONFIG_SCOPED_VARIABLES',
+        },
+    }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 

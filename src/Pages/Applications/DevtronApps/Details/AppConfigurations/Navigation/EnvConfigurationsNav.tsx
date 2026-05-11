@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { Dispatch, MouseEvent, useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { generatePath, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { GroupBase, OptionsOrGroups } from 'react-select'
-import Tippy from '@tippyjs/react'
 
 import {
     BASE_CONFIGURATION_ENV_ID,
@@ -27,29 +27,30 @@ import {
     ButtonVariantType,
     CollapsibleList,
     CollapsibleListConfig,
+    URLS as CommonURLS,
     ComponentSizeType,
     EnvResourceType,
     getSelectPickerOptionByValue,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
-    URLS as CommonURLS,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICAdd from '@Icons/ic-add.svg?react'
-import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
-import ICBack from '@Icons/ic-caret-left-small.svg?react'
-import ICFileCode from '@Icons/ic-file-code.svg?react'
-import ICLocked from '@Icons/ic-locked.svg?react'
-import { useAppContext } from '@Components/common'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
-import { URLS } from '@Config/routes'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigObjectKey, EnvConfigRouteParams, EnvConfigType, EnvConfigurationsNavProps } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, getUnnamedIconConfig } from './Navigation.helper'
+
+import { useAppContext } from '@Components/common'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+import { URLS } from '@Config/routes'
+import ICAdd from '@Icons/ic-add.svg?react'
+import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
+import ICBack from '@Icons/ic-caret-left-small.svg?react'
+import ICFileCode from '@Icons/ic-file-code.svg?react'
+import ICLocked from '@Icons/ic-locked.svg?react'
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (

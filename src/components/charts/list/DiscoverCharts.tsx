@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { Dispatch, type JSX, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 
 import {
     BreadCrumb,
@@ -24,8 +24,8 @@ import {
     ConditionalWrap,
     DetectBottom,
     DevtronProgressing,
-    DocLink,
     DOCUMENTATION,
+    DocLink,
     FeatureTitleWithInfo,
     getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
@@ -43,6 +43,8 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ChartDetailsWithKey } from '@Pages/ChartStore'
+
 import Add from '../../../assets/icons/ic-add.svg?react'
 import WarningIcon from '../../../assets/icons/ic-alert-triangle.svg?react'
 import Next from '../../../assets/icons/ic-arrow-forward.svg?react'
@@ -55,21 +57,20 @@ import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import AdvancedConfig from '../AdvancedConfig'
 import ChartCard from '../ChartCard'
+import { ChartGroupCard } from '../ChartGroupCard'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { deployChartGroup, getChartProviderList } from '../charts.service'
 import { Chart, ChartGroupEntry, EmptyCharts } from '../charts.types'
 import ChartValues from '../chartValues/ChartValues'
 import { QueryParams } from '../constants'
+import MultiChartSummary from '../MultiChartSummary'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
-import MultiChartSummary from '../MultiChartSummary'
 import useChartGroup from '../useChartGroup'
-import { ChartGroupCard } from '../ChartGroupCard'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
 import ChartGroupRouter from './ChartGroup'
 import { ChartsList } from './ChartsList'
 import { CHART_STORE_TIPPY_CONTENT, getDeployableChartsFromConfiguredCharts } from './utils'
-import { ChartDetailsWithKey } from '@Pages/ChartStore'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useMainContext()
@@ -667,7 +668,7 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
         <Routes>
             <Route path="group/*" element={<ChartGroupRouter />} />
             <Route path={`${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} element={<ChartValues />} />
-            <Route path={`${URLS.CHART}/:chartId/*`} element={<ChartDetailsWithKey />} />                    
+            <Route path={`${URLS.CHART}/:chartId/*`} element={<ChartDetailsWithKey />} />
             <Route index element={<DiscoverChartList isSuperAdmin={isSuperAdmin} />} />
         </Routes>
     )

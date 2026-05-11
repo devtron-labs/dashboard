@@ -26,13 +26,6 @@ import {
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArgoCDApp from '@Icons/ic-argocd-app.svg?react'
-import ICDefaultChart from '@Icons/ic-default-chart.svg?react'
-import ICFluxCDApp from '@Icons/ic-fluxcd-app.svg?react'
-import { getArgoInstalledExternalApps, getFluxInstalledExternalApps } from '@Components/app/list-new/AppListService'
-import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
-import { Routes } from '@Config/constants'
-
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
@@ -50,6 +43,13 @@ import {
     getValidateMigrationSourcePayload,
     sanitizeValidateMigrationSourceResponse,
 } from './utils'
+
+import { getArgoInstalledExternalApps, getFluxInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
+import { Routes } from '@Config/constants'
+import ICArgoCDApp from '@Icons/ic-argocd-app.svg?react'
+import ICDefaultChart from '@Icons/ic-default-chart.svg?react'
+import ICFluxCDApp from '@Icons/ic-fluxcd-app.svg?react'
 
 export const validateMigrationSource = async (
     params: ValidateMigrationSourceServiceParamsType,

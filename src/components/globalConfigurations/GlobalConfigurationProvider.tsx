@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
+
 import { GlobalConfiguration, TippyConfig } from './types'
 
 const globalConfigurationContext = createContext<GlobalConfiguration>({} as GlobalConfiguration)

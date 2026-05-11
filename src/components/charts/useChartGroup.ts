@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+
 import {
     getTeamListMin,
     showError,
@@ -22,19 +23,20 @@ import {
     ToastVariantType,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart, ChartGroup } from './charts.types'
-import {
-    getChartVersionsMin,
-    validateAppNames,
-    getChartValuesCategorizedList,
-    getChartValues,
-    getChartGroupDetail,
-    createChartValues as createChartValuesService,
-    getChartGroups,
-} from './charts.service'
+
+import { SERVER_MODE } from '../../config'
 import { getAvailableCharts, getChartRepoListMin } from '../../services/service'
 import { mapByKey, sortOptionsByLabel } from '../common'
-import { SERVER_MODE } from '../../config'
+import {
+    createChartValues as createChartValuesService,
+    getChartGroupDetail,
+    getChartGroups,
+    getChartValues,
+    getChartValuesCategorizedList,
+    getChartVersionsMin,
+    validateAppNames,
+} from './charts.service'
+import { Chart, ChartGroup, ChartGroupEntry, ChartGroupExports, ChartGroupState } from './charts.types'
 import { PaginationParams } from './charts.util'
 import { APP_NAME_TAKEN, DUPLICATE_NAME, EMPTY_ENV, NAME_REGEX_PATTERN } from './constants'
 
@@ -257,7 +259,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     async function validateData() {
         try {
-            const nameRegexp = new RegExp(`^[a-z]+[a-z0-9-?]*[a-z0-9]+$`)
+            const nameRegexp = /^[a-z]+[a-z0-9-?]*[a-z0-9]+$/
 
             const allNames = state.charts.map((chart) => chart.name.value)
             const duplicateNames = allNames.filter((name, index) => {

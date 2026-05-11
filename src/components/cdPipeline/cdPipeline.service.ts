@@ -15,37 +15,45 @@
  */
 
 import {
-    post,
-    get,
-    sortCallback,
-    getEnvironmentListMinPublic,
-    TriggerType,
-    GetTemplateAPIRouteType,
     AppConfigProps,
+    GetTemplateAPIRouteType,
+    get,
+    getEnvironmentListMinPublic,
     getTemplateAPIRoute,
-    patch,
     getUrlWithSearchParams,
+    patch,
+    post,
+    sortCallback,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../config'
-import { getEnvironmentSecrets, getEnvironmentConfigs } from '../../services/service'
 
-export function getCDPipelineNameSuggestion(appId: string | number, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
-    const URL = isTemplateView ? getTemplateAPIRoute({
-        type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CD,
-        queryParams: {
-            id: appId,
-        }
-    }) : `app/pipeline/suggest/cd/${appId}`
+import { Routes } from '../../config'
+import { getEnvironmentConfigs, getEnvironmentSecrets } from '../../services/service'
+
+export function getCDPipelineNameSuggestion(
+    appId: string | number,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<any> {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CD,
+              queryParams: {
+                  id: appId,
+              },
+          })
+        : `app/pipeline/suggest/cd/${appId}`
     return get(URL)
 }
 
 export function getDeploymentStrategyList(appId, isTemplateView) {
-    const URL = isTemplateView ? getTemplateAPIRoute({
-        type: GetTemplateAPIRouteType.CONFIG_STRATEGY,
-        queryParams: {
-            id: appId,
-        }
-    }) : `${Routes.DEPLOYMENT_STRATEGY}/${appId}`
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_STRATEGY,
+              queryParams: {
+                  id: appId,
+              },
+          })
+        : `${Routes.DEPLOYMENT_STRATEGY}/${appId}`
     return get(URL)
 }
 
@@ -58,7 +66,7 @@ export function updateCDPipeline(request, isTemplateView: AppConfigProps['isTemp
                     id: request.appId,
                 },
             }),
-            request
+            request,
         )
     }
 
@@ -96,7 +104,6 @@ export function deleteCDPipeline(
             }),
             request,
         )
-
     }
 
     return post(getUrlWithSearchParams(Routes.CD_CONFIG_PATCH, baseQueryParams), request)
@@ -115,7 +122,11 @@ export function getCDPipelineV2(appId: string, pipelineId: string, isTemplateVie
     return get(URL)
 }
 
-export async function getCDPipelineConfig(appId: string, pipelineId: string, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+export async function getCDPipelineConfig(
+    appId: string,
+    pipelineId: string,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<any> {
     return Promise.all([getCDPipelineV2(appId, pipelineId, isTemplateView), getEnvironmentListMinPublic(true)]).then(
         ([cdPipelineRes, envListResponse]) => {
             const envId = cdPipelineRes.result.environmentId

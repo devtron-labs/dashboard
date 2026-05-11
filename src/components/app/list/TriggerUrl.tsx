@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useEffect, useState } from 'react'
+
 import {
-    Progressing,
-    VisibleModal,
-    GenericEmptyState,
     ClipboardButton,
     EMPTY_STATE_STATUS,
+    GenericEmptyState,
+    Progressing,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
 import Close from '../../../assets/icons/ic-close.svg?react'
-import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
+import { getIngressServiceUrls } from '../service'
 import { ManifestUrlList, TriggerURL } from './types'
 
 export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, close, appType }: TriggerURL) => {
@@ -82,7 +84,10 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
 
     return (
         <VisibleModal className="" close={close}>
-            <div onClick={stopPropogation} className="flexbox-col flex-grow-1 modal-body--ci-material h-100 dc__overflow-hidden">
+            <div
+                onClick={stopPropogation}
+                className="flexbox-col flex-grow-1 modal-body--ci-material h-100 dc__overflow-hidden"
+            >
                 <div className="trigger-modal__header">
                     <h1 className="modal__title flex left fs-16" data-testid="app-details-url-heading">
                         URLs

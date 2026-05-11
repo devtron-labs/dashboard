@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { GroupBase, OptionsOrGroups } from 'react-select'
 import moment from 'moment'
+import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
     AppEnvDeploymentConfigDTO,
@@ -24,8 +24,6 @@ import {
     TemplateListDTO,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { Moment12HourFormat } from '@Config/constants'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
@@ -36,6 +34,8 @@ import {
     GetAppEnvDeploymentConfigProps,
 } from '../../AppConfig.types'
 import { SetIdentifierIdBasedOnConfigurationProps } from './types'
+
+import { Moment12HourFormat } from '@Config/constants'
 
 export const getPreviousDeploymentOptionValue = (identifierId: number, pipelineId?: number, chartRefId?: number) => {
     if (identifierId && pipelineId) {
@@ -295,7 +295,7 @@ export const getManifestRequestValues = (config: AppEnvDeploymentConfigDTO): { d
         null
 
     return {
-        data: _data ? YAMLStringify(_data) ?? '' : '',
+        data: _data ? (YAMLStringify(_data) ?? '') : '',
         chartRefId: getDraftConfigChartRefId(config),
     }
 }
@@ -339,8 +339,8 @@ export const getIdentifierIdBasedOnConfiguration = ({
     previousDeployments,
 }: SetIdentifierIdBasedOnConfigurationProps) => {
     const _identifierId = isManifestView
-        ? previousDeployments.find((prev) => prev.wfrId === identifierId)?.deploymentTemplateHistoryId ?? null
-        : previousDeployments.find((prev) => prev.deploymentTemplateHistoryId === identifierId)?.wfrId ?? null
+        ? (previousDeployments.find((prev) => prev.wfrId === identifierId)?.deploymentTemplateHistoryId ?? null)
+        : (previousDeployments.find((prev) => prev.deploymentTemplateHistoryId === identifierId)?.wfrId ?? null)
 
     return String(_identifierId)
 }

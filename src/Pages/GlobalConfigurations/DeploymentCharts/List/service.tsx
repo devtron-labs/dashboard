@@ -26,10 +26,10 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ChartUploadResponse, ChartUploadType } from '../types'
+
 import { sortObjectArrayAlphabetically } from '@Components/common'
 import { Routes } from '@Config/constants'
-
-import { ChartUploadResponse, ChartUploadType } from '../types'
 
 export const getChartList = async (): Promise<DeploymentChartType[]> => {
     try {

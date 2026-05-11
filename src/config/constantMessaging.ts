@@ -47,7 +47,7 @@ export const CONTEXT_NOT_AVAILABLE_ERROR = 'cannot be rendered outside the compo
 export const GIT_MATERIAL_IN_USE_MESSAGE =
     'This repository is being used as source for Dockerfile or as Build Context. Please select another repository and try again'
 
-export const enum DeleteComponentsName {
+export enum DeleteComponentsName {
     API_TOKEN = 'API token',
     Application = 'application',
     BuildPipeline = 'build pipeline',

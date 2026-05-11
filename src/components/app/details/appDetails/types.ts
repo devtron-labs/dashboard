@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent } from 'react'
 import moment from 'moment'
+import { SyntheticEvent } from 'react'
 
 import { AppMetricsTabType, ChartTypes, HibernationModalTypes, StatusTypes } from './appDetails.type'
 import { AppInfo } from './utils'
