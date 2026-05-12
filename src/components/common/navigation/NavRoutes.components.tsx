@@ -15,7 +15,7 @@
  */
 
 import { lazy, useEffect, useMemo, useState } from 'react'
-import { generatePath, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { generatePath, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 
 import {
@@ -70,6 +70,16 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }: { isFirstLoginUser:
     }, [])
 
     return <Navigate to={redirectPath} replace />
+}
+
+export const RedirectOldDevtronAppRoute = () => {
+    const { '*': splat } = useParams()
+    return (
+        <Navigate
+            to={`/${BASE_ROUTES.APPLICATION_MANAGEMENT.ROOT}/${BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.ROOT}/${splat}`}
+            replace
+        />
+    )
 }
 
 const DEVTRON_APP_ROUTES = BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP
