@@ -6,7 +6,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const getNavigationTreeItems = (items: NavigationItemType['subItems']) =>
-    items.map<TreeNode>(({ title, id, href, disabled }) => ({
+    (items ?? []).map<TreeNode>(({ title, id, href, disabled }) => ({
         id,
         title,
         href,
@@ -96,16 +96,20 @@ const isSubPath = (basePath: string, targetPath: string) => {
  * @returns True if the item matches the path, otherwise false.
  */
 export const doesNavigationItemMatchPath = (
-    item: NavigationItemType | NavigationItemType['subItems'][0],
+    item: NavigationItemType | NavigationItemType['subItems'][0] | undefined | null,
     pathname: string,
 ): boolean => {
+    if (!item) {
+        return false
+    }
+
     const navItem = item as NavigationItemType
 
     if (navItem.hasSubMenu && navItem.subItems) {
         return navItem.subItems.some((subItem) => !subItem.disabled && doesNavigationItemMatchPath(subItem, pathname))
     }
 
-    return !navItem.disabled && item.href && isSubPath(item.href, pathname)
+    return !navItem.disabled && !!item.href && isSubPath(item.href, pathname)
 }
 
 /**

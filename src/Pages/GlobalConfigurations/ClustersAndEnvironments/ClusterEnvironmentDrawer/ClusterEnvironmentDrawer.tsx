@@ -232,7 +232,7 @@ export const ClusterEnvironmentDrawer = ({
                     const clusterNamespace = getClusterNamespaceByName(clusterNamespacesData, formData.namespace)
                     setNamespaceLabels({
                         labels: getNamespaceLabels(clusterNamespace),
-                        resourceVersion: clusterNamespace.resourceVersion,
+                        resourceVersion: clusterNamespace?.resourceVersion,
                     })
                 } else {
                     showError(err)

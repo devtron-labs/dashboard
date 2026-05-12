@@ -96,7 +96,11 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { SidePanel } from '../SidePanel'
 import { ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-import { AutomationAndEnablementRouter, RedirectUserWithSentry } from './NavRoutes.components'
+import {
+    AutomationAndEnablementRouter,
+    RedirectOldDevtronAppRoute,
+    RedirectUserWithSentry,
+} from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 import UpgradeToOSSPlusDialog from './UpgradeToOSSPlusDialog'
 
@@ -670,6 +674,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             element={<DataProtectionManagementRouter />}
                                         />
                                     )}
+                                    <Route path="app/*" element={<RedirectOldDevtronAppRoute />} />
                                     <Route
                                         path="*"
                                         element={
