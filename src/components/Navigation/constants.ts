@@ -252,12 +252,6 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
     },
     ...(DATA_PROTECTION_MANAGEMENT_NAV_GROUP ? [DATA_PROTECTION_MANAGEMENT_NAV_GROUP] : []),
     {
-        id: 'audit-logs',
-        title: 'Audit logs',
-        icon: 'ic-file-log-search',
-        href: ROUTER_URLS.AUDIT_LOGS,
-    },
-    {
         id: 'global-configuration',
         title: 'Global Configuration',
         icon: 'ic-gear',
@@ -327,6 +321,12 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
             },
         ],
         isAvailableInEA: true,
+    },
+    {
+        id: 'audit-logs',
+        title: 'Audit logs',
+        icon: 'ic-file-log-search',
+        href: ROUTER_URLS.AUDIT_LOGS,
     },
 ]
 
