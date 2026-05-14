@@ -1,5 +1,6 @@
 import {
     CommonNavigationItemType,
+    NavigationGroupType,
     NavigationItemType,
     SERVER_MODE,
     TreeNode,
@@ -108,6 +109,10 @@ export const doesNavigationItemMatchPath = (
     return !navItem.disabled && item.href && isSubPath(item.href, pathname)
 }
 
+export const hasNavigationGroupItems = (
+    group: NavigationGroupType | null | undefined,
+): group is NavigationGroupType & { items: NavigationItemType[] } => Array.isArray(group?.items)
+
 /**
  * Finds the first enabled navigation item within a group.
  * @param items The navigation item group to search.
@@ -115,6 +120,14 @@ export const doesNavigationItemMatchPath = (
  */
 export const findActiveNavigationItemOfNavGroup = (items: NavigationItemType[]) =>
     items.find(({ disabled }) => !disabled)
+
+export const doesNavigationGroupMatchPath = (group: NavigationGroupType, pathname: string): boolean => {
+    if (hasNavigationGroupItems(group)) {
+        return group.items.some((item) => doesNavigationItemMatchPath(item, pathname))
+    }
+
+    return !group.disabled && isSubPath(group.href, pathname)
+}
 
 export const filterNavGroupAndItem = (
     item: Pick<CommonNavigationItemType, 'hideNav' | 'forceHideEnvKey' | 'isAvailableInEA'>,
