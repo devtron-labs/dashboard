@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
+
 import { GlobalChartsCheck } from './GlobalChartCheck'
 import './checklist.scss'
+
 import CustomAppDeploy from './CustomAppDeploy'
 import SampleAppDeploy from './SampleAppDeploy'
 

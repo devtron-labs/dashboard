@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-import React, { type JSX, useEffect, useContext } from 'react'
+import React, { type JSX, useContext, useEffect } from 'react'
+
 import {
+    CDEmptyState,
+    ConditionDetails,
+    PluginListContainer,
     PluginType,
+    Progressing,
+    RefVariableType,
     ScriptType,
     VariableType,
-    RefVariableType,
-    Progressing,
-    CDEmptyState,
-    PluginListContainer,
-    ConditionDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { PreBuildType } from '../ciPipeline/types'
-import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
-import EmptyPostBuild from '../../assets/img/post-build-empty.png'
-import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
-import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
-import CustomScriptCard from './CustomScriptCard'
-import { BuildStageVariable, ViewType } from '../../config'
+
 import Add from '../../assets/icons/ic-add.svg?react'
-import { TaskDetailComponent } from './TaskDetailComponent'
 import nojobs from '../../assets/img/empty-joblist.webp'
+import EmptyPostBuild from '../../assets/img/post-build-empty.png'
+import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
+import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
+import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
+import { BuildStageVariable, ViewType } from '../../config'
+import { PreBuildType } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import CustomScriptCard from './CustomScriptCard'
 import { getConditionDetailsAndVariablesFromPlugin } from './ciPipeline.utils'
+import { TaskDetailComponent } from './TaskDetailComponent'
 
 export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     const {
@@ -158,6 +160,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
         return (
             <div className="px-20 pb-20 dc__overflow-auto flexbox-col">
                 <div className="cn-9 fw-6 fs-14 pb-10 pt-20">What do you want this task to do?</div>
+                {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents lint/a11y/noStaticElementInteractions: Legacy */}
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                     <CustomScriptCard />
                 </div>

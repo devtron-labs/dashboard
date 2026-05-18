@@ -31,13 +31,14 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterListView } from '@Components/ClusterNodes/ClusterList'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
 import { sortObjectArrayAlphabetically } from '../common'
 import { KUBERNETES_RESOURCE_BROWSER_DESCRIPTION } from './Constants'
 import { renderNewClusterButton } from './PageHeader.buttons'
 import { getClusterListing } from './ResourceBrowser.service'
+
+import { ClusterListView } from '@Components/ClusterNodes/ClusterList'
 
 const ResourceBrowser: React.FC = () => {
     const parentRef = useRef<HTMLDivElement>(null)

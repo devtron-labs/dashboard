@@ -19,6 +19,14 @@ import { MultiValue } from 'react-select'
 
 import { AppDetails, EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
+import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
+
+import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
+import { tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
+import { AddLinkButton } from './AddLinkButton'
+import { ExternalLinksLearnMore, RoleBasedInfoNote } from './ExternalLinks.component'
+import { ExternalLink, ExternalLinkScopeType, OptionTypeWithIcon } from './ExternalLinks.type'
+
 import CloudwatchlIcon from '@Icons/ic-cloudwatch.png'
 import CoralogixlIcon from '@Icons/ic-coralogix.png'
 import DatadogIcon from '@Icons/ic-datadog.svg?react'
@@ -37,13 +45,6 @@ import PerformanceIcon from '@Icons/tools/ic-link-performance.png'
 import ReportIcon from '@Icons/tools/ic-link-report.png'
 import SwaggerIcon from '@Icons/tools/ic-link-swagger.png'
 import WebpageIcon from '@Icons/tools/ic-link-webpage.png'
-import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
-
-import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
-import { tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
-import { AddLinkButton } from './AddLinkButton'
-import { ExternalLinksLearnMore, RoleBasedInfoNote } from './ExternalLinks.component'
-import { ExternalLink, ExternalLinkScopeType, OptionTypeWithIcon } from './ExternalLinks.type'
 
 export const MONITORING_TOOL_ICONS = {
     cloudwatch: CloudwatchlIcon,
@@ -170,7 +171,7 @@ export const getParsedURL = (
 }
 
 export const onImageLoadError = (e) => {
-    if (e && e.target) {
+    if (e?.target) {
         e.target.src = WebpageIcon
     }
 }

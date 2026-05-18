@@ -11,8 +11,6 @@ import {
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { TIME_WINDOW, TIME_WINDOW_SELECT_OPTIONS } from '@PagesDevtron2.0/Shared'
-
 import { DEFAULT_TIME_WINDOW } from '../constants'
 import { ChartHeaderTab, SectionLoadingCard } from '../Overview.components'
 import { useGetBuildDeploymentActivity, useGetBuildDeploymentActivityDetailed } from '../services'
@@ -20,6 +18,8 @@ import { BuildDeployOverviewActivityKind } from '../types'
 import { parseMinutesInDayHourUnit } from '../utils'
 import { getAvgBuildTimeTooltip, getBuildDeploymentTriggerTooltip } from './tooltipUtils'
 import { NoBuildDeploymentTriggeredProps } from './types'
+
+import { TIME_WINDOW, TIME_WINDOW_SELECT_OPTIONS } from '@PagesDevtron2.0/Shared'
 
 const NoBuildDeploymentTriggered = ({ isDeploymentTriggerChart }: NoBuildDeploymentTriggeredProps) => (
     <div className="h-200 flex">

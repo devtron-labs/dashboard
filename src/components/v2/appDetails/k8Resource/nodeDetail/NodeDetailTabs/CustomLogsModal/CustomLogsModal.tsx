@@ -14,33 +14,36 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type JSX } from 'react'
+import moment from 'moment'
+import { type JSX, useEffect, useState } from 'react'
+import Select from 'react-select'
+
 import {
-    RadioGroupItem,
-    VisibleModal,
-    RadioGroup,
-    SelectPicker,
     ComponentSizeType,
     CustomInput,
-    InfoBlock,
     DateTimePicker,
+    InfoBlock,
+    RadioGroup,
+    RadioGroupItem,
+    SelectPicker,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select from 'react-select'
-import moment from 'moment'
-import { Option } from '../../../../../common/ReactSelect.utils'
-import Close from '../../../../../../../assets/icons/ic-close.svg?react'
+
 import ClockIcon from '../../../../../../../assets/icons/ic-clock.svg?react'
+import Close from '../../../../../../../assets/icons/ic-close.svg?react'
 import Info from '../../../../../../../assets/icons/ic-info-outline-grey.svg?react'
+import { Option } from '../../../../../common/ReactSelect.utils'
 import './customLogsModal.scss'
-import { CustomLogsModalProps, InputSelectionProps } from '../../nodeDetail.type'
+
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, CUSTOM_LOGS_OPTIONS } from '../../../../../../../config'
+import { multiSelectStyles } from '../../../../../common/ReactSelectCustomization'
+import { CustomLogsModalProps, InputSelectionProps } from '../../nodeDetail.type'
 import {
     excludeFutureTimingsOptions,
     getDurationUnits,
     getTimeFromTimestamp,
     getTimeStamp,
 } from '../../nodeDetail.util'
-import { multiSelectStyles } from '../../../../../common/ReactSelectCustomization'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from '../node.type'
 
 const DropdownIndicator = () => {
@@ -48,7 +51,7 @@ const DropdownIndicator = () => {
 }
 
 const getNearestTimeOptionBeforeNow = () => {
-    let nearestTimeOption
+    let nearestTimeOption: (typeof ALLOW_UNTIL_TIME_OPTIONS)[0]
     ALLOW_UNTIL_TIME_OPTIONS.forEach((option) => {
         const today = moment().format('YYYY-MM-DD')
         const dateTimeToCompare = moment(`${today}T${option.value}`)
@@ -65,14 +68,10 @@ export const InputForSelectedOption = ({
 }: InputSelectionProps): JSX.Element => {
     const [untilTimeOptions, setUntilTimeOptions] =
         useState<{ label: string; value: string; isDisabled?: boolean }[]>(ALLOW_UNTIL_TIME_OPTIONS)
-    const [focused, setFocused] = useState(false)
-    const handleFocusChange = ({ focused: isFocused }) => {
-        setFocused(isFocused)
-    }
 
     const setUntilTimeOptionsWithExcluded = () => {
         const nearestOption = getNearestTimeOptionBeforeNow()
-        const index = ALLOW_UNTIL_TIME_OPTIONS.findIndex((option) => option === nearestOption)
+        const index = ALLOW_UNTIL_TIME_OPTIONS.indexOf(nearestOption)
         const newOptions = excludeFutureTimingsOptions(ALLOW_UNTIL_TIME_OPTIONS, index)
         setUntilTimeOptions(newOptions)
     }
@@ -116,7 +115,7 @@ export const InputForSelectedOption = ({
     }
 
     const checkInputError = (e) => {
-        let errorString
+        let errorString: string
         if (e.target.value === '') {
             errorString = 'This field is required'
         } else if (Number(e.target.value) <= 0) {
@@ -342,7 +341,7 @@ const CustomLogsModal = ({
                         className="custom-logs-radio-group dc__no-shrink"
                     >
                         {CUSTOM_LOGS_OPTIONS.map(({ label, value }) => (
-                            <RadioGroupItem value={value}>
+                            <RadioGroupItem key={`${value}-${label}-radio`} value={value}>
                                 <span className="custom-selection-radio">{label}</span>
                             </RadioGroupItem>
                         ))}

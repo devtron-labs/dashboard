@@ -15,23 +15,26 @@
  */
 
 import { useContext } from 'react'
+
 import {
-    Progressing,
-    DTSwitch,
     CiPipelineSourceTypeOption,
     CustomInput,
-    SourceTypeMap,
+    DTSwitch,
     Icon,
+    Progressing,
+    SourceTypeMap,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getSelectedWebhookEvent } from '@Pages/App/Configurations'
+
 import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
-import { ValidationRules } from '../ciPipeline/validationRules'
 import { BuildType, WebhookCIProps } from '../ciPipeline/types'
-import AdvancedConfigOptions from './AdvancedConfigOptions'
+import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { getSelectedWebhookEvent } from '@Pages/App/Configurations'
+import AdvancedConfigOptions from './AdvancedConfigOptions'
 
 export const Build = ({
     isAdvanced,
@@ -119,7 +122,7 @@ export const Build = ({
             const _condition = {}
 
             // create initial data with fix values
-            if (_selectedWebhookEvent && _selectedWebhookEvent.selectors) {
+            if (_selectedWebhookEvent?.selectors) {
                 _selectedWebhookEvent.selectors.forEach((_selector) => {
                     if (_selector.fixValue) {
                         _condition[_selector.id] = _selector.fixValue
@@ -263,10 +266,14 @@ export const Build = ({
                         <DTSwitch
                             isDisabled={forceDockerfileScan}
                             ariaLabel="Toggle scan for security vulnerabilities"
-                            isChecked={!!forceDockerfileScan || !!formData.dockerfileScanEnabled }
+                            isChecked={!!forceDockerfileScan || !!formData.dockerfileScanEnabled}
                             onChange={handleDockerfileScanToggle}
                             name="create-build-pipeline-dockerfile-scan-toggle"
-                            tooltipContent={forceDockerfileScan ? 'Dockerfile scanning is enforced across all pipelines in the organization.' : null}
+                            tooltipContent={
+                                forceDockerfileScan
+                                    ? 'Dockerfile scanning is enforced across all pipelines in the organization.'
+                                    : null
+                            }
                         />
                     </div>
                 </>

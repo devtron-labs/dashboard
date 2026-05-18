@@ -12,8 +12,6 @@ import {
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ChartTooltip } from '@PagesDevtron2.0/Shared'
-
 import {
     AutoscalerTypes,
     ClusterCapacityDistribution,
@@ -33,6 +31,8 @@ import {
     NODE_SCHEDULING_OPTIONS,
 } from './constants'
 import { AutoscalerTypeFilters, ClusterCapacitySortKeys, NodeErrorsFilters, NodeSchedulingTypeFilters } from './types'
+
+import { ChartTooltip } from '@PagesDevtron2.0/Shared'
 
 const AllocatedResource = ({ label, value }: SelectPickerOptionType<string>) => (
     <div className="flex left flex-grow-1 dc__gap-4 fs-11 fw-4 lh-1-5 cn-7">

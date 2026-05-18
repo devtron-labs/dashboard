@@ -28,21 +28,22 @@ import {
     NavigationGroupType,
     ROUTER_URLS,
     SearchBar,
+    UseRegisterShortcutProvider,
     useMainContext,
     useQuery,
-    UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, ViewType } from '@Config/constants'
 import { CommandBar } from '@Pages/Shared/CommandBar'
 
 import { getNavigationList } from './constants'
 import { NavGroup } from './NavGroup'
-import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
+import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavGroupProps, NavigationProps } from './types'
 import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
+
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
+import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, ViewType } from '@Config/constants'
 
 import './styles.scss'
 
@@ -224,6 +225,7 @@ export const Navigation = ({
     return (
         <>
             <div className="navigation dc__position-rel">
+                {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions: Its fine for mouse enter */}
                 <nav
                     className={`navigation__default dc__position-rel dc__grid dc__overflow-hidden h-100 ${isExpanded ? 'is-expanded' : ''}`}
                     onMouseEnter={handleOpenExpandedNavigation}
@@ -291,6 +293,7 @@ export const Navigation = ({
                 <AnimatePresence>
                     {isExpanded && (
                         <>
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <div
                                 className="navigation__expanded__backdrop dc__position-abs dc__top-0"
                                 onClick={handleCloseExpandedNavigation(true)}

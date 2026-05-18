@@ -9,11 +9,11 @@ import {
     SecurityDetailsCards,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { useGetAppSecurityDetails, useGetAppSecurityDetailsRecommendations } from '../appDetails/AppSecurity'
 import { CIRunningView } from './cIDetails.util'
 import { SecurityTabType } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const DockerfileScansRecommendations = importComponentFromFELibrary('DockerfileScansRecommendations')

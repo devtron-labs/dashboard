@@ -24,14 +24,14 @@ import {
     SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { createWebhookConditionList } from '@Components/ciPipeline/ciPipeline.service'
-import { ValidationRules } from '@Components/ciPipeline/validationRules'
-
 import { SourceMaterialsSelector } from '../SourceMaterialsSelector'
 import { getCIPipelineBranchSelectorFooterConfig, getSelectedWebhookEvent } from '../utils'
 import { ConfigureWebhookWrapper } from './ConfigureWebhookWrapper'
 import { CIStepperContentProps } from './types'
 import { getBranchValue, getSelectedMaterial } from './utils'
+
+import { createWebhookConditionList } from '@Components/ciPipeline/ciPipeline.service'
+import { ValidationRules } from '@Components/ciPipeline/validationRules'
 
 const validationRules = new ValidationRules()
 

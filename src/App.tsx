@@ -31,12 +31,13 @@ import {
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate'
-import { VersionUpdateProps } from '@Components/common/hooks/useVersionUpdate/types'
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
 import { validateToken } from './services/service'
+
+import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate'
+import { VersionUpdateProps } from '@Components/common/hooks/useVersionUpdate/types'
 
 import './css/application.scss'
 
@@ -56,10 +57,7 @@ const App = () => {
     const navigate = useNavigate()
 
     const isDirectApprovalNotification =
-        location.pathname &&
-        location.pathname.includes('approve') &&
-        location.search &&
-        location.search.includes(`?token=${approvalToken}`)
+        location.pathname?.includes('approve') && location.search?.includes(`?token=${approvalToken}`)
     const customThemeClassName = location.pathname.startsWith(ROUTER_URLS.NETWORK_STATUS_INTERFACE.ROOT)
         ? 'custom-theme-override'
         : ''

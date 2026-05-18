@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
 import DOMPurify from 'dompurify'
+import { Link } from 'react-router-dom'
 
 import {
     ClipboardButton,
@@ -24,6 +24,7 @@ export const NameCellComponent = ({
 
         return (
             <div className="flex left dc__overflow-hidden">
+                {/** biome-ignore lint/a11y/noSvgWithoutTitle: Decorative svg */}
                 <svg className="app-status" preserveAspectRatio="none" viewBox="0 0 200 40">
                     <line x1="0" y1="20" x2="100%" y2="20" stroke={color} strokeWidth="1" />
                     <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
@@ -38,13 +39,12 @@ export const NameCellComponent = ({
 
     return (
         <div className="flex left dc__gap-4 dc__visible-hover dc__visible-hover--parent">
-            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <Tooltip content={name}>
                 <Link
                     className="dc__link cursor dc__truncate"
                     to={redirectToAppDetails(app, app.defaultEnv.id)}
                     onClick={stopPropagation}
-                    // eslint-disable-next-line react/no-danger
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized via DOMPurify
                     dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(
                             highlightSearchText({

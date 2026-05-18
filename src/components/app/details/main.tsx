@@ -14,42 +14,51 @@
  * limitations under the License.
  */
 
-import { lazy, PropsWithChildren, Suspense, useEffect, useState } from 'react'
-import { Route, useParams, Navigate, Routes } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { MultiValue } from 'react-select'
+
 import {
-    showError,
-    Progressing,
-    stopPropagation,
-    OptionType,
+    API_STATUS_CODES,
+    BASE_ROUTES,
+    DeleteConfirmationModal,
     ErrorScreenManager,
+    OptionType,
+    Progressing,
     ResourceKindType,
+    showError,
+    stopPropagation,
     ToastManager,
     ToastVariantType,
-    DeleteConfirmationModal,
-    API_STATUS_CODES,
-    useUserPreferences,
     useMainContext,
-    BASE_ROUTES,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { MultiValue } from 'react-select'
+
+import { APP_TYPE, URLS } from '../../../config'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import {
     ErrorBoundary,
     getAndSetAppGroupFilters,
     setAppGroupFilterInLocalStorage,
     sortOptionsByLabel,
 } from '../../common'
-import { APP_TYPE, URLS } from '../../../config'
-import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
+import Overview from '../Overview/Overview'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
-import Overview from '../Overview/Overview'
 import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
 import './app.scss'
-import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
+import {
+    CreateGroupAppListType,
+    FilterParentType,
+    GroupOptionType,
+    SetFiltersInLocalStorageParamsType,
+} from '../../ApplicationGroup/AppGroup.types'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
+
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
@@ -146,14 +155,14 @@ export default function AppDetailsPage() {
         setAppListLoading(true)
         setGroupFilterOptions([])
         const { result } = await getEnvGroupList(+appId, FilterParentType.app)
-        const _groupFilterOption = []
+        const _groupFilterOption: GroupOptionType[] = []
         if (result) {
-            let _selectedGroup
+            let _selectedGroup: SetFiltersInLocalStorageParamsType['groupList'][number]
             for (const group of result) {
                 const processedGroupData = {
                     value: group.id.toString(),
                     label: group.name,
-                    // @ts-ignore
+                    // @ts-expect-error
                     appIds: group.resourceIds,
                     description: group.description,
                 }
@@ -227,8 +236,10 @@ export default function AppDetailsPage() {
         } catch (err) {
             const _map = new Map<string, boolean>()
             if (err['code'] === 403) {
+                // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
+                // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                 err['errors'].map((errors) => {
                     arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
                     errors['userMessage']['unauthorizedApps'].forEach((element) => {
@@ -271,7 +282,7 @@ export default function AppDetailsPage() {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
-        let _selectedGroup
+        let _selectedGroup: GroupOptionType
         const _allAppIds: number[] = []
         if (groupId) {
             _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)

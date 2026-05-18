@@ -27,9 +27,6 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCreateWorkflows } from '@Components/app/details/triggerView/workflow.service'
-import { getEnvironmentListMin } from '@Services/service'
-
 import { HandleNodeUpdateActionProps, NodeUpdateActionType, WorkflowProps } from './types'
 import {
     getCDNodeIcon,
@@ -39,6 +36,9 @@ import {
     getWorkflowGraphVisualizerNodes,
     getWorkflowLinkedCDNodes,
 } from './utils'
+
+import { getCreateWorkflows } from '@Components/app/details/triggerView/workflow.service'
+import { getEnvironmentListMin } from '@Services/service'
 
 export const Workflow = ({ templateId, onChange, workflowIdToErrorMessageMap }: WorkflowProps) => {
     // STATES

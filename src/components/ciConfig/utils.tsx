@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { getGitProviderIcon } from '@Components/common'
-
 import { MaterialOptionType } from './types'
+
+import { getGitProviderIcon } from '@Components/common'
 
 export const getGitRepositoryOptions = (sourceMaterials: MaterialOptionType[]) =>
     sourceMaterials.map((material) => ({

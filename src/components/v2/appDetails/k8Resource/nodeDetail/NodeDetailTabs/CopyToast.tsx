@@ -52,4 +52,5 @@ function handleSelectionChange(terminal, setPopupText): void {
 }
 
 export default CopyToast
+
 export { handleSelectionChange }

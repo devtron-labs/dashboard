@@ -26,10 +26,6 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Edit from '@Icons/ic-pencil.svg?react'
-import { Trash } from '@Components/common'
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-
 import {
     ExternalLink,
     ExternalLinkListProps,
@@ -38,6 +34,10 @@ import {
     parseSearchParams,
 } from './ExternalLinks.type'
 import { getMonitoringToolIcon, getScopeLabel, onImageLoadError } from './ExternalLinks.utils'
+
+import { Trash } from '@Components/common'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
+import Edit from '@Icons/ic-pencil.svg?react'
 
 export const ExternalLinkList = ({
     filteredExternalLinks,
@@ -124,6 +124,7 @@ export const ExternalLinkList = ({
                         className={`dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row'} ${idx !== filteredExternalLinks.length - 1 ? 'border__secondary--bottom' : ''}`}
                     >
                         <div className="p-2 flex">
+                            {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions: Here its fine since handling error */}
                             <img
                                 src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
                                 className="flex icon-dim-20 dc__no-shrink"

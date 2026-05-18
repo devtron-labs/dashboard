@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components } from 'react-select'
-import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
+
 import Check from '../../assets/icons/ic-check.svg?react'
+import ArrowDown from '../../assets/icons/ic-chevron-down.svg?react'
 
 export const styles = {
     control: (base, state) => ({
@@ -26,7 +26,7 @@ export const styles = {
         height: '40px',
         border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
     }),
-    singleValue: (base, state) => {
+    singleValue: (base) => {
         return {
             ...base,
             fontWeight: 500,
@@ -45,12 +45,13 @@ export const styles = {
 export const Option = (props) => {
     const { selectOption, data } = props
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
-    const onClick = (e) => selectOption(data)
+    const onClick = () => selectOption(data)
     return (
         <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             {props.isSelected ? (
                 <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
             ) : (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <span onClick={onClick} className="mr-8" style={style} />
             )}
             <components.Option {...props} />

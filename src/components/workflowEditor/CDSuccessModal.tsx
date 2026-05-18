@@ -16,7 +16,7 @@
 
 import { generatePath, NavLink } from 'react-router-dom'
 
-import { AppConfigProps, ROUTER_URLS, URLS as CommonURLS, VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, URLS as CommonURLS, ROUTER_URLS, VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 
 import GotToBuildDeploy from '../../assets/icons/go-to-buildanddeploy.svg?react'
 import GoToEnvOverride from '../../assets/icons/go-to-envoverride.svg?react'

@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useState } from 'react'
-import { useParams, useNavigate, useLocation, generatePath } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
     BreadCrumb,
-    useBreadcrumb,
-    ConditionalWrap,
-    useEffectAfterMount,
-    PageHeader,
-    ToastVariantType,
-    ToastManager,
-    getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
+    ConditionalWrap,
     DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    Progressing,
     ROUTER_URLS,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useBreadcrumb,
+    useEffectAfterMount,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
+import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
+import { mapByKey, Select } from '../common'
+import AdvancedConfig from './AdvancedConfig'
+import { renderChartGroupDeploymentToastMessage } from './charts.helper'
+import { deployChartGroup } from './charts.service'
+import { getDeployableChartsFromConfiguredCharts } from './list/utils'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
-import { Select, mapByKey } from '../common'
-import AdvancedConfig from './AdvancedConfig'
-import { deployChartGroup } from './charts.service'
-import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
-import { renderChartGroupDeploymentToastMessage } from './charts.helper'
-import { getDeployableChartsFromConfiguredCharts } from './list/utils'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId/deploy`
 
@@ -100,10 +102,7 @@ export default function ChartGroupAdvanceDeploy() {
             return
         }
         if (state.charts.length === 0) {
-            navigate(
-                generatePath(`${ROUTER_URLS.CHART_STORE}/group/${groupId}`, { groupId }),
-                { replace: true },
-            )
+            navigate(generatePath(`${ROUTER_URLS.CHART_STORE}/group/${groupId}`, { groupId }), { replace: true })
         }
         configureChart((location?.state as any)?.configureChartIndex || 0)
     }, [state.loading])
@@ -194,6 +193,7 @@ export default function ChartGroupAdvanceDeploy() {
                             />
                             <div className="deployment-buttons" style={{ gridTemplateColumns: '1fr' }}>
                                 <div className="mb-12">
+                                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                                     <label className="dc__required-field">Project</label>
                                     <Select
                                         rootClassName={`${project.error ? 'popup-button--error' : ''}`}

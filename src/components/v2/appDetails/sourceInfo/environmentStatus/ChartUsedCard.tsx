@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 
 import { LoadingCard, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
+import { getUsedChartContent } from '../utils'
 
 import DefaultChart from '@Icons/ic-default-chart.svg?react'
 import File from '@Icons/ic-file.svg?react'
 import QuestionIcon from '@Icons/ic-question.svg?react'
-
-import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
-import { getUsedChartContent } from '../utils'
 
 const ChartToolTip = ({ children, isDeprecated, onClickUpgrade, chartRef }: ChartToolTipType) => (
     <Tippy
@@ -98,6 +98,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onCli
                 </span>
                 <div className="app-details-info-card__bottom-container__details fs-12 fw-6">
                     {notes && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className="details-hover flex cb-5 fw-6 cursor"
                             onClick={onClickShowNotes}

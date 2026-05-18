@@ -19,7 +19,7 @@ import type { JSX } from 'react'
 import { useDownload } from '@devtron-labs/devtron-fe-common-lib'
 
 import Success from '../../../../assets/icons/appstatus/healthy.svg?react'
-import Error from '../../../../assets/icons/ic-error-exclamation.svg?react'
+import ErrorIcon from '../../../../assets/icons/ic-error-exclamation.svg?react'
 import ICInfoFilled from '../../../../assets/icons/ic-info-filled.svg?react'
 import UnAuthorized from '../../../../assets/icons/ic-locked.svg?react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -45,7 +45,7 @@ export const TriggerModalRow = ({ rowData, index, isVirtualEnv }: TriggerModalRo
         if (responseRowData.status === BulkResponseStatus.PASS) {
             return <Success className="mr-8 icon-dim-18" />
         }
-        return <Error className="mr-8 icon-dim-18" />
+        return <ErrorIcon className="mr-8 icon-dim-18" />
     }
 
     return (

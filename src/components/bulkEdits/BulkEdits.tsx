@@ -53,8 +53,7 @@ import {
     useMotionValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
+import { BulkEditsProps, BulkEditsState, BulkEditViewType } from './bulkEdits.type'
 import {
     OutputTabs,
     renderCMAndSecretImpObj,
@@ -63,7 +62,6 @@ import {
     renderSecretOutput,
 } from './bulkedit.utils'
 import { getSeeExample, updateBulkList, updateImpactedObjectsList } from './bulkedits.service'
-import { BulkEditsProps, BulkEditsState, BulkEditViewType } from './bulkEdits.type'
 import {
     BULK_EDIT_RESIZE_HANDLE_CLASS,
     INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE,
@@ -72,6 +70,8 @@ import {
     ReadmeVersionOptions,
     STATUS,
 } from './constants'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import './bulkEdit.scss'
 
@@ -150,6 +150,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             this.setState({ view: BulkEditViewType.FORM })
             return
         }
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const errorMessage = []
         errorMessage.push(STATUS.ERROR)
 
@@ -405,7 +406,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                     {!impactedObjects.configMap?.length ? (
                         <>No Result Found </>
                     ) : (
-                        <>{impactedObjects.configMap.map((elm) => renderCMAndSecretImpObj(elm))}</>
+                        impactedObjects.configMap.map((elm) => renderCMAndSecretImpObj(elm))
                     )}
                 </div>
                 {OutputDivider}
@@ -423,33 +424,32 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                     {!impactedObjects.deploymentTemplate?.length ? (
                         <>No Result Found</>
                     ) : (
-                        <>
-                            {impactedObjects.deploymentTemplate.map((elm) => (
-                                <div>
-                                    {elm.appId && (
-                                        <>
-                                            App Id: {elm.appId} <br />
-                                        </>
-                                    )}
-                                    {elm.appName && (
-                                        <>
-                                            App Name: {elm.appName} <br />
-                                        </>
-                                    )}
-                                    {elm.envId && (
-                                        <>
-                                            Environment Id: {elm.envId} <br />
-                                        </>
-                                    )}
-                                    {elm.envName && (
-                                        <>
-                                            Environment Name: {elm.envName} <br />
-                                        </>
-                                    )}
-                                    <br />
-                                </div>
-                            ))}
-                        </>
+                        impactedObjects.deploymentTemplate.map((elm) => (
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
+                            <div>
+                                {elm.appId && (
+                                    <>
+                                        App Id: {elm.appId} <br />
+                                    </>
+                                )}
+                                {elm.appName && (
+                                    <>
+                                        App Name: {elm.appName} <br />
+                                    </>
+                                )}
+                                {elm.envId && (
+                                    <>
+                                        Environment Id: {elm.envId} <br />
+                                    </>
+                                )}
+                                {elm.envName && (
+                                    <>
+                                        Environment Name: {elm.envName} <br />
+                                    </>
+                                )}
+                                <br />
+                            </div>
+                        ))
                     )}
                 </div>
                 {OutputDivider}
@@ -467,7 +467,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                     {!impactedObjects.secret?.length ? (
                         <>No Result Found</>
                     ) : (
-                        <>{impactedObjects.secret.map((elm) => renderCMAndSecretImpObj(elm))}</>
+                        impactedObjects.secret.map((elm) => renderCMAndSecretImpObj(elm))
                     )}
                 </div>
                 {OutputDivider}

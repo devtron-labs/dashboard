@@ -8,6 +8,16 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from '../Constants'
+import { BuildImageModalProps, CIPipelineMaterialDTO } from '../types'
+import { getCIMaterials, triggerBuild } from './service'
+import {
+    GetBulkCIDataPromiseGetterListProps,
+    GetTriggerBuildPayloadProps,
+    ParseBulkCIResponseIntoBulkCIDetailProps,
+    TriggerBuildPayloadType,
+} from './types'
+
 import { BulkCIDetailType, ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
 import {
     BulkResponseStatus,
@@ -18,16 +28,6 @@ import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 import { importComponentFromFELibrary } from '@Components/common'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '@Config/constantMessaging'
 import { DEFAULT_GIT_BRANCH_VALUE } from '@Config/constants'
-
-import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from '../Constants'
-import { BuildImageModalProps, CIPipelineMaterialDTO } from '../types'
-import { getCIMaterials, triggerBuild } from './service'
-import {
-    GetBulkCIDataPromiseGetterListProps,
-    GetTriggerBuildPayloadProps,
-    ParseBulkCIResponseIntoBulkCIDetailProps,
-    TriggerBuildPayloadType,
-} from './types'
 
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')

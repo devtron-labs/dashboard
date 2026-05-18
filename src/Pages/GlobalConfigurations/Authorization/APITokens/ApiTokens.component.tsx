@@ -28,8 +28,8 @@ import {
 
 import emptyGeneratToken from '@Images/ic-empty-generate-token.png'
 
-import { TokenListType } from './apiToken.type'
 import APITokenList from './APITokenList'
+import { TokenListType } from './apiToken.type'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { getGeneratedAPITokenList } from './service'

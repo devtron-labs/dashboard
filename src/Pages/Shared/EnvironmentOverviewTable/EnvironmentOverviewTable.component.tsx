@@ -34,10 +34,6 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICActivity from '@Icons/ic-activity.svg?react'
-import ICArrowLineDown from '@Icons/ic-arrow-line-down.svg?react'
-import DevtronIcon from '@Icons/ic-devtron-app.svg?react'
-
 import {
     EnvironmentOverviewTableHeaderFixedKeys,
     EnvironmentOverviewTableHeaderValues,
@@ -46,6 +42,10 @@ import {
 } from './EnvironmentOverview.constants'
 import { EnvironmentOverviewPopupMenu } from './EnvironmentOverviewPopupMenu'
 import { EnvironmentOverviewTableProps, EnvironmentOverviewTableRowData } from './EnvironmentOverviewTable.types'
+
+import ICActivity from '@Icons/ic-activity.svg?react'
+import ICArrowLineDown from '@Icons/ic-arrow-line-down.svg?react'
+import DevtronIcon from '@Icons/ic-devtron-app.svg?react'
 
 import './EnvironmentOverviewTable.scss'
 

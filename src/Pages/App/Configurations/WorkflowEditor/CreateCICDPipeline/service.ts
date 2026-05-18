@@ -25,12 +25,12 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CreateCICDPipelineData } from './types'
+
 import { getCDPipelineNameSuggestion, getDeploymentStrategyList } from '@Components/cdPipeline/cdPipeline.service'
 import { GeneratedHelmPush } from '@Components/cdPipeline/cdPipeline.types'
 import { getInitData } from '@Components/ciPipeline/ciPipeline.service'
 import { sortObjectArrayAlphabetically } from '@Components/common'
-
-import { CreateCICDPipelineData } from './types'
 
 const getSavedStrategies = (strategies: DeploymentStrategy[]): SavedDeploymentStrategy[] => {
     if (strategies.length > 0) {

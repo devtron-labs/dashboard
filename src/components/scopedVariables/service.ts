@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, post, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import { ROUTES as COMMON_ROUTES, get, post } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../config'
 import { ScopedVariablesDataType } from './types'

@@ -37,14 +37,11 @@ import {
     TagType,
     ToastManager,
     ToastVariantType,
+    UseFormSubmitHandler,
     useAsync,
     useForm,
-    UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Trash from '@Icons/ic-delete-interactive.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-import { getClusterListing } from '@Components/ResourceBrowser/ResourceBrowser.service'
 import { getNamespaceFromLocalStorage } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
@@ -53,6 +50,10 @@ import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
 import { ClusterNamespacesDTO, EnvDrawerProps, EnvironmentFormType } from './types'
 import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNamespaceLabels } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { getClusterListing } from '@Components/ResourceBrowser/ResourceBrowser.service'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const getClusterNamespaces = importComponentFromFELibrary('getClusterNamespaces', noop, 'function')
@@ -205,7 +206,7 @@ export const ClusterEnvironmentDrawer = ({
                 resourceVersion: namespaceLabels.resourceVersion,
             })
 
-            let api
+            let api: (payload: any, envId: number) => Promise<any>
             if (data.isVirtualCluster) {
                 api = getVirtualClusterSaveUpdate(envId)
             } else {
@@ -465,6 +466,7 @@ export const ClusterEnvironmentDrawer = ({
 
     return (
         <Drawer position="right" width="1024px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
+            {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents: Required for stopPropagation and form submission */}
             <form
                 className="h-100 bg__primary flexbox-col"
                 onClick={stopPropagation}

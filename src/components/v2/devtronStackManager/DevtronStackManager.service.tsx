@@ -24,7 +24,7 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
+
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,
@@ -38,6 +38,8 @@ import {
     ServerInfoResponse,
 } from './DevtronStackManager.type'
 import { INSTALLATION_TYPE_TO_REPO_MAP } from './DevtronStackManager.utils'
+
+import ICArrowClockwise from '@Icons/ic-arrow-clockwise.svg?react'
 
 let moduleStatusMap: Record<string, ModuleInfo> = {}
 let serverInfo: ServerInfoResponse
@@ -93,8 +95,10 @@ const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInfoRespon
         installedResponseFlag = false
     } finally {
         if (installedResponseFlag) {
+            // biome-ignore lint/correctness/noUnsafeFinally: Legacy
             return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.INSTALLED } })
         }
+        // biome-ignore lint/correctness/noUnsafeFinally: Legacy
         return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.NOT_INSTALLED } })
     }
 }
@@ -149,7 +153,7 @@ export const executeModuleAction = (
 ): Promise<ModuleActionResponse> => post(`${Routes.MODULE_INFO_API}?name=${moduleName}`, moduleActionRequest)
 
 const isValidServerInfo = (_serverInfo: ServerInfoResponse): boolean =>
-    !!(_serverInfo?.result && _serverInfo.result.releaseName && _serverInfo.result.installationType)
+    !!(_serverInfo?.result?.releaseName && _serverInfo.result.installationType)
 
 const getSavedServerInfo = (): ServerInfoResponse => {
     if (!isValidServerInfo(serverInfo)) {

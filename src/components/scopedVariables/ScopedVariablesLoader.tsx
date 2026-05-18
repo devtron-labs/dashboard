@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { LoadScopedVariablesProps } from './types'
 import Close from '../../assets/icons/ic-close.svg?react'
 import ICError from '../../assets/icons/ic-error-exclamation.svg?react'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { FileReaderStatus } from '../common/hooks/types'
 import { UPLOAD_FAILED_FALLBACK_MESSAGE, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
+import { LoadScopedVariablesProps } from './types'
 
 export default function ScopedVariablesLoader({ status, progress, fileData, abortRead }: LoadScopedVariablesProps) {
     return (

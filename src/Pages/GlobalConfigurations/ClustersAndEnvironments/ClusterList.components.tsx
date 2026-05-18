@@ -25,6 +25,7 @@ import {
     ButtonVariantType,
     ClusterDetailListType,
     ClusterStatusIcon,
+    URLS as COMMON_URLS,
     ComponentSizeType,
     Drawer,
     FiltersTypeEnum,
@@ -38,12 +39,9 @@ import {
     TableCellComponentProps,
     TableSignalEnum,
     Tooltip,
-    URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
-
+import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import {
     ClusterEnvTabs,
     ClusterListFields,
@@ -51,9 +49,11 @@ import {
     DEFAULT_CLUSTER_ID,
     EditDeleteClusterProps,
 } from './cluster.type'
-import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import EditClusterDrawerContent from './EditClusterDrawerContent'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { URLS } from '@Config/routes'
 
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
@@ -199,6 +199,7 @@ export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: num
 }
 
 export const ClusterListCellComponent: FunctionComponent<
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
 > = ({
     field,
@@ -207,6 +208,7 @@ export const ClusterListCellComponent: FunctionComponent<
     },
     isRowActive,
     signals,
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
 }: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
     const linkRef = useRef<HTMLAnchorElement>(null)
 
@@ -366,6 +368,7 @@ export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: Edi
 
     return (
         <Drawer position="right" width="1000px" onClose={handleClose}>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: stop propagation */}
             <div className="flexbox-col h-100 bg__primary" onClick={stopPropagation}>
                 <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
                     <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
@@ -415,12 +418,12 @@ export const ClusterEnvLoader = () => (
     <>
         {Array.from({ length: 3 }).map((_, idx) => (
             <div
-                // eslint-disable-next-line react/no-array-index-key
+                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                 key={idx}
                 className={`px-20 py-8 dc__grid environment-row ${VirtualClusterForm ? 'with-category' : ''} dc__align-items-center`}
             >
                 {Array.from({ length: 5 }).map((_val, index) => (
-                    // eslint-disable-next-line react/no-array-index-key
+                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                     <span key={index} className="shimmer" />
                 ))}
             </div>

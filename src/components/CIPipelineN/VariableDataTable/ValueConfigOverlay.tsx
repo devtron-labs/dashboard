@@ -20,8 +20,8 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     CustomInput,
     FilePropertyTypeSizeUnit,
@@ -32,19 +32,19 @@ import {
     TextareaProps,
     Tooltip,
     UsePopoverReturnType,
-    validateRequiredPositiveNumber,
     VariableTypeFormat,
+    validateRequiredPositiveNumber,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ICAdd from '@Icons/ic-add.svg?react'
-import ICChoicesDropdown from '@Icons/ic-choices-dropdown.svg?react'
-import ICClose from '@Icons/ic-close.svg?react'
-import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_OPTIONS_MAP } from './constants'
 import { ConfigOverlayProps, VariableDataTableActionType } from './types'
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICAdd from '@Icons/ic-add.svg?react'
+import ICChoicesDropdown from '@Icons/ic-choices-dropdown.svg?react'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
 
 const AskValueAtRuntimeCheckbox = importComponentFromFELibrary('AskValueAtRuntimeCheckbox', null, 'function')
 

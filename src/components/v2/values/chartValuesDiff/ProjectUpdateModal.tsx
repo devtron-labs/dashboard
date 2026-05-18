@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type JSX } from 'react'
+import { type JSX, useEffect, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    VisibleModal,
-    ToastManager,
-    ToastVariantType,
-    SelectPicker,
     ComponentSizeType,
     InfoBlock,
     OptionType,
+    Progressing,
+    SelectPicker,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { updateHelmAppProject } from '../../../charts/charts.service'
 import Close from '../../assets/icons/ic-close.svg?react'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
-import { updateHelmAppProject } from '../../../charts/charts.service'
 import { ProjectChangeMessageList } from './constant'
 
 export default function ProjectUpdateModal({
@@ -153,7 +155,6 @@ export default function ProjectUpdateModal({
                         type="button"
                         disabled={isSubmitting}
                         onClick={onClose}
-                        tabIndex={6}
                         data-tesid="cancel-button-on-project-change"
                     >
                         Cancel
@@ -163,7 +164,6 @@ export default function ProjectUpdateModal({
                         type="submit"
                         disabled={isSubmitting}
                         onClick={handleSaveAction}
-                        tabIndex={5}
                         data-testid="overview-project-save-button"
                     >
                         {isSubmitting ? <Progressing /> : 'Save'}

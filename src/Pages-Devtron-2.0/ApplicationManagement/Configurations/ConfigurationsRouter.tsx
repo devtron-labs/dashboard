@@ -103,7 +103,7 @@ export const Configurations = () => {
                                 />
                             }
                         />
-                        {...serverMode === SERVER_MODE.FULL && window._env_.ENABLE_SCOPED_VARIABLES
+                        {...(serverMode === SERVER_MODE.FULL && window._env_.ENABLE_SCOPED_VARIABLES
                             ? [
                                   <Route
                                       key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.SCOPED_VARIABLES.ROOT}
@@ -111,7 +111,7 @@ export const Configurations = () => {
                                       element={<ScopedVariables isSuperAdmin={isSuperAdmin} />}
                                   />,
                               ]
-                            : []}
+                            : [])}
                         <Route
                             key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.BUILD_INFRA.ROOT}
                             path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.BUILD_INFRA.ROOT}/*`}

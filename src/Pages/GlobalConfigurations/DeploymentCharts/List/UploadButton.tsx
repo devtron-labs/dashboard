@@ -16,9 +16,9 @@
 
 import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import Upload from '@Icons/ic-upload.svg?react'
-
 import { UploadButtonProps } from '../types'
+
+import Upload from '@Icons/ic-upload.svg?react'
 
 const UploadButton = ({ handleOpenUploadChartModal }: UploadButtonProps) => (
     <Button

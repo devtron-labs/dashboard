@@ -55,10 +55,14 @@ const MountFromHost = () => {
         <>
             <div className="row-container mb-12">
                 <div className="fw-6 fs-13 lh-32 cn-7 " />
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addMountDirectoryfromHost}>
+                <button
+                    type="button"
+                    className="dc__transparent cb-5 fw-6 fs-13 flexbox content-fit lh-32"
+                    onClick={addMountDirectoryfromHost}
+                >
                     <Add className="add-icon mt-6" />
                     Add mapping
-                </div>
+                </button>
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap?.map(
                 (mountPathMap, index) => {

@@ -38,7 +38,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { deploymentConfigDiffTabs, getDeploymentConfigDiffTabs } from '@Pages/Shared'
-import { getChartReferencesForAppAndEnv, getTemplateOptions } from '@Services/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
@@ -63,6 +62,8 @@ import {
     isConfigTypePublished,
     parseCompareWithSearchParams,
 } from './utils'
+
+import { getChartReferencesForAppAndEnv, getTemplateOptions } from '@Services/service'
 
 export const DeploymentConfigCompare = ({
     environments,
@@ -548,10 +549,10 @@ export const DeploymentConfigCompare = ({
                 type: 'string',
                 text: compareTo || BASE_CONFIGURATIONS.name,
             },
-            ...(((currentEnvOptions?.previousDeployments.length ||
+            ...((((currentEnvOptions?.previousDeployments.length ||
                 appOrEnvIdToResourceApprovalConfigurationMap?.[getIdentifierForApprovalConfig(false)]
                     ?.isApprovalApplicable) ??
-            isBaseConfigProtected
+            isBaseConfigProtected)
                 ? [
                       {
                           id: `environment-config-type-selector-current`,
@@ -591,16 +592,16 @@ export const DeploymentConfigCompare = ({
         const _compareWithManifestChartRefId =
             chartRefId ??
             (currentSearchParams.has('compareWithIdentifierId') && _isManifestView
-                ? compareEnvOptions.previousDeployments.find(
+                ? (compareEnvOptions.previousDeployments.find(
                       (prev) => prev.wfrId === Number(currentSearchParams.get('compareWithIdentifierId')),
-                  )?.chartRefId ?? null
+                  )?.chartRefId ?? null)
                 : null)
 
         const _manifestChartRefId =
             currentSearchParams.has('identifierId') && _isManifestView
-                ? currentEnvOptions.previousDeployments.find(
+                ? (currentEnvOptions.previousDeployments.find(
                       (prev) => prev.wfrId === Number(currentSearchParams.get('identifierId')),
-                  )?.chartRefId ?? null
+                  )?.chartRefId ?? null)
                 : null
 
         if (identifierId) {

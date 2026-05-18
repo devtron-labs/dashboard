@@ -36,11 +36,8 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { namespaceListByClusterId } from '@Components/ResourceBrowser/ResourceBrowser.service'
-import { DeleteComponentsName } from '@Config/constantMessaging'
-import { URLS } from '@Config/routes'
-
+import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
+import { ClusterActions, ClusterEnvLoader } from './ClusterList.components'
 import { deleteEnvironment } from './cluster.service'
 import {
     ClusterEnvListProps,
@@ -53,9 +50,12 @@ import {
     EnvNamespaceRowType,
 } from './cluster.type'
 import { environmentNameComparator, getNamespaceCount, getSelectParsedCategory } from './cluster.util'
-import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
-import { ClusterActions, ClusterEnvLoader } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { namespaceListByClusterId } from '@Components/ResourceBrowser/ResourceBrowser.service'
+import { DeleteComponentsName } from '@Config/constantMessaging'
+import { URLS } from '@Config/routes'
 
 import './cluster.scss'
 
@@ -164,7 +164,6 @@ const ClustersEnvironmentsList = ({
                     return stringComparatorBySortOrder(a.namespace, b.namespace, sortOrder)
                 case EnvListSortableKeys.ENV_TYPE:
                     return stringComparatorBySortOrder(a.envType, b.envType, sortOrder)
-                case EnvListSortableKeys.ENV_NAME:
                 default:
                     return environmentNameComparator(
                         a.environmentName,
@@ -222,6 +221,7 @@ const ClustersEnvironmentsList = ({
 
         return sortedFilteredList.map(
             ({ namespace, namespaceNotFound, envId, envType, environmentName, category: envCategory, description }) => (
+                // biome-ignore lint/a11y/useKeyWithClickEvents lint/a11y/useSemanticElements: Legacy
                 <div
                     role="button"
                     key={`${envId}-${namespace}-${environmentName}`}

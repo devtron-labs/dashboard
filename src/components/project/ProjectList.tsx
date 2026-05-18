@@ -15,20 +15,23 @@
  */
 
 import React, { Component } from 'react'
+
 import {
-    showError,
-    Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    ToastVariantType,
+    Progressing,
+    showError,
     ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config'
-import { createProject, getProjectList } from './service'
-import { Project } from './Project'
-import { ProjectListState, ProjectType, ProjectListProps } from './types'
+
 import Add from '../../assets/icons/ic-add.svg?react'
+import { ViewType } from '../../config'
+import { Project } from './Project'
+import { createProject, getProjectList } from './service'
+import { ProjectListProps, ProjectListState, ProjectType } from './types'
 import './project.scss'
+
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {
@@ -113,7 +116,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.setState({ projects })
     }
 
-    addProject(e): void {
+    addProject(): void {
         const { projects } = { ...this.state }
         const emptyProject = {
             id: 0,
@@ -172,7 +175,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             <Project
                 saveProject={this.saveProject}
                 handleChange={this.handleChange}
-                onCancel={(event) => this.discard(index)}
+                onCancel={() => this.discard(index)}
                 isValid={this.state.isValid}
                 errorMessage={this.state.errorMessage}
                 id={project.id}
@@ -190,6 +193,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         const unSavedItem = this.state.projects.find((item) => !item.id)
         if (!unSavedItem) {
             return (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <div
                     data-testid="project-add-project-button"
                     className="white-card white-card--add-new-item mb-16 dashed"
@@ -226,7 +230,12 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                     {this.renderAddProject()}
                     {this.state.projects.map((project, index) => {
                         return (
-                            <React.Fragment key={`${project.name}-${index}`}>
+                            <React.Fragment
+                                key={`${project.name}-${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    index
+                                }`}
+                            >
                                 {this.renderProjects(project, index)}
                             </React.Fragment>
                         )

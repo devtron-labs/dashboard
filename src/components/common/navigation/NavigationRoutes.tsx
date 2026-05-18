@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import * as Sentry from '@sentry/browser'
 import { FunctionComponent, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import * as Sentry from '@sentry/browser'
 
 import {
     AboutDevtronDialog,
-    animate,
     AppThemeType,
+    animate,
     BASE_ROUTES,
     BaseConfirmationModal,
     ConfirmationModalProvider,
@@ -48,29 +48,26 @@ import {
     motion,
     noop,
     ServerErrors,
-    showError,
     SidePanelConfig,
     SwitchThemeDialog,
     SwitchThemeDialogProps,
+    showError,
     TempAppWindow,
     TempAppWindowConfig,
     ToastManager,
     ToastVariantType,
+    UserPreferencesType,
     useMotionTemplate,
     useMotionValue,
-    UserPreferencesType,
     useTheme,
     useUserEmail,
     useUserPreferences,
     ViewIsPipelineRBACConfiguredRadioTabs,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Navigation } from '@Components/Navigation'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EditClusterDrawerContent'
 import { ReleaseConfigurations } from '@Pages/Releases/Detail'
-import { ApplicationManagementRouter } from '@PagesDevtron2.0/ApplicationManagement'
-import { InfrastructureManagementRouter } from '@PagesDevtron2.0/InfrastructureManagement'
 
 import { SERVER_MODE, ViewType } from '../../../config'
 import {
@@ -89,16 +86,20 @@ import {
     getModuleInfo,
     getServerInfo,
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { ErrorBoundary } from '..'
 import { Banner } from '../Banner/Banner'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { SidePanel } from '../SidePanel'
-import { ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
 import { AutomationAndEnablementRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 import UpgradeToOSSPlusDialog from './UpgradeToOSSPlusDialog'
+
+import { Navigation } from '@Components/Navigation'
+import { ApplicationManagementRouter } from '@PagesDevtron2.0/ApplicationManagement'
+import { InfrastructureManagementRouter } from '@PagesDevtron2.0/InfrastructureManagement'
 
 import './navigation.scss'
 
@@ -212,7 +213,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     }
 
     const processLoginData = async (response: LoginCountType, superAdmin: boolean, appCount: number) => {
-        // eslint-disable-next-line radix
+        // biome-ignore lint/correctness/useParseIntRadix: Legacy
         const count = response.result?.value ? parseInt(response.result.value) : 0
         setLoginCount(count)
         if (
@@ -703,16 +704,16 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     pageState={pageState}
                 />
             )}
-            <>
-                <motion.div
-                    className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
-                    ref={navRouteRef}
-                >
-                    {renderMainContent()}
-                </motion.div>
 
-                <SidePanel asideWidth={asideWidth} />
-            </>
+            <motion.div
+                className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                ref={navRouteRef}
+            >
+                {renderMainContent()}
+            </motion.div>
+
+            <SidePanel asideWidth={asideWidth} />
+
             {showThemeSwitcherDialog && (
                 <SwitchThemeDialog
                     initialThemePreference={userPreferences?.themePreference}

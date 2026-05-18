@@ -15,21 +15,23 @@
  */
 
 import React from 'react'
-import { useFileReader, HiddenInput, importComponentFromFELibrary } from '../common'
-import ScopedVariablesEditor from './ScopedVariablesEditor'
-import ScopedVariablesLoader from './ScopedVariablesLoader'
-import { validator, downloadData } from './utils'
+
 import ICUpload from '../../assets/icons/ic-upload-blue.svg?react'
-import { UploadScopedVariablesProps } from './types'
+import { HiddenInput, importComponentFromFELibrary, useFileReader } from '../common'
 import { FileReaderStatus, ReadFileAs } from '../common/hooks/types'
 import {
+    DOWNLOAD_FILES_AS,
     DOWNLOAD_TEMPLATE,
+    DOWNLOAD_TEMPLATE_NAME,
     SCOPED_VARIABLES_TEMPLATE_DATA,
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
-    DOWNLOAD_TEMPLATE_NAME,
-    DOWNLOAD_FILES_AS,
 } from './constants'
+import ScopedVariablesEditor from './ScopedVariablesEditor'
+import ScopedVariablesLoader from './ScopedVariablesLoader'
+import { UploadScopedVariablesProps } from './types'
+import { downloadData, validator } from './utils'
+
 import { HEADER_TEXT } from '@Config/constants'
 
 export default function UploadScopedVariables({

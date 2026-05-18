@@ -16,20 +16,23 @@
 
 import { Component } from 'react'
 import { generatePath, Link } from 'react-router-dom'
+
 import {
     DeploymentAppTypes,
-    stopPropagation,
     getWorkflowNodeStatusTitle,
     Icon,
     ROUTER_URLS,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
-import { TriggerStatus } from '../../../../config'
-import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
-import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import { getNodeSideHeadingAndClass } from './workflow.utils'
-import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
+
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '@Pages/App/Configurations'
+
+import { BUILD_STATUS, DEFAULT_STATUS } from '../../../../../../config'
+import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
+import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { TriggerStatus } from '../../../../config'
+import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
+import { getNodeSideHeadingAndClass } from './workflow.utils'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     gitOpsRepoWarningCondition =
@@ -70,12 +73,11 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                     <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`}>
                         {getWorkflowNodeStatusTitle(this.props.status)}
                     </span>
-                    <>
-                        {this.props.status && <span className="mr-5 ml-5">/</span>}
-                        <Link onClick={stopPropagation} to={url} className="workflow-node__details-link">
-                            Details
-                        </Link>
-                    </>
+
+                    {this.props.status && <span className="mr-5 ml-5">/</span>}
+                    <Link onClick={stopPropagation} to={url} className="workflow-node__details-link">
+                        Details
+                    </Link>
                 </div>
             )
         }
@@ -116,9 +118,10 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
 
         return (
             <>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div
                     className={isClickable ? 'workflow-node cursor' : 'workflow-node'}
-                    onClick={(e) => {
+                    onClick={() => {
                         if (isClickable) {
                             this.redirectToCDDetails()
                         }
@@ -139,6 +142,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                     {this.renderStatus(isClickable, status)}
                     <div className="workflow-node__btn-grp">
                         <button
+                            type="button"
                             className="workflow-node__deploy-btn"
                             data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                             onClick={(event) => {

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Observable } from 'rxjs'
 
-export const useSharedState = function <T>(data: T, observable: Observable<T>): [T] {
+export const useSharedState = <T>(data: T, observable: Observable<T>): [T] => {
     const [value, setValue] = useState<T>(data)
 
     useEffect(() => {

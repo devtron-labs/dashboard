@@ -15,9 +15,10 @@
  */
 
 import { APIOptions, get, post, ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../config/constants'
 import { AppType } from './appDetails.type'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest } from './k8Resource/nodeDetail/nodeDetail.api'
+import { generateDevtronAppIdentiferForK8sRequest, getAppId } from './k8Resource/nodeDetail/nodeDetail.api'
 import { getDeploymentType, getK8sResourcePayloadAppType } from './k8Resource/nodeDetail/nodeDetail.util'
 
 export const getInstalledChartDetail = (
@@ -39,6 +40,7 @@ export const getInstalledChartResourceTree = (
     })
 
 export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
+    // biome-ignore lint/suspicious/noGlobalIsNan: Legacy
     if (isNaN(Number(_appId)) || isNaN(Number(_envId))) {
         return null
     }
@@ -69,6 +71,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
 
     const data = {
         appId:
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             appType == AppType.DEVTRON_APP
                 ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
                 : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType ?? null }),

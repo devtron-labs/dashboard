@@ -29,18 +29,18 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GeneratedHelmPush } from '@Components/cdPipeline/cdPipeline.types'
-import { ValidationRules } from '@Components/ciPipeline/validationRules'
-import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
-import { GITOPS_REPO_REQUIRED } from '@Components/v2/values/chartValuesDiff/constant'
-import { ENV_ALREADY_EXIST_ERROR } from '@Config/constants'
-import { URLS } from '@Config/routes'
-import { getGitOpsRepoConfig } from '@Services/service'
-
 import { CDPipelineDeploymentAppType } from '../CDPipelineDeploymentAppType'
 import { SourceMaterialsSelector } from '../SourceMaterialsSelector'
 import { CDStepperContentProps } from './types'
 import { getEnvironmentOptions } from './utils'
+
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { GeneratedHelmPush } from '@Components/cdPipeline/cdPipeline.types'
+import { ValidationRules } from '@Components/ciPipeline/validationRules'
+import { GITOPS_REPO_REQUIRED } from '@Components/v2/values/chartValuesDiff/constant'
+import { ENV_ALREADY_EXIST_ERROR } from '@Config/constants'
+import { URLS } from '@Config/routes'
+import { getGitOpsRepoConfig } from '@Services/service'
 
 const validationRules = new ValidationRules()
 

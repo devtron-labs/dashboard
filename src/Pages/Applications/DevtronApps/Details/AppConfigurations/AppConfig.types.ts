@@ -27,11 +27,12 @@ import {
     ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { WorkflowResult } from '@Components/app/details/triggerView/types'
-import { ViewType } from '@Config/constants'
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
 
 import { ResourceConfig, ResourceConfigState } from '../../service.types'
+
+import { WorkflowResult } from '@Components/app/details/triggerView/types'
+import { ViewType } from '@Config/constants'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',

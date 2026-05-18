@@ -21,10 +21,10 @@ import { useEffect, useRef, useState } from 'react'
 
 import { getIsRequestAborted, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { APP_TYPE } from '@Config/constants'
-
 import { fetchDevtronCloneList } from '../service'
 import { DevtronAppCloneListProps } from './types'
+
+import { APP_TYPE } from '@Config/constants'
 
 export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, searchKey }: DevtronAppCloneListProps) => {
     const cloneListAbortControllerRef = useRef(new AbortController())

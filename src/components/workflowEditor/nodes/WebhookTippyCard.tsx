@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { Button, ButtonComponentType, ButtonStyleType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import Webhook from '../../../assets/icons/ic-CIWebhook.svg?react'
 import Close from '../../../assets/icons/ic-close.svg?react'
 import { WebhookTippyType } from '../types'
-import { Button, ButtonComponentType, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function WebhookTippyCard({ link, hideTippy }: WebhookTippyType) {
     return (
@@ -34,11 +35,11 @@ export default function WebhookTippyCard({ link, hideTippy }: WebhookTippyType) 
                     <Button
                         onClick={hideTippy}
                         linkProps={{
-                            to: link
+                            to: link,
                         }}
                         component={ButtonComponentType.link}
                         text="Show webhook details"
-                        dataTestId='hide-tooltip'
+                        dataTestId="hide-tooltip"
                         style={ButtonStyleType.neutral}
                         size={ComponentSizeType.xs}
                     />

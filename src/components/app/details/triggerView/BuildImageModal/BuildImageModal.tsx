@@ -24,10 +24,6 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { EnvironmentList } from '@Components/CIPipelineN/EnvironmentList'
-import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
-import { BUILD_STATUS, SOURCE_NOT_CONFIGURED } from '@Config/constants'
-
 import { getModuleConfigured } from '../../appDetails/appDetails.service'
 import { IGNORE_CACHE_INFO, TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { BuildImageModalProps, CIMaterialRouterProps } from '../types'
@@ -36,6 +32,10 @@ import GitInfoMaterial from './GitInfoMaterial'
 import { getCIMaterials, triggerBuild } from './service'
 import { GitInfoMaterialProps } from './types'
 import { getTriggerBuildPayload } from './utils'
+
+import { EnvironmentList } from '@Components/CIPipelineN/EnvironmentList'
+import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
+import { BUILD_STATUS, SOURCE_NOT_CONFIGURED } from '@Config/constants'
 
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
@@ -401,6 +401,7 @@ const BuildImageModal = ({
 
     return (
         <Drawer position="right" width="1024px" onClose={handleClose} onEscape={handleClose}>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
             <div
                 className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
                 onClick={stopPropagation}

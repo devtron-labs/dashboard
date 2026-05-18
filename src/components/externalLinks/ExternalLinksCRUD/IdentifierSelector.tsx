@@ -17,16 +17,18 @@
 import { type JSX, useEffect, useState } from 'react'
 import { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
+
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ClearIndicator,
     MultiValueRemove,
     noop,
     ReactSelectInputAction,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
+
 import AddIcon from '../../../assets/icons/ic-add.svg?react'
+import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
 import { IdentifierSelectStyles } from '../ExternalLinks.utils'
 
 export default function IdentifierSelector({
@@ -48,22 +50,20 @@ export default function IdentifierSelector({
     const identifierMenuList = (props): JSX.Element => {
         return (
             <components.MenuList {...props}>
-                {link.type === ExternalLinkScopeType.AppLevel && (
-                    <>
-                        {identifierSearchInput ? (
-                            <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
-                                <AddIcon className="icon-dim-16 fcb-5 mr-8" />
-                                <span className="fs-13 fw-4 lh-20 cb-5">
-                                    {`${isFullMode ? 'External helm' : 'Helm'} app ‘${identifierSearchInput}’`}
-                                </span>
-                            </div>
-                        ) : (
-                            <div className="cn-5 pl-8 pt-6 pb-6 dc__italic-font-style">
-                                {`Enter app name for${isFullMode ? ' externally ' : ' '}deployed helm apps`}
-                            </div>
-                        )}
-                    </>
-                )}
+                {link.type === ExternalLinkScopeType.AppLevel &&
+                    (identifierSearchInput ? (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
+                        <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
+                            <AddIcon className="icon-dim-16 fcb-5 mr-8" />
+                            <span className="fs-13 fw-4 lh-20 cb-5">
+                                {`${isFullMode ? 'External helm' : 'Helm'} app ‘${identifierSearchInput}’`}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="cn-5 pl-8 pt-6 pb-6 dc__italic-font-style">
+                            {`Enter app name for${isFullMode ? ' externally ' : ' '}deployed helm apps`}
+                        </div>
+                    ))}
                 {props.children}
             </components.MenuList>
         )
@@ -166,7 +166,7 @@ export default function IdentifierSelector({
         }
     }
 
-    const handleCreatableBlur = (event): void => {
+    const handleCreatableBlur = (): void => {
         // validating identifiers field data on blur
         link.invalidIdentifiers = !link.identifiers || link.identifiers.length <= 0
         handleLinksDataActions('validate', index, link)
@@ -185,6 +185,7 @@ export default function IdentifierSelector({
         <div className="link-identifiers">
             {link.type === ExternalLinkScopeType.ClusterLevel ? (
                 <>
+                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                     <label className="dc__required-field">Clusters</label>
                     <CreatableSelect
                         value={selectedIdentifiers}
@@ -217,6 +218,7 @@ export default function IdentifierSelector({
                 </>
             ) : (
                 <>
+                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                     <label className="dc__required-field">Applications</label>
                     <CreatableSelect
                         value={selectedIdentifiers}

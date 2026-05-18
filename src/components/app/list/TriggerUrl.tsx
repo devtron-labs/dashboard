@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useEffect, useState } from 'react'
+
 import {
-    Progressing,
-    VisibleModal,
-    GenericEmptyState,
     ClipboardButton,
     EMPTY_STATE_STATUS,
+    GenericEmptyState,
+    Progressing,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
 import Close from '../../../assets/icons/ic-close.svg?react'
-import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
+import { getIngressServiceUrls } from '../service'
 import { ManifestUrlList, TriggerURL } from './types'
 
 export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, close, appType }: TriggerURL) => {
@@ -36,6 +38,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
     const [errorMessage, setErrorMessage] = useState({ title: '', subtitle: '' })
 
     const createUrlDataList = () => {
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         result?.map((item) => {
             if (item.kind && item.pointsTo) {
                 if (item.kind === KIND.SERVICE) {
@@ -61,7 +64,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
                 setLoading(false)
             }
             setErrorMessage({ title: '', subtitle: '' })
-        } catch (error) {
+        } catch {
             setLoading(false)
             setErrorMessage({
                 title: 'Failed to fetch URLs',
@@ -82,7 +85,11 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
 
     return (
         <VisibleModal className="" close={close}>
-            <div onClick={stopPropogation} className="flexbox-col flex-grow-1 modal-body--ci-material h-100 dc__overflow-hidden">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
+            <div
+                onClick={stopPropogation}
+                className="flexbox-col flex-grow-1 modal-body--ci-material h-100 dc__overflow-hidden"
+            >
                 <div className="trigger-modal__header">
                     <h1 className="modal__title flex left fs-16" data-testid="app-details-url-heading">
                         URLs
@@ -100,6 +107,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
                     ) : (
                         Object.entries(data).map(([kind, item]) =>
                             item.length ? (
+                                // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                 <div className="pt-20 pl-20 pr-20 cn-9">
                                     <h5 className="mt-0 fw-6 dc__first-letter-capitalize">{kind}</h5>
                                     <div className="url-table_row pt-6 pb-6 fw-6 cn-7">
@@ -110,6 +118,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
                                         </div>
                                     </div>
                                     {item.map((value) => (
+                                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                         <div className="url-table_row table-content pt-6 pb-6 fw-4 cn-9 fs-13 dc__visible-hover dc__visible-hover--parent">
                                             <div className="flex dc__align-start dc__content-start w-200">
                                                 <Tippy
@@ -126,6 +135,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
                                             {kind === KIND.INGRESS && value?.urls && (
                                                 <div className="items-width-1">
                                                     {value.urls.map((url) => (
+                                                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                                         <div className="flex left">
                                                             <Tippy
                                                                 content={url}

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useEffect, useState, type JSX } from 'react'
-import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { type JSX, MouseEvent, useEffect, useState } from 'react'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -24,13 +24,14 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     CommonNodeAttr,
     ComponentSizeType,
     DeploymentNodeType,
     ErrorScreenManager,
     Progressing,
+    ROUTER_URLS,
     ServerErrors,
     showError,
     sortCallback,
@@ -39,14 +40,7 @@ import {
     usePrompt,
     WorkflowNodeType,
     WorkflowType,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
-import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
-import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImageModal'
-import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
-import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
 import Dropdown from '../../../../assets/icons/ic-chevron-down.svg?react'
 import Close from '../../../../assets/icons/ic-cross.svg?react'
@@ -61,7 +55,7 @@ import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import { triggerBranchChange } from '../../../app/service'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { getWorkflowStatus, getWorkflows } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
     ProcessWorkFlowStatusType,
@@ -78,7 +72,14 @@ import {
 import BulkSourceChange from './BulkSourceChange'
 import { getSelectedNodeAndAppId } from './utils'
 
+import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
+import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
+import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImageModal'
+import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
+import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+
 import './EnvTriggerView.scss'
+
 import { EnvTriggerViewActionKey } from './types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
@@ -90,7 +91,7 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
 const ChangeImageSource = importComponentFromFELibrary('ChangeImageSource', null, 'function')
 const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
 
-let inprogressStatusTimer
+let inprogressStatusTimer: ReturnType<typeof setTimeout>
 const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) => {
     const { envId } = useParams<{ envId: string }>()
     const navigate = useNavigate()
@@ -170,8 +171,10 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const processFilteredData = (_filteredWorkflows: WorkflowType[]): void => {
-        const _selectedAppList = []
+        const _selectedAppList: typeof selectedAppList = []
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let _preNodeExist
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let _postNodeExist
         _filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
@@ -246,7 +249,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const handleSelectAll = (): void => {
-        const _selectedAppList = []
+        const _selectedAppList: typeof selectedAppList = []
         let _preNodeExist = false
         let _postNodeExist = false
         const _workflows = filteredWorkflows.map((wf) => {
@@ -283,7 +286,9 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
     const handleSelectionChange = (_appId: number): void => {
         const _selectedAppList = [...selectedAppList]
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let _preNodeExist
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let _postNodeExist
         const _workflows = filteredWorkflows.map((wf) => {
             if (_appId === wf.appId) {
@@ -338,8 +343,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         !node.isLinkedCI && !node.isLinkedCD && node.type !== WorkflowNodeType.WEBHOOK
 
     const changeBranch = (value): void => {
-        const appIds = []
-        const skippedResources = []
+        const appIds: number[] = []
+        const skippedResources: typeof responseList = []
         const appNameMap = new Map()
 
         filteredWorkflows.forEach((wf) => {
@@ -382,7 +387,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
         triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
-                const _responseList = []
+                const _responseList: typeof responseList = []
+                // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                 response.map((res) => {
                     _responseList.push({
                         appId: res.appId,
@@ -636,6 +642,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 />
                 <div className="flex">
                     <button
+                        type="button"
                         className={`cta flex h-32 dc__gap-8 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
                         data-trigger-type="CD"
                         data-testid="bulk-deploy-button"

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { post, put, get } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
 
 export const getGitOpsConfiguration = (id: number): Promise<any> => {

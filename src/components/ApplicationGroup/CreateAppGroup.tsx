@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState, type JSX } from 'react'
+import Tippy from '@tippyjs/react'
+import { type JSX, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ConditionalWrap,
     CustomInput,
     Drawer,
@@ -33,15 +36,14 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import Close from '../../assets/icons/ic-close.svg?react'
-import CheckIcon from '../../assets/icons/ic-check.svg?react'
+
 import Abort from '../../assets/icons/ic-abort.svg?react'
+import CheckIcon from '../../assets/icons/ic-check.svg?react'
+import Close from '../../assets/icons/ic-close.svg?react'
 import Info from '../../assets/icons/ic-info-outline-grey.svg'
-import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
-import { CreateGroupTabs, CREATE_GROUP_TABS, FILTER_NAME_REGEX } from './Constants'
 import { createEnvGroup } from './AppGroup.service'
+import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
+import { CREATE_GROUP_TABS, CreateGroupTabs, FILTER_NAME_REGEX } from './Constants'
 
 export default function CreateAppGroup({
     appList,
@@ -149,6 +151,7 @@ export default function CreateAppGroup({
     }
 
     const appFilterAuthorizedList = () => {
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, the type of id is not matching for some reasons
         const _authorizedApp = []
         appList.forEach((app) => {
             if (!unAuthorizedApps.get(app.appName)) {
@@ -174,7 +177,9 @@ export default function CreateAppGroup({
     }
 
     const appFilterList = () => {
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, the type of id is not matching for some reasons
         const _authorizedAppList = []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, the type of id is not matching for some reasons
         const _unauthorizedAppList = []
         appList.forEach((app) => {
             unAuthorizedApps.get(app.appName)
@@ -223,6 +228,7 @@ export default function CreateAppGroup({
                         ? renderEmptyState()
                         : filteredAuthList.map((app) => {
                               return (
+                                  // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                   <div
                                       key={`selected-app-${app.id}`}
                                       className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
@@ -284,6 +290,7 @@ export default function CreateAppGroup({
                     {filteredAllApps.length <= 0
                         ? renderEmptyState()
                         : filteredAllApps.map((app) => (
+                              // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                               <ConditionalWrap
                                   condition={unAuthorizedApps.get(app.appName) === true}
                                   wrap={(children) => (
@@ -426,12 +433,12 @@ export default function CreateAppGroup({
             return
         }
         setLoading(true)
-        const _selectedAppIds = []
+        const _selectedAppIds: number[] = []
         for (const _appId in selectedAppsMap) {
             _selectedAppIds.push(+_appId)
         }
 
-        const appListIds = []
+        const appListIds: number[] = []
         appList.forEach((element) => {
             if (!unAuthorizedApps.get(element.appName)) {
                 appListIds.push(+element.id)
@@ -470,10 +477,10 @@ export default function CreateAppGroup({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bg__primary py-16 px-20 w-800">
-                <button className="cta cancel flex h-36 mr-12" onClick={closePopup}>
+                <button type="button" className="cta cancel flex h-36 mr-12" onClick={closePopup}>
                     Cancel
                 </button>
-                <button className="cta flex h-36" onClick={handleSave}>
+                <button type="button" className="cta flex h-36" onClick={handleSave}>
                     {selectedAppGroup?.value ? 'Update' : 'Save'}
                 </button>
             </div>

@@ -28,9 +28,6 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import MenuDots from '@Icons/ic-more-vertical.svg?react'
-import { TaintType } from '@Components/ClusterNodes/types'
-
 import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
 import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
 import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
@@ -39,6 +36,9 @@ import { K8S_EMPTY_GROUP } from '../Constants'
 import { NodeActionsMenuProps } from '../Types'
 import { getNodeActions } from './constants'
 import { K8sResourceListURLParams } from './types'
+
+import { TaintType } from '@Components/ClusterNodes/types'
+import MenuDots from '@Icons/ic-more-vertical.svg?react'
 
 const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling

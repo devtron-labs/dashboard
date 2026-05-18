@@ -14,45 +14,48 @@
  * limitations under the License.
  */
 /* eslint-disable react/no-danger */
+
+import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
 import { Component } from 'react'
-import { Link, generatePath } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import { CINode } from './nodes/CINode'
-import { CDNode } from './nodes/CDNode'
-import { StaticNode } from './nodes/StaticNode'
+import { generatePath, Link } from 'react-router-dom'
+
+import {
+    AddCDPositions,
+    ChangeCIPayloadType,
+    CommonNodeAttr,
+    URLS as CommonURLS,
+    ConditionalWrap,
+    highlightSearchText,
+    noop,
+    PipelineType,
+    ROUTER_URLS,
+    WorkflowNodeType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import ICDelete from '../../assets/icons/ic-delete-interactive.svg?react'
+import ICInput from '../../assets/icons/ic-input.svg?react'
+import ICMoreOption from '../../assets/icons/ic-more-option.svg?react'
+import ICEdit from '../../assets/icons/ic-pencil.svg?react'
+import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
+import { WorkflowCreate } from '../app/details/triggerView/config'
 import {
     RectangularEdge as Edge,
-    getLinkedCIPipelineURL,
-    getCIPipelineURL,
     getCDPipelineURL,
+    getCIPipelineURL,
     getExCIPipelineURL,
+    getLinkedCIPipelineURL,
     getWebhookDetailsURL,
     importComponentFromFELibrary,
 } from '../common'
-import { PipelineSelect } from './PipelineSelect'
-import { WorkflowCreate } from '../app/details/triggerView/config'
+import { CHANGE_CI_TOOLTIP } from './constants'
+import { CDNode } from './nodes/CDNode'
+import { CINode } from './nodes/CINode'
+import { StaticNode } from './nodes/StaticNode'
 import { WebhookNode } from './nodes/WebhookNode'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
-import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
-import {
-    CommonNodeAttr,
-    AddCDPositions,
-    noop,
-    WorkflowNodeType,
-    PipelineType,
-    ConditionalWrap,
-    ChangeCIPayloadType,
-    URLS as CommonURLS,
-    highlightSearchText,
-    ROUTER_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
-import ICInput from '../../assets/icons/ic-input.svg?react'
-import ICMoreOption from '../../assets/icons/ic-more-option.svg?react'
-import ICDelete from '../../assets/icons/ic-delete-interactive.svg?react'
-import ICEdit from '../../assets/icons/ic-pencil.svg?react'
+import { PipelineSelect } from './PipelineSelect'
 import { WorkflowProps, WorkflowState } from './types'
-import { CHANGE_CI_TOOLTIP } from './constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
@@ -149,7 +152,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     // In case there are more than one child nodes, then we will show add cd button thrice.
     // AND renderAdditionalEdge would only work for cdWorkflowList that is CIConfigDiffView
     renderNodes({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const ci = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.CI && !node.isLinkedCD)
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const webhook = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.WEBHOOK)
         const linkedCD = nodesWithBufferHeight.find((node) => node.isLinkedCD)
         const _nodesData = this.getNodesData({
@@ -177,9 +182,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }
         if (ci) {
             return _nodes.map((node) => {
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (node.type == WorkflowNodeType.GIT) {
                     return this.renderSourceNode(node, ci)
                 }
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (node.type == WorkflowNodeType.CI) {
                     return this.renderCINodes(node)
                 }
@@ -197,6 +204,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }
         if (webhook) {
             return _nodes.map((node) => {
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (node.type == WorkflowNodeType.WEBHOOK) {
                     return this.renderWebhookNode(node)
                 }
@@ -484,6 +492,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     getEdges({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
         return nodesWithBufferHeight.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 const endNode = nodesWithBufferHeight.find((val) => `${val.type}-${val.id}` == downStreamNodeId)
                 edgeList.push({
                     startNode: node,
@@ -509,6 +518,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         nodeId: number
         nodesWithBufferHeight: CommonNodeAttr[]
     }) => {
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const ciPipeline = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)
         this.props.navigate(`workflow/${this.props.id}/ci-pipeline/${+ciPipeline?.id}/cd-pipeline/${nodeId}`)
     }
@@ -520,7 +530,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             .filter((edgeNode) => `${edgeNode.startNode.type}-${edgeNode.startNode.id}` === selectedNodeKey)
             .map((edgeNode) => edgeNode.endNode)
         // Hoping only one CIPipeline is present in one workflow
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const workflowCIPipelineId = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.CI)?.id ?? 0
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const isWebhookCD = !!nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.WEBHOOK)
 
         const edgeList = this.getEdges({ nodesWithBufferHeight }).map((edgeNode) => {
@@ -573,9 +585,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             // Creating a dummy endNode
             // To create it, we need to find the endNode from startNode that has maximum y value
             // We will use this endNode to create a dummy edge.
-            let endNode = null
+            let endNode: typeof startNode = null
             let maxY = 0
             startNode.downstreams.forEach((downStreamNodeId) => {
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 const node = nodesWithBufferHeight.find((val) => `${val.type}-${val.id}` == downStreamNodeId)
                 if (node.y > maxY) {
                     maxY = node.y
@@ -642,6 +655,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             appId: Number(this.props.params.appId),
         }
 
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const switchFromCiPipelineId = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)?.id
 
         if (switchFromCiPipelineId) {
@@ -658,6 +672,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     renderWebhookTippyContent({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const webhookNode = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
         return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
     }
@@ -670,6 +685,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     emptyWorkflow = () => (
         <div className="fs-12 cn-7 pt-16 pb-16 pr-16 pl-16">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 className="text-center lh-18 bg__secondary flexbox-col dc__align-items-center bw-1 en-2 dashed h-100 dc__content-center br-4 pt-16 pb-16 cursor"
                 onClick={this.handleNewJobRedirection}
@@ -724,6 +740,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         // This variable can be converted into some sort of manipulatedNodes array
         const nodesWithBufferHeight = this.getNodesWithBufferHeight() ?? []
         let ciPipelineId = 0
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const ciPipeline = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
@@ -776,7 +793,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     >
                         <span
                             className="m-0 cn-9 fs-13 fw-6 lh-20"
-                            // eslint-disable-next-line react/no-danger
+                            // biome-ignore lint/security/noDangerouslySetInnerHtml: DOMPurify is used to sanitize the search text
                             dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(
                                     highlightSearchText({
@@ -859,6 +876,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 y={0}
                                 height={Math.max(Number(this.props.height), parallelEdgeMaxY)}
                                 width={this.props.width}
+                                aria-label={`Workflow: ${this.props.name}`}
                             >
                                 {this.renderEdgeList({ nodesWithBufferHeight })}
                                 {this.renderNodes({ nodesWithBufferHeight })}

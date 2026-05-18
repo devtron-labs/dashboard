@@ -14,41 +14,43 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    ServerErrors,
-    DeploymentAppTypes,
-    getIsRequestAborted,
-    abortPreviousRequests,
-    API_STATUS_CODES,
-    useMainContext,
-    AIAgentContextSourceType,
-} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import {
+    AIAgentContextSourceType,
+    API_STATUS_CODES,
+    abortPreviousRequests,
+    DeploymentAppTypes,
+    ErrorScreenManager,
+    getIsRequestAborted,
+    Progressing,
+    ServerErrors,
+    showError,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { sortOptionsByValue } from '../../../common'
 import {
     getAppDetail,
-    HelmAppDetailResponse,
     HelmAppDetailAndInstalledAppInfo,
+    HelmAppDetailResponse,
 } from '../../../external-apps/ExternalAppService'
-import IndexStore from '../index.store'
-import { AppDetails, AppType } from '../appDetails.type'
-import AppDetailsComponent from '../AppDetails.component'
-import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil'
 import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil'
+import AppDetailsComponent from '../AppDetails.component'
+import { AppDetails, AppType } from '../appDetails.type'
+import IndexStore from '../index.store'
 
-let initTimer = null
+let initTimer: ReturnType<typeof setTimeout> = null
 
 const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const location = useLocation()
     const navigate = useNavigate()
-    
+
     const { setAIAgentContext } = useMainContext()
 
     const [isLoading, setIsLoading] = useState(true)
@@ -155,10 +157,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 const convertedAppDetail = _convertToGenericAppDetailModel(appDetailResponse.result)
 
-                IndexStore.publishAppDetails(
-                    convertedAppDetail,
-                    AppType.EXTERNAL_HELM_CHART,
-                )
+                IndexStore.publishAppDetails(convertedAppDetail, AppType.EXTERNAL_HELM_CHART)
 
                 setAIAgentContext({
                     source: AIAgentContextSourceType.APP_DETAILS,
@@ -168,7 +167,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                         appName: convertedAppDetail.appName,
                         clusterId: convertedAppDetail.clusterId,
                         namespace: convertedAppDetail.namespace,
-                    }
+                    },
                 })
 
                 if (appDetailResponse.result?.appDetail.environmentDetails.clusterId) {
@@ -190,7 +189,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                             setIsLoading(false)
                             isAPICallInProgress = false
                         })
-                        .catch((e) => {
+                        .catch(() => {
                             setExternalLinksAndTools(externalLinksAndTools)
                             setIsLoading(false)
                             isAPICallInProgress = false

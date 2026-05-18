@@ -15,10 +15,12 @@
  */
 
 import { useEffect } from 'react'
+
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import Close from '../assets/icons/ic-close.svg?react'
+
 import docker from '../../../assets/icons/misc/docker.svg'
 import { useKeyDown } from '../../common'
+import Close from '../assets/icons/ic-close.svg?react'
 
 export default function DockerListModal({ closeTab, dockerList }: { closeTab: () => void; dockerList: string[] }) {
     const key = useKeyDown()
@@ -39,9 +41,10 @@ export default function DockerListModal({ closeTab, dockerList }: { closeTab: ()
                 </div>
                 <div className="pt-20 pb-6 docker-body">
                     {dockerList.map((list) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                         <div className="flexbox mb-14 ml-20">
                             <span className="dc__app-commit__hash mr-8">
-                                <img src={docker} className="commit-hash__icon grayscale" />
+                                <img src={docker} className="commit-hash__icon grayscale" alt="Docker icon" />
                                 <span className="ml-3">{list.split(':')[1] || list}</span>
                             </span>
                             <span className="fs-13 fw-4">{list}</span>

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, type JSX } from 'react'
+import React, { type JSX, ReactNode, useEffect, useState } from 'react'
 import { generatePath, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     Button,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ConfirmationModal,
     ConfirmationModalVariantType,
     DISCORD_LINK,
@@ -33,28 +33,13 @@ import {
     PageHeader,
     Progressing,
     RAISE_ISSUE,
+    ROUTER_URLS,
     showError,
     TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
     VisibleModal,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import SuccessIcon from '@Icons/appstatus/healthy.svg?react'
-import RetryInstallIcon from '@Icons/ic-arrow-clockwise.svg?react'
-import InstallIcon from '@Icons/ic-arrow-forward.svg?react'
-import UpToDateIcon from '@Icons/ic-celebration.svg?react'
-import Chat from '@Icons/ic-chat-circle-dots.svg?react'
-import InstalledIcon from '@Icons/ic-check.svg?react'
-import ICTrivy from '@Icons/ic-clair-to-trivy.svg?react'
-import CloseIcon from '@Icons/ic-close.svg?react'
-import DiscoverIcon from '@Icons/ic-compass.svg?react'
-import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
-import Note from '@Icons/ic-note.svg?react'
-import ICClair from '@Icons/ic-trivy-to-clair.svg?react'
-import Warning from '@Icons/ic-warning.svg?react'
-import Info from '@Icons/info-filled.svg?react'
 
 import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
@@ -79,12 +64,27 @@ import {
     handleEnableAction,
     isLatestVersionAvailable,
     MODULE_CONFIGURATION_DETAIL_MAP,
-    ModulesSection,
     MORE_MODULE_DETAILS,
+    ModulesSection,
     OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
 } from './DevtronStackManager.utils'
 import { SuccessModalComponent } from './SuccessModalComponent'
+
+import SuccessIcon from '@Icons/appstatus/healthy.svg?react'
+import RetryInstallIcon from '@Icons/ic-arrow-clockwise.svg?react'
+import InstallIcon from '@Icons/ic-arrow-forward.svg?react'
+import UpToDateIcon from '@Icons/ic-celebration.svg?react'
+import Chat from '@Icons/ic-chat-circle-dots.svg?react'
+import InstalledIcon from '@Icons/ic-check.svg?react'
+import ICTrivy from '@Icons/ic-clair-to-trivy.svg?react'
+import CloseIcon from '@Icons/ic-close.svg?react'
+import DiscoverIcon from '@Icons/ic-compass.svg?react'
+import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
+import Note from '@Icons/ic-note.svg?react'
+import ICClair from '@Icons/ic-trivy-to-clair.svg?react'
+import Warning from '@Icons/ic-warning.svg?react'
+import Info from '@Icons/info-filled.svg?react'
 
 import './devtronStackManager.component.scss'
 
@@ -134,6 +134,7 @@ const getInstallationStatusLabel = (
         )
     }
 
+    // biome-ignore lint/complexity/noUselessFragments: Legacy
     return <></>
 }
 
@@ -156,6 +157,7 @@ const ModuleDetailsCard = ({
         }
     }
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
         <div
             data-testid="module-details-card"
             className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
@@ -200,7 +202,10 @@ export const ModulesListingView = ({
         <div className="flexbox flex-wrap left p-20">
             {modulesList.map((module, idx) => (
                 <ModuleDetailsCard
-                    key={`module-details__card-${idx}`}
+                    key={`module-details__card-${
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        idx
+                    }`}
                     moduleDetails={module}
                     className="cursor"
                     handleModuleCardClick={handleModuleCardClick}
@@ -225,7 +230,7 @@ const getUpdateStatusLabel = (
     newVersion: string,
     showInitializing: boolean,
 ): JSX.Element | null => {
-    let updateStatusLabel = null
+    let updateStatusLabel: ReactNode = null
 
     if (installationStatus === ModuleStatus.UPGRADING) {
         updateStatusLabel = <span className="dc__loading-dots">{showInitializing ? 'Initializing' : 'Updating'}</span>
@@ -302,21 +307,20 @@ export const NavItem = ({
     )
 }
 
-export const StackPageHeader = ({
-    detailsMode,
-    selectedModule,
-    handleBreadcrumbClick,
-}: StackManagerPageHeaderType): JSX.Element => {
+export const StackPageHeader = ({ detailsMode, selectedModule }: StackManagerPageHeaderType): JSX.Element => {
     const navigate = useNavigate()
 
     const handleRedirectToModule = (detailsMode) => {
         const url =
-            detailsMode === 'discover' ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES
+            detailsMode === 'discover'
+                ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES
+                : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES
         navigate(url)
     }
 
     const renderBreadcrumbs = (headerTitleName, detailsMode) => (
         <div data-testid="module-details-header" className="m-0 flex left ">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div onClick={() => handleRedirectToModule(detailsMode)} className="dc__devtron-breadcrumb__item">
                 <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
             </div>
@@ -518,47 +522,41 @@ const InstallationStatus = ({
             )}
 
             {(installationStatus === ModuleStatus.INSTALLED ||
-                (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
-                <>
-                    {isUpgradeView ? (
-                        <div
-                            data-testid="module-status-updated"
-                            className="module-details__upgrade-success flex column"
-                        >
-                            <UpToDateIcon className="icon-dim-40" />
-                            <span className="mt-12">You're using the latest version of Devtron.</span>
-                        </div>
-                    ) : (
-                        <div className="flexbox dc__content-space">
-                            <div className="module-details__installtion-success flex left dc__content-space">
-                                <div>
-                                    <span className="flexbox column left" data-testid="module-status-installed">
-                                        <SuccessIcon className="icon-dim-20 mr-12" /> Installed
-                                    </span>
-                                    {moduleNotEnabled ? (
-                                        <div className="fs-12 fw-4 cn-7 ml-30 flex left">
-                                            <span data-testid="module-not-enabled">Not enabled</span>
-                                        </div>
-                                    ) : (
-                                        ''
-                                    )}
-                                </div>
+                (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) &&
+                (isUpgradeView ? (
+                    <div data-testid="module-status-updated" className="module-details__upgrade-success flex column">
+                        <UpToDateIcon className="icon-dim-40" />
+                        <span className="mt-12">You're using the latest version of Devtron.</span>
+                    </div>
+                ) : (
+                    <div className="flexbox dc__content-space">
+                        <div className="module-details__installtion-success flex left dc__content-space">
+                            <div>
+                                <span className="flexbox column left" data-testid="module-status-installed">
+                                    <SuccessIcon className="icon-dim-20 mr-12" /> Installed
+                                </span>
+                                {moduleNotEnabled ? (
+                                    <div className="fs-12 fw-4 cn-7 ml-30 flex left">
+                                        <span data-testid="module-not-enabled">Not enabled</span>
+                                    </div>
+                                ) : (
+                                    ''
+                                )}
                             </div>
-                            {moduleNotEnabled ? (
-                                <DTSwitch
-                                    name="toggle-enable-integration"
-                                    ariaLabel="Toggle enable integration"
-                                    tooltipContent="Enable integration"
-                                    isChecked={toggled}
-                                    onChange={handleToggleButton}
-                                />
-                            ) : (
-                                ''
-                            )}
                         </div>
-                    )}
-                </>
-            )}
+                        {moduleNotEnabled ? (
+                            <DTSwitch
+                                name="toggle-enable-integration"
+                                ariaLabel="Toggle enable integration"
+                                tooltipContent="Enable integration"
+                                isChecked={toggled}
+                                onChange={handleToggleButton}
+                            />
+                        ) : (
+                            ''
+                        )}
+                    </div>
+                ))}
             {(installationStatus === ModuleStatus.INSTALL_FAILED ||
                 installationStatus === ModuleStatus.UPGRADE_FAILED ||
                 installationStatus === ModuleStatus.TIMEOUT ||
@@ -574,11 +572,14 @@ const InstallationStatus = ({
             )}
             {!isCICDModule &&
                 moduleDetails &&
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 (installationStatus == ModuleStatus.INSTALLING || installationStatus === ModuleStatus.TIMEOUT) && (
+                    // biome-ignore lint/a11y/noStaticElementInteractions: Legacy
                     <a
                         className={`mt-8 dc__no-decor fs-13 fw-6 cursor ${
                             installationStatus === ModuleStatus.INSTALLING ? '' : 'ml-32'
                         }`}
+                        // biome-ignore lint/a11y/useValidAnchor: Legacy
                         onClick={openCheckResourceStatusModal}
                     >
                         Check resource status
@@ -598,10 +599,13 @@ const InstallationStatus = ({
                     >
                         {isUpgradeView && !canViewLogs && (
                             <NavLink
-                                to={`${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
-                                    appId: `1|devtroncd|${appName}`,
-                                    appName,
-                                })}/${URLS.APP_DETAILS}`}
+                                to={`${generatePath(
+                                    ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP,
+                                    {
+                                        appId: `1|devtroncd|${appName}`,
+                                        appName,
+                                    },
+                                )}/${URLS.APP_DETAILS}`}
                                 target="_blank"
                             >
                                 View details
@@ -609,10 +613,13 @@ const InstallationStatus = ({
                         )}
                         {((isUpgradeView && canViewLogs) || (!isUpgradeView && isCICDModule)) && logPodName && (
                             <NavLink
-                                to={`${generatePath(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP, {
-                                    appId: `1|devtroncd|${appName}`,
-                                    appName
-                                })}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
+                                to={`${generatePath(
+                                    ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_HELM_APP,
+                                    {
+                                        appId: `1|devtroncd|${appName}`,
+                                        appName,
+                                    },
+                                )}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
                                 target="_blank"
                             >
                                 View logs
@@ -741,7 +748,7 @@ export const InstallationWrapper = ({
             if (!isUpgradeView && (belowMinSupportedVersion || isPendingDependency || otherInstallationInProgress)) {
                 return
             }
-            setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
+            setShowPreRequisiteConfirmationModal?.(false)
             updateActionTrigger(true)
             handleAction(
                 moduleName,
@@ -785,6 +792,7 @@ export const InstallationWrapper = ({
                             Please ensure you follow below pre-requisites steps in order.
                         </div>
                         {preRequisiteList.map((preRequisite) => (
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                             <div className="fw-4 fs-13 cn-7 mb-12">
                                 <div>Pre-requisites for {preRequisite.version}:</div>
                                 <MarkDown
@@ -820,6 +828,7 @@ export const InstallationWrapper = ({
                             </span>
                         </Checkbox>
                         <button
+                            type="button"
                             onClick={handleActionButtonClick}
                             disabled={!preRequisiteChecked}
                             className="cta ml-12 dc__no-decor"
@@ -904,6 +913,7 @@ export const InstallationWrapper = ({
                                             <Note className="module-details__install-icon icon-dim-16 mt-4 mr-8" />
                                             <div>
                                                 <div className="cn-9 fw-6 fs-13">Pre-requisites for this update</div>
+                                                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                                 <div
                                                     className="cb-5 fw-6 fs-13 pointer"
                                                     onClick={handleActionButtonClick}
@@ -943,7 +953,7 @@ export const InstallationWrapper = ({
                                 setSuccessState={setSuccessState}
                             />
                         )}
-                        {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
+                        {moduleDetails?.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
                             <ModuleNotConfigured moduleName={moduleName} />
                         )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
@@ -993,7 +1003,9 @@ export const ModuleDetailsView = ({
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
             setDetailsMode('')
             navigate(
-                fromDiscoverModules ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES,
+                fromDiscoverModules
+                    ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES
+                    : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES,
             )
         }
     }, [])
@@ -1172,7 +1184,10 @@ const DependentModuleList = ({ modulesList }: { modulesList: ModuleDetails[] }):
             <div className="fs-14 fw-6 cn-9 mb-16 mt-16">Pre-requisite integrations</div>
             {modulesList.map((module, idx) => (
                 <ModuleDetailsCard
-                    key={`module-details__card-${idx}`}
+                    key={`module-details__card-${
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        idx
+                    }`}
                     moduleDetails={module}
                     className="cursor dependent-module__card"
                     handleModuleCardClick={handleModuleCardClick}

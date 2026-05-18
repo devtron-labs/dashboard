@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import { Component, ReactElement } from 'react'
-import {
-    WorkflowNodeType,
-    ConditionalWrap,
-    Icon,
-} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { Component, ReactElement } from 'react'
 import { Link } from 'react-router-dom'
-import ToggleCDSelectButton from '../ToggleCDSelectButton'
-import Warning from '../../../assets/icons/ic-warning.svg?react'
-import ICLinkedCINode from '../../../assets/icons/ic-node-build-linked.svg?react'
+
+import { ConditionalWrap, Icon, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import IcLink from '../../../assets/icons/ic-link.svg?react'
-import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import ICLinkedCINode from '../../../assets/icons/ic-node-build-linked.svg?react'
+import Warning from '../../../assets/icons/ic-warning.svg?react'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { CINodeProps } from './types'
 
 export class CINode extends Component<CINodeProps> {

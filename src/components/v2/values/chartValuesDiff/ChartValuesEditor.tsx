@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
+
 import {
-    showError,
-    DetailsProgressing,
-    YAMLStringify,
     CodeEditor,
-    versionComparatorBySortOrder,
+    ComponentSizeType,
+    DetailsProgressing,
     MODES,
     SelectPicker,
     SelectPickerVariantType,
-    ComponentSizeType,
+    showError,
+    versionComparatorBySortOrder,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
+import Lock from '../../../../assets/icons/ic-locked.svg?react'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import Lock from '../../../../assets/icons/ic-locked.svg?react'
+import {
+    GROUPED_OPTION_LABELS,
+    ListToTraverseKeys,
+    MANIFEST_OUTPUT_INFO_TEXT,
+    MANIFEST_OUTPUT_TIPPY_CONTENT,
+} from './ChartValuesView.constants'
 import {
     ChartGroupOptionType,
     ChartKind,
@@ -40,13 +49,6 @@ import {
     CompareWithDropdownProps,
     ValuesForDiffStateType,
 } from './ChartValuesView.type'
-import Edit from '../../../../assets/icons/ic-pencil.svg?react'
-import {
-    GROUPED_OPTION_LABELS,
-    ListToTraverseKeys,
-    MANIFEST_OUTPUT_INFO_TEXT,
-    MANIFEST_OUTPUT_TIPPY_CONTENT,
-} from './ChartValuesView.constants'
 import { getFormattedChartValuesDiffOptionLabel } from './ChartValuesView.utils'
 
 const CompareWithDropdown = ({
@@ -66,7 +68,7 @@ const CompareWithDropdown = ({
     ])
 
     useEffect(() => {
-        const _groupedOptions = []
+        const _groupedOptions: typeof groupedOptions = []
         if (deploymentHistoryOptionsList?.length > 0) {
             _groupedOptions.push({
                 label: GROUPED_OPTION_LABELS.PreviousDeployments,
@@ -154,10 +156,10 @@ export default function ChartValuesEditor({
             chartValuesList.length > 0 &&
             (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
         if (ExternalModeCondition || FullModeCondition) {
-            const deployedChartValues = []
-            const defaultChartValues = []
-            const presetChartValues = []
-            let _selectedVersionForDiff
+            const deployedChartValues: ValuesForDiffStateType['deployedChartValues'] = []
+            const defaultChartValues: ValuesForDiffStateType['defaultChartValues'] = []
+            const presetChartValues: ValuesForDiffStateType['presetChartValues'] = []
+            let _selectedVersionForDiff: ValuesForDiffStateType['selectedVersionForDiff']
 
             for (let index = 0; index < chartValuesList.length; index++) {
                 const _chartValue = chartValuesList[index]
@@ -257,7 +259,7 @@ export default function ChartValuesEditor({
                             let _selectedValues: string
                             try {
                                 _selectedValues = YAMLStringify(JSON.parse(res.result.valuesYaml))
-                            } catch (error) {
+                            } catch {
                                 _selectedValues = res.result.valuesYaml
                             }
                             _valuesForDiff.set(_version, _selectedValues)
@@ -301,7 +303,7 @@ export default function ChartValuesEditor({
             (!comparisonView && valuesForDiffState.selectedVersionForDiff) ||
             (comparisonView && !valuesForDiffState.selectedVersionForDiff)
         ) {
-            let _selectedVersionForDiff
+            let _selectedVersionForDiff: ValuesForDiffStateType['selectedVersionForDiff']
             if (isCreateValueView && selectedChartValues && valuesForDiffState.selectedVersionForDiff) {
                 if (valuesForDiffState.selectedVersionForDiff.value !== selectedChartValues?.id) {
                     const listToTraverse =

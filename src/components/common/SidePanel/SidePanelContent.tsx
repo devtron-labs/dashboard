@@ -90,6 +90,7 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                         }
 
                         return (
+                            // biome-ignore lint/a11y/useSemanticElements: Legacy
                             <div
                                 key={id}
                                 role="button"

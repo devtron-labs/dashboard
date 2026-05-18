@@ -15,13 +15,22 @@
  */
 
 import moment from 'moment'
-import { get, post, APIOptions, ZERO_TIME_STRING, Teams, getEnvironmentListMinPublic, stringComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
+
+import {
+    APIOptions,
+    get,
+    getEnvironmentListMinPublic,
+    post,
+    Teams,
+    ZERO_TIME_STRING,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { Moment12HourFormat, Routes } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
-import { JobCIPipeline, JobList, JobsMasterFilters } from './Types'
 import { JOB_STATUS_OPTIONS } from './Constants'
 import { ExportJobDataType } from './JobList/types'
+import { JobCIPipeline, JobList, JobsMasterFilters } from './Types'
 
 export const getJobs = async (request, options?: APIOptions) => {
     const response = (await post(Routes.JOB_LIST, request, options)) as JobList
@@ -93,9 +102,10 @@ export const getAppListDataToExport = (
                   offset: 0,
                   size: jobCount,
               },
-            { signal }
+        { signal },
     ).then(({ result }) => {
         if (result.jobContainers) {
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, can't put ExportJobDataType[] for some reason
             const _jobDataList = []
             for (const _job of result.jobContainers) {
                 if (_job.ciPipelines?.length > 0) {

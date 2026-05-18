@@ -14,56 +14,58 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { Component, type JSX } from 'react'
+
 import {
-    ConditionalWrap,
-    Checkbox,
-    TippyCustomized,
-    TippyTheme,
-    stopPropagation,
-    CHECKBOX_VALUE,
-    CustomInput,
-    SelectPicker,
-    ComponentSizeType,
-    SelectPickerProps,
-    renderMaterialIcon,
-    isAWSCodeCommitURL,
+    AuthenticationType,
     Button,
+    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    CHECKBOX_VALUE,
+    Checkbox,
+    ComponentSizeType,
+    ConditionalWrap,
+    CustomInput,
     DeleteConfirmationModal,
-    Textarea,
     ERROR_STATUS_CODE,
-    ButtonComponentType,
+    GitProviderIcon,
     Icon,
     InfoBlock,
-    AuthenticationType,
-    GitProviderIcon,
+    isAWSCodeCommitURL,
     ROUTER_URLS,
+    renderMaterialIcon,
+    SelectPicker,
+    SelectPickerProps,
+    stopPropagation,
+    Textarea,
+    TippyCustomized,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { MaterialViewProps, MaterialViewState } from './material.types'
+
 import Add from '../../assets/icons/ic-add.svg?react'
-import Down from '../../assets/icons/ic-chevron-down.svg?react'
-import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
-import Help from '../../assets/icons/ic-help.svg?react'
 import Check from '../../assets/icons/ic-check-circle-green.svg?react'
+import Down from '../../assets/icons/ic-chevron-down.svg?react'
 import Wrong from '../../assets/icons/ic-close-circle.svg?react'
-import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
-import { deleteMaterial } from './material.service'
-import {
-    DeleteComponentsName,
-    DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
-    DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
-} from '../../config/constantMessaging'
+import Help from '../../assets/icons/ic-help.svg?react'
+import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
 import InfoOutlined from '../../assets/icons/ic-info-outlined.svg?react'
 import {
-    INCLUDE_EXCLUDE_COMMIT_TIPPY,
+    DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
+    DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
+    DeleteComponentsName,
+} from '../../config/constantMessaging'
+import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import {
     INCLUDE_EXCLUDE_COMMIT_INFO,
-    INFO_BAR,
+    INCLUDE_EXCLUDE_COMMIT_TIPPY,
     INCLUDE_EXCLUDE_PLACEHOLDER,
+    INFO_BAR,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
+import { deleteMaterial } from './material.service'
+import { MaterialViewProps, MaterialViewState } from './material.types'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -95,10 +97,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     renderCollapsedView() {
         if (this.props.material.id) {
             return (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <div
                     key={`${this.props.material.id}`}
                     className="white-card artifact-collapsed"
-                    tabIndex={0}
                     onClick={this.props.toggleCollapse}
                     data-testid="already-existing-git-material"
                 >
@@ -112,6 +114,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             )
         }
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className="white-card white-card--add-new-item mb-16 dashed"
                 onClick={this.props.toggleCollapse}
@@ -127,6 +130,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         const res =
             this.props.providers?.filter((provider) => provider?.id === this.props.material?.gitProvider?.id) || []
         if (key === 'host') {
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             return res[0]?.authMode == 'SSH' ? 'ssh' : 'https'
         }
         if (key === 'placeholder') {
@@ -134,6 +138,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 return 'e.g. git-codecommit.ap-south-1.amazonaws.com/v1/repos/repo_name'
             }
 
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             return res[0]?.authMode == 'SSH' ? 'e.g. git@github.com:abc/xyz.git' : 'e.g. https://gitlab.com/abc/xyz.git'
         }
     }
@@ -645,10 +650,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <form
                 key={`${this.props.material.id}`}
                 className={`flexbox-col dc__gap-16
-                    ${this.props.isCreateAppView
-                        ? ''
-                        : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'} `
-                }
+                    ${this.props.isCreateAppView ? '' : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'} `}
             >
                 {!this.props.isCreateAppView && (
                     <div
@@ -721,7 +723,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <Checkbox
                                         isChecked={this.props.material.isExcludeRepoChecked}
                                         value={CHECKBOX_VALUE.CHECKED}
-                                        tabIndex={3}
                                         onChange={this.props.handleExcludeRepoCheckbox}
                                         rootClassName="fs-14 cn-9 m-0 flex top dc_max-width__max-content"
                                     >
@@ -757,7 +758,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <div className="mt-8 ml-35">
                                         <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
                                             <p className="fw-4 fs-13 mb-0-imp">
-                                                Use following pattern to include/exclude specific files/folder in this repo.
+                                                Use following pattern to include/exclude specific files/folder in this
+                                                repo.
+                                                {/** biome-ignore lint/a11y/noStaticElementInteractions: Legacy */}
                                                 <a
                                                     data-testid={`${
                                                         !this.props.isLearnHowClicked
@@ -765,6 +768,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                             : 'exclude-include-hide'
                                                     }`}
                                                     className="dc__link ml-4 cursor"
+                                                    // biome-ignore lint/a11y/useValidAnchor: Legacy
                                                     onClick={this.props.handleLearnHowClick}
                                                     rel="noopener noreferrer"
                                                     target="_blank"
@@ -863,12 +867,12 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 )}
                             </>
                         )}
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         <label className="m-0 flexbox-col dc__gap-16">
                             <div>
                                 <Checkbox
                                     isChecked={this.props.isChecked}
                                     value={CHECKBOX_VALUE.CHECKED}
-                                    tabIndex={4}
                                     onChange={this.props.handleCheckoutPathCheckbox}
                                     rootClassName="fs-14 cn-9 mb-8 flex top"
                                 >
@@ -921,7 +925,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <Checkbox
                                     isChecked={this.props.material.fetchSubmodules}
                                     value={CHECKBOX_VALUE.CHECKED}
-                                    tabIndex={5}
                                     onChange={this.props.handleSubmoduleCheckbox}
                                     rootClassName="fs-14 cn-9 flex top"
                                 >

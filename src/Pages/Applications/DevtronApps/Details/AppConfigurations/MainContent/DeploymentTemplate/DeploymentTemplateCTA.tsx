@@ -24,9 +24,9 @@ import {
     InvalidYAMLTippyWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArrowRight from '@Icons/ic-arrow-right.svg?react'
-
 import { DeploymentTemplateCTAProps } from './types'
+
+import ICArrowRight from '@Icons/ic-arrow-right.svg?react'
 
 // For protect we will have a separate component
 const DeploymentTemplateCTA = ({

@@ -16,17 +16,20 @@
 
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ModuleNameMap, handlePostHogEventUpdate, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
-import HelmCollage from '../../assets/img/guided-helm-collage.png'
-import HelmCluster from '../../assets/img/guided-helm-cluster.png'
-import DeployCICD from '../../assets/img/guide-onboard.png'
-import { SERVER_MODE } from '../../config'
+
+import { handlePostHogEventUpdate, ModuleNameMap, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import ArrowRight from '../../assets/icons/ic-arrow-right.svg?react'
-import { LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
+import DeployCICD from '../../assets/img/guide-onboard.png'
+import HelmCluster from '../../assets/img/guided-helm-cluster.png'
+import HelmCollage from '../../assets/img/guided-helm-collage.png'
+import { SERVER_MODE } from '../../config'
+import { updateLoginCount } from '../../services/service'
 import GuideCommonHeader from './GuideCommonHeader'
 import { OnboardingGuideProps } from './OnboardingGuide.type'
-import { updateLoginCount } from '../../services/service'
+import { LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import './onboardingGuide.scss'
+
 import ContentCard from '../common/ContentCard/ContentCard'
 import { CardLinkIconPlacement } from '../common/ContentCard/ContentCard.types'
 import {

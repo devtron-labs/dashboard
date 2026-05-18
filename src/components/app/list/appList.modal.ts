@@ -15,6 +15,7 @@
  */
 
 import { EnvironmentListHelmResult, EnvListMinDTO, handleUTCTime } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AppListFilterConfig, AppListPayloadType } from '../list-new/AppListType'
 import { Environment, GetEnvironmentsFromClusterNamespaceProps } from './types'
 
@@ -54,6 +55,7 @@ const getEnvironmentsFromClusterNamespace = ({
     selectedClusterIds.forEach((clusterId) => {
         const envIds = clusterVsEnvMap.get(clusterId)
         if (envIds) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             envIds.forEach((envId) => environments.add(envId))
         }
     })
@@ -119,6 +121,7 @@ const getDefaultEnvironment = (envList): Environment => {
 }
 
 const handleDeploymentInitiatedStatus = (status: string): string => {
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') {
         return 'progressing'
     }

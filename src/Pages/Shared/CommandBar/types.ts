@@ -8,11 +8,11 @@ import {
     UserPreferencesType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
+
 import { HelmApp } from '@Components/app/list-new/AppListType'
 import { Chart } from '@Components/charts/charts.types'
 import { AppListMinDTO } from '@Services/service.types'
-
-import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
 
 export type CommandBarActionIdType = UserPreferencesType['commandBar']['recentNavigationActions'][number]['id']
 

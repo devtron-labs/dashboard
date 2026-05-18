@@ -23,6 +23,7 @@ export interface SidePanelProps {
 }
 
 export interface SidePanelContentBaseProps {
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     SidePanelHeaderActions: FunctionComponent<PropsWithChildren<{}>>
 }
 

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import type { JSX } from 'react'
 import { components } from 'react-select'
-import Tippy from '@tippyjs/react'
-import {
-    stopPropagation,
-} from '@devtron-labs/devtron-fe-common-lib'
-import ArrowDown from '../assets/icons/ic-chevron-down.svg?react'
+
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
+import ArrowDown from '../assets/icons/ic-chevron-down.svg?react'
 
 /**
  * @deprecated
@@ -116,6 +116,7 @@ export const Option = (props) => {
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Stop propagation
             <div onClick={stopPropagation}>
                 <components.Option {...props} />
             </div>

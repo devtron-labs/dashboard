@@ -15,10 +15,13 @@
  */
 
 import { NavLink } from 'react-router-dom'
+
 import { ROUTER_URLS, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import WarningIcon from '@Icons/ic-warning.svg?react'
-import Close from '@Icons/ic-cross.svg?react'
+
 import { NoGitOpsConfiguredWarningType } from './types'
+
+import Close from '@Icons/ic-cross.svg?react'
+import WarningIcon from '@Icons/ic-warning.svg?react'
 
 export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfiguredWarningType) {
     const closePopupContinueWithHelm = (): void => {
@@ -47,13 +50,15 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
                     <button
                         data-testid="continue-with-helm"
                         type="button"
-                        tabIndex={3}
                         className="cta cancel sso__warn-button"
                         onClick={closePopupContinueWithHelm}
                     >
                         Continue with helm
                     </button>
-                    <NavLink className="cta sso__warn-button btn-confirm" to={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GITOPS}>
+                    <NavLink
+                        className="cta sso__warn-button btn-confirm"
+                        to={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GITOPS}
+                    >
                         Configure GitOps
                     </NavLink>
                 </div>

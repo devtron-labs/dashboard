@@ -15,20 +15,22 @@
  */
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Route, useNavigate, Routes, useLocation, Navigate } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    DevtronProgressing,
-    useMainContext,
     AppStatusModal,
     AppStatusModalTabType,
-    noop,
-    InstallationType,
     BASE_ROUTES,
+    DevtronProgressing,
+    ErrorScreenManager,
+    InstallationType,
+    noop,
+    Progressing,
     ROUTER_URLS,
+    showError,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, importComponentFromFELibrary, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
@@ -51,6 +53,7 @@ import {
     StackDetailsType,
 } from './DevtronStackManager.type'
 import './devtronStackManager.scss'
+
 import { isGitopsConfigured } from '../../../services/service'
 import { getAppDetailsFromResourceStatusData } from './DevtronStackManager.utils'
 
@@ -255,7 +258,8 @@ export default function DevtronStackManager({
         try {
             const { result } = await getLogPodName()
             setLogPodName(result?.podName)
-        } catch (e) {
+        } catch {
+            // biome-ignore lint/suspicious/noConsole: Legacy
             console.error('Error in fetching pod name')
         }
     }
@@ -273,7 +277,8 @@ export default function DevtronStackManager({
                     setSelectedModule(currentModule)
                 }
             }
-        } catch (e) {
+        } catch {
+            // biome-ignore lint/suspicious/noConsole: Legacy
             console.error('Error in fetching pod name')
         }
     }
@@ -337,7 +342,8 @@ export default function DevtronStackManager({
                 // 4. Update the stackDetails
                 setStackDetails(_stackDetails)
             })
-            .catch((e) => {
+            .catch(() => {
+                // biome-ignore lint/suspicious/noConsole: Legacy
                 console.error('Error in fetching some integrations details')
             })
     }
@@ -406,9 +412,9 @@ export default function DevtronStackManager({
 
         navigate({
             pathname: fromDiscoverModules
-                    ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS
-                    : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES_DETAILS,
-                search: `?${queryParams.toString()}`,
+                ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS
+                : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES_DETAILS,
+            search: `?${queryParams.toString()}`,
         })
     }
 

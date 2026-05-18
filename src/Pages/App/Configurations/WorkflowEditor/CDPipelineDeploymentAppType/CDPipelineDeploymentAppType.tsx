@@ -16,9 +16,9 @@
 
 import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeploymentAppRadioGroup } from '@Components/v2/values/chartValuesDiff/ChartValuesView.component'
-
 import { CDPipelineDeploymentAppTypeProps } from './types'
+
+import { DeploymentAppRadioGroup } from '@Components/v2/values/chartValuesDiff/ChartValuesView.component'
 
 export const CDPipelineDeploymentAppType = ({
     isVirtualEnvironment,
@@ -38,7 +38,7 @@ export const CDPipelineDeploymentAppType = ({
     // Want to show this when gitops module is installed, does not matter if it is configured or not
     (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) && (
         <div className="mt-16">
-            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
             <label className="form__label form__label--sentence">How do you want to deploy?</label>
             <DeploymentAppRadioGroup
                 deploymentAppType={deploymentAppType ?? DeploymentAppTypes.HELM}

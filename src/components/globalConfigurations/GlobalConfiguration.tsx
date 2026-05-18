@@ -14,38 +14,42 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement, PropsWithChildren } from 'react'
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom'
+import { isValidElement, lazy, PropsWithChildren, Suspense, useEffect, useState } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    useMainContext,
-    PageHeader,
-    SideNavigation,
-    getComponentSpecificThemeClass,
     AppThemeType,
-    SideNavigationProps,
-    DOCUMENTATION,
     BASE_ROUTES,
+    DOCUMENTATION,
+    getComponentSpecificThemeClass,
+    PageHeader,
+    Progressing,
+    SideNavigation,
+    SideNavigationProps,
+    showError,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ErrorBoundary, importComponentFromFELibrary } from '../common'
+
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg?react'
-import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
+import { getAppCheckList, getHostURLConfiguration } from '../../services/service'
+import { ErrorBoundary, importComponentFromFELibrary } from '../common'
 import './globalConfigurations.scss'
+
 import {
-    ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
     MODULE_STATUS_RETRY_COUNT,
+    ModuleNameMap,
     SERVER_MODE,
 } from '../../config/constants'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { BodyType } from './globalConfiguration.type'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
-import { getShouldHidePageHeaderAndSidebar } from './utils'
+import { BodyType } from './globalConfiguration.type'
 import { ListProps } from './types'
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 import { UserPermissionsTooltipContent } from './UserPermissionsTooltipContent'
+import { getShouldHidePageHeaderAndSidebar } from './utils'
+
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
@@ -55,10 +59,12 @@ const ExternalLinks = lazy(() => import('@Components/externalLinks/ExternalLinks
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 const ProjectList = lazy(() => import('@Components/project/ProjectList'))
 
-const GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM: SideNavigationProps['list'][number]['items'][number] = importComponentFromFELibrary('GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM', null, 'function')
+const GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM: SideNavigationProps['list'][number]['items'][number] =
+    importComponentFromFELibrary('GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM', null, 'function')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
+    // biome-ignore lint/correctness/noUnusedVariables: TODO: Should be removed but would need to do refactoring in multiple places to remove the dependency on this variable
     const [hostURLConfig, setIsHostURLConfig] = useState(undefined)
     const [checkList, setCheckList] = useState({
         isLoading: true,
@@ -172,7 +178,7 @@ const NavItem = ({ serverMode }) => {
     const [, setForceUpdateTime] = useState(Date.now())
     const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
 
-    let moduleStatusTimer = null
+    let moduleStatusTimer: ReturnType<typeof setTimeout> = null
 
     useEffect(() => {
         getModuleStatus(ModuleNameMap.ARGO_CD, MODULE_STATUS_RETRY_COUNT)
@@ -199,7 +205,7 @@ const NavItem = ({ serverMode }) => {
                     getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
                 }, MODULE_STATUS_POLLING_INTERVAL)
             }
-        } catch (error) {
+        } catch {
             if (retryOnError >= 0) {
                 getModuleStatus(moduleName, --retryOnError)
             }
@@ -277,7 +283,8 @@ const NavItem = ({ serverMode }) => {
                         animation: 'shift-toward-subtle',
                         visible:
                             tippyConfig.showTippy &&
-                            tippyConfig.showOnRoute === `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USERS}`,
+                            tippyConfig.showOnRoute ===
+                                `${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/${BASE_ROUTES.GLOBAL_CONFIG.AUTH.USERS}`,
                         className: `global-configuration__user-permissions-tooltip no-content-padding dc__mxw-250 br-8 ${getComponentSpecificThemeClass(AppThemeType.light)}`,
                         placement: 'right',
                         content: <UserPermissionsTooltipContent onClose={handleTooltipClose} />,
@@ -316,41 +323,59 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
 
     return (
         <Routes>
-            <Route key={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS} path={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS} element={<ExternalLinks />} />
-            <Route key={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES} path={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES} element={<ChartRepo isSuperAdmin={isSuperAdmin} />} />
+            <Route
+                key={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS}
+                path={BASE_ROUTES.GLOBAL_CONFIG.EXTERNAL_LINKS}
+                element={<ExternalLinks />}
+            />
+            <Route
+                key={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES}
+                path={BASE_ROUTES.GLOBAL_CONFIG.CHART_REPOSITORIES}
+                element={<ChartRepo isSuperAdmin={isSuperAdmin} />}
+            />
             <Route path={`${BASE_ROUTES.GLOBAL_CONFIG.CLUSTER_ENV.ROOT}/*`} element={<Clusters />} />
-            <Route key={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS} path={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS} element={<ProjectList isSuperAdmin={isSuperAdmin} />} />
-            {!window._env_.K8S_CLIENT ? [
-                ...(serverMode !== SERVER_MODE.EA_ONLY
-                    ? [
-                          <Route
-                              key={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
-                              path={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
-                              element={
-                                  <HostURLConfiguration
-                                      isSuperAdmin={isSuperAdmin}
-                                      refreshGlobalConfig={getHostURLConfig}
-                                      handleChecklistUpdate={handleChecklistUpdate}
-                                  />
-                              }
-                          />,
-                      ]
-                    : []),
+            <Route
+                key={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS}
+                path={BASE_ROUTES.GLOBAL_CONFIG.PROJECTS}
+                element={<ProjectList isSuperAdmin={isSuperAdmin} />}
+            />
+            {!window._env_.K8S_CLIENT
+                ? [
+                      ...(serverMode !== SERVER_MODE.EA_ONLY
+                          ? [
+                                <Route
+                                    key={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
+                                    path={BASE_ROUTES.GLOBAL_CONFIG.HOST_URL}
+                                    element={
+                                        <HostURLConfiguration
+                                            isSuperAdmin={isSuperAdmin}
+                                            refreshGlobalConfig={getHostURLConfig}
+                                            handleChecklistUpdate={handleChecklistUpdate}
+                                        />
+                                    }
+                                />,
+                            ]
+                          : []),
 
-                <Route
-                    key={BASE_ROUTES.GLOBAL_CONFIG.DOCKER}
-                    path={`${BASE_ROUTES.GLOBAL_CONFIG.DOCKER}/:id?`}
-                    element={
-                        <Docker
-                            handleChecklistUpdate={handleChecklistUpdate}
-                            isSuperAdmin={isSuperAdmin}
-                            isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
-                        />
-                    }
-                />,
+                      <Route
+                          key={BASE_ROUTES.GLOBAL_CONFIG.DOCKER}
+                          path={`${BASE_ROUTES.GLOBAL_CONFIG.DOCKER}/:id?`}
+                          element={
+                              <Docker
+                                  handleChecklistUpdate={handleChecklistUpdate}
+                                  isSuperAdmin={isSuperAdmin}
+                                  isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
+                              />
+                          }
+                      />,
 
-                <Route key={BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT} path={`${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/*`} element={<Authorization />} />,
-            ]: []}
+                      <Route
+                          key={BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}
+                          path={`${BASE_ROUTES.GLOBAL_CONFIG.AUTH.ROOT}/*`}
+                          element={<Authorization />}
+                      />,
+                  ]
+                : []}
             <Route path="*" element={<Navigate to={defaultRoute()} />} />
         </Routes>
     )

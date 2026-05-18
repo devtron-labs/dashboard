@@ -3,11 +3,11 @@ import { Route, Routes } from 'react-router-dom'
 
 import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
+import { InfraOverview } from './Overview'
+
 import { importComponentFromFELibrary } from '@Components/common'
 import { InfraAppsRouter } from '@Components/common/navigation/NavRoutes.components'
 import ResourceBrowserRouter from '@Components/ResourceBrowser/ResourceBrowserRouter'
-
-import { InfraOverview } from './Overview'
 
 const Charts = lazy(() => import('@Components/charts/Charts'))
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')

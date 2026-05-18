@@ -32,15 +32,15 @@ import {
     ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICBookOpen from '@Icons/ic-book-open.svg?react'
-import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
-import ICMore from '@Icons/ic-more-option.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import BaseConfigurationNavigation from './BaseConfigurationNavigation'
 import SelectMergeStrategy from './SelectMergeStrategy'
 import { ConfigToolbarProps } from './types'
 import { PopupMenuItem } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICBookOpen from '@Icons/ic-book-open.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
+import ICMore from '@Icons/ic-more-option.svg?react'
 
 const ProtectionViewTabGroup = importComponentFromFELibrary('ProtectionViewTabGroup', null, 'function')
 const MergePatchWithTemplateCheckbox = importComponentFromFELibrary('MergePatchWithTemplateCheckbox', null, 'function')

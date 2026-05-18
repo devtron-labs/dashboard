@@ -28,14 +28,15 @@ import {
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import CloseIcon from '@Icons/ic-close.svg?react'
-import Info from '@Icons/ic-info-filled.svg?react'
 import errorImage from '@Images/ic_upload_chart_error.png'
-import { SERVER_ERROR_CODES } from '@Config/constants'
 
 import uploadingImage from '../../../../assets/gif/uploading.gif'
 import { ChartUploadResponse, ChartUploadType, UPLOAD_STATE, UploadChartModalType } from '../types'
 import { uploadChart, validateChart } from './service'
+
+import { SERVER_ERROR_CODES } from '@Config/constants'
+import CloseIcon from '@Icons/ic-close.svg?react'
+import Info from '@Icons/ic-info-filled.svg?react'
 
 const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
     const inputFileRef = useRef(null)
@@ -184,6 +185,7 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
             <img src={imgSrc} alt={title} style={{ height: '100px' }} className="mb-10" />
             <h4 className="fw-6 fs-16 text-center">{title}</h4>
             {descriptionList.map((description) => (
+                // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                 <p className="fs-13 fw-4 m-0">{description}</p>
             ))}
         </div>

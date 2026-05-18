@@ -28,9 +28,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { API_STATUS_CODES } from '../../../config'
-import { AuthorizationGlobalConfigWrapper } from './SSOLoginServices/AutoAssign'
-import { getCustomRoles } from './authorization.service'
 import { AuthorizationProvider } from './AuthorizationProvider'
+import { getCustomRoles } from './authorization.service'
+import { AuthorizationGlobalConfigWrapper } from './SSOLoginServices/AutoAssign'
 import { AuthorizationContextProps, UserAndGroupPermissionsWrapProps } from './types'
 import { getMetaPossibleRoles } from './utils'
 

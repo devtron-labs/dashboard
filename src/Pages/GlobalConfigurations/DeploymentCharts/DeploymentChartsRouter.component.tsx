@@ -18,9 +18,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { BASE_ROUTES, ERROR_STATUS_CODE, ErrorScreenManager, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { DeploymentChartsList } from './List'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const DeploymentChartDetail = importComponentFromFELibrary('DeploymentChartDetail', null, 'function')
 

@@ -25,15 +25,15 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
+import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
+import MaterialForm from './MaterialForm'
+import { GitMaterialType, MaterialListProps } from './material.types'
+
 import Folder from '@Icons/ic-folder-filled.svg?react'
 import PlayMedia from '@Icons/ic-play-outline.svg?react'
 import GitHub from '@Icons/ic-sample-app.svg?react'
 import { GitAccountDTO } from '@Services/service.types'
-
-import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
-import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { GitMaterialType, MaterialListProps } from './material.types'
-import MaterialForm from './MaterialForm'
 
 import './material.scss'
 

@@ -1,8 +1,8 @@
 import { CD_MATERIAL_SIDEBAR_TABS, CDMaterialSidebarType, noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { RuntimeParamsSidebarProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 

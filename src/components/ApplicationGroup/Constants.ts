@@ -15,6 +15,7 @@
  */
 
 import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AppEnvLocalStorageKeyType } from './AppGroup.types'
 
 export const ENV_TRIGGER_VIEW_GA_EVENTS = {
@@ -59,10 +60,10 @@ export const BUTTON_TITLE = {
 }
 
 export enum BulkResponseStatus {
-    'PASS' = 'pass',
-    'FAIL' = 'fail',
-    'UNAUTHORIZE' = 'unauthorized',
-    'SKIP' = 'skip',
+    PASS = 'pass',
+    FAIL = 'fail',
+    UNAUTHORIZE = 'unauthorized',
+    SKIP = 'skip',
 }
 
 export const BULK_VIRTUAL_RESPONSE_STATUS = {
@@ -192,15 +193,15 @@ export const GROUP_LIST_HEADER = {
 }
 
 export enum AppFilterTabs {
-    'GROUP_FILTER' = 'groupFilter',
-    'APP_FILTER' = 'appFilter',
+    GROUP_FILTER = 'groupFilter',
+    APP_FILTER = 'appFilter',
 }
 
 export enum CreateGroupTabs {
-    'SELECTED_APPS' = 'selectedApps',
-    'SELECTED_ENV' = 'selectedEnv',
-    'ALL_APPS' = 'allApps',
-    'ALL_ENV' = 'allEnv',
+    SELECTED_APPS = 'selectedApps',
+    SELECTED_ENV = 'selectedEnv',
+    ALL_APPS = 'allApps',
+    ALL_ENV = 'allEnv',
 }
 
 export const CREATE_GROUP_TABS = {
@@ -249,4 +250,5 @@ export const BULK_CI_BUILD_STATUS = (noOfApps) => ({
 
 export const ENV_GROUP_LOCAL_STORAGE_KEY: AppEnvLocalStorageKeyType = 'envGroup__filter'
 export const APP_GROUP_LOCAL_STORAGE_KEY: AppEnvLocalStorageKeyType = 'appGroup__filter'
-export const APP_GROUP_TIPPY_CONTENT = 'Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'
+export const APP_GROUP_TIPPY_CONTENT =
+    'Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'

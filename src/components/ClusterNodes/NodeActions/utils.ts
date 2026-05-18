@@ -20,10 +20,10 @@ import {
     getUniqueId,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { PATTERNS } from '@Config/constants'
-
 import { TAINT_OPTIONS, TAINTS_TABLE_HEADERS } from '../constants'
 import { EFFECT_TYPE, TaintsTableHeaderKeys, TaintsTableType, TaintType } from '../types'
+
+import { PATTERNS } from '@Config/constants'
 
 export const getTaintsTableRow = (taint?: TaintType, id?: number): TaintsTableType['rows'][number] => ({
     id: id ?? getUniqueId(),
@@ -57,6 +57,7 @@ export const getTaintsTableRows = (taints: TaintType[]): TaintsTableType['rows']
 
 export const getTaintsRowCellError = () =>
     TAINTS_TABLE_HEADERS.reduce(
+        // biome-ignore lint/performance/noAccumulatingSpread: Legacy
         (headerAcc, { key }) => ({ ...headerAcc, [key]: { isValid: true, errorMessages: [] } }),
         {},
     )
@@ -197,6 +198,7 @@ export const getTaintTableValidateState = ({ taintList }: { taintList: TaintsTab
     const taintCellError: TaintsTableType['cellError'] = taintList.reduce((acc, curr) => {
         acc[curr.id] = TAINTS_TABLE_HEADERS.reduce(
             (headerAcc, { key }) => ({
+                // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                 ...headerAcc,
                 [key]: getTaintsTableCellValidateState(key, curr),
             }),

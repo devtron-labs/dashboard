@@ -186,7 +186,6 @@ export interface GetAllAppResponseType extends ResponseType {
 
 export interface RoleBasedInfoNoteProps {
     userRole: UserRoleType
-    listingView?: boolean
 }
 
 export interface IdentifierSelectorProps {
@@ -239,14 +238,14 @@ export interface ExternalLinkListProps
 /**
  * External Link List Filters
  */
-export const enum ExternalLinkFilters {
+export enum ExternalLinkFilters {
     CLUSTERS = 'clusters',
     APPS = 'apps',
 }
 
 export interface ExternalListUrlFiltersType extends Record<ExternalLinkFilters, string[]> {}
 
-export const enum ExternalLinkMapListSortableKeys {
+export enum ExternalLinkMapListSortableKeys {
     linkName = 'linkName',
 }
 

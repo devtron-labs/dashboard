@@ -22,8 +22,8 @@ import {
     abortPreviousRequests,
     BuildStageVariable,
     ButtonWithLoader,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     EditImageFormFieldProps,
     getAvailablePluginTags,
     getIsRequestAborted,
@@ -33,26 +33,23 @@ import {
     PluginType,
     RefVariableType,
     ServerErrors,
-    showError,
     StepType,
+    showError,
     stopPropagation,
     ToastManager,
     ToastVariantType,
     useAsync,
+    VariableType,
+    VisibleModal2,
     validateDescription,
     validateDisplayName,
     validateName,
     validateSemanticVersioning,
-    VariableType,
-    VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICCross from '@Icons/ic-cross.svg?react'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-
 import { getConditionDetailsAndVariablesFromPlugin } from '../ciPipeline.utils'
-import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
 import CreatePluginFormContent from './CreatePluginFormContent'
+import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
 import { createPlugin, getParentPluginList } from './service'
 import {
     CreatePluginActionType,
@@ -65,6 +62,9 @@ import {
     HandleCreatePluginReturnType,
 } from './types'
 import { getDefaultPluginFormData, validateDocumentationLink, validateTags } from './utils'
+
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import ICCross from '@Icons/ic-cross.svg?react'
 
 import './CreatePluginModal.scss'
 
@@ -425,6 +425,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
 
     return (
         <VisibleModal2 close={handleCloseModal}>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
             <div
                 className="bg__primary dc__position-fixed dc__right-0 dc__top-0 h-100 flexbox-col dc__content-space w-800"
                 onClick={stopPropagation}

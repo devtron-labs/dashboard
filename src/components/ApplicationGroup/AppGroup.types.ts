@@ -33,17 +33,18 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GitInfoMaterialProps } from '@Components/app/details/triggerView/BuildImageModal/types'
-import { DeployImageContentProps } from '@Components/app/details/triggerView/DeployImageModal/types'
 import {
     AppConfigState,
-    EnvConfigurationsNavProps,
     EnvConfigurationState,
+    EnvConfigurationsNavProps,
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { EditDescRequest, Nodes, NodeType } from '../app/types'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
+
+import { GitInfoMaterialProps } from '@Components/app/details/triggerView/BuildImageModal/types'
+import { DeployImageContentProps } from '@Components/app/details/triggerView/DeployImageModal/types'
 
 interface BulkTriggerAppDetailType {
     appId: number

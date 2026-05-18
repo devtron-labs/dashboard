@@ -32,9 +32,6 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICDeleteInteractive from '@Icons/ic-delete-interactive.svg?react'
-import ICWarning from '@Icons/ic-warning.svg?react'
-
 import { deepEqual } from '../../../../../components/common'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
@@ -45,6 +42,9 @@ import {
 import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
+
+import ICDeleteInteractive from '@Icons/ic-delete-interactive.svg?react'
+import ICWarning from '@Icons/ic-warning.svg?react'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -71,7 +71,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const navigate = useNavigate()
 
-    async function populateDataFromAPI(data: PermissionGroup) {
+    function populateDataFromAPI(data: PermissionGroup) {
         const { name: _name, description: _description } = data
         setName({ value: _name, error: '' })
         setDescription(_description)

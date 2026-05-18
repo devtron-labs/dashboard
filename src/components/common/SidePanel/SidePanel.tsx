@@ -19,9 +19,9 @@ import { useEffect, useRef, useState } from 'react'
 import Draggable, { DraggableEventHandler } from 'react-draggable'
 
 import {
-    animate,
     AnimatePresence,
     AppThemeType,
+    animate,
     motion,
     useMainContext,
     useTheme,

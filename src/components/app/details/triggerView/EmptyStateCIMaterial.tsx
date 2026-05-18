@@ -15,15 +15,17 @@
  */
 
 import type { JSX } from 'react'
+
 import { Button, ButtonVariantType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
-import EmptyStateImage from '../../../../assets/img/app-not-deployed.svg'
+
 import NoEligibleCommit from '../../../../assets/gif/ic-no-eligible-commit.svg'
-import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import NextIcon from '../../../../assets/icons/ic-arrow-right.svg?react'
-import { EmptyStateCIMaterialProps } from './types'
-import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
+import EmptyStateImage from '../../../../assets/img/app-not-deployed.svg'
+import NoResults from '../../../../assets/img/empty-noresult@2x.png'
+import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
+import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
+import { EmptyStateCIMaterialProps } from './types'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -66,7 +68,7 @@ export default function EmptyStateCIMaterial({
                 subtitle: DOCKER_FILE_ERROR_MESSAGE,
                 cta:
                     repoUrl?.length === 0 ? (
-                        <button className="cta flex" onClick={handleGoToWorkFlowEditor}>
+                        <button type="button" className="cta flex" onClick={handleGoToWorkFlowEditor}>
                             Configure Source
                             <NextIcon className="icon-dim-16 ml-5 scn-0" />
                         </button>
@@ -87,7 +89,7 @@ export default function EmptyStateCIMaterial({
                 ),
                 cta:
                     repoUrl?.length === 0 ? (
-                        <button className="cta flex" onClick={handleGoToWorkFlowEditor}>
+                        <button type="button" className="cta flex" onClick={handleGoToWorkFlowEditor}>
                             Configure Source
                             <NextIcon className="icon-dim-16 ml-5 scn-0" />
                         </button>
@@ -114,6 +116,7 @@ export default function EmptyStateCIMaterial({
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
                 link: (
+                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                     <span
                         data-testid="show-excluded-commits-button"
                         className="dc__link dc__underline dc__block cursor"
@@ -163,9 +166,7 @@ export default function EmptyStateCIMaterial({
             return handleMaterialLoadingButton()
         }
 
-        return (
-            cta as JSX.Element
-        )
+        return cta as JSX.Element
     }
     return isMaterialLoading ? (
         <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />

@@ -16,10 +16,10 @@
 
 import { useParams } from 'react-router-dom'
 
+import { K8sResourceDetailURLParams, NodeDetailComponentWrapperProps } from './types'
+
 import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import NodeDetailComponent from '@Components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
-
-import { K8sResourceDetailURLParams, NodeDetailComponentWrapperProps } from './types'
 
 const NodeDetailComponentWrapper = ({
     getTabId,

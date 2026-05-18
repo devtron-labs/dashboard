@@ -25,12 +25,12 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ENV_TRIGGER_VIEW_GA_EVENTS } from '@Components/ApplicationGroup/Constants'
-import { URLS } from '@Config/routes'
-
 import { deepEqual } from '../../../common'
 import { TRIGGER_VIEW_GA_EVENTS, TRIGGER_VIEW_PARAMS } from './Constants'
 import { CDNodeActions, GetCDNodeSearchParams, TriggerViewDeploymentConfigType } from './types'
+
+import { ENV_TRIGGER_VIEW_GA_EVENTS } from '@Components/ApplicationGroup/Constants'
+import { URLS } from '@Config/routes'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
@@ -125,6 +125,7 @@ const checkForDiffInArray = (
     key: string,
     diffForOptions: Record<string, boolean>,
 ): Record<string, boolean> => {
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     const configOptions = []
     const configValueA = configA[key]
     const configValueB = configB[key]
@@ -254,7 +255,6 @@ export const getCDNodeActionSearch = ({
             )
             return new URLSearchParams([[TRIGGER_VIEW_PARAMS.ROLLBACK_NODE, cdNodeId.toString()]]).toString()
 
-        case CDNodeActions.CD_MATERIAL:
         default:
             handleAnalyticsEvent(
                 fromAppGroup ? ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked,

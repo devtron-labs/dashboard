@@ -26,12 +26,12 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-
 import { SERVER_MODE } from '../../config'
 import ChartIcon from './ChartIcon'
 import { ChartSelectProps } from './charts.types'
 import { getDescriptionTruncate, renderDeprecatedWarning } from './charts.util'
+
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 const ChartCard = ({
     chart,
@@ -106,6 +106,7 @@ const ChartCard = ({
         </div>
     )
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents lint/a11y/noStaticElementInteractions: Legacy
         <div
             key={chart.id}
             className={`chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__secondary-translucent cursor dc__position-rel br-8 ${isListView ? 'flexbox-col' : ''} ${selectedCount > 0 ? 'chart-grid-item--selected' : ''} `}

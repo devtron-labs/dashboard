@@ -15,11 +15,20 @@
  */
 
 import { NavLink } from 'react-router-dom'
+
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+
 import OpenInNew from '../../../../assets/icons/ic-open-in-new.svg?react'
 import { EmptyViewType } from './types'
 
-export const EmptyView = ({ imgSrc, title, subTitle, link, linkText, rootClassName = 'w-300 dc__align-reload-center' }: EmptyViewType) => {
+export const EmptyView = ({
+    imgSrc,
+    title,
+    subTitle,
+    link,
+    linkText,
+    rootClassName = 'w-300 dc__align-reload-center',
+}: EmptyViewType) => {
     const EmptyViewButton = () => {
         return link ? (
             <NavLink to={link} className="cta cta--ci-details flex" target="_blank">

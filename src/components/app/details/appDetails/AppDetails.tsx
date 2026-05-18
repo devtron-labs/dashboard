@@ -19,11 +19,11 @@ import { generatePath, useLocation, useNavigate, useParams } from 'react-router-
 
 import {
     ACTION_STATE,
-    aggregateNodes,
     AIAgentContextSourceType,
     AppStatusModal,
     AppStatusModalTabType,
     ArtifactInfoModal,
+    aggregateNodes,
     Button,
     ButtonComponentType,
     DocLink,
@@ -47,10 +47,8 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ForwardArrow from '@Icons/ic-arrow-forward.svg?react'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
-import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
 
 import { DEPLOYMENT_STATUS_QUERY_PARAM, RESOURCES_NOT_FOUND } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
@@ -62,20 +60,23 @@ import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.comp
 import IndexStore from '../../../v2/appDetails/index.store'
 import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
-import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
+import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import { useGetDeploymentWindowProfileMetaData, useGetDTAppDetails, useGetExternalLinksAndTools } from '../../service'
 import { AggregatedNodes, AppDetailsCDModalType } from '../../types'
 import { renderCIListHeader } from '../cdDetails/utils'
 import { MATERIAL_TYPE } from '../triggerView/types'
-import { AppDetailProps, DetailsType, ErrorItem, HibernationModalTypes } from './appDetails.type'
 import AppDetailsCDModal from './AppDetailsCDModal'
 import { AppMetrics } from './AppMetrics'
+import { AppDetailProps, DetailsType, ErrorItem, HibernationModalTypes } from './appDetails.type'
 import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS, RESOURCE_TREE_UNAVAILABLE_ERROR_CODE } from './constants'
 import HibernateModal from './HibernateModal'
 import IssuesListingModal from './IssuesListingModal'
 import { SourceInfo } from './SourceInfo'
+
+import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
+import ForwardArrow from '@Icons/ic-arrow-forward.svg?react'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')

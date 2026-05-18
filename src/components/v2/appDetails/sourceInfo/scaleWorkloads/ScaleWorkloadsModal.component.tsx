@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState, type JSX } from 'react'
+import { type JSX, useEffect, useRef, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    VisibleModal,
-    DetailsProgressing,
+    abortPreviousRequests,
     Checkbox,
     DeploymentAppTypes,
-    TabGroup,
+    DetailsProgressing,
     getIsRequestAborted,
-    abortPreviousRequests,
+    Progressing,
+    showError,
+    TabGroup,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Info from '../../../../../assets/icons/ic-info-filled.svg?react'
+
 import Close from '../../../../../assets/icons/ic-close.svg?react'
-import ScaleDown from '../../../../../assets/icons/ic-scale-down.svg?react'
+import Info from '../../../../../assets/icons/ic-info-filled.svg?react'
 import Restore from '../../../../../assets/icons/ic-restore.svg?react'
+import ScaleDown from '../../../../../assets/icons/ic-scale-down.svg?react'
+import MessageUI, { MsgUIType } from '../../../common/message.ui'
+import { hibernateApp, unhibernateApp } from './scaleWorkloadsModal.service'
 import {
     HibernateRequest,
     LoadingText,
@@ -37,14 +41,13 @@ import {
     ScaleWorkloadsType,
     WorkloadCheckType,
 } from './scaleWorkloadsModal.type'
-import { hibernateApp, unhibernateApp } from './scaleWorkloadsModal.service'
-import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './scaleWorkloadsModal.scss'
-import { useSharedState } from '../../../utils/useSharedState'
-import IndexStore from '../../index.store'
-import { AppType } from '../../appDetails.type'
-import { getInstalledChartDetailWithResourceTree } from '../../appDetails.api'
 import { useLocation, useNavigate } from 'react-router-dom'
+
+import { useSharedState } from '../../../utils/useSharedState'
+import { getInstalledChartDetailWithResourceTree } from '../../appDetails.api'
+import { AppType } from '../../appDetails.type'
+import IndexStore from '../../index.store'
 
 export default function ScaleWorkloadsModal({ appId, onClose }: ScaleWorkloadsModalProps) {
     const navigate = useNavigate()
@@ -236,6 +239,7 @@ export default function ScaleWorkloadsModal({ appId, onClose }: ScaleWorkloadsMo
                         id: tab,
                         label: getTabName(tab, index),
                         tabType: 'button',
+                        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                         active: selectedDeploymentTabIndex == index,
                         disabled: scalingInProgress || fetchingLatestDetails,
                         props: {
@@ -387,70 +391,62 @@ export default function ScaleWorkloadsModal({ appId, onClose }: ScaleWorkloadsMo
                     >
                         <DetailsProgressing pageLoader fullHeight loadingText={getLoadingText(isActiveWorkloadsTab)} />
                     </div>
-                ) : (
+                ) : isWorkloadPresent ? (
                     <>
-                        {isWorkloadPresent ? (
-                            <>
-                                <div className="check-all-workloads cn-7 fw-6 dc__border-bottom">
+                        <div className="check-all-workloads cn-7 fw-6 dc__border-bottom">
+                            <Checkbox
+                                rootClassName="mb-0 fs-13 cursor bg__primary p"
+                                isChecked={_nameSelection.isChecked}
+                                value={_nameSelection.value}
+                                onChange={(e) => {
+                                    e.stopPropagation()
+                                    handleAllScaleObjectsName(isActiveWorkloadsTab)
+                                }}
+                            >
+                                <div className="pl-8 fw-6">
+                                    <span>NAME</span>
+                                </div>
+                            </Checkbox>
+                        </div>
+                        <div className="h-192 dc__overflow-auto">
+                            {Array.from(_workloadsList.values()).map((item) => (
+                                <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                     <Checkbox
-                                        rootClassName="mb-0 fs-13 cursor bg__primary p"
-                                        isChecked={_nameSelection.isChecked}
-                                        value={_nameSelection.value}
+                                        rootClassName={`mb-0 fs-13 cursor bg__primary p${
+                                            item.errorMessage ? ' dc__align-baseline' : ''
+                                        }`}
+                                        isChecked={item.isChecked}
+                                        value={item.value}
                                         onChange={(e) => {
                                             e.stopPropagation()
-                                            handleAllScaleObjectsName(isActiveWorkloadsTab)
+                                            handleWorkloadSelection(`${item.kind}/${item.name}`, isActiveWorkloadsTab)
                                         }}
                                     >
-                                        <div className="pl-8 fw-6">
-                                            <span>NAME</span>
+                                        <div className="pl-8">
+                                            <span className="cn-9 fw-6">{item.kind} / </span>
+                                            <span>{item.name}</span>
                                         </div>
+                                        {item.errorMessage && (
+                                            <div className="cr-5 fs-11 fw-4 pl-16 mt-4">{item.errorMessage}</div>
+                                        )}
                                     </Checkbox>
                                 </div>
-                                <div className="h-192 dc__overflow-auto">
-                                    {Array.from(_workloadsList.values()).map((item) => (
-                                        <div key={`${item.kind}/${item.name}`} className="check-single-workload">
-                                            <Checkbox
-                                                rootClassName={`mb-0 fs-13 cursor bg__primary p${
-                                                    item.errorMessage ? ' dc__align-baseline' : ''
-                                                }`}
-                                                isChecked={item.isChecked}
-                                                value={item.value}
-                                                onChange={(e) => {
-                                                    e.stopPropagation()
-                                                    handleWorkloadSelection(
-                                                        `${item.kind}/${item.name}`,
-                                                        isActiveWorkloadsTab,
-                                                    )
-                                                }}
-                                            >
-                                                <div className="pl-8">
-                                                    <span className="cn-9 fw-6">{item.kind} / </span>
-                                                    <span>{item.name}</span>
-                                                </div>
-                                                {item.errorMessage && (
-                                                    <div className="cr-5 fs-11 fw-4 pl-16 mt-4">
-                                                        {item.errorMessage}
-                                                    </div>
-                                                )}
-                                            </Checkbox>
-                                        </div>
-                                    ))}
-                                </div>
-                            </>
-                        ) : (
-                            <MessageUI
-                                icon={MsgUIType.INFO}
-                                msg={getLoadingText(isActiveWorkloadsTab)}
-                                size={20}
-                                theme="white"
-                                iconClassName="no-readme-icon"
-                                centerMessage
-                            />
-                        )}
+                            ))}
+                        </div>
                     </>
+                ) : (
+                    <MessageUI
+                        icon={MsgUIType.INFO}
+                        msg={getLoadingText(isActiveWorkloadsTab)}
+                        size={20}
+                        theme="white"
+                        iconClassName="no-readme-icon"
+                        centerMessage
+                    />
                 )}
                 <div className="scale-workloads-cta">
                     <button
+                        type="button"
                         className={`cta flex ${
                             scalingInProgress || !isWorkloadPresent || !isAnySelected ? 'not-allowed' : ''
                         }`}

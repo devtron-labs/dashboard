@@ -21,11 +21,11 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg?react'
-
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { NODE_SEARCH_KEYS, RBSidebarKeysType, ShowAIButtonConfig } from './Types'
+
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg?react'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,

@@ -28,4 +28,3 @@ export const POSTHOG_EVENT_ONBOARDING = {
 export const LOGIN_COUNT = 'login-count'
 
 export const MAX_LOGIN_COUNT = 5
-

@@ -16,8 +16,6 @@
 
 import { RadioGroup, RadioGroupItem, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { PERMISSION_TYPE_LABEL_MAP, PermissionType } from '../../../constants'
 import { getIsSuperAdminPermission } from '../../../utils'
 import { AppPermissions } from '../AppPermissions'
@@ -25,6 +23,8 @@ import SuperAdminInfoBar from '../SuperAdminInfoBar'
 import { UserPermissionGroupsSelector } from '../UserPermissionGroupsSelector'
 import { usePermissionConfiguration } from './PermissionConfigurationFormProvider'
 import { PermissionConfigurationFormProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const ManageAllAccessToggle = importComponentFromFELibrary('ManageAllAccessToggle', null, 'function')
 
@@ -63,6 +63,7 @@ const PermissionConfigurationForm = ({
                         const isSuperAdminRadio = getIsSuperAdminPermission(value as PermissionType)
                         return (
                             <Tooltip
+                                key={`radio-tooltip-${value}`}
                                 alwaysShowTippyOnHover={isSuperAdminRadio && isPermissionSelectionDisabled}
                                 content="Cannot manage access of super admins"
                             >
@@ -72,7 +73,6 @@ const PermissionConfigurationForm = ({
                                             isSuperAdminRadio ? 'super-admin' : 'specific-user'
                                         }-permission-radio-button`}
                                         value={value}
-                                        key={value}
                                         disabled={isPermissionSelectionDisabled}
                                     >
                                         <span

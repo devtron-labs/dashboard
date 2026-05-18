@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { TLSConnectionDTO } from '@Components/common'
 import {
-    DeploymentAppTypes,
-    DeploymentStrategy,
     AppEnvironment,
-    DeploymentChartVersionType,
     ChartMetadataType,
+    DeploymentAppTypes,
+    DeploymentChartVersionType,
+    DeploymentStrategy,
     EnvListMinDTO,
     ResponseType,
     Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { TLSConnectionDTO } from '@Components/common'
 
 export interface RootObject {
     code: number

@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
+    AppEnvironment,
     asyncWrap,
     CICDSidebarFilterOptionType,
     DeploymentAppTypes,
@@ -28,21 +29,18 @@ import {
     History,
     HistoryComponentType,
     LogResizeButton,
-    mapByKey,
     ModuleNameMap,
+    mapByKey,
     Progressing,
-    showError,
+    ROUTER_URLS,
     Sidebar,
+    showError,
     TRIGGER_STATUS_PROGRESSING,
-    AppEnvironment,
     TriggerOutput,
     useAsync,
     useInterval,
     useScrollable,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { useAppContext } from '@Components/common'
 
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
@@ -57,6 +55,8 @@ import {
     renderRunSourceInDropdown,
     renderVirtualHistoryArtifacts,
 } from './utils'
+
+import { useAppContext } from '@Components/common'
 
 import './cdDetail.scss'
 
@@ -86,7 +86,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             ]),
         [appId, filteredEnvIds],
     )
-    const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
+    const [loadingDeploymentHistory, deploymentHistoryResult, _deploymentHistoryError, , , dependencyState] = useAsync(
         () => getTriggerHistory({ appId: Number(appId), envId: Number(envId), pagination }),
         [pagination, appId, envId],
         !!envId && !!pipelineId,
@@ -206,6 +206,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             )?.deploymentAppType
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
 
+            // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
             let _selectedEnvironment
             let isEnvDeleted = false
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())

@@ -1,0 +1,95 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.4.11/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 120
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "correctness": {
+                "noUnusedVariables": "error",
+                "noUndeclaredVariables": "error",
+                "useExhaustiveDependencies": "off",
+                "noConstantMathMinMaxClamp": "error",
+                "noUnusedImports": "error",
+                "noUnusedFunctionParameters": "error"
+            },
+            "style": {
+                "useConst": "error",
+                "useSelfClosingElements": "error",
+                "noNonNullAssertion": "off",
+                "noYodaExpression": "error",
+                "useFragmentSyntax": "error",
+                "useImportType": "off",
+                "useLiteralEnumMembers": "off"
+            },
+            "suspicious": {
+                "useAwait": "error",
+                "noConsole": "error",
+                "noShadowRestrictedNames": "error",
+                "noExplicitAny": "off",
+                "noVar": "error",
+                "noArrayIndexKey": "error",
+                "noEvolvingTypes": "error"
+            },
+            "a11y": {
+                "noStaticElementInteractions": "error",
+                "noNoninteractiveElementInteractions": "error",
+                "useKeyWithClickEvents": "error",
+                "useButtonType": "error",
+                "noLabelWithoutControl": "error",
+                "noAutofocus": "off"
+            },
+            "complexity": {
+                "useLiteralKeys": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "semicolons": "asNeeded",
+            "trailingCommas": "all"
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": {
+                    "level": "on",
+                    "options": {
+                        "groups": [
+                            [
+                                ":URL:",
+                                ":NODE:",
+                                ":BUN:",
+                                ":PACKAGE_WITH_PROTOCOL:",
+                                ":PACKAGE:",
+                                "!@devtron-labs",
+                                "!@devtron-labs/**"
+                            ],
+                            ":BLANK_LINE:",
+                            ["@devtron-labs", "@devtron-labs/**"],
+                            ":BLANK_LINE:",
+                            ["@Images", "@Images/**", "@Shared", "@Shared/**", "@Pages", "@Pages/**"],
+                            ":BLANK_LINE:",
+                            [":PATH:", "!**/*.css", "!**/*.scss"],
+                            ":BLANK_LINE:",
+                            ["**/*.css", "**/*.scss"]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

@@ -32,17 +32,21 @@ export default () => {
         trailingLines: [],
         prefix: '',
         eventListener(ev) {
+            // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
             let log
             try {
                 log = JSON.parse(ev.data).result.content ?? ev.data
-            } catch (e) {
+            } catch {
                 log = ev.data
             }
             let bufferedLogs: Array<string> = []
 
             // Regex to match ANSI color code/escape sequence
+            // biome-ignore lint/suspicious/noControlCharactersInRegex: Legacy
             const ANSI_COLOR_ESCAPE_SEQUENCE_REGEX = /\u001b\[.*?m/g
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (!log || log.length == 0) {
+                // biome-ignore lint/suspicious/noConsole: Legacy
                 console.log('no log lines')
             } else {
                 const logTimestamp = ev.lastEventId
@@ -59,7 +63,7 @@ export default () => {
                         if (this.indexFromLastMatch <= 1 * (a + b)) {
                             const size = Math.min(1 * (this.indexFromLastMatch - b), this.trailingLines.length)
                             bufferedLogs = bufferedLogs.concat(this.trailingLines.slice(0, size))
-                            this.trailingLines = new Array<string>()
+                            this.trailingLines = [] as string[]
                         }
                         this.indexFromLastMatch = 0
                         bufferedLogs = bufferedLogs.concat(this.buffer.concat(log))
@@ -72,13 +76,14 @@ export default () => {
                         if (this.indexFromLastMatch <= 1 * a) {
                             this.trailingLines.push(log)
                         }
+                        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                         if (this.indexFromLastMatch == 1 * (a + b)) {
                             bufferedLogs = bufferedLogs.concat(this.trailingLines)
                             this.trailingLines = []
                         }
                     }
                     for (let i = 1; i < this.grepTokens.length; i++) {
-                        const { v, _args } = this.grepTokens[i]
+                        const { _args } = this.grepTokens[i]
                         bufferedLogs = bufferedLogs.filter((l) =>
                             new RegExp(_args, 'gi').test(l.replace(ANSI_COLOR_ESCAPE_SEQUENCE_REGEX, '')),
                         )
@@ -99,10 +104,11 @@ export default () => {
             }
         },
     }
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     const wrappers = []
     self.onmessage = (e) => {
-        // eslint-disable-line no-restricted-globals
         if (!e) {
+            // biome-ignore lint/suspicious/noConsole: Legacy
             console.log('no event found')
             return
         }
@@ -110,12 +116,12 @@ export default () => {
             return
         }
         switch (e.data.type) {
-            case 'start':
+            case 'start': {
                 const { urls, grepTokens, pods } = e.data.payload
                 wrappers.forEach((wrapper) => {
                     try {
                         wrapper.eventSrc.close()
-                    } catch (err) {}
+                    } catch {}
                 })
                 for (let index = 0; index < urls.length; index++) {
                     const element = urls[index]
@@ -125,19 +131,19 @@ export default () => {
                     wrappers[index].grepTokens = grepTokens
                     const eventListener = wrappers[index].eventListener.bind(wrappers[index])
                     wrappers[index].eventSrc.addEventListener('message', eventListener)
-                    wrappers[index].eventSrc.addEventListener('open', function (ev) {
+                    wrappers[index].eventSrc.addEventListener('open', () => {
                         self.postMessage(
                             { result: [], signal: 'open', readyState: wrappers[index].eventSrc.readyState },
                             null,
                         ) // eslint-disable-line no-restricted-globals
                     })
-                    wrappers[index].eventSrc.addEventListener('error', function (ev) {
+                    wrappers[index].eventSrc.addEventListener('error', () => {
                         self.postMessage(
                             { result: [], signal: 'close', readyState: wrappers[index].eventSrc.readyState },
                             null,
                         ) // eslint-disable-line no-restricted-globals
                     })
-                    wrappers[index].eventSrc.addEventListener('CUSTOM_ERR_STREAM', function (ev) {
+                    wrappers[index].eventSrc.addEventListener('CUSTOM_ERR_STREAM', (ev) => {
                         self.postMessage(
                             {
                                 result: [ev.data],
@@ -149,13 +155,16 @@ export default () => {
                     })
                 }
                 break
+            }
             case 'stop':
                 // wrapper.filteredArray = logFilter.stop()
                 respond()
                 try {
+                    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                     wrappers.forEach((val) => val.eventSrc.close())
-                } catch (err) {
+                } catch {
                 } finally {
+                    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                     wrappers.forEach((val) => (val.filteredArray = []))
                 }
         }

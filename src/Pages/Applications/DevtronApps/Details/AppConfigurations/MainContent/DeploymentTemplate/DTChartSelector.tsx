@@ -32,12 +32,12 @@ import {
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Dropdown from '@Icons/ic-chevron-down.svg?react'
-import { sortObjectArrayAlphabetically } from '@Components/common'
-import { DEPLOYMENT } from '@Config/constants'
-
 import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS } from './constants'
 import { ChartSelectorDropdownProps, DTChartSelectorProps } from './types'
+
+import { sortObjectArrayAlphabetically } from '@Components/common'
+import { DEPLOYMENT } from '@Config/constants'
+import Dropdown from '@Icons/ic-chevron-down.svg?react'
 
 const LoadingShimmer = () => <div className="shimmer-loading h-18 w-60" />
 
@@ -56,8 +56,8 @@ const ChartSelectorDropdown = ({
     )
     const uniqueChartsByDevtron = new Map<string, boolean>()
     const uniqueCustomCharts = new Map<string, boolean>()
-    let devtronCharts = []
-    let customCharts = []
+    let devtronCharts: DeploymentChartVersionType[] = []
+    let customCharts: DeploymentChartVersionType[] = []
 
     charts.forEach((chart) => {
         const chartName = chart.name
@@ -122,32 +122,33 @@ const ChartSelectorDropdown = ({
                 </div>
             </PopupMenu.Button>
             <PopupMenu.Body noBackDrop rootClassName="dc__overflow-auto mxh-350 w-400 dc__border br-4">
-                <>
-                    {customCharts.length > 0 && (
-                        <div
-                            className="pt-12 pr-12 pb-8 pl-12 dc__position-sticky bg__primary top-0 dc__top-radius-4"
-                            onClick={stopPropagation}
-                        >
-                            <SegmentedControl
-                                segments={Object.values(CHART_TYPE_TAB_KEYS).map((key) => ({
-                                    label: CHART_TYPE_TAB[key],
-                                    value: key,
-                                }))}
-                                value={selectedChartTypeTab}
-                                onChange={changeSelectedTab}
-                                name="chart-type-tabs"
-                                size={ComponentSizeType.xs}
-                            />
-                        </div>
-                    )}
-                    <div className="pt-4 pb-4" data-testid="select-chart-type-menu-list">
-                        {(selectedChartTypeTab === CHART_TYPE_TAB_KEYS.DEVTRON_CHART
-                            ? devtronCharts
-                            : customCharts
-                        ).map((chart: DeploymentChartVersionType, index: number) => (
+                {customCharts.length > 0 && (
+                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: stopPropagation
+                    <div
+                        className="pt-12 pr-12 pb-8 pl-12 dc__position-sticky bg__primary top-0 dc__top-radius-4"
+                        onClick={stopPropagation}
+                    >
+                        <SegmentedControl
+                            segments={Object.values(CHART_TYPE_TAB_KEYS).map((key) => ({
+                                label: CHART_TYPE_TAB[key],
+                                value: key,
+                            }))}
+                            value={selectedChartTypeTab}
+                            onChange={changeSelectedTab}
+                            name="chart-type-tabs"
+                            size={ComponentSizeType.xs}
+                        />
+                    </div>
+                )}
+                <div className="pt-4 pb-4" data-testid="select-chart-type-menu-list">
+                    {(selectedChartTypeTab === CHART_TYPE_TAB_KEYS.DEVTRON_CHART ? devtronCharts : customCharts).map(
+                        (chart: DeploymentChartVersionType, index: number) => (
+                            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                             <div
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={`${selectedChartTypeTab}-${index}`}
+                                key={`${selectedChartTypeTab}-${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    index
+                                }`}
                                 className={`p-12 pointer chart-row  ${
                                     chart.name === selectedChart?.name ? ' bcb-1' : 'dc__hover-n50'
                                 }`}
@@ -181,9 +182,9 @@ const ChartSelectorDropdown = ({
                                     </div>
                                 )}
                             </div>
-                        ))}
-                    </div>
-                </>
+                        ),
+                    )}
+                </div>
             </PopupMenu.Body>
         </PopupMenu>
     )
@@ -276,7 +277,7 @@ const DTChartSelector = ({
 
             <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedTemplate}>
                 <div className="flexbox dc__gap-8 dc__align-items-center">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                     <label className="fs-12 fw-4 cn-7 m-0 lh-18" id="dt-chart-version-select">
                         Version
                     </label>

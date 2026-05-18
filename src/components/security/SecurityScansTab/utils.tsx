@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JSX } from 'react'
+
 import {
     Badge,
     ComponentSizeType,
@@ -52,7 +54,7 @@ const SEVERITY_ORDER = [
 ]
 
 export const getSeverityWithCount = (severityCount: SeverityCount) => {
-    const badges = []
+    const badges: JSX.Element[] = []
 
     // eslint-disable-next-line no-restricted-syntax
     for (const item of SEVERITY_ORDER) {

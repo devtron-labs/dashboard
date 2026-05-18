@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { AppOverviewProps } from '../types'
-import { DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
-import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import { IconBaseSizeType, ResourceKindType, SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppIconWithBackground } from '@Config/utils'
+
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { DefaultAppNote, DefaultHelmChartNote, DefaultJobNote } from '../list-new/Constants'
+import { AppOverviewProps } from '../types'
 import { OVERVIEW_TABS } from './constants'
+
 import { importComponentFromFELibrary } from '@Components/common'
+import { getAppIconWithBackground } from '@Config/utils'
 
 const {
     OVERVIEW: { APP_DESCRIPTION, JOB_DESCRIPTION },

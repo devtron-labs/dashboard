@@ -15,9 +15,11 @@
  */
 
 import Tippy from '@tippyjs/react'
-import InjectTag from '@Icons/inject-tag.svg?react'
+
 import { TagChipsContainerType } from '../types'
+
 import { APP_TYPE } from '@Config/constants'
+import InjectTag from '@Icons/inject-tag.svg?react'
 
 export default function TagChipsContainer({
     appType,
@@ -77,9 +79,9 @@ export default function TagChipsContainer({
                 <div className="fs-13 fw-4 lh-20 cn-7">
                     Add tags to this {resourceName}. Desired tags can also be propagated to Kubernetes resources as
                     labels.&nbsp;
-                    <span className="cb-5 cursor" onClick={onAddTagButtonClick}>
+                    <button type="button" className="cb-5 dc__transparent" onClick={onAddTagButtonClick}>
                         Add Tags
-                    </span>
+                    </button>
                 </div>
             )}
         </div>

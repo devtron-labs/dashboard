@@ -15,26 +15,29 @@
  */
 
 import { Component } from 'react'
+
 import {
-    Checkbox,
     CHECKBOX_VALUE,
-    noop,
-    WorkflowNodeType,
-    PipelineType,
+    Checkbox,
     CommonNodeAttr,
     DeploymentNodeType,
+    noop,
+    PipelineType,
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
+import { RectangularEdge as Edge, getCIPipelineURL, importComponentFromFELibrary } from '../../../../common'
+import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
+import { getCDNodeActionSearch } from '../TriggerView.utils'
+import { CDNodeActions, WorkflowProps } from '../types'
 import { StaticNode } from './nodes/staticNode'
-import { TriggerCINode } from './nodes/triggerCINode'
 import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
+import { TriggerCINode } from './nodes/triggerCINode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { CDNodeActions, WorkflowProps } from '../types'
-import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
-import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import { getCDNodeActionSearch } from '../TriggerView.utils'
+
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
@@ -93,6 +96,7 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     renderNodes() {
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         return this.props.nodes.map((node: any) => {
             if (node.type === WorkflowNodeType.GIT) {
                 return this.renderSourceNode(node)
@@ -131,7 +135,7 @@ export class Workflow extends Component<WorkflowProps> {
                 regex={node.regex}
                 isRegex={node.isRegex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
-                handleGoToWorkFlowEditor={(e) => {
+                handleGoToWorkFlowEditor={() => {
                     this.goToWorkFlowEditor(node)
                 }}
             />
@@ -339,7 +343,13 @@ export class Workflow extends Component<WorkflowProps> {
     getEdges() {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                const endNode = this.props.nodes.find((val) => `${val.type}-${val.id}` == downStreamNodeId)
+                const endNode = this.props.nodes.find(
+                    (val) =>
+                        `${val.type}-${
+                            val.id
+                            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
+                        }` == downStreamNodeId,
+                )
                 edgeList.push({
                     startNode: node,
                     endNode,
@@ -425,7 +435,13 @@ export class Workflow extends Component<WorkflowProps> {
                 <div
                     className={`workflow__body bg__secondary dc__overflow-auto dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
                 >
-                    <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
+                    <svg
+                        aria-label={`Workflow: ${this.props.name}`}
+                        x={this.props.startX}
+                        y={0}
+                        height={this.props.height}
+                        width={this.props.width}
+                    >
                         {this.renderEdgeList()}
                         {this.renderNodes()}
                     </svg>

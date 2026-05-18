@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import type { JSX } from 'react'
 import CreatableSelect from 'react-select/creatable'
-import Tippy from '@tippyjs/react'
 
 import {
     ComponentSizeType,
@@ -25,8 +25,6 @@ import {
     SelectPicker,
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { importComponentFromFELibrary } from '@Components/common'
 
 import Abort from '../../../../../../../assets/icons/ic-abort.svg?react'
 import Check from '../../../../../../../assets/icons/ic-check.svg?react'
@@ -52,6 +50,8 @@ import {
     SelectWrapperType,
     WrapperTitleType,
 } from './terminal.type'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const DownloadFileFolderButton = importComponentFromFELibrary('DownloadFileFolderButton', null, 'function')
 
@@ -317,6 +317,7 @@ const manifestEditButtons = ({
         const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit
 
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <span
                 className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left"
                 data-testid={`${buttonSelectionState}-manifest`}
@@ -333,6 +334,7 @@ const manifestEditButtons = ({
             <span className="bcn-2 h-32" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <span
                     className="ml-12 cn-7 fw-6 fs-12 cursor"
                     data-testid="cancel-edit-manifest"

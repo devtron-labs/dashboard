@@ -16,7 +16,7 @@
 
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { ActionTypes, EntityTypes, useGetUserRoles, UserStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionTypes, EntityTypes, UserStatus, useGetUserRoles } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { PermissionType } from '../../../constants'

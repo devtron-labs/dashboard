@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 
 import {
     DEPLOYMENT_STATUS_TEXT_MAP,
@@ -24,13 +24,13 @@ import {
     PROGRESSING_DEPLOYMENT_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import CD from '@Icons/ic-CD.svg?react'
-import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
-import Rocket from '@Icons/ic-paper-rocket.svg?react'
-
 import { DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { validateMomentDate } from './utils'
+
+import CD from '@Icons/ic-CD.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import Rocket from '@Icons/ic-paper-rocket.svg?react'
 
 const DeploymentStatusCard = ({
     deploymentStatusDetailsBreakdownData,
@@ -119,6 +119,7 @@ const DeploymentStatusCard = ({
     }
 
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
         <div
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}

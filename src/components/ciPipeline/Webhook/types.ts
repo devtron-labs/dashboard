@@ -57,6 +57,7 @@ export interface SchemaType {
 
 interface APIResponseDescriptionType {
     description: string
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     exampleValue: Object
     schema: Record<string, SchemaType>
 }

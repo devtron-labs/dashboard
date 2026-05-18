@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
 import DOMPurify from 'dompurify'
+import { useMemo, useState } from 'react'
 
 import {
     APIResponseHandler,
@@ -32,10 +32,7 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICDevtronApp from '@Icons/ic-devtron-app.svg?react'
-import ICFolderZip from '@Icons/ic-folder-zip.svg?react'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { DeploymentChartsListSortableKeys } from '../types'
 import DeploymentChartsListHeader from './DeploymentChartsListHeader'
@@ -44,6 +41,10 @@ import { getChartList } from './service'
 import UploadButton from './UploadButton'
 import UploadChartModal from './UploadChartModal'
 import { sortChartList } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICDevtronApp from '@Icons/ic-devtron-app.svg?react'
+import ICFolderZip from '@Icons/ic-folder-zip.svg?react'
 
 import './styles.scss'
 
@@ -148,7 +149,7 @@ const DeploymentChartsList = () => {
                                         </div>
                                         <span
                                             className="dc__truncate"
-                                            // eslint-disable-next-line react/no-danger
+                                            // biome-ignore lint/security/noDangerouslySetInnerHtml: Already sanitized via DOMPurify.sanitize
                                             dangerouslySetInnerHTML={{
                                                 __html: DOMPurify.sanitize(
                                                     highlightSearchText({

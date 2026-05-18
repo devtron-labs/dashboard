@@ -43,12 +43,14 @@ export const getTreeNodesWithChild = (_nodes: Node[]): iNode[] => {
         new Map<string, Map<string, string | [string, string][]>>(),
     )
 
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
     Object.keys(AggregationKeys).map((key) => {
         if (nodesByAggregator.get(AggregationKeys[key])?.size > 0) {
             const _inode = {} as iNode
             _inode.name = AggregationKeys[key]
             _inode.childNodes = Array.from(nodesByAggregator.get(AggregationKeys[key]), ([name, value]) => {
                 const _node = { name, status: value, isSelected: false } as iNode
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (name.toLowerCase() == NodeType.Pod.toLowerCase() && podParents.length > 0) {
                     _node.childNodes = podParents.map((_podParent) => {
                         const pParts = _podParent[0].split('/')

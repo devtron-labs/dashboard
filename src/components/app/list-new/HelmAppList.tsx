@@ -14,62 +14,65 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState, type JSX } from 'react'
-import {
-    AppStatus,
-    showError,
-    ErrorScreenManager,
-    ServerErrors,
-    Host,
-    GenericEmptyState,
-    DEFAULT_BASE_PAGE_SIZE,
-    Pagination,
-    handleUTCTime,
-    DATE_TIME_FORMATS,
-    SortableTableHeaderCell,
-    stringComparatorBySortOrder,
-    useStickyEvent,
-    getClassNameForStickyHeaderWithShadow,
-    DocLink,
-    ComponentSizeType,
-    ROUTER_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import { getDevtronInstalledHelmApps } from './AppListService'
-import { LazyImage } from '../../common'
-import { SERVER_MODE, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
-import { AppListViewType } from '../config'
-import ICHelpOutline from '../../../assets/icons/ic-help-outline.svg?react'
-import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
-import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
-import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
-import DeployCICD from '../../../assets/img/guide-onboard.png'
-import { AllCheckModal } from '../../checkList/AllCheckModal'
-import InfoFillPurple from '../../../assets/icons/ic-info-filled-purple.svg?react'
-import ErrorExclamationIcon from '../../../assets/icons/ic-error-exclamation.svg?react'
-import CloseIcon from '../../../assets/icons/ic-close.svg?react'
+import { type JSX, useEffect, useMemo, useState } from 'react'
+import { generatePath, Link } from 'react-router-dom'
+
+import {
+    AppStatus,
+    ComponentSizeType,
+    DATE_TIME_FORMATS,
+    DEFAULT_BASE_PAGE_SIZE,
+    DocLink,
+    ErrorScreenManager,
+    GenericEmptyState,
+    getClassNameForStickyHeaderWithShadow,
+    Host,
+    handleUTCTime,
+    Pagination,
+    ROUTER_URLS,
+    ServerErrors,
+    SortableTableHeaderCell,
+    showError,
+    stringComparatorBySortOrder,
+    useStickyEvent,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import AlertTriangleIcon from '../../../assets/icons/ic-alert-triangle.svg?react'
 import ArrowRight from '../../../assets/icons/ic-arrow-right.svg?react'
+import CloseIcon from '../../../assets/icons/ic-close.svg?react'
+import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
+import ErrorExclamationIcon from '../../../assets/icons/ic-error-exclamation.svg?react'
+import ICHelpOutline from '../../../assets/icons/ic-help-outline.svg?react'
+import InfoFillPurple from '../../../assets/icons/ic-info-filled-purple.svg?react'
+import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
+import DeployCICD from '../../../assets/img/guide-onboard.png'
+import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
+import { checkIfDevtronOperatorHelmRelease, ModuleNameMap, SERVER_MODE } from '../../../config'
+import { AllCheckModal } from '../../checkList/AllCheckModal'
+import { LazyImage } from '../../common'
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
+import { AppListViewType } from '../config'
+import { getDevtronInstalledHelmApps } from './AppListService'
 import '../list/list.scss'
+
+import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
+import AskToClearFilters from './AppListComponents'
+import { AppListSortableKeys, HelmApp, HelmAppListProps, HelmAppListResponse } from './AppListType'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
+    APP_LIST_HEADERS,
+    appListLoadingArray,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
     EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR,
     EXTERNAL_HELM_APP_FETCH_ERROR,
     EXTERNAL_HELM_SSE_CONNECTION_ERROR,
-    APP_LIST_HEADERS,
     HELM_PERMISSION_MESSAGE,
     SELECT_CLUSTER_FROM_FILTER_NOTE,
-    appListLoadingArray,
 } from './Constants'
-import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
-import AskToClearFilters from './AppListComponents'
 
 const HelmAppList = ({
     serverMode,
@@ -275,10 +278,10 @@ const HelmAppList = ({
         const _sseConnection = new EventSource(`${Host}/application?clusterIds=${clusterIdsCsv}`, {
             withCredentials: true,
         })
-        const _externalAppReceivedClusterIds = []
-        const _externalAppReceivedHelmApps = []
+        const _externalAppReceivedClusterIds: string[] = []
+        const _externalAppReceivedHelmApps: HelmApp[] = []
         const _externalAppFetchErrors: string[] = []
-        _sseConnection.onmessage = function (message) {
+        _sseConnection.onmessage = (message) => {
             _onExternalAppDataFromSse(
                 message,
                 _externalAppReceivedClusterIds,
@@ -287,7 +290,7 @@ const HelmAppList = ({
                 _sseConnection,
             )
         }
-        _sseConnection.onerror = function (err) {
+        _sseConnection.onerror = () => {
             _externalAppFetchErrors.push(EXTERNAL_HELM_SSE_CONNECTION_ERROR)
             setExternalHelmListFetchErrors([..._externalAppFetchErrors])
             _closeSseConnection(_sseConnection)

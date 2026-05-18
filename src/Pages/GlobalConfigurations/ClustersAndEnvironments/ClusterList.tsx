@@ -52,10 +52,18 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import NoClusterImg from '@Images/no-cluster-empty-state.png'
-import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
 import AddClusterButton from '@Pages/Shared/AddEditCluster/AddClusterButton'
 
+import {
+    AddEnvironment,
+    AddEnvironmentFromClusterName,
+    ClusterEnvLoader,
+    ClusterListCellComponent,
+    DeleteCluster,
+    EditCluster,
+    HibernationRulesModalWrapper,
+    PodSpreadModalWrapper,
+} from './ClusterList.components'
 import { getEnvironmentList } from './cluster.service'
 import {
     ClusterEnvFilterType,
@@ -67,18 +75,11 @@ import {
     EnvListSortableKeys,
 } from './cluster.type'
 import { parseClusterEnvSearchParams } from './cluster.util'
-import {
-    AddEnvironment,
-    AddEnvironmentFromClusterName,
-    ClusterEnvLoader,
-    ClusterListCellComponent,
-    DeleteCluster,
-    EditCluster,
-    HibernationRulesModalWrapper,
-    PodSpreadModalWrapper,
-} from './ClusterList.components'
 import { ALL_CLUSTER_VALUE } from './constants'
 import EnvironmentList from './EnvironmentList'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { URLS } from '@Config/routes'
 
 const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 'function')
 const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
@@ -184,6 +185,7 @@ const ClusterList = () => {
                               isSortable: true,
                               comparator: numberComparatorBySortOrder,
                               CellComponent: ClusterListCellComponent,
+                              // biome-ignore lint/complexity/noBannedTypes: Legacy
                           } as TableColumnType<ClusterRowData, FiltersTypeEnum.STATE, {}>,
                       ]),
                 {
@@ -203,6 +205,7 @@ const ClusterList = () => {
                               isSortable: true,
                               comparator: stringComparatorBySortOrder,
                               CellComponent: ClusterListCellComponent,
+                              // biome-ignore lint/complexity/noBannedTypes: Legacy
                           } as TableColumnType<ClusterRowData, FiltersTypeEnum.STATE, {}>,
                       ]
                     : []),
@@ -332,6 +335,7 @@ const ClusterList = () => {
             <>
                 <ClusterMap isLoading={isClusterEnvListLoading} filteredList={filteredClusterList} />
                 <div className="cluster-table-wrapper">
+                    {/** biome-ignore lint/complexity/noBannedTypes: Legacy */}
                     <Table<ClusterRowData, FiltersTypeEnum.STATE, {}>
                         id="table__cluster-list"
                         columns={tableColumns}

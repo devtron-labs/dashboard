@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
     BreadCrumb,
-    useBreadcrumb,
-    PageHeader,
-    getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
     DOCUMENTATION,
+    ErrorScreenManager,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    Progressing,
     ROUTER_URLS,
+    showError,
+    useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
+
+import { ChartDetailsSegment } from '@Pages/ChartStore/ChartDetails/types'
+
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
+import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
+
 import { URLS } from '@Config/routes'
-import { ChartDetailsSegment } from '@Pages/ChartStore/ChartDetails/types'
 
 export default function ChartValues() {
     const { chartId, chartValueId } = useParams<{ chartId: string; chartValueId: string }>()
@@ -82,10 +86,12 @@ export default function ChartValues() {
     useEffect(() => {
         const [id, kind] =
             chartValueId !== '0'
-                ? [parseInt(chartValueId), ChartKind.TEMPLATE]
+                ? // biome-ignore lint/correctness/useParseIntRadix: Legacy
+                  [parseInt(chartValueId), ChartKind.TEMPLATE]
                 : [availableVersions[0]?.id, ChartKind.DEFAULT]
 
         if (id) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             const chartValues = chartValuesList.find((chrtValue) => {
                 if (chrtValue.kind === kind && chrtValue.id === id) {
                     return chrtValue

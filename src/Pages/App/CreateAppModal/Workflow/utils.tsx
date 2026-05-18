@@ -18,14 +18,22 @@ import { GroupBase } from 'react-select'
 
 import {
     CommonNodeAttr,
-    getSelectPickerOptionByValue,
     GitProviderIcon,
     GraphVisualizerEdge,
     GraphVisualizerNode,
+    getSelectPickerOptionByValue,
     SelectPickerOptionType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import {
+    CDNodeEnvironmentSelectPickerOptionType,
+    ConvertWorkflowNodesToGraphVisualizerNodesProps,
+    GetWorkflowGraphVisualizerNodesProps,
+    NodeUpdateActionType,
+} from './types'
+
+import { createClusterEnvGroup } from '@Components/common'
 import ICCD from '@Icons/ic-CD.svg?react'
 import ICCi from '@Icons/ic-CI.svg?react'
 import ICCIWebhook from '@Icons/ic-CIWebhook.svg?react'
@@ -35,14 +43,6 @@ import ICLinkedCD from '@Icons/ic-linked-cd.svg?react'
 import ICNodeBuildLinked from '@Icons/ic-node-build-linked.svg?react'
 import ICPaperRocket from '@Icons/ic-paper-rocket.svg?react'
 import ICWarning from '@Icons/ic-warning.svg?react'
-import { createClusterEnvGroup } from '@Components/common'
-
-import {
-    CDNodeEnvironmentSelectPickerOptionType,
-    ConvertWorkflowNodesToGraphVisualizerNodesProps,
-    GetWorkflowGraphVisualizerNodesProps,
-    NodeUpdateActionType,
-} from './types'
 
 const getWorkflowCDNodeEnvironments = (
     environmentListOptions: ConvertWorkflowNodesToGraphVisualizerNodesProps['environmentListOptions'],
@@ -310,6 +310,7 @@ export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) 
     const validatedNodes = nodes
     const workflowIdToErrorMessageMap: Record<string, string> = {}
 
+    // biome-ignore lint/complexity/noFlatMapIdentity: Legacy
     const cdNodesWithDuplicateEnv = Array.from(getEnvironmentCDNodesMap(validatedNodes).values())
         .filter((cdNodes) => cdNodes.length > 1)
         .flatMap((node) => node)

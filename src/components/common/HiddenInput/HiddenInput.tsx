@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import HiddenInputProps from './types'
 
 export default function HiddenInput({ handleFileUpload, children, id }: HiddenInputProps) {

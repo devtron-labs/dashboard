@@ -15,23 +15,36 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import {
+    Button,
+    ButtonVariantType,
     CIBuildConfigType,
     CIBuildType,
-    showError,
-    ToastVariantType,
-    ToastManager,
+    ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    Button,
-    OptionType,
     DocLink,
     Icon,
-    ButtonVariantType,
-    ComponentSizeType,
+    OptionType,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import NextIcon from '../../assets/icons/ic-arrow-right.svg?react'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getGitProviderIcon, useForm } from '../common'
+import {
+    CI_CONFIG_FORM_VALIDATION,
+    getCIConfigFormState,
+    getTargetPlatformMap,
+    initCurrentCIBuildConfig,
+    processBuildArgs,
+} from './CIConfig.utils'
+import CIConfigDiffView from './CIConfigDiffView'
+import CIContainerRegistryConfig from './CIContainerRegistryConfig'
+import CIDockerFileConfig from './CIDockerFileConfig'
 import { saveCIConfig, updateCIConfig } from './service'
 import {
     CIBuildArgType,
@@ -41,17 +54,6 @@ import {
     SelectedGitMaterialType,
     SourceConfigType,
 } from './types'
-import NextIcon from '../../assets/icons/ic-arrow-right.svg?react'
-import CIConfigDiffView from './CIConfigDiffView'
-import CIContainerRegistryConfig from './CIContainerRegistryConfig'
-import CIDockerFileConfig from './CIDockerFileConfig'
-import {
-    CI_CONFIG_FORM_VALIDATION,
-    getCIConfigFormState,
-    getTargetPlatformMap,
-    initCurrentCIBuildConfig,
-    processBuildArgs,
-} from './CIConfig.utils'
 
 export default function CIConfigForm({
     parentReloading,
@@ -120,7 +122,7 @@ export default function CIConfigForm({
     const currentRegistry =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
-            : ciConfig && ciConfig.dockerRegistry
+            : ciConfig?.dockerRegistry
               ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
               : dockerRegistries.find((reg) => reg.isDefault)
     const { state, handleOnChange, handleOnSubmit } = useForm(
@@ -140,7 +142,7 @@ export default function CIConfigForm({
     })
     const [apiInProgress, setApiInProgress] = useState(false)
     const targetPlatformMap = getTargetPlatformMap()
-    let _selectedPlatforms = []
+    let _selectedPlatforms: OptionType[] = []
     let _customTargetPlatform = false
     if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
         _selectedPlatforms = ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
@@ -259,11 +261,11 @@ export default function CIConfigForm({
             ciBuildConfig: _ciBuildConfig,
             afterDockerBuild: [],
             appName: '',
-            ...(ciConfig && ciConfig.version ? { version: ciConfig.version } : {}),
+            ...(ciConfig?.version ? { version: ciConfig.version } : {}),
         }
         setApiInProgress(true)
         try {
-            const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
+            const saveOrUpdate = ciConfig?.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody, isTemplateView)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
@@ -344,7 +346,7 @@ export default function CIConfigForm({
         setShowConfigOverrideDiff(!showConfigOverrideDiff)
     }
 
-    const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
+    const { repository, dockerfile, projectPath, registry, repository_name, buildContext } = state
     return (
         <div className="flexbox-col h-100 dc__content-space dc__overflow-hidden">
             <div className="flex-grow-1 dc__overflow-auto">

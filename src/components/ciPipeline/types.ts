@@ -32,11 +32,11 @@ import {
     ScriptType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AdvancedConfigOptionsProps } from '@Components/ciConfig/types'
+import { HostURLConfig } from '../../services/service.types'
+
 import { validateConditionDataCell } from '@Components/CIPipelineN/ConditionDataTable/utils'
 import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
-
-import { HostURLConfig } from '../../services/service.types'
+import { AdvancedConfigOptionsProps } from '@Components/ciConfig/types'
 
 export interface ExternalCIPipelineState {
     code: number

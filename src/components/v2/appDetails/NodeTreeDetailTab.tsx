@@ -20,15 +20,7 @@ import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, usePar
 
 import { noop, smoothScrollToTop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICLogs from '@Icons/ic-logs.svg?react'
-import ICObject from '@Icons/ic-object.svg?react'
-import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
-import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
-
 import { URLS } from '../../../config'
-import { K8ResourceComponent } from './k8Resource/K8Resource.component'
-import { getApplicationsGAEvent } from './k8Resource/utils'
-import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import {
     APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX,
     AppDetailsTabs,
@@ -37,7 +29,15 @@ import {
 } from './appDetails.store'
 import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import IndexStore from './index.store'
+import { K8ResourceComponent } from './k8Resource/K8Resource.component'
+import { getApplicationsGAEvent } from './k8Resource/utils'
+import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
+
+import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
+import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
+import ICLogs from '@Icons/ic-logs.svg?react'
+import ICObject from '@Icons/ic-object.svg?react'
 
 import './appDetails.scss'
 

@@ -16,10 +16,10 @@
 
 import { ClusterProviderDetailsType, get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 
+import { DeleteClusterPayload, EditClusterDrawerMetadataType, Environment, EnvironmentDTO } from './cluster.type'
+
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
-
-import { DeleteClusterPayload, EditClusterDrawerMetadataType, Environment, EnvironmentDTO } from './cluster.type'
 
 const getCloudProviderForCluster: (clusterId: number) => Promise<ClusterProviderDetailsType> =
     importComponentFromFELibrary('getCloudProviderForCluster', null, 'function')

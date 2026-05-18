@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { post, put, get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
 
 export const getGitProviderConfig = (id: number): Promise<any> => {
@@ -22,12 +23,12 @@ export const getGitProviderConfig = (id: number): Promise<any> => {
     return get(URL)
 }
 
-export const updateGitProviderConfig = (request: any, id: number) => {
+export const updateGitProviderConfig = (request: any, _id: number) => {
     const URL = `${Routes.GIT_PROVIDER}`
     return put(URL, request)
 }
 
-export const saveGitProviderConfig = (request: any, id: any) => {
+export const saveGitProviderConfig = (request: any, _id: any) => {
     const URL = `${Routes.GIT_PROVIDER}`
     return post(URL, request)
 }

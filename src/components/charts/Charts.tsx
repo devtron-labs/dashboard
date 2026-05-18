@@ -28,6 +28,7 @@ const Charts = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => <DiscoverCharts 
 
 export default Charts
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const GenericChartsHeader = ({ children = null }: PropsWithChildren<{}>) => (
     <div className="dc__page-header dc__page-header__tabs">{children}</div>
 )
@@ -48,12 +49,15 @@ export const ChartDetailNavigator = () => (
     />
 )
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const HeaderTitle = ({ children = null }: PropsWithChildren<{}>) => (
     <h1 className="dc__page-header__title flex left">{children}</h1>
 )
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const HeaderSubtitle = ({ children = null }: PropsWithChildren<{}>) => <div className="subtitle">{children}</div>
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const HeaderButtonGroup = ({ children = null }: PropsWithChildren<{}>) => (
     <div className="dc__page-header__cta-container flex right">{children}</div>
 )

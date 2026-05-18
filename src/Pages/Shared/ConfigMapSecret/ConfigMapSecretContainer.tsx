@@ -19,8 +19,8 @@ import ReactGA from 'react-ga4'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
 import {
-    abortPreviousRequests,
     API_STATUS_CODES,
+    abortPreviousRequests,
     CM_SECRET_STATE,
     CMSecretComponentType,
     CMSecretPayloadType,
@@ -49,17 +49,15 @@ import {
     ToastManager,
     ToastVariantType,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
-    useAsync,
-    useForm,
     UseFormErrorHandler,
     UseFormSubmitHandler,
+    useAsync,
+    useForm,
     useOneTimePrompt,
     usePrompt,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
@@ -102,6 +100,9 @@ import {
     parseConfigMapSecretSearchParams,
     shouldHidePatchOption,
 } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 
 import './styles.scss'
 

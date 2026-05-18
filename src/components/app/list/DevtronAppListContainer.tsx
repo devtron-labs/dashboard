@@ -31,11 +31,6 @@ import {
     TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import PlayMedia from '@Icons/ic-play-outline.svg?react'
-import ContentCard from '@Components/common/ContentCard/ContentCard'
-import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
-import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
-
 import ArrowRight from '../../../assets/icons/ic-arrow-right.svg?react'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
@@ -45,6 +40,11 @@ import { getAppList } from '../service'
 import { appListModal, getDevtronAppListPayload } from './appList.modal'
 import { App, DevtronAppListProps, Environment, TableAdditionalPropsType } from './types'
 import { getTableColumns } from './utils'
+
+import ContentCard from '@Components/common/ContentCard/ContentCard'
+import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
+import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
+import PlayMedia from '@Icons/ic-play-outline.svg?react'
 
 import './list.scss'
 

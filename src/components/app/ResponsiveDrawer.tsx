@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect } from 'react'
+
 import { useEffectAfterMount, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ResponsiveDrawer({
@@ -29,16 +30,16 @@ export default function ResponsiveDrawer({
     anchor = null,
 }) {
     const dimensions = useWindowSize()
-    const { height: windowHeight, width } = dimensions || { height: 0, width: 0 }
+    const { height: windowHeight } = dimensions || { height: 0, width: 0 }
     const [height, setHeight] = React.useState(initialHeight)
     const maxHeight = windowHeight - minimumTopMargin
-    let timeout
+    let timeout: ReturnType<typeof window.requestAnimationFrame>
     const resize = (e) => {
         e.stopPropagation()
         if (timeout) {
             window.cancelAnimationFrame(timeout)
         }
-        timeout = window.requestAnimationFrame(function () {
+        timeout = window.requestAnimationFrame(() => {
             const height2 = window.innerHeight - e.clientY
             if (height2 < minHeight) {
                 setHeight(minHeight)
@@ -71,12 +72,12 @@ export default function ResponsiveDrawer({
         }
     }, [height])
 
-    const stopResize = (e) => {
+    const stopResize = (_e) => {
         window.removeEventListener('mousemove', resize, false)
         window.removeEventListener('mouseup', stopResize, false)
     }
 
-    const initResize = (e) => {
+    const initResize = (_e) => {
         window.addEventListener('mousemove', resize, false)
         window.addEventListener('mouseup', stopResize, false)
     }

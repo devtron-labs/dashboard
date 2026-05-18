@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { useRegisterSW } from 'virtual:pwa-register/react'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-// eslint-disable-next-line import/no-unresolved
-import { useRegisterSW } from 'virtual:pwa-register/react'
 
 import {
     API_STATUS_CODES,
@@ -28,9 +27,9 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
-
 import { VersionUpdateProps } from './types'
+
+import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
 
 export const dismissToast = ({ updateToastRef }: { updateToastRef: React.MutableRefObject<null> }) => {
     if (ToastManager.isToastActive(updateToastRef.current)) {
@@ -99,7 +98,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
         updateServiceWorker,
     } = useRegisterSW({
         onRegisteredSW(swUrl, swRegistration) {
-            // eslint-disable-next-line no-console
+            // biome-ignore lint/suspicious/noConsole: Required here to log service worker registration info
             console.log(`Service Worker at: ${swUrl}`)
             if (swRegistration) {
                 const intervalId = setInterval(
@@ -134,7 +133,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             return noop
         },
         onRegisterError(error) {
-            // eslint-disable-next-line no-console
+            // biome-ignore lint/suspicious/noConsole: Required here to log service worker registration errors
             console.error('SW registration error', error)
             logExceptionToSentry(error)
         },
@@ -209,9 +208,9 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
             // check for sw updates on page change
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             navigator.serviceWorker
                 .getRegistrations()
+                // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh && !refreshing.current) {
                 handleAppUpdate()

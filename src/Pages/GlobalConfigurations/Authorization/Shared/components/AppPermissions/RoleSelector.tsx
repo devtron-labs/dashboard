@@ -20,8 +20,8 @@ import Select, { GroupHeadingProps, GroupProps, OptionProps } from 'react-select
 import {
     ACCESS_TYPE_MAP,
     ActionTypes,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     Icon,
     noop,
     RadioGroupItem,
@@ -29,7 +29,6 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
 import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
 
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
@@ -37,6 +36,8 @@ import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 import { renderGroup, renderGroupHeading, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
 import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
 import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import './roleSelectorStyles.scss'
 

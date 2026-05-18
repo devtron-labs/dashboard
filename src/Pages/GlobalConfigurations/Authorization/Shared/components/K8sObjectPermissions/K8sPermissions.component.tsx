@@ -52,7 +52,7 @@ const K8sPermissions = () => {
     }
 
     const deletePermission = (index) => {
-        setK8sPermission(k8sPermission.filter((permission, permissionIndex) => permissionIndex !== index))
+        setK8sPermission(k8sPermission.filter((_permission, permissionIndex) => permissionIndex !== index))
     }
 
     const closeModal = () => {
@@ -88,6 +88,7 @@ const K8sPermissions = () => {
                         ))}
                     </div>
                     {k8sPermission.map((permission, index) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy not sure about unique identifier for key prop
                         <K8sPermissionRow
                             permission={permission}
                             index={index}

@@ -22,8 +22,8 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     Drawer,
@@ -121,7 +121,7 @@ export const RestartWorkloadModal = ({
         onClose?.()
     }
 
-    const getPodsToRotate = async (selectedAppIds: number[]) => {
+    const getPodsToRotate = (selectedAppIds: number[]) => {
         setRestartLoader(true)
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
 
@@ -357,6 +357,7 @@ export const RestartWorkloadModal = ({
                 {resourceKeys.map((kindName) => {
                     const { isChecked } = resources[kindName]
                     return (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             key={kindName}
                             data-testid="workload-details"
@@ -406,6 +407,7 @@ export const RestartWorkloadModal = ({
                                 )
                             }
                         />
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <div
                             className="flex dc__content-space w-100 pt-12 pb-12"
                             onClick={() => toggleWorkloadCollapse(+appId)}
@@ -602,7 +604,7 @@ export const RestartWorkloadModal = ({
         )
     }
 
-    const onSave = async () => {
+    const onSave = () => {
         if (!showStatusModal && !showResistanceBox && Object.keys(hibernateInfoMap).length > 0) {
             setShowResistanceBox(true)
             return
@@ -656,6 +658,7 @@ export const RestartWorkloadModal = ({
     }
     return (
         <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: stopPropagation */}
             <div
                 onClick={stopPropagation}
                 className="flexbox-col dc__content-space bg__primary cn-9 w-800 h-100 fs-13 lh-20"

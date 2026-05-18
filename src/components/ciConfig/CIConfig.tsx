@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useState } from 'react'
+
+import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getCIConfig, getSourceConfig } from '../../services/service'
 import { getGitProviderIcon, sortObjectArrayAlphabetically } from '../common'
 import { getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig } from '../../services/service'
-import { ComponentStates } from '@Components/CIPipelineN/types'
 import { CIConfigProps } from './types'
+
+import { ComponentStates } from '@Components/CIPipelineN/types'
 import './CIConfig.scss'
+
 import CIConfigForm from './CIConfigForm'
 
 // FIXME: Here the error state is not gracefully handled, we are only showing toast and hiding corresponsing component.
@@ -54,7 +58,6 @@ export default function CIConfig({
         }
     }, [])
 
-
     async function initialise() {
         try {
             setLoading(true)
@@ -68,17 +71,17 @@ export default function CIConfig({
             sourceConfig &&
                 Array.isArray(sourceConfig.material) &&
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
-                const _sourceConfig = { ...sourceConfig }
-                const sourceConfigMaterial = sourceConfig.material?.map((material) => {
-                    return {
-                        ...material,
-                        label: material?.name || '',
-                        value: material?.id || '',
-                        startIcon: getGitProviderIcon(material.url) || '',
-                    }
-                })
-                _sourceConfig.material = sourceConfigMaterial
-                setSourceConfig(_sourceConfig)
+            const _sourceConfig = { ...sourceConfig }
+            const sourceConfigMaterial = sourceConfig.material?.map((material) => {
+                return {
+                    ...material,
+                    label: material?.name || '',
+                    value: material?.id || '',
+                    startIcon: getGitProviderIcon(material.url) || '',
+                }
+            })
+            _sourceConfig.material = sourceConfigMaterial
+            setSourceConfig(_sourceConfig)
             setCIConfig(ciConfig)
 
             if (setParentState) {

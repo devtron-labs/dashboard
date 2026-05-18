@@ -53,7 +53,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     const [form, setForm] = useState<SlackFormType>(DefaultSlackKeys)
     const [isFormValid, setFormValid] = useState(DefaultSlackValidations)
 
-    const fetchSlackConfig = async () => {
+    const fetchSlackConfig = () => {
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
         Promise.all([getSlackConfiguration(slackConfigId), getProjectListMin()])
             .then(([slackConfigRes, projectListRes]) => {
@@ -73,7 +73,6 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
 
     useEffect(() => {
         if (slackConfigId) {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             fetchSlackConfig()
         } else {
             getProjectListMin()

@@ -17,19 +17,19 @@
 import { useState } from 'react'
 
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     DC_DELETE_SUBTITLES,
     DeleteConfirmationModal,
     ERROR_STATUS_CODE,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { DeleteComponentsName } from '../../../config/constantMessaging'
 import { deleteCluster } from './cluster.service'
 import { DeleteClusterConfirmationModalProps } from './cluster.type'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const deleteInstalledCluster = importComponentFromFELibrary('deleteInstalledCluster', null, 'function')
 

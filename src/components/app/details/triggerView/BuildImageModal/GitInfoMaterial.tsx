@@ -20,8 +20,8 @@ import {
     OptionType,
     ROUTER_URLS,
     SearchBar,
-    showError,
     SourceTypeMap,
+    showError,
     Tooltip,
     uploadCIPipelineFile,
     WorkflowNodeType,
@@ -30,11 +30,6 @@ import {
 import externalCiImg from '@Images/external-ci.webp'
 import linkedCDBuildCIImg from '@Images/linked-cd-bulk-ci.webp'
 import linkedCiImg from '@Images/linked-ci.webp'
-import { getCIMaterialList, getGitMaterialByCommitHash, refreshGitMaterial } from '@Components/app/service'
-import { BULK_CI_MESSAGING } from '@Components/ApplicationGroup/Constants'
-import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
-import { NO_COMMIT_SELECTED } from '@Config/constants'
-import { URLS } from '@Config/routes'
 
 import { EmptyView } from '../../cicdHistory/History.components'
 import BranchRegexModal from '../BranchRegexModal'
@@ -44,6 +39,12 @@ import EmptyStateCIMaterial from '../EmptyStateCIMaterial'
 import TriggerBuildSidebar from './TriggerBuildSidebar'
 import { GitInfoMaterialProps } from './types'
 import { getIsRegexBranchNotAvailable } from './utils'
+
+import { BULK_CI_MESSAGING } from '@Components/ApplicationGroup/Constants'
+import { getCIMaterialList, getGitMaterialByCommitHash, refreshGitMaterial } from '@Components/app/service'
+import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
+import { NO_COMMIT_SELECTED } from '@Config/constants'
+import { URLS } from '@Config/routes'
 
 import './GitInfoMaterial.scss'
 

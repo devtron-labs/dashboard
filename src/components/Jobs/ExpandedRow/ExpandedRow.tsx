@@ -15,13 +15,16 @@
  */
 
 import { generatePath, Link } from 'react-router-dom'
+
 import Expand from '../../../assets/icons/ic-dropdown-filled.svg?react'
 import Settings from '../../../assets/icons/ic-settings.svg?react'
 import { ExpandedRowProps, Job, JobCIPipeline } from '../Types'
 import './ExpandedRow.scss'
-import { environmentName } from '../Utils'
-import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+
 import { AppStatus, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import { environmentName } from '../Utils'
 
 export default function ExpandedRow(props: ExpandedRowProps) {
     const handleEditJob = () => {
@@ -67,6 +70,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
     return (
         <div className="expanded-row">
             <div className="expanded-row__title">
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div
                     className="cn-9 expanded-row__close flex left pr-20 pl-20 cursor"
                     data-key={props.job.id}

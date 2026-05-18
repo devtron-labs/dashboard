@@ -23,11 +23,11 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Close from '@Icons/ic-close.svg?react'
-
 import { ConfigurationsTabTypes } from './constants'
 import { getTabText } from './notifications.util'
 import { ConfigurationTabDrawerModalProps } from './types'
+
+import Close from '@Icons/ic-close.svg?react'
 
 export const ConfigurationTabDrawerModal = ({
     renderContent,

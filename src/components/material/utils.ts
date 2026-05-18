@@ -1,11 +1,11 @@
-import { GitAccountDTO } from '@Services/service.types'
-
 import {
     CreateMaterialPayload,
     GitMaterialType,
     UpdateMaterialPayload,
     UpsertMaterialItemPayload,
 } from './material.types'
+
+import { GitAccountDTO } from '@Services/service.types'
 
 export const getInitialMaterialFormState = (material?: GitMaterialType): GitMaterialType => {
     if (material) {

@@ -15,9 +15,9 @@
  */
 import { ComponentSizeType, DocLink, Icon, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICCDStage from '@Icons/ic-cd-stage.svg?react'
-
 import { INLINE_PLUGIN_TEXT } from './Constants'
+
+import ICCDStage from '@Icons/ic-cd-stage.svg?react'
 
 const CustomScriptCard = () => (
     <div

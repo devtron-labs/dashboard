@@ -14,60 +14,60 @@
  * limitations under the License.
  */
 
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
+
 import {
-    BuildStageVariable,
-    DeploymentAppTypes,
-    Drawer,
-    ErrorScreenManager,
-    OptionType,
-    ServerErrors,
-    showError,
-    VariableType,
-    VisibleModal,
-    PipelineType,
-    MODAL_TYPE,
     ACTION_STATE,
-    YAMLStringify,
-    PluginDataStoreType,
-    DEFAULT_PLUGIN_DATA_STORE,
-    getPluginsDetail,
-    getUpdatedPluginStore,
-    Environment,
-    PipelineFormType,
-    ReleaseMode,
-    TabGroup,
-    TabProps,
-    ToastVariantType,
-    ToastManager,
-    MandatoryPluginDataType,
-    ProcessPluginDataParamsType,
-    ProcessPluginDataReturnType,
-    ResourceKindType,
-    getEnvironmentListMinPublic,
-    uploadCDPipelineFile,
-    getGlobalVariables,
-    FloatingVariablesSuggestions,
-    saveCDPipeline,
-    TriggerType,
+    BuildStageVariable,
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    Icon,
-    SourceTypeMap,
+    DEFAULT_PLUGIN_DATA_STORE,
+    DeploymentAppTypes,
+    Drawer,
+    Environment,
+    ErrorScreenManager,
+    FloatingVariablesSuggestions,
+    getEnvironmentListMinPublic,
+    getGlobalVariables,
+    getPluginsDetail,
+    getUpdatedPluginStore,
     handleAnalyticsEvent,
+    Icon,
+    MandatoryPluginDataType,
+    MODAL_TYPE,
+    OptionType,
+    PipelineFormType,
+    PipelineType,
+    PluginDataStoreType,
+    ProcessPluginDataParamsType,
+    ProcessPluginDataReturnType,
+    ReleaseMode,
+    ResourceKindType,
+    ServerErrors,
+    SourceTypeMap,
+    saveCDPipeline,
+    showError,
+    TabGroup,
+    TabProps,
+    ToastManager,
+    ToastVariantType,
+    TriggerType,
+    uploadCDPipelineFile,
+    VariableType,
+    VisibleModal,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
+
 import { CDDeploymentTabText, RegistryPayloadType, ViewType } from '../../config'
+import { BOUNDARY_GAP } from '../CIPipelineN/Constants'
+import { PreBuild } from '../CIPipelineN/PreBuild'
+import { Sidebar } from '../CIPipelineN/Sidebar'
+import { ValidationRules } from '../ciPipeline/validationRules'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import {
-    CD_PATCH_ACTION,
-    GeneratedHelmPush,
-    MigrateArgoAppToCDPipelineRequiredPayloadType,
-    MigrateToDevtronFormState,
-} from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -76,12 +76,17 @@ import {
     getDeploymentStrategyList,
     updateCDPipeline,
 } from './cdPipeline.service'
-import { Sidebar } from '../CIPipelineN/Sidebar'
+import {
+    CD_PATCH_ACTION,
+    GeneratedHelmPush,
+    MigrateArgoAppToCDPipelineRequiredPayloadType,
+    MigrateToDevtronFormState,
+} from './cdPipeline.types'
 import DeleteCDNode from './DeleteCDNode'
-import { PreBuild } from '../CIPipelineN/PreBuild'
-import { BOUNDARY_GAP } from '../CIPipelineN/Constants'
-import { ValidationRules } from '../ciPipeline/validationRules'
 import './cdPipeline.scss'
+
+import { checkForGitOpsRepoNotConfigured } from '@Pages/App/Configurations'
+
 import {
     CHANGE_TO_EXTERNAL_SOURCE,
     CREATE_DEPLOYMENT_PIPELINE,
@@ -90,6 +95,13 @@ import {
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
 } from '../../config/constantMessaging'
+import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
+import { getDockerRegistryMinAuth } from '../ciConfig/service'
+import NoGitOpsRepoConfiguredWarning, {
+    ReloadNoGitOpsRepoConfiguredModal,
+} from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 import {
     calculateLastStepDetailsLogic,
     checkUniqueness,
@@ -98,17 +110,10 @@ import {
     handleDeleteCDNodePipeline,
     validateTask,
 } from './cdpipeline.util'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
-import { getDockerRegistryMinAuth } from '../ciConfig/service'
-import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
-import NoGitOpsRepoConfiguredWarning, {
-    ReloadNoGitOpsRepoConfiguredModal,
-} from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
+import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+
 import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
-import { checkForGitOpsRepoNotConfigured } from '@Pages/App/Configurations'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -576,7 +581,7 @@ export default function CDPipeline({
                 active: env.id === pipelineConfigFromRes.environmentId,
             }
         })
-        const savedStrategies = []
+        const savedStrategies: typeof formData.strategies = []
         if (pipelineConfigFromRes.strategies) {
             for (let i = 0; i < pipelineConfigFromRes.strategies.length; i++) {
                 savedStrategies.push({
@@ -852,6 +857,7 @@ export default function CDPipeline({
      * @description This method is called only in case when we render basic view, i.e, CD creation first modal
      */
     const handleStrategy = (value: string): void => {
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let newSelection
         newSelection = {}
         newSelection['deploymentTemplate'] = value
@@ -1011,6 +1017,7 @@ export default function CDPipeline({
                 )
                 let envName = pipelineConfigFromRes.environmentName
                 if (!envName) {
+                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                     const selectedEnv: Environment = environmentRes.result.find((env) => env.id == _form.environmentId)
                     envName = selectedEnv.name
                 }
@@ -1050,6 +1057,7 @@ export default function CDPipeline({
         const _forceDeleteData = { ...forceDeleteData }
         setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 _forceDeleteData.forceDeleteDialogMessage = internalMessage
                 _forceDeleteData.forceDeleteDialogTitle = userMessage
@@ -1063,6 +1071,7 @@ export default function CDPipeline({
             formData.deploymentAppType === DeploymentAppTypes.ARGO && formData.deploymentAppCreated && !force
         const payload = {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
+            // biome-ignore lint/correctness/useParseIntRadix: Legacy
             appId: parseInt(appId),
             pipeline: {
                 id: +cdPipelineId,
@@ -1114,6 +1123,7 @@ export default function CDPipeline({
                 //For now we are removing check for error code 422 which is of deployment window,
                 // so in that case force delete modal would be shown.
                 // This should be done at BE and when done we will revert our changes
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (!force && error.code != 403 && error.code != 412) {
                     setForceDeleteDialogData(error)
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
@@ -1128,6 +1138,7 @@ export default function CDPipeline({
     const handleAdvanceClick = () => {
         const form = { ...formData }
         const strategies = form.strategies.filter(
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             (strategy) => strategy.deploymentTemplate != form.savedStrategies[0].deploymentTemplate,
         )
         form.strategies = strategies
@@ -1349,7 +1360,7 @@ export default function CDPipeline({
     }
 
     const renderCDPipelineModal = () => {
-        let title
+        let title: string
         if (isWebhookCD && workflowId === '0') {
             title = DEPLOY_IMAGE_EXTERNALSOURCE
         } else if (isWebhookCD && changeCIPayload) {
@@ -1513,6 +1524,7 @@ export default function CDPipeline({
             activeStageName === BuildStageVariable.Build ||
             hideScopedVariableWidget
         ) {
+            // biome-ignore lint/complexity/noUselessFragments: Legacy
             return <></>
         }
 

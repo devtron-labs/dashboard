@@ -16,12 +16,12 @@
 
 import { abortPreviousRequests, post } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CloneListResponse, CloneListTypes } from './AppClone/types'
+
 import { getJobs } from '@Components/Jobs/Service'
 import { APP_TYPE, Routes } from '@Config/constants'
 import { getAppIconWithBackground } from '@Config/utils'
 import { getAppListMin } from '@Services/service'
-
-import { CloneListResponse, CloneListTypes } from './AppClone/types'
 
 export const createApp = (request) => post(Routes.APP, request)
 

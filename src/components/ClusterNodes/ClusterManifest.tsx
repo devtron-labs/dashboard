@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2, YAMLStringify, CodeEditor, AppThemeType } from '@devtron-labs/devtron-fe-common-lib'
-import MessageUI, { MsgUIType } from '../v2/common/message.ui'
-import { getClusterManifest } from './clusterNodes.service'
-import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
-import { ClusterManifestType, ManifestPopuptype } from './types'
+
+import { AppThemeType, CodeEditor, VisibleModal2, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+
+import Close from '../../assets/icons/ic-cross.svg?react'
 import Pencil from '../../assets/icons/ic-pencil.svg?react'
 import WarningIcon from '../../assets/icons/ic-warning.svg?react'
-import Close from '../../assets/icons/ic-cross.svg?react'
-import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
+import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { getTrimmedManifestData } from '../v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
+import MessageUI, { MsgUIType } from '../v2/common/message.ui'
+import { getClusterManifest } from './clusterNodes.service'
+import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
+import { ClusterManifestType, ManifestPopuptype } from './types'
 
 export default function ClusterManifest({
     terminalAccessId,
@@ -64,7 +66,7 @@ export default function ClusterManifest({
                     setLoading(false)
                     setManifestAvailable(true)
                 })
-                .catch((error) => {
+                .catch(() => {
                     setResourceMissing(true)
                     setManifestAvailable(false)
                 })
@@ -96,7 +98,7 @@ export default function ClusterManifest({
                         setManifest(defaultManifestErrorText)
                         setManifestMode(EditModeType.EDIT)
                     }
-                } catch (error) {
+                } catch {
                     // Since we check error in edit as well, we can ignore this error and somehow infinite loop is created if we setManifest here.
                     setManifestMode(EditModeType.EDIT)
                 }
@@ -162,6 +164,7 @@ export default function ClusterManifest({
                     >
                         <div className="flex dc__content-space px-12">
                             <span>Pod manifest</span>
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
                                 <Close className="icon-dim-16 cursor icon-fill__white" />
                             </span>
@@ -208,7 +211,6 @@ export const ManifestPopupMenu = ({ closePopup, podName, namespace, forceDeleteP
                 <div className="flex right confirmation-dialog__button-group">
                     <button
                         type="button"
-                        tabIndex={3}
                         className="cta cancel sso__warn-button"
                         onClick={closePopupDoNothing}
                         data-testid="terminate-existing-pod-cancel-button"
@@ -216,6 +218,7 @@ export const ManifestPopupMenu = ({ closePopup, podName, namespace, forceDeleteP
                         {ManifestMessaging.CANCEL}
                     </button>
                     <button
+                        type="button"
                         className="cta sso__warn-button btn-confirm"
                         data-testid="terminate-existing-pod-button"
                         onClick={forceDelete}

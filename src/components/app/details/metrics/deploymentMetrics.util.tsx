@@ -15,8 +15,9 @@
  */
 
 import Tippy from '@tippyjs/react'
-import Smiley from '../../../../assets/icons/ic-smiley-party.svg?react'
+
 import ICHelpOutline from '../../../../assets/icons/ic-help-outline.svg?react'
+import Smiley from '../../../../assets/icons/ic-smiley-party.svg?react'
 import { createTimestamp } from './deploymentMetrics.service'
 
 export function frequencyXAxisLabel(props) {
@@ -64,25 +65,25 @@ export const BenchmarkLine = (props) => {
     switch (category) {
         case 'LOW':
             return (
-                <svg height="10" width="30">
+                <svg height="10" width="30" aria-label="Low Category Benchmark Line">
                     <line stroke="var(--R500)" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
                 </svg>
             )
         case 'MEDIUM':
             return (
-                <svg height="10" width="30">
+                <svg height="10" width="30" aria-label="Medium Category Benchmark Line">
                     <line stroke="var(--Y500)" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
                 </svg>
             )
         case 'HIGH':
             return (
-                <svg height="10" width="30">
+                <svg height="10" width="30" aria-label="High Category Benchmark Line">
                     <line stroke="var(--G500)" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
                 </svg>
             )
         case 'ELITE':
             return (
-                <svg height="10" width="30">
+                <svg height="10" width="30" aria-label="Elite Category Benchmark Line">
                     <line stroke="var(--V500)" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
                 </svg>
             )
@@ -106,7 +107,7 @@ export function renderCategoryTag(category: string) {
 
 export const ReferenceLineLegend = () => {
     return (
-        <svg height="10" width="30">
+        <svg height="10" width="30" aria-label="Reference Line Legend">
             <line stroke="var(--N900)" strokeWidth="2" strokeDasharray="8,3" x1="0" y1="5" x2="30" y2="5" />
         </svg>
     )
@@ -114,14 +115,18 @@ export const ReferenceLineLegend = () => {
 
 export const EliteCategoryMessage = (props) => {
     return (
-        <button type='button' className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column" onClick={props.onClick}>
+        <button
+            type="button"
+            className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column"
+            onClick={props.onClick}
+        >
             <p className="graph-legend__secondary-label"> You are in elite category </p>
             <p className="graph-legend__secondary-value">Good job!</p>
         </button>
     )
 }
 
-export const FailureLegendEmptyState = (props) => {
+export const FailureLegendEmptyState = () => {
     return (
         <div>
             <p className="graph-legend__primary-label">
@@ -192,10 +197,10 @@ export const RecoveryTimeTooltip = (props) => {
     if (!props.active) {
         return <div />
     }
-    let yAxisLabel
+    let yAxisLabel: string
     try {
         yAxisLabel = props?.payload[0]?.payload?.yAxisLabel || ''
-    } catch (e) {
+    } catch {
         yAxisLabel = ''
     }
     return (

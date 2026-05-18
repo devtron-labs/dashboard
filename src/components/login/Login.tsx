@@ -36,13 +36,14 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
 import { getSSOConfigList } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 
 import { TOKEN_COOKIE_NAME, URLS } from '../../config'
 import { dashboardAccessed } from '../../services/service'
 import { LOGIN_CARD_ANIMATION_VARIANTS, SSOProvider } from './constants'
 import { LoginForm } from './LoginForm'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import './login.scss'
 
@@ -77,7 +78,7 @@ const Login = () => {
                 description: 'Please login again',
             })
         }
-        if (queryParam && queryParam.includes('login')) {
+        if (queryParam?.includes('login')) {
             queryParam =
                 window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface
                     ? ROUTER_URLS.DEVTRON_APP_LIST
@@ -97,6 +98,7 @@ const Login = () => {
 
     const onClickSSO = () => {
         if (import.meta.env.VITE_ARGOCD_TOKEN) {
+            // biome-ignore lint/suspicious/noDocumentCookie: Legacy
             document.cookie = `argocd.token=${import.meta.env.VITE_ARGOCD_TOKEN}; path=/`
 
             navigate(ROUTER_URLS.DEVTRON_APP_LIST, { replace: true })
@@ -209,7 +211,7 @@ const Login = () => {
                             {renderLoginContent()}
                         </motion.div>
                     </div>
-                    {getTermsAndConditions && getTermsAndConditions()}
+                    {getTermsAndConditions?.()}
                 </div>
             </div>
         </div>

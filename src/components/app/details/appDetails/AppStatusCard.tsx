@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react'
 import Tippy from '@tippyjs/react'
+import React, { useMemo } from 'react'
 import ReactGA from 'react-ga4'
+
 import {
     AppStatus,
     AppType,
-    StatusType,
-    LoadingCard,
     getAIAnalyticsEvents,
-    useMainContext,
+    LoadingCard,
     MainContext,
+    StatusType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import ICHelpOutline from '../../../../assets/icons/ic-help-outline.svg?react'
 import { AppStatusCardType } from './appDetails.type'
 import './appDetails.scss'
+
 import { importComponentFromFELibrary } from '@Components/common'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
@@ -46,7 +49,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
     const debugObject = `${debugNode?.kind}/${debugNode?.name}`
 
     const showApplicationDetailedModal = (): void => {
-        setDetailed && setDetailed(true)
+        setDetailed?.(true)
         ReactGA.event({
             category: 'App Details',
             action: 'App Status clicked',
@@ -65,17 +68,19 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
             analyticsCategory: getAIAnalyticsEvents('APP_STATUS', appDetails.appType),
         }
 
-        const debugAgentContext = aiAgentContext ? {
-            ...aiAgentContext,
-            prompt: `Why is application '${appDetails.appName}' of '${appDetails.environmentName}' env in ${status} state?`,
-            data: {
-                ...aiAgentContext.data,
-                ...(debugNode ? { debugNodeKind: debugNode.kind, debugNodeName: debugNode.name } : {}),
-                ...(message ? { debugError: message } : {}),
-                namespace: appDetails.namespace,
-                status: debugNode?.health?.status ?? appDetails.appStatus,
-            },
-        } as MainContext['debugAgentContext'] : null
+        const debugAgentContext = aiAgentContext
+            ? ({
+                  ...aiAgentContext,
+                  prompt: `Why is application '${appDetails.appName}' of '${appDetails.environmentName}' env in ${status} state?`,
+                  data: {
+                      ...aiAgentContext.data,
+                      ...(debugNode ? { debugNodeKind: debugNode.kind, debugNodeName: debugNode.name } : {}),
+                      ...(message ? { debugError: message } : {}),
+                      namespace: appDetails.namespace,
+                      status: debugNode?.health?.status ?? appDetails.appStatus,
+                  },
+              } as MainContext['debugAgentContext'])
+            : null
 
         return (
             <div className="flexbox dc__content-space dc__gap-4 w-100">
@@ -102,6 +107,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
     }
 
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
         <div
             data-testid="app-status-card"
             onClick={showApplicationDetailedModal}

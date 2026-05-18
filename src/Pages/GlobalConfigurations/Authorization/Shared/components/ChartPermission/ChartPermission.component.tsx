@@ -18,8 +18,8 @@ import React, { useMemo } from 'react'
 
 import {
     ActionTypes,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     noop,
     OptionType,

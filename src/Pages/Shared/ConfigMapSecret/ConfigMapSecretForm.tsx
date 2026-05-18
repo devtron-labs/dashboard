@@ -22,11 +22,11 @@ import {
     CM_SECRET_STATE,
     CMSecretExternalType,
     ComponentSizeType,
-    configMapDataTypeOptions,
     ConfigMapSecretDataTypeOptionType,
-    configMapSecretMountDataMap,
     ConfigMapSecretReadyOnly,
     CustomInput,
+    configMapDataTypeOptions,
+    configMapSecretMountDataMap,
     getSecretDataTypeOptions,
     getSelectPickerOptionByValue,
     hasESO,
@@ -42,12 +42,6 @@ import {
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {
-    importComponentFromFELibrary,
-    isChartRef3090OrBelow,
-    isVersionLessThanOrEqualToTarget,
-} from '@Components/common'
-import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 
 import { ConfigMapSecretData } from './ConfigMapSecretData'
@@ -55,6 +49,13 @@ import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { renderChartVersionBelow3090NotSupportedText, renderESOInfo, renderExternalInfo } from './helpers'
 import { ConfigMapSecretFormProps } from './types'
 import { shouldHidePatchOption } from './utils'
+
+import {
+    importComponentFromFELibrary,
+    isChartRef3090OrBelow,
+    isVersionLessThanOrEqualToTarget,
+} from '@Components/common'
+import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
 
 const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
     'DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE',
@@ -176,7 +177,7 @@ export const ConfigMapSecretForm = ({
 
     const renderMountData = () => (
         <div className="flexbox-col dc__gap-6">
-            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
             <label className="m-0 fs-13 lh-20 dc__required-field fw-4">Mount data as</label>
             <RadioGroup
                 className="configmap-secret-form__mount-data"

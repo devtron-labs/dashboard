@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
 import Tippy, { TippyProps } from '@tippyjs/react'
+import { useRef } from 'react'
 
 import {
     Button,
@@ -25,10 +25,10 @@ import {
     useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICDownload from '@Icons/ic-arrow-line-down.svg?react'
-import { Routes } from '@Config/constants'
-
 import { DownloadChartButtonProps } from '../types'
+
+import { Routes } from '@Config/constants'
+import ICDownload from '@Icons/ic-arrow-line-down.svg?react'
 
 const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
     const { isDownloading, handleDownload } = useDownload()

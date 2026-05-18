@@ -29,18 +29,15 @@ import {
     noop,
     ResourceKindType,
     ROUTER_URLS,
-    showError,
     StatusComponent,
     StatusType,
+    showError,
     TARGET_K8S_VERSION_SEARCH_KEY,
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
-import { getAvailableCharts } from '@Services/service'
-
-import Error from '../../assets/icons/ic-error-exclamation.svg?react'
+import ErrorIcon from '../../assets/icons/ic-error-exclamation.svg?react'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
@@ -56,6 +53,9 @@ import {
     defaultClusterShortDescription,
 } from './constants'
 import { ClusterOverviewProps, ERROR_TYPE } from './types'
+
+import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
+import { getAvailableCharts } from '@Services/service'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'function')
@@ -238,7 +238,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
         return (
             <div className="mb-16 dc__border br-4 pt-12 bg__primary">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">
-                    <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
+                    <ErrorIcon className="mt-2 mb-2 mr-8 icon-dim-20" />
                     <span className="fw-6 fs-13 cn-9 mr-16">
                         {clusterErrorList.length === 1 ? '1 Error' : `${clusterErrorList.length} Errors in cluster`}
                     </span>
@@ -249,12 +249,18 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
                 </div>
                 <div className="pl-16 pr-16 fs-13 fw-4">
                     {clusterErrorList.map((error, index) => (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <div className="flex left pt-8 pb-8" key={`${error.errorType}-${index}`}>
+                        <div
+                            className="flex left pt-8 pb-8"
+                            key={`${error.errorType}-${
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                index
+                            }`}
+                        >
                             <div className="w-250 cn-9">{error.errorType}</div>
                             <div className="fw-4 fs-13 cn-9">
                                 {error.errorText}
                                 {error.errorType !== ERROR_TYPE.VERSION_ERROR ? (
+                                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                     <span
                                         className="cb-5 pointer"
                                         onClick={() => {
@@ -268,6 +274,7 @@ function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
                                         <>
                                             &nbsp;
                                             {_index > 0 && ', '}
+                                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                             <span
                                                 className="cb-5 pointer"
                                                 onClick={() => {

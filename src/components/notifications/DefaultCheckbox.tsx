@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DefaultCheckboxProps } from './types'
 

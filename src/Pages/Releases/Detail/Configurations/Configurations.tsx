@@ -27,9 +27,6 @@ import {
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
-import { URLS } from '@Config/routes'
 import { DeploymentTemplate } from '@Pages/Applications'
 import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DeploymentConfigCompareWrapper } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
@@ -38,6 +35,10 @@ import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
 
 import { ReleaseConfigurationContextType } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+import { URLS } from '@Config/routes'
 
 import './styles.scss'
 
@@ -72,7 +73,7 @@ export const ReleaseConfigurations = () => {
     const [envConfigResLoading, setEnvConfigResLoading] = useState<boolean>(false)
     const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
 
-    const fetchEnvConfig = async (propEnvId?: number, callback?: Parameters<typeof getEnvConfig>[3]) => {
+    const fetchEnvConfig = async (_propEnvId?: number, callback?: Parameters<typeof getEnvConfig>[3]) => {
         if (!appId || !envId) {
             return
         }

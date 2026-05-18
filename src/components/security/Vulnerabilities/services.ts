@@ -1,10 +1,10 @@
 import { post, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '@Config/constants'
-
 import { SeverityFilterValues } from '../SecurityScansTab/types'
 import { CVEListFilters } from './CVEList/types'
 import { VulnerabilitySummaryDTO } from './types'
+
+import { Routes } from '@Config/constants'
 
 export const useGetVulnerabilitySummary = (payload: Partial<Record<CVEListFilters, string[]>>) => {
     const { application, environment, cluster, severity, fixAvailability, ageOfDiscovery } = payload

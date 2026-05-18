@@ -15,6 +15,7 @@
  */
 
 import { useNavigate } from 'react-router-dom'
+
 import Close from '../../assets/icons/ic-close.svg?react'
 import { GuideCommonHeaderType } from './OnboardingGuide.type'
 

@@ -25,8 +25,6 @@ import {
     ResourceIdToResourceApprovalPolicyConfigMapType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Lock from '@Icons/ic-locked.svg?react'
-import ICStamp from '@Icons/ic-stamp.svg?react'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
@@ -37,6 +35,9 @@ import {
     ExtendedCollapsibleListItem,
 } from '../AppConfig.types'
 import { RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP } from './constants'
+
+import Lock from '@Icons/ic-locked.svg?react'
+import ICStamp from '@Icons/ic-stamp.svg?react'
 
 const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolean, dataTestId: string) => {
     if (isLocked) {
@@ -141,6 +142,7 @@ export const getEnvConfiguration = (
 } =>
     Object.keys(envConfig).reduce(
         (acc, curr) => ({
+            // biome-ignore lint/performance/noAccumulatingSpread: Legacy
             ...acc,
             [curr]:
                 curr === EnvConfigObjectKey.DeploymentTemplate

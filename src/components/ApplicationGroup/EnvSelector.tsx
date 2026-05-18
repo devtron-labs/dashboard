@@ -50,7 +50,7 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
         isEnvDataAvailable && !!recentlyVisitedResources.length,
     )
 
-    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+    const onInputChange: SelectPickerProps['onInputChange'] = (val) => {
         setInputValue(val)
     }
 

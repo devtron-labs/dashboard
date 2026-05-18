@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
 import Tippy from '@tippyjs/react'
+import { Component } from 'react'
 import { generatePath, Link } from 'react-router-dom'
+
 import {
     DEPLOYMENT_STATUS,
     DeploymentAppTypes,
@@ -27,15 +28,18 @@ import {
     statusColor,
     statusIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
+
+import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '@Pages/App/Configurations'
+
 import Rollback from '../../../../../../assets/icons/ic-rollback.svg?react'
 import { DEFAULT_STATUS } from '../../../../../../config'
-import { envDescriptionTippy, getNodeSideHeadingAndClass } from './workflow.utils'
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
+import { envDescriptionTippy, getNodeSideHeadingAndClass } from './workflow.utils'
+
 import { getAppGroupDeploymentHistoryLink } from '@Components/ApplicationGroup/AppGroup.utils'
-import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '@Pages/App/Configurations'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
@@ -106,16 +110,15 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             >
                 <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                 <span>{statusText}</span>
-                <>
-                    {statusText && <span className="mr-5 ml-5">/</span>}
-                    <Link
-                        data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
-                        to={url}
-                        className="workflow-node__details-link"
-                    >
-                        Details
-                    </Link>
-                </>
+
+                {statusText && <span className="mr-5 ml-5">/</span>}
+                <Link
+                    data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                    to={url}
+                    className="workflow-node__details-link"
+                >
+                    Details
+                </Link>
             </div>
         )
     }
@@ -188,6 +191,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                         {!this.props.isVirtualEnvironment && (
                             <Tippy className="default-tt" arrow placement="bottom" content="Rollback">
                                 <button
+                                    type="button"
                                     data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
                                     className="workflow-node__rollback-btn"
                                     onClick={this.handleRollbackClick}
@@ -197,6 +201,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                             </Tippy>
                         )}
                         <button
+                            type="button"
                             data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                             className="workflow-node__deploy-btn"
                             onClick={(event) => {

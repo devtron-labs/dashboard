@@ -28,8 +28,6 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { DEFAULT_MERGE_STRATEGY } from '../constants'
 import { CompareConfigViewProps, EnvOverrideEditorCommonStateType } from '../types'
 import { CHART_NAME_TO_DOC_SEGMENT, PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
@@ -50,6 +48,8 @@ import {
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')

@@ -7,8 +7,8 @@ import {
     DeploymentNodeType,
     DeploymentWindowProfileMetaData,
     FilterStates,
-    genericCDMaterialsService,
     GetPolicyConsequencesProps,
+    genericCDMaterialsService,
     handleAnalyticsEvent,
     PolicyConsequencesDTO,
     showError,
@@ -17,12 +17,12 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { CD_MATERIAL_GA_EVENT } from '../Constants'
 import { FilterConditionViews, MATERIAL_TYPE } from '../types'
 import { GetAppGroupDeploymentWindowMapReturnType, GetMaterialResponseListProps, LoadOlderImagesProps } from './types'
 import { getIsCDTriggerBlockedThroughConsequences, getIsConsumedImageAvailable } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
     importComponentFromFELibrary('getPolicyConsequences', null, 'function')

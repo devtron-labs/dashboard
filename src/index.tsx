@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserTracing } from '@sentry/tracing'
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import {
     customEnv,
@@ -51,6 +51,7 @@ if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
 
 const root = document.getElementById('root')
 if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._env_.SENTRY_ERROR_ENABLED) {
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     const integrationArr = []
     integrationArr.push(new CaptureConsole({ levels: ['error'] }))
     if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
@@ -74,7 +75,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
         integrations: integrationArr,
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
         ...(window._env_.SENTRY_RELEASE_VERSION ? { release: window._env_.SENTRY_RELEASE_VERSION } : {}),
-        environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
+        environment: window._env_?.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
         beforeSend(event) {
             const errorList = event?.exception?.values || []
             for (let index = 0; index < errorList.length; index++) {
@@ -103,7 +104,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
     })
 }
 
-if (!window || !window._env_) {
+if (!window?._env_) {
     window._env_ = {
         SENTRY_ENV: 'staging',
         SENTRY_ERROR_ENABLED: false,

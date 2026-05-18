@@ -16,6 +16,7 @@ export const CVE_LIST_GROUP_FILTER_OPTIONS: GroupedFilterSelectPickerProps<CVELi
     },
 ]
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const CVE_LIST_TABLE_COLUMNS: TableProps<CVEDetails, FiltersTypeEnum.URL, {}>['columns'] = [
     {
         label: 'CVE ID',

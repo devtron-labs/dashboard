@@ -16,9 +16,9 @@
 
 import {
     AppConfigProps,
+    ROUTES as CommonRoutes,
     get,
     getUrlWithSearchParams,
-    ROUTES as CommonRoutes,
     trash,
 } from '@devtron-labs/devtron-fe-common-lib'
 

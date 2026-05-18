@@ -2,16 +2,16 @@ import dayjs from 'dayjs'
 
 import {
     ChartColorKey,
-    Severity,
     SEVERITY_LABEL_MAP,
+    Severity,
     SimpleDataset,
     SimpleDatasetForPie,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { RelativeTimeWindow } from '@PagesDevtron2.0/Shared/types'
-
 import { SEVERITY_CHART_COLOR_MAP, SEVERITY_ORDER } from './constants'
 import { SecurityGlanceMetricKeys, SeverityAgeDistribution, SeverityDistribution } from './types'
+
+import { RelativeTimeWindow } from '@PagesDevtron2.0/Shared/types'
 
 // Sort and return only non-zero values
 export const parseSeverityDistribution = (severityDistribution: SeverityDistribution) => {

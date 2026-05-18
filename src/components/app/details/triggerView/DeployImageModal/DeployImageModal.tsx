@@ -26,8 +26,8 @@ import {
     PipelineDeploymentStrategy,
     ROUTER_URLS,
     ServerErrors,
-    showError,
     SortingOrder,
+    showError,
     stopPropagation,
     ToastManager,
     ToastVariantType,
@@ -40,14 +40,9 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { URLS } from '@Config/routes'
-
+import { TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { getCanDeployWithoutApproval, getCanImageApproverDeploy, getWfrId } from '../cdMaterials.utils'
 import { CDButtonLabelMap } from '../config'
-import { TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { PipelineConfigDiff, usePipelineDeploymentConfig } from '../PipelineConfigDiff'
 import { PipelineConfigDiffStatusTile } from '../PipelineConfigDiff/PipelineConfigDiffStatusTile'
 import { MATERIAL_TYPE } from '../types'
@@ -72,6 +67,11 @@ import {
     renderDeployCTATippyData,
     showErrorIfNotAborted,
 } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
+import { URLS } from '@Config/routes'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const getDeploymentStrategies: (pipelineIds: number[]) => Promise<PipelineDeploymentStrategy[]> =
@@ -711,6 +711,7 @@ const DeployImageModal = ({
     return (
         <>
             <Drawer position="right" width="1024px" onClose={handleClose} onEscape={handleClose}>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
                 <div
                     className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
                     onClick={stopPropagation}

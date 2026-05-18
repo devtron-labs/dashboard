@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { type JSX, useState } from 'react'
 import Tippy from '@tippyjs/react'
+import { type JSX, useState } from 'react'
+
 import {
     Collapse,
     DTSwitch,
@@ -25,13 +26,14 @@ import {
     SelectPicker,
     Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CustomImageTagsType } from './CustomImageTag.type'
-import { ValidationRules } from '../ciPipeline/validationRules'
-import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import Edit from '../../assets/icons/ic-pencil.svg?react'
+
 import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
 import GeneratedImage from '../../assets/icons/ic-generated-image.svg?react'
-import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
+import Edit from '../../assets/icons/ic-pencil.svg?react'
+import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { ValidationRules } from '../ciPipeline/validationRules'
+import { CustomImageTagsType } from './CustomImageTag.type'
+import { customTagStageTypeOptions, getCDStageTypeSelectorValue } from './ciPipeline.utils'
 import '../ciPipeline/ciPipeline.scss'
 
 function CustomImageTags({
@@ -165,7 +167,6 @@ function CustomImageTags({
                 <div className="flex left cn-7">
                     Value of {renderCounterXTippy(`{x}`)} will be
                     <input
-                        tabIndex={2}
                         type="number"
                         className="form__input form__input-pl-8 w-80px-imp ml-8 mr-8 bg__secondary"
                         name="image_counter"
@@ -270,9 +271,7 @@ function CustomImageTags({
                         onChange={handleCustomTagToggle}
                     />
                 </div>
-                <Collapse expand={formData.enableCustomTag}>
-                    {renderCustomImageDetails()}
-                </Collapse>
+                <Collapse expand={formData.enableCustomTag}>{renderCustomImageDetails()}</Collapse>
                 <hr />
             </div>
         )

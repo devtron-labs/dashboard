@@ -40,7 +40,8 @@ export class LogFilter {
      * @returns
      */
     public filter(log: string): Array<string> {
-        let bufferedLogs: Array<string> = new Array<string>()
+        let bufferedLogs: Array<string> = [] as string[]
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (log.length == 0) {
             return []
         }
@@ -52,7 +53,7 @@ export class LogFilter {
         if (new RegExp(_args, 'gi').test(log)) {
             if (this.distanceFromPreviousLessThanEqualTo(a + b)) {
                 bufferedLogs = bufferedLogs.concat(this.fetchNonOverlappingTrailingLines(b))
-                this.trailingLines = new Array<string>()
+                this.trailingLines = [] as string[]
             }
             this.indexFromLastMatch = 0
             bufferedLogs = bufferedLogs.concat(this.buffer.concat(log))
@@ -71,7 +72,7 @@ export class LogFilter {
             }
         }
         for (let i = 1; i < this.grepTokens.length; i++) {
-            const { v, _args } = this.grepTokens[i]
+            const { _args } = this.grepTokens[i]
             bufferedLogs = bufferedLogs.filter((l) => new RegExp(_args, 'gi').test(l))
         }
         return bufferedLogs
@@ -82,6 +83,7 @@ export class LogFilter {
     }
 
     private distanceFromPreviousEqualTo(dist: number): boolean {
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy comparison
         return this.indexFromLastMatch == 1 * dist
     }
 
@@ -93,10 +95,10 @@ export class LogFilter {
     public stop(): Array<string> {
         let bufferedLogs = this.trailingLines
         for (let i = 1; i < this.grepTokens.length; i++) {
-            const { v, _args } = this.grepTokens[i]
+            const { _args } = this.grepTokens[i]
             bufferedLogs = bufferedLogs.filter((l) => new RegExp(_args, 'gi').test(l))
         }
-        this.trailingLines = new Array<string>()
+        this.trailingLines = [] as string[]
         return bufferedLogs
     }
 }

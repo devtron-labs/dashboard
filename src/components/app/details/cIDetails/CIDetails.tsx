@@ -22,7 +22,6 @@ import {
     asyncWrap,
     CICDSidebarFilterOptionType,
     EMPTY_STATE_STATUS,
-    ErrorScreenManager,
     FetchIdDataStatus,
     GenericEmptyState,
     GitChanges,
@@ -30,21 +29,21 @@ import {
     HistoryComponentType,
     LogResizeButton,
     LogsRenderer,
-    mapByKey,
     ModuleNameMap,
+    mapByKey,
     PipelineType,
     Progressing,
     Reload,
-    sanitizeTargetPlatforms,
     Scroller,
-    showError,
     Sidebar,
+    sanitizeTargetPlatforms,
+    showError,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
-    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './ciDetails.scss'
-import { TriggerDetails, useAsync, useInterval, useScrollable, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ROUTER_URLS, TriggerDetails, useAsync, useInterval, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes as ROUTES } from '../../../../config'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
@@ -58,9 +57,9 @@ import {
     getTriggerHistory,
 } from '../../service'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { SecurityTab } from './SecurityTab'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
-import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
+import { SecurityTab } from './SecurityTab'
+import { BuildDetails, CIPipeline, HistoryLogsType } from './types'
 
 import './ciDetails.scss'
 
@@ -248,7 +247,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
 
     const renderSourcePipelineButton = () => {
         return (
-            <button className="flex cta h-32" onClick={redirectToArtifactLogs}>
+            <button type="button" className="flex cta h-32" onClick={redirectToArtifactLogs}>
                 View Source Pipeline
             </button>
         )
@@ -280,53 +279,48 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                             }.`}
                         />
                     ) : (
-                        pipeline && (
-                            <>
-                                {triggerHistory.size > 0 || fetchBuildIdData ? (
-                                    pipelineId &&
-                                    buildId && (
-                                        <Details
-                                            fullScreenView={fullScreenView}
-                                            synchroniseState={synchroniseState}
-                                            triggerHistory={triggerHistory}
-                                            isSecurityModuleInstalled={
-                                                initDataResults[1]?.['value']?.result?.status ===
-                                                    ModuleStatus.INSTALLED || false
-                                            }
-                                            isBlobStorageConfigured={
-                                                initDataResults[2]?.['value']?.result?.enabled || false
-                                            }
-                                            isJobView={isJobView}
-                                            tagsEditable={tagsEditable}
-                                            appReleaseTags={appReleaseTags}
-                                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                                            fetchIdData={fetchBuildIdData}
-                                            isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
-                                            scrollToTop={scrollToTop}
-                                            scrollToBottom={scrollToBottom}
-                                        />
-                                    )
-                                ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                    // Empty state if there is no linked pipeline
-                                    <GenericEmptyState
-                                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
-                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
-                                        isButtonAvailable
-                                        renderButton={renderSourcePipelineButton}
-                                    />
-                                ) : (
-                                    !loading && (
-                                        // Empty state if there is no pipeline
-                                        <GenericEmptyState
-                                            title={`${isJobView ? 'Job' : 'Build'} ${
-                                                EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
-                                            }`}
-                                            subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
-                                        />
-                                    )
-                                )}
-                            </>
-                        )
+                        pipeline &&
+                        (triggerHistory.size > 0 || fetchBuildIdData ? (
+                            pipelineId &&
+                            buildId && (
+                                <Details
+                                    fullScreenView={fullScreenView}
+                                    synchroniseState={synchroniseState}
+                                    triggerHistory={triggerHistory}
+                                    isSecurityModuleInstalled={
+                                        initDataResults[1]?.['value']?.result?.status === ModuleStatus.INSTALLED ||
+                                        false
+                                    }
+                                    isBlobStorageConfigured={initDataResults[2]?.['value']?.result?.enabled || false}
+                                    isJobView={isJobView}
+                                    tagsEditable={tagsEditable}
+                                    appReleaseTags={appReleaseTags}
+                                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                    fetchIdData={fetchBuildIdData}
+                                    isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                                    scrollToTop={scrollToTop}
+                                    scrollToBottom={scrollToBottom}
+                                />
+                            )
+                        ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
+                            // Empty state if there is no linked pipeline
+                            <GenericEmptyState
+                                title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
+                                subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
+                                isButtonAvailable
+                                renderButton={renderSourcePipelineButton}
+                            />
+                        ) : (
+                            !loading && (
+                                // Empty state if there is no pipeline
+                                <GenericEmptyState
+                                    title={`${isJobView ? 'Job' : 'Build'} ${
+                                        EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
+                                    }`}
+                                    subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
+                                />
+                            )
+                        ))
                     )}
                 </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
@@ -584,6 +578,7 @@ const HistoryLogs = ({
 
     const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => (
         // TargetPlatforms are not supported for Artifacts in case of JobCI
+        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
         <Artifacts
             status={triggerDetails.status}
             artifact={ciJobArtifact[index]}

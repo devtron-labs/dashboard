@@ -15,10 +15,12 @@
  */
 
 import { useEffect, useState } from 'react'
-import { showError, Progressing, CIBuildType, ClipboardButton, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+
+import { CIBuildType, ClipboardButton, CodeEditor, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+
 import { MODES } from '../../config'
-import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import BuildContext from './BuildContext'
+import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import { RootBuildContext } from './ciConfigConstant'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import { getSelectStartIcon } from './utils'
@@ -232,7 +234,7 @@ export default function CICreateDockerfileOption({
     }
 
     const resetChanges = () => {
-        const editorData = templateData && templateData[getTemplateKey(selectedLanguage, selectedFramework)]
+        const editorData = templateData?.[getTemplateKey(selectedLanguage, selectedFramework)]
         setEditorValue(editorData?.data)
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,

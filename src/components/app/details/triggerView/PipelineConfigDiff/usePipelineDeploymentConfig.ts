@@ -40,10 +40,8 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import { getChartList } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentTemplate/service'
 import { deploymentConfigDiffTabs, getDeploymentConfigDiffTabs } from '@Pages/Shared'
-import { getTemplateOptions } from '@Services/service'
 
 import {
     PipelineConfigDiffQueryParams,
@@ -57,6 +55,9 @@ import {
     getPipelineDeploymentConfigSelectorConfig,
     parseCompareWithSearchParams,
 } from './utils'
+
+import { URLS } from '@Config/routes'
+import { getTemplateOptions } from '@Services/service'
 
 export const usePipelineDeploymentConfig = ({
     appId,
@@ -435,7 +436,7 @@ export const usePipelineDeploymentConfig = ({
     const getNavItemHref = (resourceType: EnvResourceType, resourceName: string) =>
         `${pathname.split(`/${URLS.APP_DIFF_VIEW}/`)[0]}/${URLS.APP_DIFF_VIEW}/${resourceType}${resourceName ? `/${resourceName}` : ''}${search}`
 
-    const onTabChange = async (tab: typeof selectedTab) => {
+    const onTabChange = (tab: typeof selectedTab) => {
         navigate(
             getNavItemHref(
                 tab === deploymentConfigDiffTabs.MANIFEST

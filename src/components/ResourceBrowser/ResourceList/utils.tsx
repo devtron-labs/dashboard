@@ -33,10 +33,6 @@ import {
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AggregationKeys } from '@Components/app/types'
-import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlphabetically } from '@Components/common'
-import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-
 import {
     clusterOverviewNodeText,
     ERROR_SCREEN_LEARN_MORE,
@@ -59,6 +55,10 @@ import {
 } from '../Types'
 import { convertResourceGroupListToK8sObjectList } from '../Utils'
 import { K8sResourceListFilterType, NodeSearchListOptionType, ResourceListUrlFiltersType } from './types'
+
+import { AggregationKeys } from '@Components/app/types'
+import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlphabetically } from '@Components/common'
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     'getFilterOptionsFromSearchParams',

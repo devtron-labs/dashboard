@@ -6,8 +6,8 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
-    Chart,
     CHART_COLORS,
+    Chart,
     ComponentSizeType,
     GenericSectionErrorState,
     getSelectPickerOptionByValue,
@@ -20,8 +20,6 @@ import {
     Tooltip,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { RELATIVE_TIME_WINDOW_SELECT_OPTIONS, RelativeTimeWindow } from '@PagesDevtron2.0/Shared'
 
 import { SectionLoadingCard } from '../Overview.components'
 import { useGetAppOverviewDoraMetrics } from '../services'
@@ -37,6 +35,8 @@ import {
 } from './constants'
 import { getDoraMetricsChartTooltip } from './tooltipUtils'
 import { getDoraMetricBadgeVariant } from './utils'
+
+import { RELATIVE_TIME_WINDOW_SELECT_OPTIONS, RelativeTimeWindow } from '@PagesDevtron2.0/Shared'
 
 const PerformanceLevelIndicator = () => {
     const { appTheme } = useTheme()

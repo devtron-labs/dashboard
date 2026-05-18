@@ -20,11 +20,11 @@ import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-do
 import {
     Button,
     ButtonVariantType,
-    capitalizeFirstLetter,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     ComponentSizeType,
     ConfigurationType,
+    capitalizeFirstLetter,
     DeploymentAppTypes,
     FormProps,
     getAIAnalyticsEvents,
@@ -39,14 +39,6 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
-import ICCheck from '@Icons/ic-check.svg?react'
-import ICPencil from '@Icons/ic-pencil.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
-import { K8sResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
-import { EDITOR_VIEW } from '@Config/constants'
 
 import DeleteIcon from '../../../../../assets/icons/ic-delete-interactive.svg?react'
 import EphemeralIcon from '../../../../../assets/icons/ic-ephemeral.svg?react'
@@ -65,14 +57,22 @@ import {
     Options,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
+import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
-import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import { getManifestResource, updateManifestResourceHelmApps } from './nodeDetail.api'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
+import { K8sResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
+import { EDITOR_VIEW } from '@Config/constants'
+import ICArrowsLeftRight from '@Icons/ic-arrows-left-right.svg?react'
+import ICCheck from '@Icons/ic-check.svg?react'
+import ICPencil from '@Icons/ic-pencil.svg?react'
 
 import './nodeDetail.css'
 
@@ -169,7 +169,7 @@ const NodeDetailComponent = ({
         (currentResource as unknown as Node)?.health?.status === 'Missing'
 
     const [containers, setContainers] = useState<Options[]>(
-        (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
+        (isResourceBrowserView ? (selectedResource?.containers ?? []) : getContainersData(podMetaData)) as Options[],
     )
     const [startTerminal, setStartTerminal] = useState<boolean>(false)
 
@@ -227,7 +227,7 @@ const NodeDetailComponent = ({
                 name: selectedResource.name ? selectedResource.name : nullCaseName,
                 namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
             })) as any
-            const _resourceContainers = []
+            const _resourceContainers: typeof containers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
                     _resourceContainers.push(
@@ -538,6 +538,7 @@ const NodeDetailComponent = ({
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
                                 <EphemeralIcon className="mr-4 icon-dim-16 scb-5" />
                                 Launch Ephemeral Container
@@ -579,6 +580,7 @@ const NodeDetailComponent = ({
                 </div>
                 {isResourceBrowserView &&
                     !hideDeleteButton && ( // hide delete button if resource is deleted or user is not authorized
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={toggleDeleteDialog}>
                             <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
                             {CLUSTER_NODE_ACTIONS_LABELS.delete}

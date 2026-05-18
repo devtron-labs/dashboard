@@ -22,10 +22,10 @@ import {
     useGetResourceKindsOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICFolderColor from '@Icons/ic-folder-color.svg?react'
-
 import { PROJECT_SELECT_INPUT_ID } from './constants'
 import { CreateAppFormStateType, ProjectSelectorProps } from './types'
+
+import ICFolderColor from '@Icons/ic-folder-color.svg?react'
 
 const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: ProjectSelectorProps) => {
     const { isResourcesOptionsLoading, resourcesOptionsMap, resourcesOptionsError, refetchResourcesOptions } =

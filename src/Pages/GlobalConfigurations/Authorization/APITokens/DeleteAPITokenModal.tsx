@@ -18,10 +18,10 @@ import { useNavigate } from 'react-router-dom'
 
 import { DeleteConfirmationModal, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
 import { DeleteAPITokenModalProps } from './apiToken.type'
 import { deleteGeneratedAPIToken } from './service'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const DeleteAPITokenModal = ({ isEditView, tokenData, reload, setDeleteConfirmation }: DeleteAPITokenModalProps) => {
     const navigate = useNavigate()

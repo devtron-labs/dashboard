@@ -111,6 +111,7 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
 
                 {isSecureConnection ? (
                     iframeSrc && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions: its required to have onLoad event on iframe to hide loader
                         <iframe
                             key={iframeKeyRef.current}
                             ref={iframeRef}

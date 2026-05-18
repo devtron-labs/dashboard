@@ -189,6 +189,7 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                             size={ComponentSizeType.large}
                         />
 
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         {repositoryError && <label className="form__error">{repositoryError}</label>}
                     </div>
 

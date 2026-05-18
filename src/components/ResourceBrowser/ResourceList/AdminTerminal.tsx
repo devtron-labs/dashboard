@@ -22,8 +22,8 @@ import { ErrorScreenManager, Progressing, useAsync } from '@devtron-labs/devtron
 import { createTaintsList } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 
 import { getHostURLConfiguration } from '../../../services/service'
-import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clusterNodes.service'
 import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
+import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clusterNodes.service'
 import { createGroupSelectList, filterImageList } from '../../common'
 import { AdminTerminalProps, ClusterDetailBaseParams } from '../Types'
 

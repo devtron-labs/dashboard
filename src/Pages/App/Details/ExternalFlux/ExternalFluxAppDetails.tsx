@@ -18,9 +18,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
-    abortPreviousRequests,
     AIAgentContextSourceType,
     AppType,
+    abortPreviousRequests,
     DeploymentAppTypes,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
@@ -39,7 +39,7 @@ import { getExternalFluxCDAppDetails } from './service'
 import { ExternalFluxAppDetailParams } from './types'
 import { getAppStatus } from './utils'
 
-let initTimer = null
+let initTimer: ReturnType<typeof setTimeout> = null
 
 const ExternalFluxAppDetails = () => {
     const { clusterId, appName, namespace, templateType } = useParams<ExternalFluxAppDetailParams>()

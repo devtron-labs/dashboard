@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+export * from './ClusterEnvironmentDrawer'
+export { default as ClusterComponents } from './ClusterList'
+export * from './CreateCluster'
 export * from './cluster.service'
 export * from './cluster.type'
 export * from './cluster.util'
-export * from './ClusterEnvironmentDrawer'
-export { default as ClusterComponents } from './ClusterList'
 export * from './constants'
-export * from './CreateCluster'
 export * from './EnvironmentDeleteComponent'

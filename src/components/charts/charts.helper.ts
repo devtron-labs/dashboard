@@ -87,6 +87,7 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
     arr = arr.filter((str) => str.length)
     let crumbs = arr.map((ele, itemIndex) => {
         let subArr = arr.slice(0, itemIndex + 1)
+        // biome-ignore lint/complexity/noCommaOperator: Legacy
         if ((arr[itemIndex + 1], parseInt(arr[itemIndex + 1], 10))) {
             subArr = subArr.concat([arr[itemIndex + 1]])
         }

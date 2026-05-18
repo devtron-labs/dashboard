@@ -14,60 +14,65 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, type JSX } from 'react'
+import moment from 'moment'
+import React, { type JSX, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    ServerErrors,
-    GenericEmptyState,
-    DetailsProgressing,
-    DeploymentAppTypes,
-    YAMLStringify,
-    DeploymentDetailSteps,
+    AppStatus,
+    Button,
     CodeEditor,
+    ComponentSizeType,
+    DEPLOYMENT_STATUS,
+    DeploymentAppTypes,
+    DeploymentDetailSteps,
+    DetailsProgressing,
+    EMPTY_STATE_STATUS,
+    ErrorScreenManager,
+    GenericEmptyState,
+    MODES,
+    Progressing,
+    ServerErrors,
+    ShowMoreText,
+    StatusType,
+    showError,
     TabGroup,
     ToastManager,
     ToastVariantType,
-    ShowMoreText,
-    DEPLOYMENT_STATUS,
-    EMPTY_STATE_STATUS,
-    AppStatus,
-    StatusType,
-    Button,
-    ComponentSizeType,
-    MODES,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { useNavigate, useParams } from 'react-router-dom'
-import docker from '@Icons/misc/docker.svg'
+
 import DataNotFound from '../../../assets/img/app-not-deployed.svg'
-import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
+import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
+
+import docker from '@Icons/misc/docker.svg'
 import '../../app/details/cIDetails/ciDetails.scss'
 import './chartDeploymentHistory.scss'
+
+import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderDeploymentApprovalInfo,
+} from '../../app/details/cdDetails/utils'
+import { importComponentFromFELibrary } from '../../common'
+import IndexStore from '../appDetails/index.store'
 import MessageUI from '../common/message.ui'
-import DockerListModal from './DockerListModal'
 import {
     ChartDeploymentDetail,
     ChartDeploymentHistoryResponse,
     ChartDeploymentManifestDetail,
     getDeploymentHistory,
     getDeploymentManifestDetails,
-    rollbackApplicationDeployment,
     RollbackReleaseRequest,
+    rollbackApplicationDeployment,
 } from './chartDeploymentHistory.service'
-import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
-import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
+import DockerListModal from './DockerListModal'
 import RollbackConfirmationDialog from './RollbackConfirmationDialog'
-import {
-    processVirtualEnvironmentDeploymentData,
-    renderDeploymentApprovalInfo,
-} from '../../app/details/cdDetails/utils'
-import Rocket from '@Icons/ic-nav-rocket.svg?react'
+
 import ICLines from '@Icons/ic-lines.svg?react'
+import Rocket from '@Icons/ic-nav-rocket.svg?react'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
@@ -106,7 +111,7 @@ const ChartDeploymentHistory = ({
     const [showReleaseNotFound, setReleaseNotFound] = useState<boolean>(false)
     const navigate = useNavigate()
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
-    let initTimer = null
+    let initTimer: ReturnType<typeof setTimeout> = null
     // Checking if deployment app type is argocd only then show steps tab
 
     const deploymentTabs = () => {
@@ -226,6 +231,7 @@ const ChartDeploymentHistory = ({
 
     function onClickDeploymentTabs(tabName: string) {
         // This will call whenever we change the tabs internally eg, source,value etc
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (selectedDeploymentTabName == tabName) {
             return
         }
@@ -235,6 +241,7 @@ const ChartDeploymentHistory = ({
 
     function onClickDeploymentHistorySidebar(index: number) {
         // This will call whenever we change the deployment from sidebar
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
@@ -322,9 +329,11 @@ const ChartDeploymentHistory = ({
                 {deploymentHistoryArr.map((deployment, index) => {
                     return (
                         <React.Fragment key={deployment.version}>
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <div
                                 onClick={() => onClickDeploymentHistorySidebar(index)}
                                 className={`w-100 ci-details__build-card ${
+                                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                                     selectedDeploymentHistoryIndex == index ? 'active' : ''
                                 }`}
                                 data-testid={`chart-deployment-history-sidebar-row-${index}`}
@@ -356,7 +365,11 @@ const ChartDeploymentHistory = ({
                                         <div className="flex left cn-7 fs-12">
                                             {deployment.dockerImages && (
                                                 <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
-                                                    <img src={docker} className="commit-hash__icon grayscale" />
+                                                    <img
+                                                        src={docker}
+                                                        className="commit-hash__icon grayscale"
+                                                        alt="Docker icon"
+                                                    />
                                                     <span className="ml-3" data-testid="docker-version-deployment">
                                                         {deployment.dockerImages[0].split(':')[1] ||
                                                             deployment.dockerImages[0]}
@@ -426,7 +439,7 @@ const ChartDeploymentHistory = ({
             try {
                 const parsedJson = JSON.parse(value)
                 return YAMLStringify(parsedJson)
-            } catch (e) {
+            } catch {
                 return value
             }
         }

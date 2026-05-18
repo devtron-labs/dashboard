@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import * as Sentry from '@sentry/browser'
 import { lazy, useEffect, useMemo, useState } from 'react'
 import { generatePath, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import * as Sentry from '@sentry/browser'
 
 import {
     BASE_ROUTES,

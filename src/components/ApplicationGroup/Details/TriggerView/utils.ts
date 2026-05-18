@@ -16,10 +16,10 @@
 
 import { CommonNodeAttr, DeploymentNodeType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { BulkCDDetailType } from '../../AppGroup.types'
+
 import { DeployImageContentProps } from '@Components/app/details/triggerView/DeployImageModal/types'
 import { getNodeIdAndTypeFromSearch } from '@Components/app/details/triggerView/TriggerView.utils'
-
-import { BulkCDDetailType } from '../../AppGroup.types'
 
 export const getSelectedCDNode = (bulkTriggerType: DeploymentNodeType, _cdNode: CommonNodeAttr) => {
     if (bulkTriggerType === DeploymentNodeType.PRECD) {

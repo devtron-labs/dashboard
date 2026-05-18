@@ -8,11 +8,11 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { getIsMaterialApproved } from '../cdMaterials.utils'
 import { ImageSelectionCTAProps } from './types'
 import { getIsImageApprover } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
 

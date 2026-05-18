@@ -25,20 +25,20 @@ import {
     CustomInput,
     Icon,
     InfoBlock,
+    SourceTypeMap,
     savePipeline,
     showError,
-    SourceTypeMap,
     stopPropagation,
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import Close from '@Icons/ic-close.svg?react'
-import { getGitProviderIcon } from '@Components/common'
 
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { BranchRegexModalProps, RegexValueType } from './types'
 import { getInitialRegexValue } from './utils'
+
+import { getGitProviderIcon } from '@Components/common'
+import Close from '@Icons/ic-close.svg?react'
 
 const renderRegexInfo = () => (
     <InfoBlock
@@ -91,6 +91,7 @@ const BranchRegexModal = ({
                 id: +ciPipelineId,
                 ciPipelineMaterial: selectedCIPipeline.ciMaterial.map((_cm) => {
                     const regVal = regexValue[_cm.gitMaterialId]
+                    // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
                     let _updatedCM
 
                     if (regVal?.value && _cm.source.regex) {
@@ -245,6 +246,7 @@ const BranchRegexModal = ({
 
     return (
         <VisibleModal2 className="visible-modal__body">
+            {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <form
                 onSubmit={handleSave}
                 onClick={stopPropagation}

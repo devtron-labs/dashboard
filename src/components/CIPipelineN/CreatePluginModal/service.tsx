@@ -22,8 +22,6 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '@Config/constants'
-
 import {
     CreatePluginAPIParamsType,
     CreatePluginServiceParamsType,
@@ -31,6 +29,8 @@ import {
     ParentPluginListItemType,
 } from './types'
 import { getCreatePluginPayload } from './utils'
+
+import { Routes } from '@Config/constants'
 
 export const getParentPluginList = async (appId: number): Promise<ParentPluginListItemType[]> => {
     try {
@@ -57,7 +57,7 @@ export const getParentPluginList = async (appId: number): Promise<ParentPluginLi
     }
 }
 
-export const createPlugin = async ({
+export const createPlugin = ({
     stepData,
     appId,
     pluginForm,

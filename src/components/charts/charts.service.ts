@@ -16,24 +16,25 @@
 
 import {
     get,
+    getAPIOptionsWithTriggerTimeout,
+    getUrlWithSearchParams,
     post,
     put,
-    trash,
-    sortCallback,
     ResponseType,
-    getUrlWithSearchParams,
-    getAPIOptionsWithTriggerTimeout,
+    sortCallback,
+    trash,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DELETE_ACTION, Routes } from '../../config'
 import { handleUTCTime } from '../common'
 import {
-    ChartValuesType,
-    ChartGroup,
-    HelmTemplateChartRequest,
-    HelmProjectUpdatePayload,
-    DeleteInstalledChartParamsType,
     ChartDetailsDTO,
+    ChartGroup,
     ChartListType,
+    ChartValuesType,
+    DeleteInstalledChartParamsType,
+    HelmProjectUpdatePayload,
+    HelmTemplateChartRequest,
 } from './charts.types'
 
 interface RootObject {
@@ -86,7 +87,7 @@ export function deleteInstalledChart(
 }
 
 export function getChartValuesCategorizedList(chartId: number | string, installedAppVersionId = null): Promise<any> {
-    let URL
+    let URL: string
     if (installedAppVersionId) {
         URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}?installedAppVersionId=${installedAppVersionId}`
     } else {
@@ -105,10 +106,10 @@ export function getChartValuesCategorizedListParsed(
         const deployedCharts = list.find((chartList) => chartList.kind === 'DEPLOYED')
         const defaultCharts = list.find((chartList) => chartList.kind === 'DEFAULT')
         const existingCharts = list.find((chartList) => chartList.kind === 'EXISTING')
-        let savedChartValues = savedCharts && savedCharts.values ? savedCharts.values : []
-        let deployedChartValues = deployedCharts && deployedCharts.values ? deployedCharts.values : []
-        let defaultChartValues = defaultCharts && defaultCharts.values ? defaultCharts.values : []
-        let existingChartValues = existingCharts && existingCharts.values ? existingCharts.values : []
+        let savedChartValues = savedCharts?.values ? savedCharts.values : []
+        let deployedChartValues = deployedCharts?.values ? deployedCharts.values : []
+        let defaultChartValues = defaultCharts?.values ? defaultCharts.values : []
+        let existingChartValues = existingCharts?.values ? existingCharts.values : []
 
         savedChartValues = savedChartValues.map((chart) => {
             return { ...chart, kind: 'TEMPLATE' }

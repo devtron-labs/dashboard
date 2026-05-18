@@ -11,15 +11,15 @@ import {
     noop,
     ResponseType,
     SearchBar,
-    stopPropagation,
     SupportedKeyboardKeysType,
+    stopPropagation,
     ToastManager,
     ToastVariantType,
+    UserPreferencesType,
     updateUserPreferences,
     useMainContext,
     useQuery,
     useRegisterShortcut,
-    UserPreferencesType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandGroup from './CommandGroup'
@@ -343,6 +343,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
             deactivateFocusOnEscape={!!searchText}
             returnFocusOnDeactivate={false}
         >
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
             <div
                 onClick={stopPropagation}
                 className="dc__mxw-720 mxh-500 flexbox-col dc__overflow-hidden dc__content-space br-12 bg__modal--primary command-bar__container border__secondary-translucent w-100 h-100"

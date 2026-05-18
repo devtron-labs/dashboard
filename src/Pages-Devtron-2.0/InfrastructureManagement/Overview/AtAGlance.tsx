@@ -13,11 +13,11 @@ import {
     useQueryClient,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { INFRA_OVERVIEW_QUERY_KEY } from './constants'
 import { refreshInfraOverviewCache } from './service'
 import { GlanceMetricsKeys, InfraOverviewAtAGlanceProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const INFRA_OVERVIEW_QUERY_KEYS = importComponentFromFELibrary('INFRA_OVERVIEW_QUERY_KEYS', null, 'function')
 

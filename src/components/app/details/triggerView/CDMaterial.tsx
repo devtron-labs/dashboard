@@ -2,12 +2,12 @@ import { useLocation } from 'react-router-dom'
 
 import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCDPipelineURL, useAppContext } from '@Components/common'
-
 import { TRIGGER_VIEW_PARAMS } from './Constants'
 import { DeployImageModal } from './DeployImageModal'
 import { getSelectedNodeFromWorkflows } from './TriggerView.utils'
 import { CDMaterialProps, MATERIAL_TYPE } from './types'
+
+import { getCDPipelineURL, useAppContext } from '@Components/common'
 
 const CDMaterial = ({ workflows, handleClose, handleSuccess, isTriggerView }: CDMaterialProps) => {
     const location = useLocation()
@@ -43,7 +43,7 @@ const CDMaterial = ({ workflows, handleClose, handleSuccess, isTriggerView }: CD
                 materialType={materialType}
                 appId={appId}
                 envId={cdNode.environmentId}
-                appName={isTriggerView ? triggerViewAppName : selectedWorkflow?.name ?? ''}
+                appName={isTriggerView ? triggerViewAppName : (selectedWorkflow?.name ?? '')}
                 stageType={cdNode.type as DeploymentNodeType}
                 envName={cdNode.environmentName}
                 pipelineId={Number(cdNodeId)}

@@ -16,9 +16,9 @@
 
 import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICClose from '@Icons/ic-close.svg?react'
-
 import { HeaderSectionProps } from './types'
+
+import ICClose from '@Icons/ic-close.svg?react'
 
 const HeaderSection = ({ isJobView, handleClose, isCloseDisabled }: HeaderSectionProps) => (
     <div className="flex flex-align-center flex-justify border__primary--bottom py-12 px-20">

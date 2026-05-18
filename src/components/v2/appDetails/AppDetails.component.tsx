@@ -24,28 +24,28 @@ import {
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
     noop,
-    processDeploymentStatusDetailsData,
     Progressing,
+    processDeploymentStatusDetailsData,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ClusterMetaDataBar } from '@Components/common/ClusterMetaDataBar/ClusterMetaDataBar'
 
 import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
 import { importComponentFromFELibrary } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import { useSharedState } from '../utils/useSharedState'
-import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
-import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import { getSaveTelemetry } from './appDetails.api'
 import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import ReleaseStatusEmptyState from './ReleaseStatusEmptyState'
+import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
+import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
+
+import { ClusterMetaDataBar } from '@Components/common/ClusterMetaDataBar/ClusterMetaDataBar'
 
 import './appDetails.scss'
 
-let deploymentStatusTimer = null
+let deploymentStatusTimer: ReturnType<typeof setTimeout> = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
@@ -164,8 +164,7 @@ const AppDetailsComponent = ({
             appDetails &&
             !appDetails.resourceTree?.nodes?.length &&
             appDetails.deploymentAppType === DeploymentAppTypes.HELM &&
-            appDetails.helmReleaseStatus &&
-            appDetails.helmReleaseStatus.status &&
+            appDetails.helmReleaseStatus?.status &&
             (appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
                 appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING ||
                 appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN)

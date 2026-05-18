@@ -1,11 +1,11 @@
 import { ChartColorKey, ChartProps, SEVERITY_LABEL_MAP } from '@devtron-labs/devtron-fe-common-lib'
 
+import { SEVERITY_ORDER } from '../constants'
+import { VulnerabilityTrend } from '../types'
+
 import { ChartColorIndicator, ChartTooltip } from '@PagesDevtron2.0/Shared/components'
 import { RelativeTimeWindow } from '@PagesDevtron2.0/Shared/types'
 import { parseTimestampToDate } from '@PagesDevtron2.0/Shared/utils'
-
-import { SEVERITY_ORDER } from '../constants'
-import { VulnerabilityTrend } from '../types'
 
 export const getSeverityDistributionTooltip: (
     title: string,

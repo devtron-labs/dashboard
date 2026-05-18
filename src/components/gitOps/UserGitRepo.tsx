@@ -15,6 +15,7 @@
  */
 
 import { FunctionComponent, SyntheticEvent } from 'react'
+
 import {
     CustomInput,
     GitOpsAuthModeType,
@@ -23,10 +24,12 @@ import {
     RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './gitops.scss'
-import { repoType } from '../../config/constants'
-import Error from '@Icons/ic-error-exclamation.svg?react'
-import { UserGitRepoProps } from './gitops.type'
+
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { repoType } from '../../config/constants'
+import { UserGitRepoProps } from './gitops.type'
+
+import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
 
 const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
     setRepoURL,
@@ -110,7 +113,7 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
                 {staleData && (
                     <div className="pt-16">
                         <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
-                            <Error className="icon-dim-20 mr-8" />
+                            <ErrorIcon className="icon-dim-20 mr-8" />
                             <div className="cn-9 fs-13">
                                 Ability to commit manifest to a desired repository has been disabled. Please continue
                                 with Auto-create repository.

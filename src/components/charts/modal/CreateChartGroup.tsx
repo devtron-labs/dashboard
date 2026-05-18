@@ -15,10 +15,20 @@
  */
 
 import { Component } from 'react'
-import { showError, DialogForm, CustomInput, ToastVariantType, ToastManager, Textarea, Button } from '@devtron-labs/devtron-fe-common-lib'
-import { ChartGroup, CreateChartGroupProps } from '../charts.types'
-import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
+
+import {
+    Button,
+    CustomInput,
+    DialogForm,
+    showError,
+    Textarea,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { getChartGroupEditURL } from '../charts.helper'
+import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
+import { ChartGroup, CreateChartGroupProps } from '../charts.types'
 import { REGEX_ERROR_MESSAGES, REQ_FIELD } from '../constants'
 
 interface ChartGroupCreateState {
@@ -43,9 +53,9 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     }
 
     handleNameChange(event) {
-        const lowercaseRegex = new RegExp('^[a-z0-9-. ]*$')
-        const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9 ].*[a-zA-Z0-9 ]$`)
-        const errors = []
+        const lowercaseRegex = /^[a-z0-9-. ]*$/
+        const startAndEndAlphanumericRegex = /^[a-zA-Z0-9 ].*[a-zA-Z0-9 ]$/
+        const errors: string[] = []
 
         if (!event.target.value) {
             errors.push(REQ_FIELD)
@@ -58,6 +68,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 errors.push(REGEX_ERROR_MESSAGES.LOWER_CASE)
             }
 
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (!startAndEndAlphanumericRegex.test(event.target.value) && !(event.target.value.length == 1)) {
                 errors.push(REGEX_ERROR_MESSAGES.START_END_ALPHA)
             }
@@ -102,7 +113,8 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         return true
     }
 
-    async saveChartGroup(e) {
+    // biome-ignore lint/suspicious/useAwait: Legacy
+    async saveChartGroup(_e) {
         if (!this.state.name.value) {
             this.setState({
                 name: {

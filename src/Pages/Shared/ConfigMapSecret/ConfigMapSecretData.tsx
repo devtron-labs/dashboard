@@ -22,11 +22,11 @@ import {
     ButtonVariantType,
     CMSecretExternalType,
     CODE_EDITOR_RADIO_STATE,
+    CONFIGURATION_TYPE_OPTIONS,
     CodeEditor,
     ComponentSizeType,
-    configMapSecretMountDataMap,
-    CONFIGURATION_TYPE_OPTIONS,
     ConfigurationType,
+    configMapSecretMountDataMap,
     convertKeyValuePairToYAML,
     convertYAMLToKeyValuePair,
     KeyValueTable,
@@ -40,10 +40,6 @@ import {
     ToastVariantType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ICPencil from '@Icons/ic-pencil.svg?react'
-import HideIcon from '@Icons/ic-visibility-off.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import {
     CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
@@ -61,6 +57,10 @@ import {
     getExpressEditComparisonViewLHS,
     getLockedYamlString,
 } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICPencil from '@Icons/ic-pencil.svg?react'
+import HideIcon from '@Icons/ic-visibility-off.svg?react'
 
 const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 
@@ -248,7 +248,7 @@ export const ConfigMapSecretData = ({
 
         return (
             <div className="flex left dc__gap-12">
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                 <label className="m-0 fs-13 lh-20 dc__required-field">{isPatchMode ? 'Patch data' : 'Data'}</label>
                 {!isESO && !isHashiOrAWS && (
                     <SegmentedControl

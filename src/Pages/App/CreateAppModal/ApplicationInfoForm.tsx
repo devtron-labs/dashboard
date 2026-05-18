@@ -18,11 +18,6 @@ import { ChangeEvent } from 'react'
 
 import { CustomInput, TagsContainer, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICCaretLeftSmall from '@Icons/ic-caret-left-small.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-import { APP_TYPE } from '@Config/constants'
-import { getAppIconWithBackground } from '@Config/utils'
-
 import ProjectSelector from './ProjectSelector'
 import {
     ApplicationInfoFormProps,
@@ -31,6 +26,11 @@ import {
     HandleFormStateChangeParamsType,
     ProjectSelectorProps,
 } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { APP_TYPE } from '@Config/constants'
+import { getAppIconWithBackground } from '@Config/utils'
+import ICCaretLeftSmall from '@Icons/ic-caret-left-small.svg?react'
 
 const MandatoryTagsContainer = importComponentFromFELibrary('MandatoryTagsContainer', null, 'function')
 

@@ -16,8 +16,6 @@
 
 import { DynamicDataTable } from '@devtron-labs/devtron-fe-common-lib'
 
-import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
-
 import { getEmptyVariableDataRow, getTableHeaders } from './notifications.util'
 import {
     HandleRowUpdateActionProps,
@@ -25,6 +23,8 @@ import {
     WebhookDataRowType,
     WebhookHeaderKeyType,
 } from './types'
+
+import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
 
 export const WebhookConfigDynamicDataTable = ({ rows, setRows }: WebhookConfigDynamicDataTableProps) => {
     const handleRowUpdateAction = ({ actionType, actionValue, rowId, headerKey }: HandleRowUpdateActionProps) => {

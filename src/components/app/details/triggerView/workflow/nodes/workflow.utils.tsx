@@ -15,6 +15,7 @@
  */
 
 import Tippy from '@tippyjs/react'
+
 import { DO_NOT_DEPLOY } from '../../Constants'
 
 export const envDescriptionTippy = (environmentName: string, description: string) => {

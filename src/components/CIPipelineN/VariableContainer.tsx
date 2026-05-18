@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useState, useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
+
 import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
 import { PluginVariableType } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -22,16 +23,15 @@ import { VariableDataTable } from './VariableDataTable'
 
 export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(type !== PluginVariableType.INPUT)
-    const { formData, selectedTaskIndex, activeStageName, formDataErrorObj  } = useContext(pipelineContext)
+    const { formData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const variableLength =
         formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
             type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
         ]?.length || 0
     useEffect(() => {
         if (collapsedSection) {
-            const invalidInputVariables = !formDataErrorObj[activeStageName].steps[
-                selectedTaskIndex
-            ].pluginRefStepDetail.isValid
+            const invalidInputVariables =
+                !formDataErrorObj[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.isValid
             if (invalidInputVariables) {
                 setCollapsedSection(false) // expand input variables in case of error
             }
@@ -41,20 +41,21 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
     return (
         <div>
             <div className="mb-10 flexbox justify-space">
-                <span
-                    className="fw-6 fs-13 cn-9 pointer"
+                <button
+                    type="button"
+                    className="fw-6 fs-13 cn-9 dc__transparent"
                     onClick={() => {
                         variableLength > 0 && setCollapsedSection(!collapsedSection)
                     }}
                 >
                     {type} variables
-                </span>
+                </button>
                 {variableLength > 0 ? (
                     <Dropdown
                         data-testid="input-variable-value-dropdown"
                         className="pointer"
                         style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
-                        onClick={(event) => {
+                        onClick={() => {
                             setCollapsedSection(!collapsedSection)
                         }}
                     />

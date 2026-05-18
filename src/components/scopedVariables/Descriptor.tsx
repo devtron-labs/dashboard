@@ -15,12 +15,15 @@
  */
 
 import React from 'react'
+
 import { FeatureTitleWithInfo, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
-import { validator } from './utils'
-import { DescriptorProps } from './types'
-import { importComponentFromFELibrary, HiddenInput } from '../common'
-import { ReadFileAs } from '../common/hooks/types'
+
 import ICUpload from '../../assets/icons/ic-upload-blue.svg?react'
+import { HiddenInput, importComponentFromFELibrary } from '../common'
+import { ReadFileAs } from '../common/hooks/types'
+import { DescriptorProps } from './types'
+import { validator } from './utils'
+
 import { HEADER_TEXT } from '@Config/constants'
 
 export default function Descriptor({ children, showUploadButton, readFile, searchKey, onSearch }: DescriptorProps) {

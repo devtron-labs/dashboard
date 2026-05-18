@@ -21,6 +21,7 @@ export interface StaticNodeProps {
 }
 
 export interface CINodeProps
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     extends RouterV5Props<{}>,
         Pick<WorkflowProps, 'isOffendingPipelineView' | 'isTemplateView'> {
     x: number

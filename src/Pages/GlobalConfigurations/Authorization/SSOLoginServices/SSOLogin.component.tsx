@@ -46,16 +46,12 @@ import {
     RouterV5Props,
     SegmentedControl,
     SegmentType,
-    showError,
     SSOProviderIcon,
+    showError,
     ToastManager,
     ToastVariantType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import InfoIcon from '@Icons/ic-info-warn.svg?react'
-import Check from '@Icons/ic-selected-corner.png'
-import UsersIcon from '@Icons/ic-users.svg?react'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
 import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, ViewType } from '../../../../config'
@@ -63,14 +59,18 @@ import { AutoAssignToggleTile, getAuthorizationGlobalConfig, UserPermissionConfi
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
-    ssoDocumentationMap,
     SSOProvider,
-    ssoProviderToDisplayNameMap,
     SsoSecretsToHide,
+    ssoDocumentationMap,
+    ssoProviderToDisplayNameMap,
 } from './constants'
 import sample from './sampleSSOConfig.json'
 import { createSSOList, getSSOConfig, getSSOConfigList, updateSSOList } from './service'
 import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
+
+import InfoIcon from '@Icons/ic-info-warn.svg?react'
+import Check from '@Icons/ic-selected-corner.png'
+import UsersIcon from '@Icons/ic-users.svg?react'
 
 import '@Components/login/login.scss'
 import './ssoLogin.scss'
@@ -90,6 +90,7 @@ const SSOLoginTab: FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveS
                 <SSOProviderIcon provider={value} size={24} />
             </aside>
             <aside className="login__text-alignment">{SSOName}</aside>
+            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
             <label>
                 {lastActiveSSO?.name === value ? (
                     <aside className="dc__position-abs dc__right-0 dc__top-0">
@@ -103,6 +104,7 @@ const SSOLoginTab: FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveS
     </label>
 )
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginState> {
     /**
      * Ref to store the value from the API, used for showing the modal
@@ -204,15 +206,19 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
 
     setSecretPlaceHolderInResponse(response): void {
         const config = response.result?.config?.config
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.clientID) && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.clientSecret) && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.bindPW) && config?.bindPW === '') {
             response.result.config.config.bindPW = DEFAULT_SECRET_PLACEHOLDER
         }
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && config?.usernamePrompt === '') {
             response.result.config.config.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
         }
@@ -267,24 +273,28 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
 
     checkConfigJson(ssoConfig) {
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientID) &&
             (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)
         ) {
             ssoConfig.clientID = ''
         }
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientSecret) &&
             (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)
         ) {
             ssoConfig.clientSecret = ''
         }
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.bindPW) &&
             (ssoConfig?.bindPW === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.bindPW)
         ) {
             ssoConfig.bindPW = ''
         }
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) &&
             (ssoConfig?.usernamePrompt === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.usernamePrompt)
         ) {
@@ -348,16 +358,16 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
     }
 
     sanitiseSecretDataFromResponse(response): void {
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientID)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.clientID)) {
             response.result.config.config.clientID = ''
         }
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientSecret)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.clientSecret)) {
             response.result.config.config.clientSecret = ''
         }
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.bindPW)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.bindPW)) {
             response.result.config.config.bindPW = ''
         }
-        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.usernamePrompt)) {
+        if (Object.hasOwn(response.result.config.config, SsoSecretsToHide.usernamePrompt)) {
             response.result.config.config.usernamePrompt = ''
         }
     }
@@ -544,6 +554,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
             return
         }
         if (this.state.sso === OIDCType) {
+            // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
             let config
             try {
                 config = yamlJsParser.parse(value)
@@ -599,16 +610,16 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
     }
 
     setDefaultSecretPlaceHolder(newConfig): void {
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientID) && !newConfig.clientID) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.clientID) && !newConfig.clientID) {
             newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientSecret) && !newConfig.clientSecret) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.clientSecret) && !newConfig.clientSecret) {
             newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.bindPW) && !newConfig.bindPW) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.bindPW) && !newConfig.bindPW) {
             newConfig.bindPW = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && !newConfig.usernamePrompt) {
+        if (Object.hasOwn(newConfig, SsoSecretsToHide.usernamePrompt) && !newConfig.usernamePrompt) {
             newConfig.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
         }
     }
@@ -617,6 +628,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
         if (this.state.configMap !== SwitchItemValues.Configuration) {
             return
         }
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let newConfig
         try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)

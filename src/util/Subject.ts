@@ -19,15 +19,6 @@ import { murmurhash3_32_gc } from './MurmurHash3'
 export class Subject<T> {
     private observers: Map<number, (t: T) => void> = new Map()
 
-    private name: string
-
-    constructor() {
-        this.name = Math.random()
-            .toString(36)
-            .replace(/[^a-z]+/g, '')
-            .substr(0, 5)
-    }
-
     public subscribe(observer: (t: T) => void): [boolean, () => boolean] {
         const hash = murmurhash3_32_gc(observer.toString(), 0)
         if (this.observers.has(hash)) {

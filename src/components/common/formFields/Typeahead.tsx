@@ -15,8 +15,12 @@
  */
 
 import React, { Component, createContext, PropsWithChildren } from 'react'
+
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import dropdown from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { isArrayEqual } from '../helpers/utils'
+
 // id must exist
 const TypeaheadContext = createContext({
     name: '',
@@ -24,8 +28,8 @@ const TypeaheadContext = createContext({
     multi: false,
     labelKey: 0 as any,
     selections: [],
-    selectItem: (item) => {},
-    onChange: (...args: any[]) => {},
+    selectItem: noop,
+    onChange: noop,
 })
 
 export interface TypeaheadProps {
@@ -96,10 +100,12 @@ export class Typeahead extends Component<
         const selection = selections.length && !this.state.showMenu ? selections[0] : undefined
         const classes = this.props.disabled ? 'typeahead__single-selection disabled' : 'typeahead__single-selection'
         return (
+            // biome-ignore lint/a11y/noLabelWithoutControl: Legacy
             <label className="w-100">
                 <span className="form__label">{this.props.label}</span>
                 <span data-testid={this.props.dataTestIdContainer} style={{ position: 'relative', display: 'block' }}>
                     {selection ? (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <span
                             className={classes}
                             onClick={() => {
@@ -126,7 +132,7 @@ export class Typeahead extends Component<
                             onChange={this.onChange}
                         />
                     )}
-                    <img src={dropdown} className="typeahead__dropdown-icon" />
+                    <img src={dropdown} className="typeahead__dropdown-icon" alt="Dropdown icon" />
                 </span>
             </label>
         )
@@ -138,6 +144,7 @@ export class Typeahead extends Component<
         return (
             <label className="w-100">
                 <span className="form__label">{this.props.label}</span>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <span
                     className="typeahead__multi-selection"
                     style={{ border: this.props.multi ? 'solid 1px var(--N200)' : 'none', display: 'block' }}
@@ -145,22 +152,21 @@ export class Typeahead extends Component<
                         this.setState({ showMenu: true })
                     }}
                 >
-                    {showSelection ? (
-                        <>
-                            {selections.map((item) => {
-                                return (
-                                    <span
-                                        className="selection-chip"
-                                        onClick={(e) => {
-                                            this.removeItem(item)
-                                        }}
-                                    >
-                                        {item[this.props.labelKey]}
-                                    </span>
-                                )
-                            })}
-                        </>
-                    ) : null}
+                    {showSelection
+                        ? selections.map((item) => {
+                              return (
+                                  // biome-ignore lint/correctness/useJsxKeyInIterable lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
+                                  <span
+                                      className="selection-chip"
+                                      onClick={() => {
+                                          this.removeItem(item)
+                                      }}
+                                  >
+                                      {item[this.props.labelKey]}
+                                  </span>
+                              )
+                          })
+                        : null}
                     <input
                         type="text"
                         value={this.state.search}
@@ -172,7 +178,7 @@ export class Typeahead extends Component<
                         }}
                         onChange={this.onChange}
                     />
-                    <img src={dropdown} className="typeahead__dropdown-icon" />
+                    <img src={dropdown} className="typeahead__dropdown-icon" alt="Dropdown icon" />
                 </span>
             </label>
         )
@@ -191,6 +197,7 @@ export class Typeahead extends Component<
                     onChange: this.props.onChange,
                 }}
             >
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 {this.state.showMenu ? <div className="dc__transparent-div" onClick={this.handleClick} /> : null}
                 {this.props.multi ? this.renderMultiSelection() : this.renderSingleSelection()}
                 {this.state.showMenu ? <ul className="typeahead__menu">{this.props.children}</ul> : null}
@@ -210,11 +217,12 @@ export class TypeaheadOption extends Component<
                         return null
                     }
                     return (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <li
                             data-testid={this.props.dataTestIdMenuList}
                             className="typeahead__menu-item"
                             key={this.props.id}
-                            onClick={(event) => {
+                            onClick={() => {
                                 context.selectItem(this.props.item)
                             }}
                         >
@@ -231,7 +239,7 @@ export class TypeaheadErrorOption extends Component<PropsWithChildren<{ classNam
     render() {
         return (
             <TypeaheadContext.Consumer>
-                {(context) => {
+                {() => {
                     const classes = this.props.className
                         ? `${this.props.className} typeahead__menu-item`
                         : `typeahead__menu-item`

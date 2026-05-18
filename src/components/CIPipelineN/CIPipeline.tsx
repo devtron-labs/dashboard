@@ -14,63 +14,65 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo, useRef } from 'react'
-import { Navigate, Route, Routes, useParams, useLocation, useNavigate } from 'react-router-dom'
-import {
-    ServerErrors,
-    showError,
-    ConditionalWrap,
-    Drawer,
-    VariableType,
-    MandatoryPluginDataType,
-    PluginDataStoreType,
-    ProcessPluginDataReturnType,
-    PluginDetailPayloadType,
-    DEFAULT_PLUGIN_DATA_STORE,
-    getPluginsDetail,
-    ErrorScreenManager,
-    getUpdatedPluginStore,
-    TabProps,
-    TabGroup,
-    SourceTypeMap,
-    DEFAULT_ENV,
-    getEnvironmentListMinPublic,
-    PipelineFormType,
-    ToastVariantType,
-    ToastManager,
-    ProcessPluginDataParamsType,
-    ResourceKindType,
-    uploadCIPipelineFile,
-    getGlobalVariables,
-    FloatingVariablesSuggestions,
-    TriggerType,
-    DeleteCINodeButton,
-    GenericModal,
-    Button,
-    handleAnalyticsEvent,
-    useMainContext,
-} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+
+import {
+    Button,
+    ConditionalWrap,
+    DEFAULT_ENV,
+    DEFAULT_PLUGIN_DATA_STORE,
+    DeleteCINodeButton,
+    Drawer,
+    ErrorScreenManager,
+    FloatingVariablesSuggestions,
+    GenericModal,
+    getEnvironmentListMinPublic,
+    getGlobalVariables,
+    getPluginsDetail,
+    getUpdatedPluginStore,
+    handleAnalyticsEvent,
+    MandatoryPluginDataType,
+    PipelineFormType,
+    PluginDataStoreType,
+    PluginDetailPayloadType,
+    ProcessPluginDataParamsType,
+    ProcessPluginDataReturnType,
+    ResourceKindType,
+    ServerErrors,
+    SourceTypeMap,
+    showError,
+    TabGroup,
+    TabProps,
+    ToastManager,
+    ToastVariantType,
+    TriggerType,
+    uploadCIPipelineFile,
+    useMainContext,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import Close from '../../assets/icons/ic-cross.svg?react'
+import WarningTriangle from '../../assets/icons/ic-warning.svg?react'
+import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
+import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
+import { LoadingState } from '../ciConfig/types'
+import { getInitData, getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
+import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
+import { ValidationRules } from '../ciPipeline/validationRules'
 import {
     getParsedBranchValuesForPlugin,
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
-import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
-import { getInitData, getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
-import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
-import Close from '../../assets/icons/ic-cross.svg?react'
+import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { Build } from './Build'
+import { BOUNDARY_GAP } from './Constants'
 import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
-import { Build } from './Build'
-import WarningTriangle from '../../assets/icons/ic-warning.svg?react'
-import { LoadingState } from '../ciConfig/types'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
-import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
-import { BOUNDARY_GAP } from './Constants'
 import { EnvironmentWithSelectPickerType } from './types'
 
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -299,6 +301,7 @@ export default function CIPipeline({
     const getEnvironments = async (envId: number): Promise<void> => {
         envId = envId || 0
         try {
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legace, can't give type of environments due to isClusterActive field
             const list = []
             list.push({
                 id: 0,
@@ -324,6 +327,7 @@ export default function CIPipeline({
                     })
                 }
             })
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             const _selectedEnv = list.find((env) => env.id == envId)
             _selectedEnv.label = _selectedEnv.name
             _selectedEnv.value = _selectedEnv
@@ -347,7 +351,7 @@ export default function CIPipeline({
     const getPluginData = async (_formData?: PipelineFormType): Promise<void> => {
         try {
             await getMandatoryPluginData(_formData ?? formData)
-        } catch (error) {
+        } catch {
             // Do nothing
         }
     }
@@ -471,7 +475,13 @@ export default function CIPipeline({
                     setIsAdvanced(true)
                 }
             } else {
-                const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView, forceDockerfileScan)
+                const ciPipelineResponse = await getInitData(
+                    appId,
+                    true,
+                    isJobCard,
+                    isTemplateView,
+                    forceDockerfileScan,
+                )
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
                     setSecurityModuleInstalled(ciPipelineResponse.result.isSecurityModuleInstalled)
@@ -619,10 +629,7 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
-            isJobCard ||
-            !isSecurityModuleInstalled ||
-            formData.scanEnabled ||
-            !window._env_.FORCE_SECURITY_SCANNING
+            isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
             ToastManager.showToast({
@@ -900,6 +907,7 @@ export default function CIPipeline({
             activeStageName === BuildStageVariable.Build ||
             hideScopedVariableWidget
         ) {
+            // biome-ignore lint/complexity/noUselessFragments: Legacy
             return <></>
         }
 

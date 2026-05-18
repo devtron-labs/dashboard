@@ -28,8 +28,8 @@ import {
     AddEnvironmentFormPrefilledInfoType,
     ClusterEnvFilterKeys,
     ClusterTerminalParamsType,
-    emptyClusterTerminalParamsData,
     Environment,
+    emptyClusterTerminalParamsData,
 } from './cluster.type'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
@@ -46,6 +46,7 @@ export function getClusterTerminalParamsData(
     const _selectedImage = imageList.find((image) => image.value === params.get('image'))
     const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
     const nodeOptionList: OptionType[] = []
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
     nodeList?.forEach((item) => nodeOptionList.push(...item.options))
 
     const _selectedNode: OptionType =

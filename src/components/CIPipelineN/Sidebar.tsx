@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useContext, useEffect, useState } from 'react'
+
 import {
+    CHECKBOX_VALUE,
+    DOCUMENTATION,
+    DocLink,
+    PipelineFormType,
     RadioGroup,
     RadioGroupItem,
-    CHECKBOX_VALUE,
-    PipelineFormType,
-    SelectPicker,
     ResourceKindType,
-    WORKFLOW_CACHE_CONFIG_ENUM,
+    SelectPicker,
     TriggerType,
-    DocLink,
-    DOCUMENTATION,
+    WORKFLOW_CACHE_CONFIG_ENUM,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { BuildStageVariable } from '../../config'
-import { TaskList } from './TaskList'
-import { importComponentFromFELibrary } from '../common'
-import { CIPipelineSidebarType } from '../ciConfig/types'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
-import File from '../../assets/icons/ic-file-code.svg?react'
-import Key from '../../assets/icons/ic-key-bulb.svg?react'
+
 import Add from '../../assets/icons/ic-add.svg?react'
 import Remove from '../../assets/icons/ic-close.svg?react'
+import File from '../../assets/icons/ic-file-code.svg?react'
+import Key from '../../assets/icons/ic-key-bulb.svg?react'
+import { BuildStageVariable } from '../../config'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
+import { CIPipelineSidebarType } from '../ciConfig/types'
+import { importComponentFromFELibrary } from '../common'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { EnvironmentList } from './EnvironmentList'
+import { TaskList } from './TaskList'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 const CacheConfiguration = importComponentFromFELibrary('CacheConfiguration', null, 'function')
@@ -71,7 +73,7 @@ export const Sidebar = ({
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: keyof typeof DOCUMENTATION }>({
         helpText: 'Docs: Configure build stage',
-        docLink: "BUILD_STAGE",
+        docLink: 'BUILD_STAGE',
     })
     const isPreBuildTab = activeStageName === BuildStageVariable.PreBuild
     const changeTriggerType = (appCreationType: string): void => {
@@ -84,22 +86,22 @@ export const Sidebar = ({
         if (isJobCard) {
             setHelpData({
                 helpText: 'Docs: Configure job',
-                docLink: "JOB_WORKFLOW_EDITOR",
+                docLink: 'JOB_WORKFLOW_EDITOR',
             })
         } else if (activeStageName === BuildStageVariable.Build) {
             setHelpData({
                 helpText: 'Docs: Configure build stage',
-                docLink: "BUILD_STAGE",
+                docLink: 'BUILD_STAGE',
             })
         } else if (activeStageName === BuildStageVariable.PostBuild) {
             setHelpData({
                 helpText: 'Docs: Configure post-build tasks',
-                docLink: "PRE_POST_BUILD_STAGE",
+                docLink: 'PRE_POST_BUILD_STAGE',
             })
         } else if (isPreBuildTab) {
             setHelpData({
                 helpText: 'Docs: Configure pre-build tasks',
-                docLink: "PRE_POST_BUILD_STAGE",
+                docLink: 'PRE_POST_BUILD_STAGE',
             })
         }
     }, [activeStageName])
@@ -137,9 +139,13 @@ export const Sidebar = ({
 
     const addConfigSecrets = (selected) => {
         const _form = { ...formData }
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, unable to put correct type without refactoring
         const preConfigMaps = []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, unable to put correct type without refactoring
         const preSecrets = []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, unable to put correct type without refactoring
         const postConfigsMaps = []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy, unable to put correct type without refactoring
         const postSecrets = []
         selected.forEach((item) => {
             if (item.type === 'configmaps') {

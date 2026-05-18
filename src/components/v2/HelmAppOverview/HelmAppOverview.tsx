@@ -18,11 +18,11 @@ import { useEffect, useState } from 'react'
 
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
-import { APP_TYPE } from '@Config/constants'
-
 import AppOverview from '../../app/Overview/Overview'
 import { getHelmAppOverviewInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
+
+import { APP_TYPE } from '@Config/constants'
 
 export const HelmAppOverview = (props: { appId: string; setErrorResponseCode: (code) => void }) => {
     const { appId, setErrorResponseCode } = props

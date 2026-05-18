@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { DATE_TIME_FORMAT_STRING, getTimeDifference } from '@devtron-labs/devtron-fe-common-lib'
 import { Dayjs } from 'dayjs'
 import moment from 'moment'
+
+import { DATE_TIME_FORMAT_STRING, getTimeDifference } from '@devtron-labs/devtron-fe-common-lib'
 
 /**
  * @deprecated use handleUTCTime from common lib
@@ -24,7 +25,7 @@ import moment from 'moment'
 export function handleUTCTime(ts: string, isRelativeTime = false) {
     let timestamp = ''
     try {
-        if (ts && ts.length) {
+        if (ts?.length) {
             const date = moment(ts)
             if (isRelativeTime) {
                 timestamp = date.fromNow()
@@ -32,9 +33,7 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
                 timestamp = date.format(DATE_TIME_FORMAT_STRING)
             }
         }
-    } catch (error) {
-        console.error('Error Parsing Date:', ts)
-    }
+    } catch {}
     return timestamp
 }
 

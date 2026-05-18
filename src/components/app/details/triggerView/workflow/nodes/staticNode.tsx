@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
+
+import { CiPipelineSourceConfig, GitProviderIcon, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../../config'
-import { CiPipelineSourceConfig, GitProviderIcon, GitProviderType, Icon } from '@devtron-labs/devtron-fe-common-lib'
 export interface StaticNodeProps {
     x: number
     y: number
@@ -39,6 +41,7 @@ export interface StaticNodeProps {
 export class StaticNode extends Component<StaticNodeProps> {
     renderCardContent() {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className={`workflow-node workflow-node--static ${
                     this.props.branch === GIT_BRANCH_NOT_CONFIGURED ? 'cursor dashed' : ''

@@ -23,8 +23,8 @@ import {
     Chip,
     FilterChips,
     getNamespaceListMin,
-    handleUTCTime,
     HeaderWithCreateButton,
+    handleUTCTime,
     InfrastructureManagementAppListType,
     ModuleNameMap,
     Progressing,
@@ -36,10 +36,7 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ModuleStatus } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
 import { CreateAppModal } from '@Pages/App/CreateAppModal'
-import { getCommonAppFilters } from '@Services/service'
-import { Cluster } from '@Services/service.types'
 
 import { SERVER_MODE } from '../../../config'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
@@ -69,9 +66,13 @@ import {
 } from './list.utils'
 import { AppListFilterLabelType } from './types'
 
+import { ModuleStatus } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
+import { getCommonAppFilters } from '@Services/service'
+import { Cluster } from '@Services/service.types'
+
 import '../list/list.scss'
 
-let interval
+let interval: ReturnType<typeof setInterval>
 
 const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     const navigate = useNavigate()

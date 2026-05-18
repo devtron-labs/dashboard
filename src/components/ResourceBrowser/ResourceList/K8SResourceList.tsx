@@ -37,12 +37,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyCustomChart from '@Images/empty-noresult@2x.png'
-import { importComponentFromFELibrary } from '@Components/common'
-import {
-    getManifestResource,
-    getPodRestartRBACPayload,
-    updateManifestResourceHelmApps,
-} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 import { NODE_LIST_HEADER_KEYS_TO_SEARCH, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
@@ -51,11 +45,11 @@ import K8sResourceListTableCellComponent from './K8sResourceListTableCellCompone
 import NodeListSearchFilter from './NodeListSearchFilter'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import {
+    K8SResourceListViewWrapperProps,
     K8sResourceListFilterType,
     K8sResourceListTableAdditionalProps,
     K8sResourceListTableProps,
     K8sResourceListURLParams,
-    K8SResourceListViewWrapperProps,
 } from './types'
 import {
     getColumnComparator,
@@ -63,6 +57,13 @@ import {
     isItemASearchMatchForNodeListing,
     parseK8sResourceListSearchParams,
 } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import {
+    getManifestResource,
+    getPodRestartRBACPayload,
+    updateManifestResourceHelmApps,
+} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 const RESOURCE_FILTER_KEYS: Record<string, unknown> = importComponentFromFELibrary(
     'RESOURCE_FILTER_KEYS',
@@ -159,7 +160,7 @@ export const K8SResourceList = ({
 
     const [resourceListLoader, resourceList, resourceListError, reloadResourceList] = useAsync(
         () =>
-            abortPreviousRequests(async () => {
+            abortPreviousRequests(() => {
                 if (selectedResource) {
                     return getResourceData({
                         selectedResource,

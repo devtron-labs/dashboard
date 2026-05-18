@@ -18,10 +18,10 @@ import { useParams } from 'react-router-dom'
 
 import { IndexStore, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
-import Close from '@Icons/ic-cross.svg?react'
-
 import { deleteEphemeralUrl } from './nodeDetail.api'
 import { DeleteEphemeralButtonType, ParamsType, ResponsePayload } from './nodeDetail.type'
+
+import Close from '@Icons/ic-cross.svg?react'
 
 import '../k8resources.scss'
 

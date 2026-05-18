@@ -40,15 +40,13 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-
 import { importComponentFromFELibrary, useForm } from '../../../../components/common'
+import { CREATE_CLUSTER_TITLE } from '../CreateCluster/constants'
+import { CreateClusterTypeEnum } from '../CreateCluster/types'
 import { saveCluster, updateCluster } from '../cluster.service'
 import { ClusterFormProps, SSHAuthenticationType } from '../cluster.type'
 import { getServerURLFromLocalStorage } from '../cluster.util'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY } from '../constants'
-import { CREATE_CLUSTER_TITLE } from '../CreateCluster/constants'
-import { CreateClusterTypeEnum } from '../CreateCluster/types'
 import DeleteClusterConfirmationModal from '../DeleteClusterConfirmationModal'
 import ApplicationMonitoring from './ApplicationMonitoring'
 import ClusterConfigurations from './ClusterConfigurations'
@@ -56,6 +54,8 @@ import { ClusterFormNavButton } from './ClusterForm.components'
 import { CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP } from './constants'
 import { ClusterConfigTabEnum, CostModuleStateType } from './types'
 import { getClusterFormValidationSchema } from './utils'
+
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 import '../cluster.scss'
 
@@ -493,7 +493,6 @@ const ClusterForm = ({
                         ? !state.sshAuthKey?.value || state.sshAuthKey?.error
                         : false)
                 )
-            case RemoteConnectionType.Direct:
             default:
                 return false
         }

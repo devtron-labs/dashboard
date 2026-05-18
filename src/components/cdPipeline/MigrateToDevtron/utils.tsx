@@ -18,8 +18,6 @@ import { Link } from 'react-router-dom'
 
 import { DeploymentAppTypes, ROUTER_URLS, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GenericAppType } from '@Components/app/list-new/AppListType'
-
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
@@ -28,6 +26,8 @@ import {
 } from '../cdPipeline.types'
 import { DEPLOYMENT_APP_TYPE_LABEL } from './constants'
 import { SelectClusterOptionType, SelectMigrateAppOptionType } from './types'
+
+import { GenericAppType } from '@Components/app/list-new/AppListType'
 
 const sanitizeDestinationData = (
     destination: ValidateMigrationSourceInfoType['destination'],

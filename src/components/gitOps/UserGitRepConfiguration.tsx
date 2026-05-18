@@ -15,6 +15,7 @@
  */
 
 import { FunctionComponent, useEffect, useState } from 'react'
+
 import {
     GitOpsAuthModeType,
     InfoBlock,
@@ -23,11 +24,12 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
-import UserGitRepo from './UserGitRepo'
-import { UserGitRepoConfigurationProps } from './gitops.type'
+
 import { repoType } from '../../config'
+import { getGitOpsRepoConfig, gitOpsConfigDevtron } from '../../services/service'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { UserGitRepoConfigurationProps } from './gitops.type'
+import UserGitRepo from './UserGitRepo'
 
 const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> = ({
     respondOnSuccess,

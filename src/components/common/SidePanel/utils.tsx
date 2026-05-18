@@ -18,8 +18,8 @@ import {
     Button,
     ButtonComponentType,
     ButtonVariantType,
-    ComponentSizeType,
     CONTACT_SUPPORT_LINK,
+    ComponentSizeType,
     OPEN_NEW_TICKET,
     SidePanelTab,
 } from '@devtron-labs/devtron-fe-common-lib'

@@ -14,14 +14,30 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { Component } from 'react'
 
 import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     Chip,
     CiPipelineSourceConfig,
     ComponentSizeType,
@@ -30,25 +46,23 @@ import {
     EMPTY_STATE_STATUS,
     GenericEmptyState,
     Icon,
-    IconsProps,
     Pagination,
     Progressing,
     Reload,
-    showError,
     SourceTypeMap,
-    RouterV5Props,
-    BASE_ROUTES,
+    showError,
     stopPropagation,
     TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '@Components/common'
-
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import { ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
+import { AddNotificationButton } from './AddNotificationButton'
+import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
+import { EVENT_ID, EVENT_LABEL, EVENTS } from './constants'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import {
     deleteNotifications,
@@ -57,11 +71,9 @@ import {
     updateNotificationEvents,
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
-import { NotificationConfiguration, NotificationPipelineType, NotificationTabState } from './types'
-import { EVENT_ID, EVENT_LABEL, EVENTS } from './constants'
-import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
-import React from 'react'
-import { AddNotificationButton } from './AddNotificationButton'
+import { NotificationPipelineType, NotificationTabState } from './types'
+
+import { InValidHostUrlWarningBlock, importComponentFromFELibrary } from '@Components/common'
 
 const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 export class NotificationTab extends Component<any, NotificationTabState> {
@@ -224,7 +236,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         const allSelectedRows = this.state.notificationList
             .filter((row) => row.isSelected)
             .map((row) => {
-                const eventTypeIds = []
+                const eventTypeIds: number[] = []
                 if (row.trigger) {
                     eventTypeIds.push(1)
                 }
@@ -471,12 +483,12 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             <tbody>
                 {this.state.notificationList.map((row) => {
                     const _isCi = row.branch && row.pipelineType === NotificationPipelineType.CI
-                    let _isWebhookCi
+                    let _isWebhookCi: boolean
                     if (_isCi) {
                         try {
                             JSON.parse(row.branch)
                             _isWebhookCi = true
-                        } catch (e) {
+                        } catch {
                             _isWebhookCi = false
                         }
                     }
@@ -523,6 +535,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                         </div>
                                         <div className="flex left dc__gap-6">
                                             {row.appliedFilters.project.map((element) => (
+                                                // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}
                                                     label={`Project: ${element.name}`}
@@ -530,6 +543,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                 />
                                             ))}
                                             {row.appliedFilters.application.map((element) => (
+                                                // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}
                                                     label={`Apps: ${element.name}`}
@@ -537,6 +551,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                 />
                                             ))}
                                             {row.appliedFilters.environment.map((element) => (
+                                                // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}
                                                     label={`Env: ${element.name}`}
@@ -544,6 +559,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                 />
                                             ))}
                                             {row.appliedFilters.cluster.map((element) => (
+                                                // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}
                                                     label={`Cluster: ${element.name}`}
@@ -641,6 +657,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             <td className="pipeline-list__recipients">
                                 <div className="dc__devtron-tag__container flex left dc__gap-4 flex-wrap">
                                     {row.providers.map((p) => (
+                                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                         <Chip
                                             data-testid={`recipient-${p.configId}`}
                                             label={p.recipient ? p.recipient : p.name}

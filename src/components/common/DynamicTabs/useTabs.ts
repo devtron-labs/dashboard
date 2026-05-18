@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, useState } from 'react'
 import dayjs from 'dayjs'
+import { useMemo, useRef, useState } from 'react'
 
 import { DynamicTabType, InitTabType, noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import { MONITORING_DASHBOARD_TAB_ID, RESOURCE_RECOMMENDER_TAB_ID } from '@Components/ResourceBrowser/Constants'
-
 import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
+
+import { MONITORING_DASHBOARD_TAB_ID, RESOURCE_RECOMMENDER_TAB_ID } from '@Components/ResourceBrowser/Constants'
 
 export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB): UseTabsReturnType {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
@@ -206,7 +206,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                         }
                     }
 
-                    _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] ?? [] : prevTabs
+                    _tabs = parsedTabsData ? (parsedTabsData.data[persistenceKey] ?? []) : prevTabs
                 } catch {
                     _tabs = prevTabs
                 }
@@ -409,7 +409,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
 
             setTabs((prevTabs) => {
                 let isTabFound = false
-                let previousActiveTab = null
+                let previousActiveTab: DynamicTabType | null = null
 
                 const _tabs = prevTabs.map((tab) => {
                     const isMatch = tab.id === id

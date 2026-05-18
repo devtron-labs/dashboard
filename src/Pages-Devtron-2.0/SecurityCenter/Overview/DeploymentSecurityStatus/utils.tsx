@@ -1,11 +1,11 @@
 import { ChartProps } from '@devtron-labs/devtron-fe-common-lib'
 
+import { BlockedDeploymentTrend } from '../types'
+import { COVERAGE_CHART_COLORS } from './CoverageMetrics'
+
 import { ChartTooltip } from '@PagesDevtron2.0/Shared'
 import { RelativeTimeWindow } from '@PagesDevtron2.0/Shared/types'
 import { parseTimestampToDate } from '@PagesDevtron2.0/Shared/utils'
-
-import { BlockedDeploymentTrend } from '../types'
-import { COVERAGE_CHART_COLORS } from './CoverageMetrics'
 
 export const getBlockedDeploymentChartTooltip: (
     data: BlockedDeploymentTrend,

@@ -15,21 +15,22 @@
  */
 
 import { useState } from 'react'
+
 import {
+    ButtonComponentType,
+    ButtonVariantType,
     ComponentSizeType,
     CustomInput,
     Icon,
     REGISTRY_TYPE_MAP,
     RegistryIcon,
-    SelectPicker,
-    ButtonVariantType,
-    ButtonComponentType,
     ROUTER_URLS,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { _multiSelectStyles } from './CIConfig.utils'
-import { CIContainerRegistryConfigProps } from './types'
+
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { CIContainerRegistryInfoBlock } from './CIContainerRegistryInfoBlock'
+import { CIContainerRegistryConfigProps } from './types'
 
 export default function CIContainerRegistryConfig({
     appId,
@@ -60,7 +61,7 @@ export default function CIContainerRegistryConfig({
 
     const getContainerRegistryOptions = () => dockerRegistries.map(getCustomRegistryOption)
 
-    const onClickRedirectLink = (e) => {
+    const onClickRedirectLink = (_e) => {
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('takeMeThereClicked', '1')
         }
@@ -124,6 +125,7 @@ export default function CIContainerRegistryConfig({
                             size={ComponentSizeType.large}
                         />
                     )}
+                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                     {registry.error && <label className="form__error">{registry.error}</label>}
                 </div>
                 <div className={`form__field flex-grow-1 ${configOverrideView ? 'mb-0-imp' : ''}`}>
@@ -156,6 +158,7 @@ export default function CIContainerRegistryConfig({
                         />
                     )}
                     {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
+                        // biome-ignore lint/a11y/noLabelWithoutControl: Legacy
                         <label className="form__error dc__gap-4">
                             <Icon name="ic-info-outline" color="N700" size={14} />
                             <span className="cn-7">New repository will be created if not provided</span>

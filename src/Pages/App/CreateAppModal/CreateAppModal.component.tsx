@@ -28,19 +28,12 @@ import {
     validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
-import { createJob } from '@Components/Jobs/Service'
-import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
-import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
-import { getHostURLConfiguration } from '@Services/service'
-
 import ApplicationInfoForm from './ApplicationInfoForm'
 import { CloneApplicationSelectionList } from './CloneApplicationSelectionList'
 import { createAppInitialFormErrorState, createAppInitialFormState, PROJECT_SELECT_INPUT_ID } from './constants'
 import HeaderSection from './HeaderSection'
-import { createApp } from './service'
 import Sidebar from './Sidebar'
+import { createApp } from './service'
 import {
     ApplicationInfoFormProps,
     CreateAppFormErrorStateType,
@@ -50,6 +43,13 @@ import {
     CreationMethodType,
 } from './types'
 import { getCreateMethodConfig, getNoItemSelectToastText, validateFormField } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
+import { createJob } from '@Components/Jobs/Service'
+import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
+import { getHostURLConfiguration } from '@Services/service'
 
 import './styles.scss'
 
@@ -87,6 +87,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         updatedFormErrorState.name = validateFormField('name', formState.name)
         updatedFormErrorState.description = validateFormField('description', formState.description)
 
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const labelTags = []
         updatedFormErrorState.tags = {}
         let invalidLabels = false

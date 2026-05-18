@@ -22,9 +22,9 @@ import {
     deleteNodeCapacity,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
 import { DeleteNodeModalProps } from '../types'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const DeleteNodeModal = ({ name, version, kind, closePopup, handleClearBulkSelection }: DeleteNodeModalProps) => {
     const { clusterId } = useParams<{ clusterId: string }>()

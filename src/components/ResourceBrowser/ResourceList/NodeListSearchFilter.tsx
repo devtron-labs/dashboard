@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
+import { ParsedQuery, parse as parseQueryString, stringify as stringifyQueryString } from 'query-string'
 import { useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryString } from 'query-string'
 
 import { FilterChips, GroupedFilterSelectPicker, SearchBar, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-
-import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 
 import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
@@ -32,6 +30,8 @@ import {
 } from './constants'
 import { NodeSearchListOptionType } from './types'
 import { getNodeSearchKeysOptionsList } from './utils'
+
+import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 
 const NodeListSearchFilter = ({
     visibleColumns,

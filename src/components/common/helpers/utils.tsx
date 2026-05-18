@@ -15,18 +15,20 @@
  */
 
 import type { JSX } from 'react'
-import { sortCallback, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
-import GitLab from '../../../assets/icons/git/gitlab.svg?react'
+
+import { GitProviderType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+
+import BitBucket from '../../../assets/icons/git/bitbucket.svg?react'
 import Git from '../../../assets/icons/git/git.svg?react'
 import GitHub from '../../../assets/icons/git/github.svg?react'
-import BitBucket from '../../../assets/icons/git/bitbucket.svg?react'
+import GitLab from '../../../assets/icons/git/gitlab.svg?react'
 
 export function subtractArray(a: any[], b: any[], key: string): any[] {
-    if (!(a && a.length && a.length > 0)) {
+    if (!(a?.length && a.length > 0)) {
         return []
     }
     const set = new Set()
-    const result = []
+    const result: any[] = []
     for (let bi = 0; bi < b.length; bi++) {
         set.add(b[bi][key])
     }
@@ -76,7 +78,7 @@ export const swap = (array: any[], indexA: number, indexB: number) => {
 
 export const getGitProviderIcon = (gitUrl: string, rootClassName?: string): JSX.Element => {
     let IconComponent: React.ElementType = Git // Using React.ElementType for any JSX component
-    if(!gitUrl) return null
+    if (!gitUrl) return null
     if (gitUrl.includes(GitProviderType.GITLAB)) {
         IconComponent = GitLab
     } else if (gitUrl.includes(GitProviderType.GITHUB)) {

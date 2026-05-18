@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ConfigureWebhook } from '@Components/ciPipeline/ConfigureWebhook'
-
 import { ConfigureWebhookWrapperProps } from './types'
+
+import { ConfigureWebhook } from '@Components/ciPipeline/ConfigureWebhook'
 
 export const ConfigureWebhookWrapper = ({
     webhookConditionList,

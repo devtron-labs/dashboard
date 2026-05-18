@@ -14,33 +14,36 @@
  * limitations under the License.
  */
 
-import { useState, useContext, Fragment, SyntheticEvent } from 'react'
+import { Fragment, useContext, useState } from 'react'
+
 import {
-    BuildStageVariable,
-    PluginType,
-    RefVariableStageType,
-    RefVariableType,
-    PipelineFormType,
-    ValidationResponseType,
-    StepType,
-    PipelineStageTaskActionModalType,
-    PipelineStageTaskActionModalStateType,
-    ResourceKindType,
     ActionMenu,
+    ActionMenuProps,
+    BuildStageVariable,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    ActionMenuProps,
     Icon,
+    PipelineFormType,
+    PipelineStageTaskActionModalStateType,
+    PipelineStageTaskActionModalType,
+    PluginType,
+    RefVariableStageType,
+    RefVariableType,
+    ResourceKindType,
+    StepType,
+    ValidationResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
-import TaskTitle from './TaskTitle'
-import Add from '../../assets/icons/ic-add.svg?react'
+
 import Drag from '../../assets/icons/drag.svg?react'
+import Add from '../../assets/icons/ic-add.svg?react'
 import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
 import { TaskListType } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { TaskActionMenuOptionIdEnum } from './Constants'
+import TaskTitle from './TaskTitle'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const getTaskActionPluginValidationStatus: (params) => ValidationResponseType = importComponentFromFELibrary(
     'getTaskActionPluginValidationStatus',
@@ -233,16 +236,6 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         }
     }
 
-    const handleTriggerDelete = (e: SyntheticEvent) => {
-        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
-        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.DELETE)
-    }
-
-    const handleTriggerMoveToOtherStage = (e: SyntheticEvent): void => {
-        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
-        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.MOVE_PLUGIN)
-    }
-
     const handleClearTaskActionModalState = () => {
         setTaskActionModalState(null)
     }
@@ -287,8 +280,8 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
     }
 
     const reCalculatePrevStepVar = (_formData: PipelineFormType, newTaskIndex: number): void => {
-        let preBuildVariable
-        let postBuildVariable
+        let preBuildVariable: ReturnType<typeof calculateLastStepDetail>['calculatedStageVariables']
+        let postBuildVariable: ReturnType<typeof calculateLastStepDetail>['calculatedStageVariables']
         if (activeStageName === BuildStageVariable.PreBuild) {
             preBuildVariable = calculateLastStepDetail(
                 false,
@@ -361,7 +354,13 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         <>
             <div className={withWarning ? 'with-warning' : ''}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
-                    <Fragment key={`task-item-${index}`}>
+                    <Fragment
+                        key={`task-item-${
+                            // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                            index
+                        }`}
+                    >
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <div
                             className={`task-item fw-4 fs-13 pointer flex-justify ${
                                 selectedTaskIndex === index ? 'task-item__selected-list' : ''
@@ -437,6 +436,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                     />
                 )}
             </div>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 data-testid="sidebar-add-task-button"
                 className="task-item add-task-container cb-5 fw-6 fs-13 flexbox"

@@ -19,8 +19,8 @@ import {
     get,
     getUrlWithSearchParams,
     noop,
-    post,
     PromiseAllStatusType,
+    post,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,7 +29,7 @@ import { RotatePodsRequest } from '../../../v2/appDetails/sourceInfo/rotatePods/
 import { AppGroupListType, ManageAppsResponseType, WorkloadListResultDTO } from '../../AppGroup.types'
 import { BULK_HIBERNATE_ERROR_MESSAGE, BULK_UNHIBERNATE_ERROR_MESSAGE, BulkResponseStatus } from '../../Constants'
 
-export const manageApps = async (
+export const manageApps = (
     appIds: number[],
     appDetailsList: AppGroupListType['apps'],
     envId: number,
@@ -79,7 +79,6 @@ export const manageApps = async (
                                         ? BULK_HIBERNATE_ERROR_MESSAGE[BulkResponseStatus.UNAUTHORIZE]
                                         : BULK_UNHIBERNATE_ERROR_MESSAGE[BulkResponseStatus.UNAUTHORIZE]
                                 break
-                            case 409:
                             default:
                                 response.error =
                                     action === 'hibernate'

@@ -26,8 +26,6 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ErrorIcon from '@Icons/ic-warning.svg?react'
-
 import Help from '../../assets/icons/ic-help.svg?react'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import {
@@ -47,6 +45,8 @@ import {
 } from './notifications.util'
 import { WebhookConfigModalProps, WebhookDataRowType, WebhookFormTypes, WebhookValidations } from './types'
 import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
+
+import ErrorIcon from '@Icons/ic-warning.svg?react'
 
 export const WebhookConfigModal = ({
     webhookConfigId,

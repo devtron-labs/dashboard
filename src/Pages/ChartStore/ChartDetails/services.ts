@@ -22,6 +22,8 @@ import {
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ChartDeploymentsDTO, ChartValuesTemplateDTO } from './types'
+
 import {
     deleteInstalledChart,
     getChartValuesCategorizedListParsed,
@@ -29,8 +31,6 @@ import {
     getChartVersionsMin,
 } from '@Components/charts/charts.service'
 import { DELETE_ACTION, Routes } from '@Config/constants'
-
-import { ChartDeploymentsDTO, ChartValuesTemplateDTO } from './types'
 
 export const fetchChartVersions = async (chartId: string) => {
     try {

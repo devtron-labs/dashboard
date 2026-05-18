@@ -16,10 +16,10 @@
 
 import { CommonNodeAttr, SelectPickerOptionType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CreateAppFormErrorStateType, CreateAppFormStateType } from '../types'
+
 import { EnvironmentListMinType } from '@Components/app/types'
 import { createClusterEnvGroup } from '@Components/common'
-
-import { CreateAppFormErrorStateType, CreateAppFormStateType } from '../types'
 
 export interface WorkflowProps {
     templateId: string

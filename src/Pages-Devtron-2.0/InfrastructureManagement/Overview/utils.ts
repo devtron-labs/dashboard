@@ -33,7 +33,7 @@ export const getInfraGlanceConfig = (result: InfraOverviewDTO) =>
         redirectionLink: ROUTER_URLS.RESOURCE_BROWSER.ROOT,
         metricValue: (key === GlanceMetricsKeys.REACHABLE_CLUSTERS
             ? getReachableClusterCount(result)
-            : result?.[key]?.value ?? 0
+            : (result?.[key]?.value ?? 0)
         ).toLocaleString(),
         metricUnit: key === GlanceMetricsKeys.REACHABLE_CLUSTERS ? undefined : result?.[key]?.unit,
         valueOutOf:
@@ -49,6 +49,7 @@ export const getClusterNodeHealthConfig = (
 } => ({
     [ClusterNodeHealthStatusKeys.CLUSTER_STATUS_BREAKDOWN]: Object.values(ClusterStatusKeys).reduce(
         (acc, key) => ({
+            // biome-ignore lint/performance/noAccumulatingSpread: Legacy
             ...acc,
             [key]: result?.clusterStatusBreakdown?.[key] ?? 0,
         }),
@@ -56,6 +57,7 @@ export const getClusterNodeHealthConfig = (
     ),
     [ClusterNodeHealthStatusKeys.NODE_ERRORS_BREAKDOWN]: Object.values(NodeErrorsKeys).reduce(
         (acc, key) => ({
+            // biome-ignore lint/performance/noAccumulatingSpread: Legacy
             ...acc,
             [key]: result?.nodeErrorBreakdown?.errorCounts?.[key] ?? 0,
         }),
@@ -63,6 +65,7 @@ export const getClusterNodeHealthConfig = (
     ),
     [ClusterNodeHealthStatusKeys.NODE_SCHEDULING_BREAKDOWN]: Object.values(NodeSchedulingKeys).reduce(
         (acc, key) => ({
+            // biome-ignore lint/performance/noAccumulatingSpread: Legacy
             ...acc,
             [key]: result?.nodeSchedulingBreakdown?.[key] ?? 0,
         }),

@@ -16,11 +16,11 @@
 
 import { DeploymentHistoryDiffView, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICFileEdit from '@Icons/ic-file-edit.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { CompareConfigViewProps } from './types'
 import { getCompareViewHistoryDiffConfigProps } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICFileEdit from '@Icons/ic-file-edit.svg?react'
 
 const CompareFromApprovalSelector = importComponentFromFELibrary('CompareFromApprovalSelector', null, 'function')
 

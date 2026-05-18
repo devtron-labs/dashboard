@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
+
 import {
+    AddCDButton,
     AddCDPositions,
     AddPipelineType,
-    AddCDButton,
-    Point,
-    EdgeNodeType,
     EdgeEndNodeType,
+    EdgeNodeType,
     handleAddCD,
+    Point,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { nodeColors } from './colors'
 
-interface Line {
-    startNode: Point
-    endNode: Point
-}
+import { nodeColors } from './colors'
 
 interface EdgeProps {
     // type should not be any but WorkflowNodeType, but node type is something else have to look into it
@@ -91,6 +88,7 @@ export default class Edge extends Component<EdgeProps> {
             // this.props.deleteEdge();
             // return ``;
         }
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (lineStartY != lineEndY) {
             return `M${lineStartX} ${lineStartY} H ${midPointX} V ${lineEndY} H ${lineEndX}`
         }
@@ -168,6 +166,7 @@ export default class Edge extends Component<EdgeProps> {
         const arrowEquation = this.getArrowEquation()
 
         return (
+            // biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithMouseEvents: need to be a group element for svg
             <g
                 onClick={this.props.onClickEdge}
                 className="edge-group cursor"

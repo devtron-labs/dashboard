@@ -18,13 +18,13 @@ import { Link } from 'react-router-dom'
 
 import { getAlphabetIcon, handleAnalyticsEvent, Icon } from '@devtron-labs/devtron-fe-common-lib'
 
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-
 import ChartIcon from './ChartIcon'
 import { getChartGroupURL } from './charts.helper'
 import { ChartGroupCardProps } from './charts.types'
 import { getChartGroupSubgroup, getDescriptionTruncate } from './charts.util'
 import { CHART_CARD_MAX_LENGTH } from './constants'
+
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
     const chartGroupEntries = getChartGroupSubgroup(chartGroup.chartGroupEntries)

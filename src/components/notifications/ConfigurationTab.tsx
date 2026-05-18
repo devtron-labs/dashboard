@@ -136,7 +136,6 @@ export const ConfigurationTab = () => {
                 return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SLACK} image={EmptySlack} />
             case ConfigurationsTabTypes.WEBHOOK:
                 return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.WEBHOOK} image={WebhookEmpty} />
-            case ConfigurationsTabTypes.SES:
             default:
                 return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SES} image={SESEmpty} />
         }

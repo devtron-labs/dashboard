@@ -18,9 +18,9 @@ import { SyntheticEvent, useState } from 'react'
 
 import { DEFAULT_SECRET_PLACEHOLDER, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICError from '@Icons/ic-error.svg?react'
-
 import { TLSInputFieldProps } from './types'
+
+import ICError from '@Icons/ic-error.svg?react'
 
 const TLSInputField = ({
     label,

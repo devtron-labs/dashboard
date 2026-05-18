@@ -32,12 +32,12 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ComponentStates, EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
-import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
-
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
+
+import { ComponentStates, EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]

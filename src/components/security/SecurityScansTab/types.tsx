@@ -68,11 +68,11 @@ export interface ScanListPayloadType {
 }
 
 export enum SeverityFilterValues {
-    'critical' = 2,
-    'high' = 3,
-    'medium' = 1,
-    'low' = 0,
-    'unknown' = 5,
+    critical = 2,
+    high = 3,
+    medium = 1,
+    low = 0,
+    unknown = 5,
 }
 
 export type SecurityScansTableAdditionalProps = {

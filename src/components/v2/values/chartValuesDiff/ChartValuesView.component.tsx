@@ -14,38 +14,42 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type JSX } from 'react'
+import Tippy from '@tippyjs/react'
+import { type JSX, useEffect, useState } from 'react'
 import { GroupBase } from 'react-select'
+
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    ConditionalWrap,
+    CustomInput,
+    DeploymentAppTypes,
+    Drawer,
+    GitOpsAuthModeType,
+    handleAnalyticsEvent,
+    Icon,
+    MarkDown,
     Progressing,
     RadioGroup,
     RadioGroupItem,
-    ConditionalWrap,
-    DeploymentAppTypes,
-    CustomInput,
-    Drawer,
-    TippyTheme,
-    GitOpsAuthModeType,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
-    MarkDown,
-    ComponentSizeType,
-    ButtonVariantType,
-    handleAnalyticsEvent,
-    Button,
-    ButtonStyleType,
-    Icon,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import Error from '../../../../assets/icons/ic-warning.svg?react'
+
+import EditIcon from '../../../../assets/icons/ic-pencil.svg?react'
+import ErrorIcon from '../../../../assets/icons/ic-warning.svg?react'
 import { importComponentFromFELibrary } from '../../../common'
 import Close from '../../assets/icons/ic-close.svg?react'
-import EditIcon from '../../../../assets/icons/ic-pencil.svg?react'
 import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 import './ChartValuesView.scss'
-import ICAdd from '@Icons/ic-add.svg?react'
 
+import { repoType } from '../../../../config'
+import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
+import UserGitRepo from '../../../gitOps/UserGitRepo'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -58,16 +62,15 @@ import {
     DeleteApplicationButtonProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
-    ValueNameInputType,
     gitOpsDrawerType,
+    ValueNameInputType,
 } from './ChartValuesView.type'
-import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
-import { repoType } from '../../../../config'
-import UserGitRepo from '../../../gitOps/UserGitRepo'
+
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
+import { DEPLOYMENT_TYPE_TO_TEXT_MAP, DeploymentTypeIcon } from '@Components/common/DeploymentTypeIcon'
 import { ConfigureGitopsInfoBlock } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
-import { DeploymentTypeIcon, DEPLOYMENT_TYPE_TO_TEXT_MAP } from '@Components/common/DeploymentTypeIcon'
+import ICAdd from '@Icons/ic-add.svg?react'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -175,7 +178,12 @@ export const DeploymentAppSelector = ({
                                 animation="shift-toward-subtle"
                                 content={gitRepoURL}
                             >
-                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target="_blank">
+                                <a
+                                    className="dc__block dc__ellipsis-left cursor"
+                                    href={gitRepoURL}
+                                    target="_blank"
+                                    rel="noopener"
+                                >
                                     {gitRepoURL}
                                 </a>
                             </Tippy>
@@ -232,6 +240,7 @@ const GitOpsActionBlock = ({
     }
 
     const gitOpsNotConfiguredText =
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
 
     if (isGitOpsRepoNotConfigured) {
@@ -408,7 +417,7 @@ export const GitOpsDrawer = ({
         return (
             <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
                 <div className="error-label-icon">
-                    <Error className="icon-dim-16" />
+                    <ErrorIcon className="icon-dim-16" />
                 </div>
                 <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
             </div>
@@ -476,8 +485,10 @@ export const GitOpsDrawer = ({
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
+                        {/** biome-ignore lint/a11y/noStaticElementInteractions: Legacy */}
                         <a
                             className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left"
+                            // biome-ignore lint/a11y/useValidAnchor: Legacy
                             onClick={toggleDrawer}
                         >
                             {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}

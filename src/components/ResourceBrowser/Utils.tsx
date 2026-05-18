@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { generatePath, useLocation } from 'react-router-dom'
 import moment from 'moment'
 import queryString from 'query-string'
+import React from 'react'
+import { generatePath, useLocation } from 'react-router-dom'
 
 import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
-    getUrlWithSearchParams,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKType,
+    getUrlWithSearchParams,
     InitTabType,
     K8sResourceDetailDataType,
     Nodes,
@@ -50,8 +50,8 @@ import {
     GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
     K8SObjectMapType,
-    K8sObjectOptionType,
     K8SObjectType,
+    K8sObjectOptionType,
     NodeRowDetail,
 } from './Types'
 
@@ -148,7 +148,7 @@ const newK8sObjectOption = (
 export const convertK8sObjectMapToOptionsList = (
     k8SObjectMap: Map<string, K8SObjectMapType>,
 ): K8sObjectOptionType[] => {
-    const _k8sObjectOptionsList = []
+    const _k8sObjectOptionsList: K8sObjectOptionType[] = []
 
     /* NOTE: we will map through all objects and their children to create the options
      * The options will be provided as a flat list but the groupings and heirarchies

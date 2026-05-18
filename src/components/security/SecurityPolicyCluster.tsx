@@ -16,14 +16,16 @@
 
 import { Component } from 'react'
 import { NavLink, useParams } from 'react-router-dom'
-import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+
+import { Progressing, Reload, SearchBar, showError, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ViewType } from '../../config'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getClusterListMinNoAuth } from './security.service'
-import { ViewType } from '../../config'
 import { SecurityPolicyClusterState } from './security.types'
 
 class SecurityPolicyCluster extends Component<
-    { params: ReturnType< typeof useParams<{ clusterId: string }>>},
+    { params: ReturnType<typeof useParams<{ clusterId: string }>> },
     SecurityPolicyClusterState
 > {
     constructor(props) {
@@ -56,7 +58,7 @@ class SecurityPolicyCluster extends Component<
     }
 
     handleSearchChange(_searchText: string) {
-        this.setState({ clusterSearch: _searchText})
+        this.setState({ clusterSearch: _searchText })
     }
 
     renderList() {
@@ -81,7 +83,7 @@ class SecurityPolicyCluster extends Component<
                                 handleEnter={this.handleSearchChange}
                                 inputProps={{
                                     placeholder: 'Search cluster',
-                                    autoFocus: true
+                                    autoFocus: true,
                                 }}
                                 dataTestId="security-policy-cluster-search"
                             />
@@ -89,7 +91,7 @@ class SecurityPolicyCluster extends Component<
                     </tr>
                     {this.state.clusterList
                         .filter((cluster) => cluster.name.includes(this.state.clusterSearch))
-                        .map((cluster, i) => {
+                        .map((cluster) => {
                             return (
                                 <tr
                                     key={cluster.id}

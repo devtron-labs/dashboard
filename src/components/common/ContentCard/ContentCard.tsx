@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { NavLink } from 'react-router-dom'
+
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CardContentDirection, CardLinkIconPlacement, ContentCardProps } from './ContentCard.types'
 import './ContentCard.scss'
 
@@ -51,37 +52,35 @@ export default function ContentCard({
                     condition={direction === CardContentDirection.Horizontal}
                     wrap={(children) => <div className="flex column left">{children}</div>}
                 >
-                    <>
-                        <div
-                            className={`fw-6 fs-16 cn-9 ${
-                                direction === CardContentDirection.Horizontal ? '' : 'pt-24'
-                            } pb-12 pl-24 pr-24 dc__break-word`}
-                            data-testid={`${datatestid}-heading`}
-                        >
-                            {title}
-                        </div>
-                        <div
-                            className={`flex ${
-                                linkIconPlacement === CardLinkIconPlacement.AfterLinkApart ||
-                                linkIconPlacement === CardLinkIconPlacement.BeforeLinkApart
-                                    ? 'dc__content-space'
-                                    : 'left'
-                            } w-100 ${direction === CardContentDirection.Horizontal ? '' : 'pb-24'} pl-24 pr-24`}
-                            data-testid={`${datatestid}-link`}
-                        >
-                            {LinkIcon &&
-                                (linkIconPlacement === CardLinkIconPlacement.BeforeLink ||
-                                    linkIconPlacement === CardLinkIconPlacement.BeforeLinkApart) && (
-                                    <LinkIcon className={`icon-dim-20 ${linkIconClass || ''}`} />
-                                )}
-                            <span className="fs-14 fw-6 lh-20 cb-5">{linkText}</span>
-                            {LinkIcon &&
-                                (linkIconPlacement === CardLinkIconPlacement.AfterLink ||
-                                    linkIconPlacement === CardLinkIconPlacement.AfterLinkApart) && (
-                                    <LinkIcon className={`icon-dim-20 ${linkIconClass || ''}`} />
-                                )}
-                        </div>
-                    </>
+                    <div
+                        className={`fw-6 fs-16 cn-9 ${
+                            direction === CardContentDirection.Horizontal ? '' : 'pt-24'
+                        } pb-12 pl-24 pr-24 dc__break-word`}
+                        data-testid={`${datatestid}-heading`}
+                    >
+                        {title}
+                    </div>
+                    <div
+                        className={`flex ${
+                            linkIconPlacement === CardLinkIconPlacement.AfterLinkApart ||
+                            linkIconPlacement === CardLinkIconPlacement.BeforeLinkApart
+                                ? 'dc__content-space'
+                                : 'left'
+                        } w-100 ${direction === CardContentDirection.Horizontal ? '' : 'pb-24'} pl-24 pr-24`}
+                        data-testid={`${datatestid}-link`}
+                    >
+                        {LinkIcon &&
+                            (linkIconPlacement === CardLinkIconPlacement.BeforeLink ||
+                                linkIconPlacement === CardLinkIconPlacement.BeforeLinkApart) && (
+                                <LinkIcon className={`icon-dim-20 ${linkIconClass || ''}`} />
+                            )}
+                        <span className="fs-14 fw-6 lh-20 cb-5">{linkText}</span>
+                        {LinkIcon &&
+                            (linkIconPlacement === CardLinkIconPlacement.AfterLink ||
+                                linkIconPlacement === CardLinkIconPlacement.AfterLinkApart) && (
+                                <LinkIcon className={`icon-dim-20 ${linkIconClass || ''}`} />
+                            )}
+                    </div>
                 </ConditionalWrap>
             </>
         )

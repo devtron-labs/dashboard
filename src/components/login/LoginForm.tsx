@@ -32,11 +32,11 @@ import {
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
-
 import { loginAsAdmin } from './login.service'
 import { LoginFormType } from './login.types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const LoginForm = ({ loginList }: LoginFormType) => {
     const [loading, setLoading] = useState(false)

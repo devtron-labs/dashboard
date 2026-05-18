@@ -138,6 +138,7 @@ export const BASE_CONFIG = [
     },
 ]
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRowType, FiltersTypeEnum.STATE, {}>['columns'] = [
     ...BASE_CONFIG,
     {
@@ -152,6 +153,7 @@ export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRowType, Filters
     },
 ]
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRowType, FiltersTypeEnum.STATE, {}>['columns'] = [
     ...BASE_CONFIG,
     {
@@ -174,6 +176,7 @@ export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRowType, Filte
 export const SLACK_WEBHOOK_TABLE_COLUMNS: TableProps<
     SlackWebhookConfigurationTableRowType,
     FiltersTypeEnum.STATE,
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     {}
 >['columns'] = [
     ...BASE_CONFIG,

@@ -15,22 +15,19 @@
  */
 
 import { Component } from 'react'
-import { Route, Routes, Navigate } from 'react-router-dom'
-import {
-    ErrorScreenNotAuthorized,
-    FeatureTitleWithInfo,
-    RouterV5Props,
-    TabGroup,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { Navigate, Route, Routes } from 'react-router-dom'
+
+import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+
+import { HEADER_TEXT } from '../../config'
+import { ErrorBoundary } from '../common'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
-import { ErrorBoundary } from '../common'
-import { HEADER_TEXT } from '../../config'
 import './notifications.scss'
-import { NotificationsProps, NotificationsState } from './types'
-import { AddNotificationButton } from './AddNotificationButton'
-export default class Notifications extends Component<NotificationsProps, NotificationsState> {
 
+import { AddNotificationButton } from './AddNotificationButton'
+import { NotificationsProps, NotificationsState } from './types'
+export default class Notifications extends Component<NotificationsProps, NotificationsState> {
     constructor(props) {
         super(props)
         this.state = {

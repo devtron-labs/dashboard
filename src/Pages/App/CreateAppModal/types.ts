@@ -25,10 +25,10 @@ import {
     TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { getCreateMethodConfig } from './utils'
+
 import { CIConfigProps } from '@Components/ciConfig/types'
 import { GitMaterialType } from '@Components/material/material.types'
-
-import { getCreateMethodConfig } from './utils'
 
 interface CreateAppWorkflowConfigType {
     cd: {

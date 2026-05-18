@@ -15,52 +15,55 @@
  */
 
 import { useContext, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import yamlJsParser from 'yaml'
+
 import {
+    ButtonVariantType,
+    CodeEditor,
     CustomInput,
     DeploymentAppTypes,
+    Environment,
+    InfoBlock,
+    MODES,
     Progressing,
+    ReleaseMode,
+    ROUTER_URLS,
+    SelectPicker,
+    showError,
     TippyCustomized,
     TippyTheme,
-    YAMLStringify,
-    CodeEditor,
-    Environment,
-    ReleaseMode,
-    SelectPicker,
-    ToastVariantType,
     ToastManager,
-    showError,
+    ToastVariantType,
     TriggerType,
-    InfoBlock,
-    ButtonVariantType,
-    MODES,
-    ROUTER_URLS,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useNavigate } from 'react-router-dom'
-import yamlJsParser from 'yaml'
-import ICArrowRight from '@Icons/ic-arrow-right.svg?react'
+
+import { CDPipelineDeploymentAppType, SourceMaterialsSelector } from '@Pages/App/Configurations'
+
+import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, URLS, ViewType } from '../../config'
+import { getGitOpsRepoConfig } from '../../services/service'
+import CustomImageTags from '../CIPipelineN/CustomImageTags'
+import { ValidationRules } from '../ciPipeline/validationRules'
+import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
+import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { GeneratedHelmPush, MigrateToDevtronFormState, TriggerTypeRadioProps } from './cdPipeline.types'
+import { getNamespacePlaceholder } from './cdpipeline.util'
+import { MigrateToDevtron } from './MigrateToDevtron'
+import { DEPLOYMENT_APP_TYPE_LABEL } from './MigrateToDevtron/constants'
+import PullImageDigestToggle from './PullImageDigestToggle'
+import TriggerTypeRadio from './TriggerTypeRadio'
+import { BuildCDProps } from './types'
+
+import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import Add from '@Icons/ic-add.svg?react'
+import ICArrowRight from '@Icons/ic-arrow-right.svg?react'
 import Help from '@Icons/ic-help.svg?react'
-import ICInfo from '@Icons/ic-info-filled.svg?react'
 import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import ICInfo from '@Icons/ic-info-filled.svg?react'
 import settings from '@Icons/ic-settings.svg'
 import trash from '@Icons/misc/delete.svg'
-import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, URLS, ViewType } from '../../config'
-import { GeneratedHelmPush, MigrateToDevtronFormState, TriggerTypeRadioProps } from './cdPipeline.types'
-import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { getNamespacePlaceholder } from './cdpipeline.util'
-import { ValidationRules } from '../ciPipeline/validationRules'
-import CustomImageTags from '../CIPipelineN/CustomImageTags'
-import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
-import { getGitOpsRepoConfig } from '../../services/service'
-
-import PullImageDigestToggle from './PullImageDigestToggle'
-import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
-import { BuildCDProps } from './types'
-import { MigrateToDevtron } from './MigrateToDevtron'
-import TriggerTypeRadio from './TriggerTypeRadio'
-import { DEPLOYMENT_APP_TYPE_LABEL } from './MigrateToDevtron/constants'
-import { CDPipelineDeploymentAppType, SourceMaterialsSelector } from '@Pages/App/Configurations'
 
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 
@@ -195,6 +198,7 @@ export default function BuildCD({
              * Readonly field
              */
             _form.isDigestEnforcedForEnv = _form.environments.find(
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 (env) => env.id == selection.id,
             )?.isDigestEnforcedForEnv
         } else {
@@ -259,7 +263,12 @@ export default function BuildCD({
         setGitopsConflictLoading(true)
         getGitOpsRepoConfig(+appId)
             .then(() => {
-                navigate(`${(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })}/${URLS.APP_GITOPS_CONFIG}`)
+                navigate(
+                    `${
+                        // biome-ignore lint/complexity/noCommaOperator: Legacy
+                        (ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })
+                    }/${URLS.APP_GITOPS_CONFIG}`,
+                )
             })
             .catch((err) => {
                 if (err.code === 409) {
@@ -330,9 +339,12 @@ export default function BuildCD({
     const selectStrategy = (e): void => {
         const { value } = e.target
         const _form = { ...formData }
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
 
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (_form.savedStrategies.length == 0) {
             selection.default = true
         } else {
@@ -353,6 +365,7 @@ export default function BuildCD({
 
     const renderEnvNamespaceAndTriggerType = () => {
         const envId = formData.environmentId
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const _environment = formData.environments.find((env) => env.id == envId)
         const selectedEnv: EnvironmentWithSelectPickerType = _environment && {
             ..._environment,
@@ -459,12 +472,14 @@ export default function BuildCD({
         const strategies = _form.strategies.map((strategy) => {
             return {
                 ...strategy,
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 default: strategy.deploymentTemplate == selection,
             }
         })
         const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 default: strategy.deploymentTemplate == selection,
             }
         })
@@ -507,21 +522,21 @@ export default function BuildCD({
     }
 
     const handleStrategyChange = (value, selection: string, key: 'json' | 'yaml'): void => {
-        let json
-        let jsonStr
-        let yamlStr
+        let json: Record<string, unknown>
+        let jsonStr: string
+        let yamlStr: string
         if (key === 'json') {
             jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = YAMLStringify(json)
-            } catch (error) {}
+            } catch {}
         } else {
             yamlStr = value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
-            } catch (error) {}
+            } catch {}
         }
         const _form = { ...formData }
         const strategies = _form.savedStrategies.map((strategy) => {
@@ -643,6 +658,7 @@ export default function BuildCD({
                                     {strategy.default ? (
                                         <span className="default-strategy">Default</span>
                                     ) : (
+                                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                         <span
                                             className="set-as-default"
                                             onClick={() => setDefaultStrategy(strategy.deploymentTemplate)}
@@ -655,7 +671,7 @@ export default function BuildCD({
                                     <button
                                         type="button"
                                         className="dc__transparent"
-                                        onClick={(event) => toggleStrategy(strategy.deploymentTemplate)}
+                                        onClick={() => toggleStrategy(strategy.deploymentTemplate)}
                                     >
                                         <img src={settings} alt="config" className="icon-dim-20" />
                                     </button>

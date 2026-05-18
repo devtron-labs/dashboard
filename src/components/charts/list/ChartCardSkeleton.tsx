@@ -49,7 +49,7 @@ const ChartCardSkeletonRow = ({ isGridView }: ChartSkeletonRowType) => (
         {Array(2)
             .fill(0)
             .map((_, index) => (
-                // eslint-disable-next-line react/no-array-index-key
+                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                 <ChartCardSkeleton key={index} isGridView={isGridView} />
             ))}
     </>

@@ -7,10 +7,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyPreDeploy from '@Images/empty-pre-deploy.webp'
-import { BULK_CD_MESSAGING } from '@Components/ApplicationGroup/Constants'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { BulkDeployEmptyStateProps } from './types'
+
+import { BULK_CD_MESSAGING } from '@Components/ApplicationGroup/Constants'
+import { importComponentFromFELibrary } from '@Components/common'
 
 const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')

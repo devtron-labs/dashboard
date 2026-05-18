@@ -48,13 +48,14 @@ const KubeConfigEditor = ({ saveYamlData, setSaveYamlData, errorText }: KubeConf
                         <span className="flex left">Paste the contents of kubeconfig file here</span>
                         <div className="dc__link ml-auto cursor">
                             {uploadState !== UPLOAD_STATE.UPLOADING && (
-                                <div
+                                <button
+                                    type="button"
                                     data-testid="browse_file_to_upload"
                                     onClick={handleBrowseFileClick}
-                                    className="flex fw-6"
+                                    className="flex fw-6 dc__transparent"
                                 >
                                     Browse file...
-                                </div>
+                                </button>
                             )}
                         </div>
                         <input

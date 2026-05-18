@@ -15,12 +15,15 @@
  */
 
 import { useContext } from 'react'
+
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import Close from '../../assets/icons/ic-close.svg?react'
+
 import Add from '../../assets/icons/ic-add.svg?react'
-import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+import Close from '../../assets/icons/ic-close.svg?react'
+import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 
 const OutputDirectoryPath = () => {
@@ -60,10 +63,10 @@ const OutputDirectoryPath = () => {
 
         // If already saved, create valid error array of same length
         if (!outputPathErrors?.length && currentOutputPaths?.length) {
-            updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = new Array(
+            updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = [
                 currentOutputPaths.length,
                 { isValid: true, message: '' },
-            )
+            ]
         }
 
         updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] =
@@ -88,18 +91,25 @@ const OutputDirectoryPath = () => {
                     taskField={TaskFieldLabel.OUTPUTDIRECTORYPATH}
                     contentDescription={TaskFieldDescription.OUTPUTDIRECTORYPATH}
                 />
-                <div
+                <button
+                    type="button"
                     data-testid="output-directory-path-add-path-button"
-                    className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32"
+                    className="dc__transparent cb-5 fw-6 fs-13 flexbox content-fit lh-32"
                     onClick={addOutputDirectoryPath}
                 >
                     <Add className="add-icon mt-6" />
                     Add path
-                </div>
+                </button>
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.map((elm, index) => {
                 return (
-                    <div className="custom-script__output-directory pl-220 mt-8" key={`output-directory-${index}`}>
+                    <div
+                        className="custom-script__output-directory pl-220 mt-8"
+                        key={`output-directory-${
+                            // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                            index
+                        }`}
+                    >
                         <CustomInput
                             fullWidth
                             placeholder="Enter directory path"

@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import { useState, type JSX } from 'react'
-import { showError, Progressing, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
-import Close from '../../../../../assets/icons/ic-close.svg?react'
+import { type JSX, useState } from 'react'
+
+import { Progressing, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
 import Success from '../../../../../assets/icons/appstatus/healthy.svg?react'
-import Error from '../../../../../assets/icons/ic-error-exclamation.svg?react'
+import Close from '../../../../../assets/icons/ic-close.svg?react'
+import ErrorIcon from '../../../../../assets/icons/ic-error-exclamation.svg?react'
 import { RotatePodsRequest, RotatePodsResponseTargetObject, RotateResponseModalProps } from './rotatePodsModal.type'
 import '../scaleWorkloads/scaleWorkloadsModal.scss'
+
+import BackIcon from '../../../../../assets/icons/ic-arrow-backward.svg?react'
+import RetryIcon from '../../../../../assets/icons/ic-arrow-clockwise.svg?react'
+import { POD_ROTATION_INITIATED } from '../../../../../config'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
-import RetryIcon from '../../../../../assets/icons/ic-arrow-clockwise.svg?react'
 import { RotatePods } from './rotatePodsModal.service'
-import { POD_ROTATION_INITIATED } from '../../../../../config'
-import BackIcon from '../../../../../assets/icons/ic-arrow-backward.svg?react'
 
 export default function RotateResponseModal({
     onClose,
@@ -56,7 +59,7 @@ export default function RotateResponseModal({
         if (response.errorResponse === '') {
             return <Success className="mr-8 icon-dim-18" />
         }
-        return <Error className="mr-8 icon-dim-18" />
+        return <ErrorIcon className="mr-8 icon-dim-18" />
     }
     const renderResponseBodySection = (): JSX.Element => {
         return (
@@ -78,10 +81,12 @@ export default function RotateResponseModal({
                         <div className="flex left top fs-13 fw-4 cn-9 ml-16">
                             {renderStatusIcon(response)}
                             <span data-testid={`response-status-text-${index}`}>
+                                {/** biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                                 {response.errorResponse == '' ? 'Succeeded' : 'Failed'}
                             </span>
                         </div>
                         <div className="fs-13 fw-4 cn-9 ml-16">
+                            {/** biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                             {response.errorResponse == '' ? '-' : response.errorResponse}
                         </div>
                     </div>
@@ -93,10 +98,15 @@ export default function RotateResponseModal({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex py-16 px-20 right">
-                <button className="cta cancel flex h-36 mr-12" data-testid="close-popup" onClick={onClose}>
+                <button
+                    type="button"
+                    className="cta cancel flex h-36 mr-12"
+                    data-testid="close-popup"
+                    onClick={onClose}
+                >
                     Close
                 </button>
-                <button className="cta flex h-36" onClick={handleRetryRotate} disabled={isLoading}>
+                <button type="button" className="cta flex h-36" onClick={handleRetryRotate} disabled={isLoading}>
                     {isLoading ? (
                         <Progressing />
                     ) : (

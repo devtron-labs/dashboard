@@ -16,9 +16,9 @@
 
 import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
-import Add from '@Icons/ic-add.svg?react'
-
 import { AddLinkButtonProps } from './ExternalLinks.type'
+
+import Add from '@Icons/ic-add.svg?react'
 
 export const AddLinkButton = ({ handleOnClick }: AddLinkButtonProps) => (
     <Button

@@ -15,30 +15,33 @@
  */
 
 import { type JSX, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    Drawer,
-    ToastManager,
-    ToastVariantType,
     Button,
-    ComponentSizeType,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
+    Drawer,
+    DynamicDataTableCellErrorType,
+    DynamicDataTableRowType,
+    Progressing,
+    showError,
     stopPropagation,
     TagsContainer,
-    DynamicDataTableRowType,
     TagsTableColumnsType,
-    DynamicDataTableCellErrorType,
+    ToastManager,
+    ToastVariantType,
     validateTagKeyValue,
     validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import Close from '../../../assets/icons/ic-cross.svg?react'
-import { AboutAppInfoModalProps } from '../types'
-import { editApp } from '../service'
 import { importComponentFromFELibrary } from '../../common'
-import { APP_TYPE } from '@Config/constants'
+import { editApp } from '../service'
+import { AboutAppInfoModalProps } from '../types'
 import { getLabelTags } from './utils'
+
+import { APP_TYPE } from '@Config/constants'
 
 const MandatoryTagsContainer = importComponentFromFELibrary('MandatoryTagsContainer', null, 'function')
 
@@ -65,6 +68,7 @@ export default function AboutTagEditModal({
 
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const customLabelTags = []
         let invalidLabels = false
         const updatedTagsError: DynamicDataTableCellErrorType<TagsTableColumnsType> = {}
@@ -107,6 +111,7 @@ export default function AboutTagEditModal({
         setSubmitting(true)
 
         const payload = {
+            // biome-ignore lint/correctness/useParseIntRadix: Legacy
             id: parseInt(appId),
             labels: customLabelTags,
             teamId: appMetaInfo.projectId,
@@ -180,6 +185,7 @@ export default function AboutTagEditModal({
 
     return (
         <Drawer position="right" width="800px" onClose={onClose} onEscape={onClose}>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: modal content click isolation */}
             <div className="h-100 flexbox-col bg__primary" onClick={stopPropagation}>
                 <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
                     <h2 className="fs-16 cn-9 fw-6 m-0">Manage tags</h2>

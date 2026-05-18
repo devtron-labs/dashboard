@@ -18,21 +18,21 @@ import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import {
     AppDetails as CommonAppDetails,
-    ConfigurationType,
-    FormProps,
     iNode as CommoniNode,
     Node as CommonNode,
+    ConfigurationType,
+    FormProps,
     OptionsBase,
     OptionType,
     SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterListType } from '@Components/ClusterNodes/types'
-import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
+
+import { ClusterListType } from '@Components/ClusterNodes/types'
+import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -429,7 +429,7 @@ export enum ManifestCodeEditorMode {
     EDIT = 'edit',
     APPLY_CHANGES = 'applyChanges',
     CANCEL = 'cancel',
-    'REVIEW' = 'review',
+    REVIEW = 'review',
 }
 
 export type ManifestActionPropsType = Omit<

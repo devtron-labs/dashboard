@@ -24,10 +24,6 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { APP_TYPE } from '@Config/constants'
-import { getAppIconWithBackground } from '@Config/utils'
-
 import { AppCloneList } from './AppClone'
 import ApplicationInfoForm from './ApplicationInfoForm'
 import {
@@ -37,6 +33,10 @@ import {
     CreationMethodType,
 } from './types'
 import UpdateTemplateConfig from './UpdateTemplateConfig'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { APP_TYPE } from '@Config/constants'
+import { getAppIconWithBackground } from '@Config/utils'
 
 const TemplateList = importComponentFromFELibrary('TemplateList', null, 'function')
 

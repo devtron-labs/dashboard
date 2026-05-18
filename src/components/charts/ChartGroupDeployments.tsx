@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
 import React, { useState } from 'react'
 import { generatePath, Link } from 'react-router-dom'
-import {
-    not,
-    GenericEmptyState,
-    DeleteConfirmationModal,
-    ROUTER_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import Delete from '../../assets/icons/ic-delete.svg?react'
-import DownArrow from '../../assets/icons/ic-chevron-down.svg?react'
-import NoDeploymentImg from '../../assets/img/app-not-configured.png'
-import { InstalledChartGroup, InstalledChart, ChartGroupDeploymentsProps } from './charts.types'
-import placeHolder from '../../assets/icons/ic-plc-chart.svg'
-import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+
+import { DeleteConfirmationModal, GenericEmptyState, not, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
+
+import DownArrow from '../../assets/icons/ic-chevron-down.svg?react'
+import Delete from '../../assets/icons/ic-delete.svg?react'
+import placeHolder from '../../assets/icons/ic-plc-chart.svg'
+import NoDeploymentImg from '../../assets/img/app-not-configured.png'
+import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+import { ChartGroupDeploymentsProps, InstalledChart, InstalledChartGroup } from './charts.types'
 
 const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = (props) => {
     return (
@@ -49,6 +47,7 @@ const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = (props) => {
                     {props.installedChartData.length > 0 ? (
                         props.installedChartData.map((group, index) => (
                             <CollapsibleDeployment
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                                 key={index}
                                 index={index}
                                 installedChartGroup={group}
@@ -115,7 +114,7 @@ const CollapsibleDeployment: React.FC<{
                     <DownArrow
                         className={`icon-dim-20 chart-group-deployment__expand-row ${collapsed ? '' : 'chart-group-deployment__expand-row--rotated'}`}
                         data-testid="down-arrow"
-                        onClick={(e) => toggleCollapsed(not)}
+                        onClick={(_e) => toggleCollapsed(not)}
                     />
                 </div>
             </div>
@@ -127,11 +126,15 @@ const CollapsibleDeployment: React.FC<{
                                 appId: String(chart.installedAppId),
                                 envId: String(chart.environmentId),
                             })}
-                            key={`${index} - ${chart.chartName}}`}
+                            key={`${
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                index
+                            } - ${chart.chartName}}`}
                             className="chart-group-deployment__row"
                             data-testid={`group-deployment-${props.index}`}
                         >
                             <div className="chart-group-deployment__cell chart-group-deployment__cell--first-child">
+                                {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions: onError is fine here */}
                                 <img
                                     className="icon-dim-40 mr-16"
                                     onError={handleImageError}

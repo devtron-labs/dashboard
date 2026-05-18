@@ -19,12 +19,12 @@ import { useNavigate } from 'react-router-dom'
 
 import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-
 import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
 import { BASE_CONFIG, ConfigurationsTabTypes, SMTP_TABLE_COLUMNS } from './constants'
 import { renderDefaultTag } from './notifications.util'
 import { ConfigurationTableProps, SMTPConfigurationTableRowType } from './types'
+
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { smtpConfigurationList } = state

@@ -15,28 +15,31 @@
  */
 
 import { Component } from 'react'
+import CreatableSelect from 'react-select/creatable'
+
 import {
-    showError,
-    VisibleModal,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    preventDefault,
     RadioGroup,
     RadioGroupItem,
-    ToastVariantType,
+    showError,
     ToastManager,
-    preventDefault,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
+    ToastVariantType,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CreatableSelect from 'react-select/creatable'
-import Close from '../../assets/icons/ic-close.svg?react'
-import Slack from '../../assets/icons/slack-logo.svg?react'
-import Email from '../../assets/icons/ic-mail.svg?react'
+
 import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
 import Webhook from '../../assets/icons/ic-CIWebhook.svg?react'
+import Close from '../../assets/icons/ic-close.svg?react'
+import Email from '../../assets/icons/ic-mail.svg?react'
+import Slack from '../../assets/icons/slack-logo.svg?react'
 import { updateNotificationRecipients } from './notifications.service'
-import { multiSelectStyles, DropdownIndicator, MultiValueLabel, Option } from './notifications.util'
+import { DropdownIndicator, MultiValueLabel, multiSelectStyles, Option } from './notifications.util'
 import './notifications.scss'
-import { EMAIL_AGENT, ModifyRecipientsModalProps, ModifyRecipientsModalState } from './types'
+
+import { EMAIL_AGENT, ModifyRecipientsModalProps, ModifyRecipientsModalState, RecipientType } from './types'
 
 export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps, ModifyRecipientsModalState> {
     constructor(props) {
@@ -52,7 +55,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     }
 
     componentDidMount() {
-        let oldRecipientList = []
+        let oldRecipientList: RecipientType[] = []
         let _recipientWithoutEmailAgent = false
         for (let i = 0; i < this.props.notificationListFromParent.length; i++) {
             if (!_recipientWithoutEmailAgent) {
@@ -63,7 +66,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
             oldRecipientList = oldRecipientList.concat(this.props.notificationListFromParent[i].providers)
         }
         const set = new Set()
-        const arrayWithouDuplicates = []
+        const arrayWithouDuplicates: RecipientType[] = []
         for (let i = 0; i < oldRecipientList.length; i++) {
             const uniqueValue = `${oldRecipientList[i].configId}_${oldRecipientList[i].name}_${oldRecipientList[i].recipient}`
             if (set.has(uniqueValue)) {
@@ -94,6 +97,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
 
     removeRecipient(provider): void {
         const state = { ...this.state }
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         state.savedRecipients = state.savedRecipients.filter((p) => {
             if (
                 (provider.configId && (p.configId !== provider.configId || p.dest !== provider.dest)) ||
@@ -210,6 +214,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                         <div className="form__input h-132">
                             {this.state.savedRecipients.map((p) => {
                                 return (
+                                    // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                                     <div className="dc__devtron-tag mr-5 mb-5">
                                         {p.dest === 'ses' || p.dest === 'smtp' ? (
                                             <Email className="icon-dim-20 mr-5" />
@@ -243,7 +248,6 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                             options={this.props.channelList}
                             value={this.state.selectedRecipient}
                             onChange={this.addRecipient}
-                            tabIndex={2}
                             className="basic-multi-select"
                             classNamePrefix="select"
                             components={{

@@ -34,13 +34,6 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg?react'
-import ICChartLineUp from '@Icons/ic-chart-line-up.svg?react'
-import ICObject from '@Icons/ic-object.svg?react'
-import ICTerminalFill from '@Icons/ic-terminal-fill.svg?react'
-import ICWorldBlack from '@Icons/ic-world-black.svg?react'
-import { ClusterListType } from '@Components/ClusterNodes/types'
-import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -69,6 +62,14 @@ import ResourcePageHeader from './ResourcePageHeader'
 import { ResourceRecommenderTableViewWrapper } from './ResourceRecommenderTableViewWrapper'
 import { ResourceListProps } from './types'
 import { dynamicSort, getClusterOptions } from './utils'
+
+import { ClusterListType } from '@Components/ClusterNodes/types'
+import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg?react'
+import ICChartLineUp from '@Icons/ic-chart-line-up.svg?react'
+import ICObject from '@Icons/ic-object.svg?react'
+import ICTerminalFill from '@Icons/ic-terminal-fill.svg?react'
+import ICWorldBlack from '@Icons/ic-world-black.svg?react'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const ResourceRecommender = importComponentFromFELibrary('ResourceRecommender', null, 'function')

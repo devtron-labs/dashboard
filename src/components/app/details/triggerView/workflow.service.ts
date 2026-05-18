@@ -15,35 +15,36 @@
  */
 
 import {
-    CommonNodeAttr,
-    TriggerTypeMap,
-    WorkflowNodeType,
-    PipelineType,
-    DownstreamNodesEnvironmentsType,
-    WorkflowType,
-    CiPipeline,
+    AppConfigProps,
     CdPipeline,
+    CiPipeline,
+    CommonNodeAttr,
+    DownstreamNodesEnvironmentsType,
     getIsApprovalPolicyConfigured,
+    PipelineType,
     sanitizeApprovalConfigData,
     TriggerType,
-    AppConfigProps,
+    TriggerTypeMap,
+    WorkflowNodeType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
-import {
-    CdPipelineResult,
-    CiPipelineResult,
-    Workflow,
-    WorkflowResult,
-    AddDimensionsToDownstreamDeploymentsParams,
-    GetInitialWorkflowsParamsType,
-} from './types'
-import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
+
 import { DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
-import { importComponentFromFELibrary, isEmpty } from '../../../common'
+import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
-import { CIPipelineBuildType } from '../../../ciPipeline/types'
+import { importComponentFromFELibrary, isEmpty } from '../../../common'
 import { BlackListedCI } from '../../../workflowEditor/types'
+import { Offset, WorkflowCreate, WorkflowDimensions, WorkflowDimensionType, WorkflowTrigger } from './config'
+import {
+    AddDimensionsToDownstreamDeploymentsParams,
+    CdPipelineResult,
+    CiPipelineResult,
+    GetInitialWorkflowsParamsType,
+    Workflow,
+    WorkflowResult,
+} from './types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
@@ -189,6 +190,7 @@ function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse
     for (const ciPipeline of filteredCIPipelines) {
         configuredMaterialList[ciPipeline.name] = new Set<string>()
         if (ciPipeline.ciMaterial?.length > 0) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             ciPipeline.ciMaterial.forEach((property, _) =>
                 configuredMaterialList[ciPipeline.name].add(property.gitMaterialId),
             )
@@ -255,7 +257,7 @@ export function processWorkflow(
         (externalCIResponse ?? []).map((externalCI) => [externalCI.id, externalCI] as [number, WebhookDetailsType]),
     )
     const { appName } = workflow
-    let workflows = new Array<WorkflowType>()
+    let workflows: WorkflowType[] = []
 
     // populate workflows with CI and CD nodes, sourceNodes are inside CI nodes and PreCD and PostCD nodes are inside CD nodes
     workflow.workflows
@@ -266,12 +268,14 @@ export function processWorkflow(
             _wfTree
                 .sort((a, b) => a.id - b.id)
                 .forEach((branch) => {
+                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                     if (branch.type == PipelineType.CI_PIPELINE) {
                         const ciNode = ciMap.get(String(branch.componentId))
                         if (!ciNode) {
                             return
                         }
                         wf.nodes.push(ciNode)
+                        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                     } else if (branch.type == PipelineType.WEBHOOK) {
                         const webhook = webhookMap.get(branch.componentId)
                         if (!webhook) {
@@ -283,6 +287,7 @@ export function processWorkflow(
                         const cdPipeline = cdMap.get(branch.componentId)
                         if (
                             !cdPipeline ||
+                            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                             (dimensions.type == WorkflowDimensionType.TRIGGER && cdPipeline.deploymentAppDeleteRequest)
                         ) {
                             return
@@ -317,6 +322,7 @@ export function processWorkflow(
         workflows = filter(workflows)
     }
 
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     if (dimensions.type == WorkflowDimensionType.TRIGGER) {
         workflows = workflows.filter((wf) => wf.nodes.length > 0)
     }
@@ -346,11 +352,13 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
     workflows.forEach((workflow, index) => {
         const startY = 0
         const startX = 0
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (workflow.nodes.length == 0) {
             return
         }
 
         const ciNode = workflow.nodes.find(
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
         )
         ciNode.sourceNodes?.forEach((s, si) => {
@@ -385,17 +393,20 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             })
         }
 
-        const finalWorkflow = new Array<CommonNodeAttr>()
+        const finalWorkflow: CommonNodeAttr[] = []
         workflow.nodes.forEach((node) => {
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (node.type == WorkflowNodeType.CI && !node.isLinkedCD) {
                 node.sourceNodes && finalWorkflow.push(...node.sourceNodes)
                 finalWorkflow.push(node)
                 delete node['sourceNodes']
             }
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (node.type == PipelineType.WEBHOOK || node.isLinkedCD) {
                 finalWorkflow.push(node)
                 delete node['sourceNodes']
             }
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (node.type == WorkflowNodeType.CD) {
                 node.downstreamNodes?.forEach((dn) => {
                     dn.parentEnvironmentName = node.environmentName
@@ -436,20 +447,25 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
     })
 
     // FIXME: This might be the key to solve scrolling workflows in case one scrolls, all other scrolls
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
     workflows.forEach((workflow) => (workflow.width = maxWorkflowWidth))
 }
 
 function addDownstreams(workflows: WorkflowType[]) {
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
     workflows.forEach((wf) => {
         const nodes = new Map(wf.nodes.map((node) => [`${node.type}-${node.id}`, node] as [string, CommonNodeAttr]))
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         wf.nodes.forEach((node) => {
             if (!node.parentPipelineId) {
                 return node
             }
 
             let parentType = WorkflowNodeType.CD
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (node.parentPipelineType == PipelineType.CI_PIPELINE) {
                 parentType = WorkflowNodeType.CI
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             } else if (node.parentPipelineType == PipelineType.WEBHOOK) {
                 parentType = WorkflowNodeType.WEBHOOK
             }
@@ -534,7 +550,7 @@ function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): Workf
         id: `${workflow.id}`,
         appId: workflow.appId,
         name: workflow.name,
-        nodes: new Array<CommonNodeAttr>(),
+        nodes: [] as CommonNodeAttr[],
         gitMaterials: ciResponse?.materials ?? [],
         ciConfiguredGitMaterialId: ciResponse?.ciGitConfiguredId,
         startX: 0,
@@ -624,7 +640,7 @@ function ciPipelineToNode(
         isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes,
-        downstreamNodes: new Array<CommonNodeAttr>(),
+        downstreamNodes: [] as CommonNodeAttr[],
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
         isTriggerBlocked: ciPipeline.isCITriggerBlocked,
         pluginBlockState: getParsedPluginPolicyConsequenceData(ciPipeline.ciBlockState),
@@ -656,7 +672,7 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
         isLinkedCI: false,
         linkedCount: 0,
         sourceNodes: [],
-        downstreamNodes: new Array<CommonNodeAttr>(),
+        downstreamNodes: [] as CommonNodeAttr[],
     } as CommonNodeAttr
 }
 
@@ -712,7 +728,7 @@ function cdPipelineToNode(
         }
         stageIndex++
     }
-    let cdDownstreams = []
+    let cdDownstreams: CommonNodeAttr['downstreams'] = []
     if (
         dimensions.type === WorkflowDimensionType.TRIGGER &&
         !isEmpty(cdPipeline.postDeployStage?.steps || cdPipeline.postStage?.config)
@@ -746,7 +762,7 @@ function cdPipelineToNode(
         isRoot: false,
         preNode: undefined,
         postNode: undefined,
-        downstreamNodes: new Array<CommonNodeAttr>(),
+        downstreamNodes: [] as CommonNodeAttr[],
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
@@ -851,7 +867,7 @@ function getCINodeHeight(dimensionType: WorkflowDimensionType, pipeline: CiPipel
 }
 
 export function getAllChildDownstreams(node: CommonNodeAttr, workflow: any): { downstreamNodes: CommonNodeAttr[] } {
-    let downstreamNodes = []
+    let downstreamNodes: CommonNodeAttr[] = []
     // Not using downstreamNodes since they get deleted in service itself
     if (node?.downstreams?.length) {
         node.downstreams.forEach((downstreamData) => {

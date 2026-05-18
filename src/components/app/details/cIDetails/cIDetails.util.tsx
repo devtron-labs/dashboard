@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { GenericEmptyState, EMPTY_STATE_STATUS } from '@devtron-labs/devtron-fe-common-lib'
-import MechanicalOperation from '@Images/ic-mechanical-operation.svg?react'
+import { EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
+import MechanicalOperation from '@Images/ic-mechanical-operation.svg?react'
 
 export const CIRunningView = (props) => {
     return (
         <div className="flexbox-col p-16 bg__primary flex-grow-1 en-2 bw-1 br-8">
-        <GenericEmptyState
-            SvgImage={MechanicalOperation}
-            title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
-            subTitle={props.isSecurityTab ? null : EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
-        />
+            <GenericEmptyState
+                SvgImage={MechanicalOperation}
+                title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
+                subTitle={props.isSecurityTab ? null : EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
+            />
         </div>
     )
 }

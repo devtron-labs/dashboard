@@ -1,9 +1,9 @@
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { BuildDeploymentMetrics } from './BuildDeploymentMetrics'
 import Glance from './Glance'
 import OverviewPageHeader from './OverviewPageHeader'
 import WorkflowOverview from './WorkflowOverview'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import './styles.scss'
 

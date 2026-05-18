@@ -14,46 +14,49 @@
  * limitations under the License.
  */
 
-import { useParams, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import {
-    showError,
-    Progressing,
-    BreadCrumb,
-    useBreadcrumb,
-    ConditionalWrap,
-    useAsync,
-    PageHeader,
-    ToastVariantType,
-    ToastManager,
-    DeleteConfirmationModal,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
-    ComponentSizeType,
-    getInfrastructureManagementBreadcrumb,
-    BreadcrumbText,
-    DOCUMENTATION,
-    ROUTER_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import ChartGroupDeployments from './ChartGroupDeployments'
-import MultiChartSummary from './MultiChartSummary'
-import useChartGroup from './useChartGroup'
-import Pencil from '@Icons/ic-pencil.svg?react'
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
 import {
-    deployChartGroup,
-    getChartGroupInstallationDetails,
-    deleteInstalledChart,
-    getChartGroups,
-    deleteChartGroup,
-} from './charts.service'
-import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
+    BreadCrumb,
+    BreadcrumbText,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    ConditionalWrap,
+    DeleteConfirmationModal,
+    DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    Progressing,
+    ROUTER_URLS,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
+import ChartGroupDeployments from './ChartGroupDeployments'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
+import {
+    deleteChartGroup,
+    deleteInstalledChart,
+    deployChartGroup,
+    getChartGroupInstallationDetails,
+    getChartGroups,
+} from './charts.service'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
+import MultiChartSummary from './MultiChartSummary'
+import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
+import useChartGroup from './useChartGroup'
+
+import Pencil from '@Icons/ic-pencil.svg?react'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId`
 
@@ -102,7 +105,7 @@ export default function ChartGroupDetails() {
         [state.name],
     )
     const [showDeployModal, toggleDeployModal] = useState(false)
-    const [chartGroupDetailsLoading, chartGroupInstalled, chartGroupDetailsError, reloadChartGroupDetails] = useAsync(
+    const [_chartGroupDetailsLoading, chartGroupInstalled, _chartGroupDetailsError, reloadChartGroupDetails] = useAsync(
         () => getChartGroupInstallationDetails(groupId),
         [groupId],
     )
@@ -155,6 +158,7 @@ export default function ChartGroupDetails() {
         const payload = {
             name: state.name,
             description: state.description,
+            // biome-ignore lint/correctness/useParseIntRadix: Legacy
             id: parseInt(groupId),
             chartGroupEntries: state.charts,
             installedChartData: chartGroupInstalled?.result?.installedChartData,

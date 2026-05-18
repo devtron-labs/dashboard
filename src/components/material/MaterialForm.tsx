@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 
 import { isAWSCodeCommitURL, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { MaterialView } from './MaterialView'
 import { createMaterial, updateMaterial } from './material.service'
 import { MaterialFormProps } from './material.types'
-import { MaterialView } from './MaterialView'
 import { getInitialMaterialFormState, getUpsertMaterialPayload, isGitProviderValid } from './utils'
 
 const MaterialForm = ({

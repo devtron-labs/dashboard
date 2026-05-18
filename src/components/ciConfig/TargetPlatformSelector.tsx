@@ -15,11 +15,13 @@
  */
 
 import { SelectPicker, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
-import WarningIcon from '@Icons/ic-warning.svg?react'
+
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { TARGET_PLATFORM_LIST } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
+
+import WarningIcon from '@Icons/ic-warning.svg?react'
 
 const TargetPlatformSelector = ({
     allowOverride,
@@ -40,9 +42,7 @@ const TargetPlatformSelector = ({
         }
     }
 
-    const handleCreateNewOption: SelectPickerProps<string, boolean>['onCreateOption'] = (
-        inputValue,
-    ): void => {
+    const handleCreateNewOption: SelectPickerProps<string, boolean>['onCreateOption'] = (inputValue): void => {
         const _selectedTargetPlatforms = [
             ...selectedTargetPlatforms,
             {
@@ -86,6 +86,7 @@ const TargetPlatformSelector = ({
             <div className="flex left ">
                 {targetPlatform.split(',').map((val) => {
                     return (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                         <div
                             className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
                             style={{ maxWidth: '100px' }}

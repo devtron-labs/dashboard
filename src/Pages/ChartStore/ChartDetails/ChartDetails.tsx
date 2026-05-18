@@ -35,10 +35,6 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ChartSelector } from '@Components/AppSelector'
-import { getChartSelectAPI } from '@Components/charts/charts.util'
-import { URLS } from '@Config/routes'
-
 import { ChartDetailsAbout } from './ChartDetailsAbout'
 import { ChartDetailsDeploy } from './ChartDetailsDeploy'
 import { ChartDetailsDeployments } from './ChartDetailsDeployments'
@@ -48,6 +44,10 @@ import { CHART_DETAILS_PORTAL_CONTAINER_ID, CHART_DETAILS_SEGMENTS } from './con
 import { fetchChartDetails, fetchChartVersions } from './services'
 import { ChartDetailsRouteParams, ChartDetailsSearchParams, ChartDetailsSegment } from './types'
 import { chartSelectorFilterOption, chartSelectorFormatOptionLabel, parseChartDetailsSearchParams } from './utils'
+
+import { ChartSelector } from '@Components/AppSelector'
+import { getChartSelectAPI } from '@Components/charts/charts.util'
+import { URLS } from '@Config/routes'
 
 import './chartDetails.scss'
 

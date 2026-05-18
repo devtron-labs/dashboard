@@ -19,11 +19,11 @@ import { useNavigate } from 'react-router-dom'
 
 import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-
 import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
 import { BASE_CONFIG, ConfigurationsTabTypes, SLACK_WEBHOOK_TABLE_COLUMNS } from './constants'
 import { ConfigurationTableProps, SlackWebhookConfigurationTableRowType } from './types'
+
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { webhookConfigurationList } = state

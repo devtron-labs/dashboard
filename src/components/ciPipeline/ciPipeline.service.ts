@@ -15,30 +15,32 @@
  */
 
 import {
-    get,
-    savePipeline,
-    MaterialType,
+    AppConfigProps,
+    ChangeCIPayloadType,
+    GetTemplateAPIRouteType,
     Githost,
-    ScriptType,
+    get,
+    getModuleConfigured,
+    getTemplateAPIRoute,
+    MaterialType,
+    ModuleNameMap,
+    ModuleStatus,
+    PipelineBuildStageType,
     PluginType,
     RefVariableType,
-    PipelineBuildStageType,
-    getModuleConfigured,
-    ModuleNameMap,
-    VariableTypeFormat,
-    TriggerType,
-    ChangeCIPayloadType,
-    AppConfigProps,
-    GetTemplateAPIRouteType,
-    getTemplateAPIRoute,
+    ScriptType,
     SourceTypeMap,
-    ModuleStatus,
+    savePipeline,
+    TriggerType,
+    VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
+import { safeTrim } from '../../util/Util'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { CIPipelineBuildType, CIPipelineInitData, PatchAction } from './types'
-import { safeTrim } from '../../util/Util'
+
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 const emptyStepsData = () => {
@@ -65,9 +67,8 @@ export function getInitData(
     includeWebhookData: boolean = false,
     isJobCard: boolean,
     isTemplateView: AppConfigProps['isTemplateView'],
-    forceDockerfileScan: boolean
+    forceDockerfileScan: boolean,
 ): Promise<CIPipelineInitData> {
-
     return Promise.all([
         getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),
@@ -186,6 +187,7 @@ export function getPipelineMetaConfiguration(
     ).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
         const _materials = baseResponse.result.materials || []
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
             return baseResponse
         }
@@ -198,6 +200,7 @@ export function getPipelineMetaConfiguration(
             _material.gitHostId = _gitHostId
 
             // if git host Id is not set, then return
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (!_gitHostId || _gitHostId == 0) {
                 return baseResponse
             }
@@ -389,6 +392,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         externalCiConfig: ciPipeline.externalCiConfig,
         linkedCount: ciPipeline.linkedCount,
         isExternal: isExternalCI,
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         isManual: formData.triggerType == TriggerType.Manual,
         ...(formData.workflowCacheConfig
             ? {
@@ -425,7 +429,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         scanEnabled: formData.scanEnabled,
         dockerfileScanEnabled: formData.dockerfileScanEnabled,
         dockerArgs: formData.args
-            .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
+            .filter((arg) => arg.key?.length && arg.value?.length)
             .reduce((agg, curr) => {
                 agg[curr.key] = curr.value
                 return agg
@@ -586,12 +590,13 @@ function parseCIResponse(
         }
         const materials = createMaterialList(ciPipeline, gitMaterials, gitHost)
         // do webhook event specific
-        let _webhookConditionList = []
+        let _webhookConditionList: ReturnType<typeof createWebhookConditionList> = []
         if (webhookEvents && webhookEvents.length > 0) {
             // assume single git material
             const _material = materials[0]
             const _materialValue = _material.value
 
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (_material.type == SourceTypeMap.WEBHOOK) {
                 _webhookConditionList = createWebhookConditionList(_materialValue)
 
@@ -655,7 +660,7 @@ function parseCIResponse(
 }
 
 export function createWebhookConditionList(materialJsonValue: string) {
-    let conditions = []
+    let conditions: any[] = []
     if (!materialJsonValue) {
         conditions = []
         conditions.push({ selectorId: 0, value: '' })
@@ -665,6 +670,7 @@ export function createWebhookConditionList(materialJsonValue: string) {
     const _materialValue = JSON.parse(materialJsonValue)
     const _selectedEventCondition = _materialValue.condition
 
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     if (!_selectedEventCondition || Object.keys(_selectedEventCondition).length == 0) {
         conditions = []
         conditions.push({ selectorId: 0, value: '' })

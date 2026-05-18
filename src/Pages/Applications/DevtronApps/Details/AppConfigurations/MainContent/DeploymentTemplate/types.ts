@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent } from 'react'
 import { Operation } from 'fast-json-patch'
+import { SyntheticEvent } from 'react'
 
 import {
     AppConfigProps,
@@ -325,6 +325,7 @@ export interface ChartSelectorDropdownProps
     isUnSet: boolean
     selectChart: (
         selectedChart: DeploymentChartVersionType,
+        // biome-ignore lint/suspicious/noConfusingVoidType: Legacy
     ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
 }
 

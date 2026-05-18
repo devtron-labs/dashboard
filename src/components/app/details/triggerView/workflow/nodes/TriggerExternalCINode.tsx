@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
 import Tippy from '@tippyjs/react'
-import link from '../../../../../../assets/icons/ic-link.svg'
+import { Component } from 'react'
+
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'
+
+import link from '../../../../../../assets/icons/ic-link.svg'
 
 export interface CINodeProps {
     x: number

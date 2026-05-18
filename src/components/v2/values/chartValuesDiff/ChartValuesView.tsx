@@ -14,57 +14,52 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useReducer, useRef, type JSX } from 'react'
+import Tippy from '@tippyjs/react'
+import { type JSX, useEffect, useReducer, useRef, useState } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
-import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
+import YAML from 'yaml'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
+    AnimatedDeployButton,
+    ButtonVariantType,
+    ComponentSizeType,
     ConditionalWrap,
-    ServerErrors,
-    GenericEmptyState,
-    ResponseType,
-    DeploymentAppTypes,
-    useMainContext,
-    YAMLStringify,
-    usePrompt,
-    getIsRequestAborted,
-    deepEqual,
-    useDownload,
     ConfigurationType,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
+    DeploymentAppTypes,
+    deepEqual,
+    doesJSONConformToSchema07,
+    ErrorScreenManager,
+    ForceDeleteConfirmationModal,
+    GenericEmptyState,
+    getIsRequestAborted,
+    handleAnalyticsEvent,
+    Icon,
+    InfoBlock,
+    Progressing,
+    ResponseType,
+    ROUTER_URLS,
+    SegmentedControl,
+    SegmentType,
+    ServerErrors,
+    showError,
     ToastManager,
     ToastVariantType,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
-    ForceDeleteConfirmationModal,
-    doesJSONConformToSchema07,
-    InfoBlock,
-    ButtonVariantType,
-    handleAnalyticsEvent,
-    Icon,
-    AnimatedDeployButton,
-    SegmentedControl,
-    ComponentSizeType,
-    SegmentType,
-    ROUTER_URLS,
+    useDownload,
+    useMainContext,
+    usePrompt,
     validateAppName,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
-import Tippy from '@tippyjs/react'
-import {
-    getReleaseInfo,
-    ReleaseInfoResponse,
-    ReleaseInfo,
-    InstalledAppInfo,
-    deleteApplicationRelease,
-    linkToChartStore,
-    LinkToChartStoreRequest,
-    UpdateAppReleaseRequest,
-    updateAppRelease,
-    UpdateAppReleaseWithoutLinkingRequest,
-    updateAppReleaseWithoutLinking,
-} from '../../../external-apps/ExternalAppService'
+
+import Arrows from '../../../../assets/icons/ic-arrows-left-right.svg?react'
+import Close from '../../../../assets/icons/ic-close.svg?react'
+import File from '../../../../assets/icons/ic-file-text.svg?react'
+import LinkIcon from '../../../../assets/icons/ic-link.svg?react'
+import Edit from '../../../../assets/icons/ic-pencil.svg?react'
+import { checkIfDevtronOperatorHelmRelease, DELETE_ACTION, SERVER_MODE, URLS } from '../../../../config'
+import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
 import {
     createChartValues,
     deleteChartValues,
@@ -74,19 +69,26 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import { DELETE_ACTION, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
-import {
-    ChartEnvironmentSelector,
-    ActiveReadmeColumn,
-    ChartProjectSelector,
-    ChartVersionValuesSelector,
-    DeleteApplicationButton,
-    AppNameInput,
-    ValueNameInput,
-    DeploymentAppSelector,
-    GitOpsDrawer,
-} from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
+import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
+import {
+    deleteApplicationRelease,
+    getReleaseInfo,
+    InstalledAppInfo,
+    LinkToChartStoreRequest,
+    linkToChartStore,
+    ReleaseInfo,
+    ReleaseInfoResponse,
+    UpdateAppReleaseRequest,
+    UpdateAppReleaseWithoutLinkingRequest,
+    updateAppRelease,
+    updateAppReleaseWithoutLinking,
+} from '../../../external-apps/ExternalAppService'
+import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import {
+    ChartDeploymentHistoryResponse,
+    getDeploymentHistory,
+} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import {
     fetchChartVersionsData,
     fetchProjects,
@@ -94,16 +96,19 @@ import {
     getChartRelatedReadMe,
     getChartValuesList,
 } from '../common/chartValues.api'
-import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
-import Edit from '../../../../assets/icons/ic-pencil.svg?react'
-import Arrows from '../../../../assets/icons/ic-arrows-left-right.svg?react'
-import File from '../../../../assets/icons/ic-file-text.svg?react'
-import Close from '../../../../assets/icons/ic-close.svg?react'
-import LinkIcon from '../../../../assets/icons/ic-link.svg?react'
+import ChartValuesGUIForm from './ChartValuesGUIView'
 import {
-    ChartDeploymentHistoryResponse,
-    getDeploymentHistory,
-} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+    ActiveReadmeColumn,
+    AppNameInput,
+    ChartEnvironmentSelector,
+    ChartProjectSelector,
+    ChartVersionValuesSelector,
+    DeleteApplicationButton,
+    DeploymentAppSelector,
+    GitOpsDrawer,
+    ValueNameInput,
+} from './ChartValuesView.component'
+import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import {
     ChartEnvironmentOptionType,
     ChartKind,
@@ -111,35 +116,34 @@ import {
     ChartValuesViewActionTypes,
     ChartValuesViewType,
 } from './ChartValuesView.type'
-import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
-import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
 import '../../../app/Overview/Overview.scss'
-import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
-import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
-import { AppMetaInfo } from '../../../app/types'
-import { getHelmAppMetaInfo } from '../../../app/service'
-import ProjectUpdateModal from './ProjectUpdateModal'
-import ChartValuesEditor from './ChartValuesEditor'
-import { ChartRepoSelector } from './ChartRepoSelector'
+
+import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
+
 import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG, TOAST_INFO } from '../../../../config/constantMessaging'
+import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
+import { getHelmAppMetaInfo } from '../../../app/service'
+import { AppMetaInfo } from '../../../app/types'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
+import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
+import IndexStore from '../../appDetails/index.store'
+import { ChartRepoSelector } from './ChartRepoSelector'
+import ChartValuesEditor from './ChartValuesEditor'
 import {
     CHART_VALUE_TOAST_MSGS,
     COMPARISON_OPTION_LABELS,
     COMPARISON_OPTION_TIPPY_CONTENT,
     CONNECT_TO_HELM_CHART_TEXTS,
-    MANIFEST_TAB_VALIDATION_ERROR,
-    MANIFEST_INFO,
-    UPDATE_DATA_VALIDATION_ERROR_MSG,
     EMPTY_YAML_ERROR,
+    MANIFEST_INFO,
+    MANIFEST_TAB_VALIDATION_ERROR,
+    UPDATE_DATA_VALIDATION_ERROR_MSG,
 } from './ChartValuesView.constants'
-import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
-import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
-import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 import { DeleteChartDialog } from './DeleteChartDialog'
+import ProjectUpdateModal from './ProjectUpdateModal'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
@@ -250,7 +254,7 @@ const ChartValuesView = ({
                 },
             })
             setAllowedCustomBool(result.allowCustomRepository === true)
-        } catch (error) {}
+        } catch {}
     }
 
     useEffect(() => {
@@ -407,7 +411,7 @@ const ChartValuesView = ({
                         payload: _deploymentHistoryArr,
                     })
                 })
-                .catch((e) => {})
+                .catch(() => {})
         }
 
         if (!isDeployChartView && !isCreateValueView) {
@@ -437,7 +441,7 @@ const ChartValuesView = ({
                                 modifiedValuesYaml: response.result.values || '',
                             },
                         })
-                        let _valueName
+                        let _valueName: string
                         if (isCreateValueView && commonState.chartValues.kind === ChartKind.TEMPLATE) {
                             if (valueName === '') {
                                 setValueName(response.result.name)
@@ -503,8 +507,7 @@ const ChartValuesView = ({
 
     useEffect(() => {
         if (
-            commonState.installedConfig &&
-            commonState.installedConfig.environmentId &&
+            commonState.installedConfig?.environmentId &&
             commonState.installedConfig.teamId &&
             commonState.environments.length > 0 &&
             commonState.projects.length > 0
@@ -616,7 +619,7 @@ const ChartValuesView = ({
                     },
                 },
             })
-        } catch (e: any) {
+        } catch {
             dispatch({ type: ChartValuesViewActionTypes.isLoading, payload: false })
         }
     }
@@ -705,7 +708,7 @@ const ChartValuesView = ({
                         description: TOAST_INFO.DELETION_INITIATED,
                     })
 
-                    init && init()
+                    init?.()
                     navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM)
                     return
                 }
@@ -748,6 +751,7 @@ const ChartValuesView = ({
                     let forceDeleteTitle = ''
                     let forceDeleteMessage = ''
                     if (error instanceof ServerErrors && Array.isArray(error.errors)) {
+                        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                         error.errors.map(({ userMessage, internalMessage }) => {
                             forceDeleteTitle = userMessage
                             forceDeleteMessage = internalMessage
@@ -793,6 +797,7 @@ const ChartValuesView = ({
         }
         // Delete: helm chart preset values
         if (isCreateValueView) {
+            // biome-ignore lint/correctness/useParseIntRadix: Legacy
             return deleteChartValues(parseInt(chartValueId))
         }
         // Delete: helm app
@@ -979,8 +984,9 @@ const ChartValuesView = ({
         }
 
         try {
+            // biome-ignore lint/suspicious/noImplicitAnyLet lint/suspicious/noEvolvingTypes: Can't give type since throwing error on other lines
             let res
-            let toastMessage
+            let toastMessage: string
 
             if (isExternalApp && !commonState.installedAppInfo) {
                 if (commonState.repoChartValue?.chartRepoName) {
@@ -1029,6 +1035,7 @@ const ChartValuesView = ({
                     const chartVersionObj = commonState.chartVersionsData.find(
                         (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
                     )
+                    // biome-ignore lint/correctness/useParseIntRadix: Legacy
                     payload['id'] = parseInt(chartValueId)
                     payload['chartVersion'] = chartVersionObj.version
                     toastMessage = CHART_VALUE_TOAST_MSGS.Updated
@@ -1129,6 +1136,7 @@ const ChartValuesView = ({
         }
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     const redirectToChartValues = async () => {
         const _chartId = commonState.repoChartValue?.chartId || commonState.installedConfig?.appStoreId
         if (_chartId) {
@@ -1226,6 +1234,7 @@ const ChartValuesView = ({
 
     const renderReadMeOption = (disabled?: boolean) => {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <span
                 className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ml-8 ${
                     commonState.openReadMe ? 'opened' : ''
@@ -1263,6 +1272,7 @@ const ChartValuesView = ({
 
     const renderComparisonOption = (disabled?: boolean) => {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <span
                 className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
                     commonState.openComparison ? 'opened' : ''
@@ -1327,7 +1337,7 @@ const ChartValuesView = ({
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
             if (commonState.activeTab === 'manifest') {
-                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.length
+                return commonState.deploymentHistoryArr?.length
                     ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest
                     : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
             }
@@ -1648,7 +1658,7 @@ const ChartValuesView = ({
     }
 
     const renderData = () => {
-        const deployedAppDetail = isExternalApp && appId && appId.split('|')
+        const deployedAppDetail = isExternalApp && appId?.split('|')
         const showDeploymentTools =
             !isExternalApp &&
             !isCreateValueView &&
@@ -1949,6 +1959,7 @@ const ChartValuesView = ({
         )
     }
 
+    // biome-ignore lint/complexity/noUselessFragments: Legacy
     return !isExternalApp || (commonState.releaseInfo && commonState.repoChartValue) ? renderData() : <></>
 }
 

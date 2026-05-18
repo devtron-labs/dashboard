@@ -15,40 +15,42 @@
  */
 
 import { useMemo, useState } from 'react'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
 
 import {
+    AppEnvironment,
     AppStatus,
+    ArtifactInfoModal,
+    ArtifactInfoModalProps,
+    CommitChipCell,
     GenericEmptyState,
     getRandomColor,
     handleRelativeDateSorting,
+    ImageChipCell,
     processDeployedTime,
+    RegistryType,
+    ROUTER_URLS,
     SortableTableHeaderCell,
     SortingOrder,
+    StatusType,
     useAsync,
     useUrlFilters,
-    CommitChipCell,
-    ArtifactInfoModal,
-    ArtifactInfoModalProps,
-    ImageChipCell,
-    RegistryType,
-    AppEnvironment,
-    StatusType,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath, Link, useNavigate } from 'react-router-dom'
+
 import ActivityIcon from '../../../assets/icons/ic-activity.svg?react'
 import IconForward from '../../../assets/icons/ic-arrow-forward.svg?react'
-import ArrowLineDown from '@Icons/ic-arrow-line-down.svg?react'
 import Database from '../../../assets/icons/ic-env.svg?react'
 import VirtualEnvIcon from '../../../assets/icons/ic-environment-temp.svg?react'
 import { ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import { getAppOtherEnvironment } from '@Services/service'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { renderCIListHeader } from '../details/cdDetails/utils'
 import { AppMetaInfo, AppOverviewProps } from '../types'
 import { EnvironmentListSortableKeys, loadingEnvironmentList } from './constants'
-import { renderCIListHeader } from '../details/cdDetails/utils'
+
+import ArrowLineDown from '@Icons/ic-arrow-line-down.svg?react'
+import { getAppOtherEnvironment } from '@Services/service'
 
 const {
     OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
@@ -107,6 +109,7 @@ export const EnvironmentList = ({
 
     const renderEmptyStateButton = () => (
         <button
+            type="button"
             className="flex cta dc__gap-4"
             onClick={() => {
                 navigate(generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId: String(appId) }))

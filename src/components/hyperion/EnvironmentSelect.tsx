@@ -16,7 +16,9 @@
 
 import React from 'react'
 import Select, { components } from 'react-select'
+
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Option } from '../v2/common/ReactSelect.utils'
 import './EnvironmentSelect.scss'
 
@@ -34,6 +36,7 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                         {React.cloneElement(props.children[1])}
                     </div>
                 ) : (
+                    // biome-ignore lint/complexity/noUselessFragments: Legacy
                     <>{props.children}</>
                 )}
             </components.ValueContainer>
@@ -67,6 +70,7 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                 ) : (
                     <>
                         <span
+                            // biome-ignore lint/security/noDangerouslySetInnerHtml: Legacy
                             dangerouslySetInnerHTML={{
                                 __html: option.label.replace(
                                     new RegExp(inputValue, 'gi'),
@@ -77,6 +81,7 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                         {option.clusterName && option.namespace && (
                             <small
                                 className="light-color"
+                                // biome-ignore lint/security/noDangerouslySetInnerHtml: Legacy
                                 dangerouslySetInnerHTML={{
                                     __html: `${option.clusterName}/${option.namespace}`.replace(
                                         new RegExp(inputValue, 'gi'),

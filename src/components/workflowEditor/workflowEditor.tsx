@@ -15,67 +15,71 @@
  */
 
 import { Component, createContext, type JSX } from 'react'
-import { Route, Routes, generatePath } from 'react-router-dom'
+import { generatePath, Route, Routes } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    WorkflowNodeType,
-    PipelineType,
     AddPipelineType,
-    SelectedNode,
-    InfoIconTippy,
-    ToastVariantType,
-    ToastManager,
-    TARGET_IDS,
-    CIPipelineNodeType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     ChangeCIPayloadType,
-    WorkflowOptionsModal,
+    CIPipelineNodeType,
     URLS as CommonURLS,
+    ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    deleteWorkflow,
-    InfoBlock,
     DocLink,
-    Button,
-    Icon,
-    ComponentSizeType,
-    ButtonVariantType,
-    ButtonStyleType,
-    handleAnalyticsEvent,
+    deleteWorkflow,
+    ErrorScreenManager,
     GenericEmptyState,
-    SearchBar,
-    URL_FILTER_KEYS,
     GenericFilterEmptyState,
+    handleAnalyticsEvent,
+    Icon,
+    InfoBlock,
+    InfoIconTippy,
+    PipelineType,
+    Progressing,
     ROUTER_URLS,
+    SearchBar,
+    SelectedNode,
+    showError,
+    TARGET_IDS,
+    ToastManager,
+    ToastVariantType,
+    URL_FILTER_KEYS,
+    WorkflowNodeType,
+    WorkflowOptionsModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
-import { URLS, AppConfigStatus, ViewType } from '../../config'
-import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '../common'
-import { Workflow } from './Workflow'
+
+import ICClose from '../../assets/icons/ic-close.svg?react'
+import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
+import ICHelpOutline from '../../assets/img/ic-help-outline.svg?react'
+import { AppConfigStatus, URLS, ViewType } from '../../config'
+import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import {
     getAllChildDownstreams,
     getCreateWorkflows,
     getMaxYFromFirstLevelDownstream,
 } from '../app/details/triggerView/workflow.service'
-import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'
-import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
-import ICHelpOutline from '../../assets/img/ic-help-outline.svg?react'
-import ICClose from '../../assets/icons/ic-close.svg?react'
-import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
+import { InValidHostUrlWarningBlock, importComponentFromFELibrary } from '../common'
+import AddWorkflow from './CreateWorkflow'
+import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
+import { Workflow } from './Workflow'
 import './workflowEditor.scss'
-import CDSuccessModal from './CDSuccessModal'
-import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
-import nojobs from '../../assets/img/empty-joblist.webp'
-import CDPipeline from '../cdPipeline/CDPipeline'
-import EmptyWorkflow from './EmptyWorkflow'
-import { WorkflowCreate } from '../app/details/triggerView/config'
-import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
-import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
+
 import { CreateCICDPipeline } from '@Pages/App/Configurations'
+
+import nojobs from '../../assets/img/empty-joblist.webp'
+import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
+import { WorkflowCreate } from '../app/details/triggerView/config'
+import CDPipeline from '../cdPipeline/CDPipeline'
+import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
+import CDSuccessModal from './CDSuccessModal'
+import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
+import EmptyWorkflow from './EmptyWorkflow'
 import { getAnalyticsAction } from './utils'
 
 export const pipelineContext = createContext<PipelineContext>(null)
@@ -163,8 +167,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
-                let isDeletionInProgress
-                const _envIds = []
+                let isDeletionInProgress: boolean | undefined
+                const _envIds: number[] = []
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
                         if (node.type === WorkflowNodeType.CI) {
@@ -217,7 +221,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .then((response) => {
                 this.setState({ hostURLConfig: response.result })
             })
-            .catch((error) => {})
+            .catch(() => {})
     }
 
     async checkGitOpsConfiguration(): Promise<void> {
@@ -230,7 +234,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 if (!result.isInstalled || !result.isConfigured) {
                     this.setState({ noGitOpsModuleInstalledAndConfigured: true })
                 }
-            } catch (error) {}
+            } catch {}
         }
     }
 
@@ -411,7 +415,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.navigate(LINK)
     }
 
-    openEditWorkflow = (event, workflowId: number): string => {
+    openEditWorkflow = (_event, workflowId: number): string => {
         return `${workflowId}/edit`
     }
 
@@ -514,7 +518,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         // and compute the maximum y of the bufferNodes and if there are downstreams > 1 then also for maxY, we will check maxY using node.y and depth
         if (selectedNode) {
             // would check if selectedNode.type and selectedNode.id is same as node.id and node.type
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             let _wf = null
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             let _node = null
             this.state.workflows.forEach((wf) => {
                 if (!_wf) {
@@ -530,6 +536,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             if (_node) {
                 const { downstreamNodes } = getAllChildDownstreams(_node, _wf)
                 const firstLevelDownstreamMaxY = getMaxYFromFirstLevelDownstream(_node, _wf)
+                // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
                 const bufferNodes = []
                 if (downstreamNodes.length > 0) {
                     _wf.nodes.forEach((wfNode) => {

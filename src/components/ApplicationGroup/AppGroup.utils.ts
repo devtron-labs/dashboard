@@ -14,38 +14,41 @@
  * limitations under the License.
  */
 
+import { generatePath } from 'react-router-dom'
+
 import {
-    ServerErrors,
-    showError,
+    BaseRecentlyVisitedEntitiesTypes,
     BlockedStateData,
-    ConsequenceType,
-    ConsequenceAction,
-    WorkflowType,
-    getIsRequestAborted,
     CIMaterialType,
-    SourceTypeMap,
+    ConsequenceAction,
+    ConsequenceType,
     DEPLOYMENT_STATUS,
-    WorkflowStatusEnum,
+    DeploymentNodeType,
+    getIsRequestAborted,
     RecentlyVisitedGroupedOptionsType,
     RecentlyVisitedOptions,
-    BaseRecentlyVisitedEntitiesTypes,
     ROUTER_URLS,
-    DeploymentNodeType,
+    ServerErrors,
+    SourceTypeMap,
+    showError,
+    WorkflowStatusEnum,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getParsedBranchValuesForPlugin } from '@Components/common'
+
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
 import {
+    AppGroupListType,
     AppGroupUrlFilters,
     CDWorkflowStatusType,
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
-    AppGroupListType,
 } from './AppGroup.types'
-import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
-import { generatePath } from 'react-router-dom'
 
-let timeoutId
+import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
+import { getParsedBranchValuesForPlugin } from '@Components/common'
+
+let timeoutId: ReturnType<typeof setTimeout>
 
 export const processWorkflowStatuses = (
     allCIs: CIWorkflowStatusType[],
@@ -140,6 +143,7 @@ export const handleSourceNotConfigured = (
     isDockerFileError: boolean,
 ) => {
     if (_materialList.length > 0) {
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
     }
 
@@ -241,12 +245,12 @@ export const appGroupAppSelectorStyle = {
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
         backgroundColor: 'var(--bg-primary)',
     }),
-    singleValue: (base, state) => ({
+    singleValue: (base) => ({
         ...base,
         color: 'var(--N900)',
         fontWeight: '500',
     }),
-    placeholder: (base, state) => ({
+    placeholder: (base) => ({
         ...base,
         fontWeight: '500',
     }),
@@ -281,7 +285,7 @@ export const appGroupAppSelectorStyle = {
         marginBottom: '0',
         borderRadius: '4px',
     }),
-    dropdownIndicator: (base, state) => ({
+    dropdownIndicator: (base) => ({
         ...base,
         padding: '0 4px 0 4px',
     }),
@@ -321,6 +325,7 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
 
     for (const workflow of workflows) {
         for (const node of workflow.nodes) {
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             if (node.type === 'CI' && node.id == ciNodeId) {
                 const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                 if (selectedCIPipeline?.ciMaterial) {
@@ -405,4 +410,3 @@ export const parseAppListData = (
 
     return parsedData
 }
-    

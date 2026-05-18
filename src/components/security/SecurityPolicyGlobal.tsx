@@ -15,8 +15,10 @@
  */
 
 import { Component } from 'react'
+
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export class SecurityPolicyGlobal extends Component<{}, {}> {
     render() {
         return <SecurityPolicyEdit level="global" />

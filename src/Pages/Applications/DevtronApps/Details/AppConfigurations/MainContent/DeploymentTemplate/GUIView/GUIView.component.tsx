@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
 import { JSONPath } from 'jsonpath-plus'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import YAML from 'yaml'
 
 import {
-    flatMapOfJSONPaths,
     FormProps,
+    flatMapOfJSONPaths,
     GenericEmptyState,
     GUIViewError,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
@@ -31,14 +31,15 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICArrow from '@Icons/ic-arrow-forward.svg?react'
-import ICWarningY5 from '@Icons/ic-warning-y5.svg?react'
 import EmptyFolderImage from '@Images/empty-folder.webp'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
 import { GUIViewProps, GUIViewState } from './types'
 import { GUIInfoBlock } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICArrow from '@Icons/ic-arrow-forward.svg?react'
+import ICWarningY5 from '@Icons/ic-warning-y5.svg?react'
 
 const makeObjectFromJsonPathArray = importComponentFromFELibrary('makeObjectFromJsonPathArray', null, 'function')
 const ConfigurableGUIViewPanel = importComponentFromFELibrary('ConfigurableGUIViewPanel', null, 'function')

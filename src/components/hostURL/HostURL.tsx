@@ -15,22 +15,24 @@
  */
 
 import React, { Component } from 'react'
+
 import {
-    showError,
-    Progressing,
+    CustomInput,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    CustomInput,
     FeatureTitleWithInfo,
-    ToastVariantType,
-    ToastManager,
     InfoBlock,
+    Progressing,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
+
+import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg'
 import { HEADER_TEXT, NO_HOST_URL, ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
-import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg'
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service'
+import { HostURLConfigProps, HostURLConfigState } from './hosturl.type'
 import './hosturl.scss'
 
 const renderInfoContent = () => (
@@ -243,7 +245,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                     Auto-detected from your browser:
                                     <button
                                         type="button"
-                                        onClick={(e) => this.handleHostURLLocation(window.location.origin)}
+                                        onClick={() => this.handleHostURLLocation(window.location.origin)}
                                         className="hosturl__url fw-4 cg-5 py-0"
                                         data-testid="clickable-url"
                                     >
@@ -256,7 +258,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     <div className="flex left w-100 dc__border-top-n1 pt-16">
                         <button
                             type="submit"
-                            tabIndex={2}
                             disabled={this.state.saveLoading}
                             className="cta small"
                             data-testid="host-url-update-button"

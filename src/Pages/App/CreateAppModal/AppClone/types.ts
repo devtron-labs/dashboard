@@ -16,9 +16,9 @@
 
 import { BaseAppMetaData, GenericInfoCardListingProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { APP_TYPE } from '@Config/constants'
-
 import { SidebarProps } from '../types'
+
+import { APP_TYPE } from '@Config/constants'
 
 export interface AppCloneListProps extends Pick<SidebarProps, 'handleCreationMethodChange'> {
     handleCloneAppClick: ({ appId, appName }: BaseAppMetaData) => void

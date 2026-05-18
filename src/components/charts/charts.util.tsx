@@ -15,11 +15,13 @@
  */
 
 import type { JSX } from 'react'
+
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'
-import { getAvailableCharts } from '@Services/service'
-import { CHART_LIST_SELECT_QUERY } from './constants'
+
 import { ChartDescriptionTypes, ChartGroupEntry } from './charts.types'
-import { CHART_CARD_MAX_LENGTH } from './constants'
+import { CHART_CARD_MAX_LENGTH, CHART_LIST_SELECT_QUERY } from './constants'
+
+import { getAvailableCharts } from '@Services/service'
 
 export const PaginationParams = {
     pageOffset: 0,
@@ -35,7 +37,8 @@ export const renderAdditionalErrorInfo = (
         suggestedName && (
             <>
                 . Suggested Name:
-                <span className="anchor pointer" onClick={(e) => handleNameChange(index, suggestedName)}>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
+                <span className="anchor pointer" onClick={(_e) => handleNameChange(index, suggestedName)}>
                     {suggestedName}
                 </span>
             </>

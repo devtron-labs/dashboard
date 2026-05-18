@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { cloneElement, type JSX } from 'react'
 import { components } from 'react-select'
+
 import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { getOptionBGClass } from './AppGroup.utils'
+
+import CheckIcon from '../../assets/icons/ic-check.svg?react'
+import Trash from '../../assets/icons/ic-delete-interactive.svg?react'
+import Clear from '../../assets/icons/ic-error.svg?react'
 import ShowIconFilter from '../../assets/icons/ic-group-filter.svg?react'
 import ShowIconFilterApplied from '../../assets/icons/ic-group-filter-applied.svg?react'
-import Search from '../../assets/icons/ic-search.svg?react'
-import Clear from '../../assets/icons/ic-error.svg?react'
 import InfoIcon from '../../assets/icons/ic-info-outlined.svg?react'
 import Edit from '../../assets/icons/ic-pencil.svg?react'
-import Trash from '../../assets/icons/ic-delete-interactive.svg?react'
-import CheckIcon from '../../assets/icons/ic-check.svg?react'
+import Search from '../../assets/icons/ic-search.svg?react'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
+import { getOptionBGClass } from './AppGroup.utils'
+import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { AppFilterTabs } from './Constants'
-import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
+
 import { setAppGroupFilterInLocalStorage } from '@Components/common'
+import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
 
 export const ValueContainer = (props): JSX.Element => {
     const {
@@ -41,7 +44,7 @@ export const ValueContainer = (props): JSX.Element => {
         selectedGroupFilter,
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
-    let selectorText
+    let selectorText: string
     const selectedAppsLength = props.getValue().length
     if (selectedFilterTab === AppFilterTabs.GROUP_FILTER && selectedGroupFilter[0]) {
         selectorText = selectedGroupFilter[0]?.label
@@ -53,28 +56,24 @@ export const ValueContainer = (props): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
             {!props.selectProps.inputValue ? (
-                <>
-                    {!props.selectProps.menuIsOpen ? (
-                        <div className="flexbox dc__gap-4 dc__align-items-center">
-                            {selectedAppsLength > 0 ? (
-                                <ShowIconFilterApplied className="icon-dim-16 mw-18 dc__no-shrink" />
-                            ) : (
-                                <ShowIconFilter className="icon-dim-16 mw-18 dc__no-shrink" />
-                            )}
-                            <span data-testid="app-group-selector-text" className="cn-9 ml-2">
-                                {selectorText}
-                            </span>
-                            <ShortcutKeyBadge shortcutKey="F" rootClassName="dc__position-rel-imp" />
-                        </div>
-                    ) : (
-                        <>
-                            <Search className="icon-dim-16 mr-4 mw-18" />
-                            <span className="dc__position-abs dc__left-35 cn-5 ml-2">
-                                {props.selectProps.placeholder}
-                            </span>
-                        </>
-                    )}
-                </>
+                !props.selectProps.menuIsOpen ? (
+                    <div className="flexbox dc__gap-4 dc__align-items-center">
+                        {selectedAppsLength > 0 ? (
+                            <ShowIconFilterApplied className="icon-dim-16 mw-18 dc__no-shrink" />
+                        ) : (
+                            <ShowIconFilter className="icon-dim-16 mw-18 dc__no-shrink" />
+                        )}
+                        <span data-testid="app-group-selector-text" className="cn-9 ml-2">
+                            {selectorText}
+                        </span>
+                        <ShortcutKeyBadge shortcutKey="F" rootClassName="dc__position-rel-imp" />
+                    </div>
+                ) : (
+                    <>
+                        <Search className="icon-dim-16 mr-4 mw-18" />
+                        <span className="dc__position-abs dc__left-35 cn-5 ml-2">{props.selectProps.placeholder}</span>
+                    </>
+                )
             ) : (
                 <Search className="icon-dim-16 mr-4 mw-18" />
             )}
@@ -249,6 +248,7 @@ export const MenuList = (props: any): JSX.Element => {
                         className="dc__react-select__bottom dc__no-top-radius dc__align-right bg__primary fw-6 fs-13 cb-5 pt-8 pr-12 pb-8 pl-12 cursor"
                         style={{ boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)' }}
                     >
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <span onClick={openCreateGroup}>Save selection as filter</span>
                     </div>
                 )}

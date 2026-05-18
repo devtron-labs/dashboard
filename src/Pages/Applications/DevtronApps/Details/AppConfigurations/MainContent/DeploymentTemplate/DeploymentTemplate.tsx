@@ -20,9 +20,9 @@ import { useParams } from 'react-router-dom'
 import YAML from 'yaml'
 
 import {
-    abortPreviousRequests,
     API_STATUS_CODES,
     AppConfigProps,
+    abortPreviousRequests,
     BASE_CONFIGURATION_ENV_ID,
     BaseURLParams,
     Button,
@@ -41,8 +41,8 @@ import {
     DryRunEditorMode,
     ErrorScreenManager,
     FloatingVariablesSuggestions,
-    GenericEmptyState,
     GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
+    GenericEmptyState,
     getIsRequestAborted,
     getResolvedDeploymentTemplate,
     logExceptionToSentry,
@@ -67,12 +67,7 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICClose from '@Icons/ic-close.svg?react'
-import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
-import { importComponentFromFELibrary } from '@Components/common'
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP } from '@Pages/Shared/ConfigMapSecret/constants'
 
 import BaseConfigurationNavigation from '../BaseConfigurationNavigation'
@@ -134,6 +129,12 @@ import {
     handleInitializeDraftData,
     parseDeploymentTemplateParams,
 } from './utils'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
+import ICClose from '@Icons/ic-close.svg?react'
+import ICInfoOutlineGrey from '@Icons/ic-info-outline-grey.svg?react'
 
 import './DeploymentTemplate.scss'
 
@@ -1152,9 +1153,10 @@ const DeploymentTemplate = ({
      *
      * @param skipReadmeAndSchema - true only while doing handleSave
      */
-    const prepareDataToSave = ({ skipReadmeAndSchema = false, fromDeleteOverride = false } = {}):
-        | UpdateBaseDTPayloadType
-        | UpdateEnvironmentDTPayloadType => {
+    const prepareDataToSave = ({
+        skipReadmeAndSchema = false,
+        fromDeleteOverride = false,
+    } = {}): UpdateBaseDTPayloadType | UpdateEnvironmentDTPayloadType => {
         if (!envId) {
             return getUpdateBaseDeploymentTemplatePayload({
                 state,

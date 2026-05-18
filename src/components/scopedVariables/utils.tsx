@@ -15,24 +15,26 @@
  */
 
 import yaml from 'yaml'
+
 import {
-    YAMLStringify,
-    ScopedVariablesFileViewType,
-    InteractiveCellText,
     Icon,
+    InteractiveCellText,
+    ScopedVariablesFileViewType,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ScopedVariablesDataType } from './types'
+
+import { FILE_EXTENSION, MIME_TYPE } from '../common/helpers/types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
-import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
-    PARSE_ERROR_STATUS,
-    JSON_PARSE_ERROR_STATUS,
-    YAML_PARSE_ERROR_STATUS,
-    SENSITIVE_VARIABLE_DESCRIPTION,
     IN_SENSITIVE_VARIABLE_DESCRIPTION,
+    JSON_PARSE_ERROR_STATUS,
+    PARSE_ERROR_STATUS,
+    SENSITIVE_VARIABLE_DESCRIPTION,
+    YAML_PARSE_ERROR_STATUS,
 } from './constants'
+import { ScopedVariablesDataType } from './types'
 
 export const getFileMimeType = (fileDataName: string): MIME_TYPE => {
     const fileType = fileDataName.split('.').pop()
@@ -65,7 +67,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                     }
                 }
                 return PARSE_ERROR_STATUS
-            } catch (e) {
+            } catch {
                 return JSON_PARSE_ERROR_STATUS
             }
         case MIME_TYPE.APPLICATION_X_YAML:
@@ -79,13 +81,13 @@ export const validator: ValidatorType = ({ data, type }) => {
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: YAMLStringify(parsedData, { simpleKeys: true }),
+                            data,
                             description: 'File uploaded successfully',
                         },
                     }
                 }
                 return PARSE_ERROR_STATUS
-            } catch (e) {
+            } catch {
                 return YAML_PARSE_ERROR_STATUS
             }
         default:

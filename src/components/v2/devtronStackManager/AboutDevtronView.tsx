@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, type JSX } from 'react'
+import React, { type JSX, useEffect } from 'react'
+
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
 import { InstallationWrapper } from './DevtronStackManager.component'
 import { AboutDevtronViewType } from './DevtronStackManager.type'
 import './AboutDevtronView.scss'
+
 import { InstallationType, MarkDown, ROUTER_URLS, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 
 const AboutDevtronView = ({
@@ -88,7 +90,13 @@ const AboutDevtronView = ({
                 <div className="about-devtron__view-releases">
                     {releaseNotes.map((releaseNote, idx) => {
                         return (
-                            <div key={`release-notes-${idx}`} className="about-devtron__release-notes-wrapper cn-9">
+                            <div
+                                key={`release-notes-${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    idx
+                                }`}
+                                className="about-devtron__release-notes-wrapper cn-9"
+                            >
                                 <h2 className="about-devtron__release-name fs-16 fw-6">
                                     Release {releaseNote.releaseName}
                                 </h2>

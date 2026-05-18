@@ -6,9 +6,6 @@ import {
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '@Config/constants'
-import { RelativeTimeWindow } from '@PagesDevtron2.0/Shared/types'
-
 import { SECURITY_AT_A_GLANCE_CARDS_CONFIG, SECURITY_OVERVIEW_QUERY_KEYS } from './constants'
 import {
     BlockedDeploymentTrend,
@@ -29,6 +26,9 @@ import {
     parseSeverityDistribution,
     parseSeverityDistributionDatasets,
 } from './utils'
+
+import { Routes } from '@Config/constants'
+import { RelativeTimeWindow } from '@PagesDevtron2.0/Shared/types'
 
 export const useGetSecurityGlanceMetrics = () =>
     useQuery<SecurityGlanceMetricsDTO, MetricsInfoCardProps[]>({

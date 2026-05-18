@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { ClusterNamespacesDTO, GetClusterEnvironmentUpdatePayloadType } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const getCategoryPayload = importComponentFromFELibrary('getCategoryPayload', null, 'function')
 

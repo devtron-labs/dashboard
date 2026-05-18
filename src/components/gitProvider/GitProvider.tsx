@@ -14,62 +14,67 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import Tippy from '@tippyjs/react'
+import { useEffect, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    ErrorScreenNotAuthorized,
-    VisibleModal,
-    useEffectAfterMount,
-    useAsync,
-    CustomInput,
-    DEFAULT_SECRET_PLACEHOLDER,
-    FeatureTitleWithInfo,
-    ToastVariantType,
-    ToastManager,
-    SelectPicker,
-    ComponentSizeType,
-    ERROR_STATUS_CODE,
+    AuthenticationType,
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
+    CustomInput,
+    DEFAULT_SECRET_PLACEHOLDER,
     DeleteConfirmationModal,
-    Textarea,
-    PasswordField,
+    DTSwitch,
+    DTSwitchProps,
+    ERROR_STATUS_CODE,
+    ErrorScreenManager,
+    ErrorScreenNotAuthorized,
+    FeatureTitleWithInfo,
+    GitProviderIcon,
     Icon,
     InfoBlock,
-    DTSwitchProps,
-    DTSwitch,
-    AuthenticationType,
-    GitProviderIcon,
+    PasswordField,
+    Progressing,
+    SelectPicker,
+    showError,
+    Textarea,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
+    useEffectAfterMount,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
+import { HEADER_TEXT } from '../../config'
+import { getGitHostList, getGitProviderList } from '../../services/service'
+import { List } from '../globalConfigurations/GlobalConfiguration'
+import { deleteGitProvider, saveGitHost, saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service'
+
 import {
     getCertificateAndKeyDependencyError,
     getIsTLSDataPresent,
     getTLSConnectionPayloadValues,
-    TLSConnectionDTO,
-    TLSConnectionFormActionType,
-    TLSConnectionFormProps,
-    useForm,
     handleOnBlur,
     handleOnFocus,
     parsePassword,
+    TLSConnectionDTO,
     TLSConnectionForm,
+    TLSConnectionFormActionType,
+    TLSConnectionFormProps,
+    useForm,
 } from '@Components/common'
-import { getGitHostList, getGitProviderList } from '../../services/service'
-import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { List } from '../globalConfigurations/GlobalConfiguration'
-import { HEADER_TEXT } from '../../config'
 import './gitProvider.scss'
-import { GitHostConfigModal } from './AddGitHostConfigModal'
-import Add from '@Icons/ic-add.svg?react'
-import Warn from '@Icons/ic-info-warn.svg?react'
-import Trash from '@Icons/ic-delete-interactive.svg?react'
+
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { safeTrim } from '../../util/Util'
+import { GitHostConfigModal } from './AddGitHostConfigModal'
 import { TLSInputType } from './types'
+
+import Add from '@Icons/ic-add.svg?react'
+import Trash from '@Icons/ic-delete-interactive.svg?react'
+import Warn from '@Icons/ic-info-warn.svg?react'
 
 export default function GitProvider({ ...props }) {
     const [, , error] = useAsync(getGitProviderList, [], props.isSuperAdmin)
@@ -250,7 +255,7 @@ const CollapsedList = ({
     isCADataPresent,
     isTLSCertDataPresent,
     isTLSKeyDataPresent,
-    ...props
+    ..._props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
     const [enabled, setEnabled] = useState<boolean>(active)
@@ -324,9 +329,7 @@ const CollapsedList = ({
                 className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
             >
                 <List.Logo>
-                    {id && (
-                        <GitProviderIcon gitRepoUrl={url} />
-                    )}
+                    {id && <GitProviderIcon gitRepoUrl={url} />}
                     {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}
                 </List.Logo>
                 <div className="flexbox dc__align-items-center dc__content-space">
@@ -417,7 +420,7 @@ const GitForm = ({
     isCADataPresent,
     isTLSCertDataPresent,
     isTLSKeyDataPresent,
-    ...props
+    ..._props
 }) => {
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -602,12 +605,13 @@ const GitForm = ({
             return
         }
 
-        if (gitHost.value && gitHost.value.__isNew__) {
+        if (gitHost.value?.__isNew__) {
             const gitHostPayload = {
                 name: gitHost.value.value,
                 active: true,
             }
             try {
+                // biome-ignore lint/correctness/noUnusedVariables: Legacy, If remove this then result from saveGitHost would be unused I don't know why its being used so leaving as if for now
                 let gitHostId = gitHost.value.value
                 const { result } = await saveGitHost(gitHostPayload)
                 await getHostList()
@@ -641,6 +645,7 @@ const GitForm = ({
         }
 
         const savedAuth = state.auth.value
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if ((savedAuth == 'SSH' && selectedAuth != 'SSH') || (savedAuth != 'SSH' && selectedAuth == 'SSH')) {
             return false
         }
@@ -847,6 +852,7 @@ const GitForm = ({
             <div className="form__label dc__required-field">Authentication type</div>
             <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
                 {AuthType.map(({ label: Lable, value }, index) => (
+                    // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                     <div
                         data-testid={`git-account-auth-type-${index}`}
                         className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}

@@ -14,43 +14,58 @@
  * limitations under the License.
  */
 
-import { type JSX, Fragment, MouseEvent, useEffect, useRef, useState } from 'react'
+import Tippy from '@tippyjs/react'
+import { Fragment, type JSX, MouseEvent, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    Drawer,
-    Reload,
-    copyToClipboard,
-    CustomInput,
+    ACCESS_TYPE_MAP,
+    ActionTypes,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     ClipboardButton,
     CodeEditor,
-    TabGroup,
     ComponentSizeType,
-    ToastVariantType,
-    ToastManager,
-    ACCESS_TYPE_MAP,
-    EntityTypes,
-    Button,
-    ButtonVariantType,
-    ActionTypes,
-    InfoBlock,
+    CustomInput,
+    copyToClipboard,
     DocLink,
-    stopPropagation,
-    ButtonStyleType,
+    Drawer,
+    EntityTypes,
     Icon,
+    InfoBlock,
+    Progressing,
+    Reload,
     SelectPicker,
+    showError,
+    stopPropagation,
+    TabGroup,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+
+import Add from '../../../assets/icons/ic-add.svg?react'
 import Close from '../../../assets/icons/ic-close.svg?react'
 import Help from '../../../assets/icons/ic-help.svg?react'
 import ICHelpOutline from '../../../assets/icons/ic-help-outline.svg?react'
-import Add from '../../../assets/icons/ic-add.svg?react'
 import Tag from '../../../assets/icons/ic-tag.svg?react'
 import './webhookDetails.scss'
-import { getUserRole, createOrUpdateUser } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
-import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+
+import { getApiTokenHeader } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorization/APITokens/service'
+import { createOrUpdateUser, getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+import { PermissionType } from '@Pages/GlobalConfigurations/Authorization/constants'
+import {
+    getDefaultStatusAndTimeout,
+    getDefaultUserStatusAndTimeout,
+} from '@Pages/GlobalConfigurations/Authorization/libUtils'
+import { ChartGroupPermissionsFilter } from '@Pages/GlobalConfigurations/Authorization/types'
+import { createUserPermissionPayload } from '@Pages/GlobalConfigurations/Authorization/utils'
+
+import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
+import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
+import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import {
     CURL_PREFIX,
     GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
@@ -60,17 +75,6 @@ import {
     SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
-import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
-import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
-import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
-import { createUserPermissionPayload } from '@Pages/GlobalConfigurations/Authorization/utils'
-import { ChartGroupPermissionsFilter } from '@Pages/GlobalConfigurations/Authorization/types'
-import { PermissionType } from '@Pages/GlobalConfigurations/Authorization/constants'
-import {
-    getDefaultStatusAndTimeout,
-    getDefaultUserStatusAndTimeout,
-} from '@Pages/GlobalConfigurations/Authorization/libUtils'
-import { getApiTokenHeader } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 
 export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -86,6 +90,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const [showTokenNameError, setTokenNameError] = useState(false)
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     const [webhookResponse, setWebhookResponse] = useState<Object>(null)
     const [generatedAPIToken, setGeneratedAPIToken] = useState<string>(null)
     const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
@@ -108,7 +113,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
 
     const clipboardContent = window.location.href
 
-    const handleCopyButtonClick = async () => {
+    const handleCopyButtonClick = () => {
         setCopyToClipboardPromise(copyToClipboard(clipboardContent))
     }
 
@@ -131,7 +136,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         const toReturn = {}
         toReturn[tableName] = {}
         for (const key in ob) {
-            if (!ob.hasOwnProperty(key)) {
+            if (!Object.hasOwn(ob, key)) {
                 continue
             }
             const currentElement = ob[key]
@@ -144,7 +149,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 currentElement.dataType = key
                 delete currentElement.child
                 for (const x in flatObject) {
-                    if (!flatObject.hasOwnProperty(x)) {
+                    if (!Object.hasOwn(flatObject, x)) {
                         continue
                     }
                     toReturn[key] = flatObject[x]
@@ -209,7 +214,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 setTokenList(sortedResult)
             }
             setLoader(false)
-        } catch (error) {
+        } catch {
             setIsSuperAdmin(false)
             setLoader(false)
             setErrorInGetData(true)
@@ -285,6 +290,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const generateTabHeader = (
         tabList: TabDetailsType[],
         selectedTab: string,
+        // biome-ignore lint/suspicious/noConfusingVoidType: Legacy
         setSelectedTab: (selectedTab: string, index: number) => void | React.Dispatch<React.SetStateAction<string>>,
         isChildTab?: boolean,
         index?: number,
@@ -386,7 +392,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         )
     }
 
-    const handleCopyToClipboard = async ({ e, token }: { e: MouseEvent; token: string }) => {
+    const handleCopyToClipboard = ({ e, token }: { e: MouseEvent; token: string }) => {
         stopPropagation(e)
         setCopyToClipboardPromise(copyToClipboard(token))
     }
@@ -543,7 +549,9 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
         return (
             <div
-                ref={(el) => { schemaRef.current[schemaName] = el }}
+                ref={(el) => {
+                    schemaRef.current[schemaName] = el
+                }}
                 className={`dc__border-top ${selectedSchema === schemaName ? 'bcy-1' : ''}`}
             >
                 <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">
@@ -559,6 +567,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                             <span className="dc__ellipsis-right">{key}</span>
                             <span className="dc__ellipsis-right">
                                 {data.createLink ? (
+                                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                     <span
                                         className="cb-5 cursor"
                                         onClick={() => handleSchemaClick(`${schemaName}-${key}`)}
@@ -583,7 +592,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             <div>
                 {renderSchema(schema['root'], `${schemaName}-root`)}
                 {Object.keys(schema).map((key) => {
-                    const data = schema[key]
                     if (key === 'root') {
                         return null
                     }
@@ -673,8 +681,12 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 </div>
                 <div className="">
                     {webhookDetails?.payloadOption.map((option, index) => (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
-                            key={`md-${index}`}
+                            key={`md-${
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                index
+                            }`}
                             className={`dc__inline-block bw-1 br-4 mr-8 mb-8 pt-2 pr-8 pb-2 pl-8 ${
                                 option.isSelected ? 'bcb-1 eb-2' : 'en-2'
                             } ${option.mandatory ? '' : 'pointer'}`}
@@ -710,7 +722,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const changePayload = (codeEditorData: string): void => {
         try {
             setModifiedSampleString(codeEditorData)
-        } catch (error) {}
+        } catch {}
     }
 
     const renderCodeEditor = (): JSX.Element => {
@@ -797,6 +809,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         <div>Description</div>
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                         <div className="response-row pt-8 pb-8">
                             <div className="fs-13 fw-4 cn-9" data-testid="response-code">
                                 {response.code}
@@ -827,10 +840,11 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             setTryoutAPITokenError(true)
             return
         }
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let _modifiedPayload
         try {
             _modifiedPayload = JSON.parse(modifiedSampleString)
-        } catch (error) {
+        } catch {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Invalid JSON',

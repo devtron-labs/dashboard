@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
 
 import {
     AppThemeType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     CodeEditor,
     CodeEditorProps,
     ConditionalWrap,
@@ -44,8 +44,6 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICClose from '@Icons/ic-close.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
 import { MODES } from '../../../../../../config'
@@ -77,6 +75,9 @@ import {
 } from '../nodeDetail.api'
 import { NodeDetailTab } from '../nodeDetail.type'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData, manifestBorderConfig } from '../nodeDetail.util'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICClose from '@Icons/ic-close.svg?react'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -464,8 +465,8 @@ const ManifestComponent = ({
                             description: (err as ServerErrors).errors?.[0]?.userMessage || TOAST_ACCESS_DENIED.SUBTITLE,
                         })
                     } else if (err.code === 400 || err.code === 409 || err.code === 422) {
-                        const er = err.errors && err.errors[0]
-                        if (er && er.code && er.userMessage) {
+                        const er = err.errors?.[0]
+                        if (er?.code && er.userMessage) {
                             setErrorText(`ERROR ${err.code} > Message: “${er.userMessage}”`)
                         } else {
                             showError(err)
@@ -606,6 +607,7 @@ const ManifestComponent = ({
     )
 
     const renderShowDecodedValueCheckbox = () => {
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let jsonManifestData
 
         try {
@@ -764,8 +766,7 @@ const ManifestComponent = ({
                         'hasDrift' in _selectedResource &&
                         _selectedResource.hasDrift &&
                         !showManifestCompareView &&
-                        renderOutOfSyncWarning &&
-                        renderOutOfSyncWarning(handleDesiredManifestOpen)}
+                        renderOutOfSyncWarning?.(handleDesiredManifestOpen)}
                     {showManifestCompareView && (
                         <CodeEditor.Header hideDefaultSplitHeader>
                             <div className="flex dc__content-space dc__gap-8 pr-16">

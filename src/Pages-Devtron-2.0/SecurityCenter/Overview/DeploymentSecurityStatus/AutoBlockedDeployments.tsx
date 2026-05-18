@@ -9,10 +9,10 @@ import {
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { RELATIVE_TIME_WINDOW_SELECT_OPTIONS, RelativeTimeWindow } from '@PagesDevtron2.0/Shared'
-
 import { useGetAutoBlockedDeploymentTrend } from '../services'
 import { getBlockedDeploymentChartTooltip } from './utils'
+
+import { RELATIVE_TIME_WINDOW_SELECT_OPTIONS, RelativeTimeWindow } from '@PagesDevtron2.0/Shared'
 
 const AutoBlockedDeployments = () => {
     const [timeRange, setTimeRange] = useState<RelativeTimeWindow>(RelativeTimeWindow.LAST_30_DAYS)

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
-
 export function getVersionArr(version: string): number[] {
     if (!version) {
         return [0, 0, 0]
@@ -37,7 +35,6 @@ export function isVersionLessThanOrEqualToTarget(version: string, target: number
             if (i === target.length - 1) {
                 return true
             }
-            continue
         } else if (versionNum[i] < target[i]) {
             return true
         }

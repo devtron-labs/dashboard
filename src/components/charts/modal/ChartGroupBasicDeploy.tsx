@@ -15,12 +15,22 @@
  */
 
 import { Component } from 'react'
-import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError, DEFAULT_ROUTE_PROMPT_MESSAGE, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
-import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
+
+import {
+    ComponentSizeType,
+    CustomInput,
+    DialogForm,
+    DialogFormSubmit,
+    handleAnalyticsEvent,
+    SelectPicker,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import Edit from '../../../assets/icons/ic-edit.svg?react'
-import Error from '../../../assets/icons/ic-warning.svg?react'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
+import ErrorIcon from '../../../assets/icons/ic-warning.svg?react'
 import { getEnvironmentListMin } from '../../../services/service'
+import { ChartGroupEntry, EnvironmentType, ProjectType } from '../charts.types'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
@@ -68,9 +78,9 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
         }
     }
 
-    toggleShowAppName(event): void {
+    toggleShowAppName(): void {
         this.setState({ showAppNames: !this.state.showAppNames })
-        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_EDIT_APP_NAME'})
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_EDIT_APP_NAME' })
     }
 
     handleEnvironmentChange(envId: number) {
@@ -80,7 +90,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
 
     async deployChartGroup() {
         const validated = await this.props.validateData()
-        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_DEPLOY'})
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_DEPLOY' })
         if (validated) {
             await this.props.deployChartGroup()
         } else {
@@ -96,7 +106,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             })
             .join(', ')
         return (
-            <div className="deploy-selected-charts__applications dc__border-top-n1 pt-16" tabIndex={0}>
+            <div className="deploy-selected-charts__applications dc__border-top-n1 pt-16">
                 <div className="flex-1">
                     <h3 className="deploy-selected-charts__applications-title">Application Names</h3>
                     {this.state.showAppNames ? null : (
@@ -116,7 +126,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
     }
 
     handleAdvancedOptions = () => {
-        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_ADV_OPTIONS'})
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_ADV_OPTIONS' })
         this.props.redirectToAdvancedOptions()
     }
 
@@ -162,14 +172,16 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                 onSave={this.deployChartGroup}
             >
                 <div className="deploy-selected-charts__body">
+                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                     <label className="form__row">
                         <SelectPicker
                             autoFocus
                             classNamePrefix="group-deployment-project"
-                            inputId='chart-group-deployment-project'
+                            inputId="chart-group-deployment-project"
                             value={selectedProject}
                             placeholder="Select Project"
                             onChange={(selected) => {
+                                // biome-ignore lint/correctness/useParseIntRadix: Legacy
                                 this.props.handleProjectChange(parseInt((selected as any).value))
                             }}
                             options={projects}
@@ -180,7 +192,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         <span className="form__error">
                             {!this.props.selectedProjectId && this.state.showError ? (
                                 <>
-                                    <Error className="form__icon form__icon--error" />
+                                    <ErrorIcon className="form__icon form__icon--error" />
                                     This is a required Field
                                 </>
                             ) : null}
@@ -189,11 +201,12 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     <div className="form__row">
                         <SelectPicker
                             name="chart-group-deployment-env"
-                            inputId='chart-group-deployment-env'
+                            inputId="chart-group-deployment-env"
                             value={selectedEnvironment}
                             classNamePrefix="group-deployment-env"
                             placeholder="Select Environment"
                             onChange={(selected) => {
+                                // biome-ignore lint/correctness/useParseIntRadix: Legacy
                                 this.handleEnvironmentChange(parseInt((selected as any).value))
                             }}
                             options={environments?.filter((item) => !item.isVirtualEnvironment)}
@@ -204,7 +217,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         <span className="form__error">
                             {!this.state.selectedEnvironmentId && this.state.showError ? (
                                 <>
-                                    <Error className="form__icon form__icon--error" />
+                                    <ErrorIcon className="form__icon form__icon--error" />
                                     This is a required Field
                                 </>
                             ) : null}
@@ -226,7 +239,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     >
                         Advanced Options
                     </button>
-                    <DialogFormSubmit tabIndex={3}>Deploy Chart</DialogFormSubmit>
+                    <DialogFormSubmit tabIndex={0}>Deploy Chart</DialogFormSubmit>
                 </div>
             </DialogForm>
         )
@@ -250,7 +263,9 @@ const ApplicationNameList = ({ charts, handleNameChange, showAppNames }) => {
             {charts.map((chart, index) => {
                 if (chart.isEnabled) {
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                         <div key={index} className="form__row deploy-selected-chart__list-item">
+                            {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions: onError is fine */}
                             <img
                                 onError={handleImageError}
                                 src={chart.chartMetaData.icon || ''}
@@ -272,9 +287,10 @@ const ApplicationNameList = ({ charts, handleNameChange, showAppNames }) => {
                                         chart.name.suggestedName ? (
                                             <>
                                                 Suggested Name:
+                                                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                                 <span
                                                     className="anchor pointer"
-                                                    onClick={(e) => handleNameChange(index, chart.name.suggestedName)}
+                                                    onClick={() => handleNameChange(index, chart.name.suggestedName)}
                                                 >
                                                     {chart.name.suggestedName}
                                                 </span>

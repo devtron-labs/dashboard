@@ -8,11 +8,11 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
 import { getNotificationEvents } from './notifications.util'
 import { ModifyRecipientPopUpType, NotificationPipelineType } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
@@ -48,13 +48,13 @@ export const ModifyRecipientPopUp = ({
             <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
                 {options.map((option) => (
                     <Tooltip
+                        key={option.value}
                         content={option.isDisabled ? 'Cannot edit for the selected resource types.' : ''}
                         placement="top"
                         className="mxh-210 dc__overflow-auto dc__word-break"
                         alwaysShowTippyOnHover={option.isDisabled}
                     >
                         <li
-                            key={option.value}
                             className={`dc__kebab-menu__list-item flex-justify flex ${option.isDisabled ? 'dc__disabled' : ''}`}
                         >
                             <div className="flex left dc__gap-8">

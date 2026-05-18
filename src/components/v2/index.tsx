@@ -15,12 +15,12 @@
  */
 
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { Route, Routes, useNavigate, useLocation, useParams, Navigate } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
-    abortPreviousRequests,
     AIAgentContextSourceType,
     API_STATUS_CODES,
+    abortPreviousRequests,
     DetailsProgressing,
     ErrorScreenManager,
     GenericEmptyState,
@@ -35,17 +35,18 @@ import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
-import { getInstalledChartDetail, getInstalledChartResourceTree } from './appDetails/appDetails.api'
 import AppDetailsComponent from './appDetails/AppDetails.component'
+import { getInstalledChartDetail, getInstalledChartResourceTree } from './appDetails/appDetails.api'
 import { AppDetails, AppType, EnvType } from './appDetails/appDetails.type'
 import IndexStore from './appDetails/index.store'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component'
-import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
+import ChartHeaderComponent from './headers/ChartHeader.component'
 import ValuesComponent from './values/ChartValues.component'
+
 import { ERROR_EMPTY_SCREEN } from '@Config/constantMessaging'
 
-let initTimer = null
+let initTimer: ReturnType<typeof setTimeout> = null
 
 const RouterComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
@@ -158,8 +159,8 @@ const RouterComponent = () => {
                 clusterId: appDetailsRef.current.clusterId,
                 appName: appDetailsRef.current.appName,
                 envName: appDetailsRef.current.environmentName,
-                appType: 'devtronHelmChart'
-            }
+                appType: 'devtronHelmChart',
+            },
         })
 
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
@@ -218,6 +219,7 @@ const RouterComponent = () => {
         return { isAborted: false }
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
         // Intentionally not setting await since it was not awaited earlier when in thens as well
         Promise.allSettled([handleFetchAppDetails(fetchExternalLinks), handleFetchResourceTree()])
@@ -264,7 +266,7 @@ const RouterComponent = () => {
                             })).sort(sortOptionsByValue) || [],
                     })
                 })
-                .catch((e) => {
+                .catch((_e) => {
                     setExternalLinksAndTools(externalLinksAndTools)
                 })
         }

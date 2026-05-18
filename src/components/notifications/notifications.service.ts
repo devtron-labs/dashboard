@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import { get, post, trash, put, ResponseType, sortCallback, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, get, post, put, ResponseType, sortCallback, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config/constants'
-import { FilterOptions, NotificationConfiguration, NotificationPipelineType, PipelineType, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import {
+    FilterOptions,
+    NotificationConfiguration,
+    NotificationPipelineType,
+    PipelineType,
+    SMTPConfigResponseType,
+    WebhookAttributesResponseType,
+} from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -83,7 +91,7 @@ interface SESConfigResponseType extends ResponseType {
 
 function createSaveNotificationPayload(selectedPipelines, providers): SaveNotificationPayload {
     const allPipelines = selectedPipelines.map((config) => {
-        const eventTypeIds = []
+        const eventTypeIds: SaveNotificationPayload['notificationConfigRequest'][0]['eventTypeIds'] = []
         if (config.trigger) {
             eventTypeIds.push(1)
         }
@@ -100,13 +108,13 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
             eventTypeIds.push(7)
         }
 
-        const teamId = config.appliedFilters
-            .filter((filter) => filter.type === FilterOptions.PROJECT)
-            .map((p) => p.id)
+        const teamId = config.appliedFilters.filter((filter) => filter.type === FilterOptions.PROJECT).map((p) => p.id)
         const appId = config.appliedFilters
             .filter((filter) => filter.type === FilterOptions.APPLICATION)
             .map((app) => app.id)
-        const envId = config.appliedFilters.filter((filter) => filter.type === FilterOptions.ENVIRONMENT).map((e) => e.id)
+        const envId = config.appliedFilters
+            .filter((filter) => filter.type === FilterOptions.ENVIRONMENT)
+            .map((e) => e.id)
         const clusterId = config.appliedFilters
             .filter((filter) => filter.type === FilterOptions.CLUSTER)
             .map((e) => e.id)
@@ -136,7 +144,10 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
 
 export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
     const payload = createSaveNotificationPayload(selectedPipelines, providers)
-    return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(`${Routes.NOTIFIER}/${Routes.API_VERSION_V2}`, payload)
+    return post<SaveNotificationResponseType['result'], SaveNotificationPayload>(
+        `${Routes.NOTIFIER}/${Routes.API_VERSION_V2}`,
+        payload,
+    )
 }
 
 export function getChannelConfigs(): Promise<ResponseType> {
@@ -285,7 +296,7 @@ export function updateNotificationRecipients(
         savedRecipientSet.add(key)
     }
     const notificationConfigRequest = notificationList.map((config) => {
-        let updatedProviders = []
+        let updatedProviders: Array<{ configId: number; dest: string; recipient: string }> = []
         let emailChannel = selectedEmailAgent?.toLowerCase()
         for (let i = 0; i < config.providers.length; i++) {
             const key = config.providers[i].configId + config.providers[i].name
@@ -326,7 +337,7 @@ export function updateNotificationRecipients(
 
 export function deleteNotifications(requestBody, singleDeletedId): Promise<DeleteNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`
-    let payload
+    let payload: { id: number[] }
     if (singleDeletedId) {
         payload = {
             id: [singleDeletedId],
@@ -410,7 +421,8 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
         teamId: filters.filter((p) => p.type === FilterOptions.PROJECT).map((p) => p.value),
         envId: filters.filter((p) => p.type === FilterOptions.ENVIRONMENT).map((p) => p.value),
         appId: filters.filter((p) => p.type === FilterOptions.APPLICATION).map((p) => p.value),
-        clusterId: filters.filter((p) => p.type === FilterOptions.CLUSTER).map(p => p.value),
+        clusterId: filters.filter((p) => p.type === FilterOptions.CLUSTER).map((p) => p.value),
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         pipelineName: filters.find((p) => p.type == 'pipeline')?.value,
     }
     return post(URL, payload).then((response) => {
@@ -464,6 +476,7 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
                 imageApproval: false,
             }
         })
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const matchingPipelines = parsedResult.filter((r) => r.appliedFilters.length == 0)
         const directPipelines = parsedResult.filter((r) => r.appliedFilters.length > 0)
 

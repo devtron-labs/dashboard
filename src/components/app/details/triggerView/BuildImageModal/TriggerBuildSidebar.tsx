@@ -1,8 +1,8 @@
 import type { JSX } from 'react'
 
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     CIMaterialSidebarType,
     ConsequenceAction,
     Icon,
@@ -10,14 +10,14 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import MaterialSource from '../MaterialSource'
+import { TriggerBuildSidebarProps } from './types'
+import { getCanNodeHaveMaterial } from './utils'
+
 import { BulkCIDetailType } from '@Components/ApplicationGroup/AppGroup.types'
 import { BULK_CI_MESSAGING } from '@Components/ApplicationGroup/Constants'
 import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
 import { BUILD_STATUS } from '@Config/constants'
-
-import MaterialSource from '../MaterialSource'
-import { TriggerBuildSidebarProps } from './types'
-import { getCanNodeHaveMaterial } from './utils'
 
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
@@ -102,6 +102,7 @@ const TriggerBuildSidebar = ({
     }
 
     const renderAppName = (appDetails: (typeof appList)[number]): JSX.Element | null => (
+        // biome-ignore lint/a11y/useKeyWithClickEvents lint/a11y/useSemanticElements: Legacy
         <div
             role="button"
             tabIndex={0}

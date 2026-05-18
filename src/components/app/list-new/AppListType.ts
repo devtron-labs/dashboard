@@ -24,12 +24,12 @@ import {
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCommonAppFilters } from '@Services/service'
-import { Cluster } from '@Services/service.types'
-
 import { DevtronAppListProps } from '../list/types'
 import { APP_LIST_HEADERS } from './Constants'
 import { AppListFilterLabelOperatorType, AppListFilterLabelType } from './types'
+
+import { getCommonAppFilters } from '@Services/service'
+import { Cluster } from '@Services/service.types'
 
 export enum FluxCDTemplateType {
     KUSTOMIZATION = 'Kustomization',

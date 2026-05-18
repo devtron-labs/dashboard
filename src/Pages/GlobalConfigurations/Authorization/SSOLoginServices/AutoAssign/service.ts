@@ -1,8 +1,8 @@
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '@Config/constants'
-
 import { AuthorizationGlobalConfig, AuthorizationGlobalConfigRes } from './types'
+
+import { Routes } from '@Config/constants'
 
 export const getAuthorizationGlobalConfig = async () => {
     try {

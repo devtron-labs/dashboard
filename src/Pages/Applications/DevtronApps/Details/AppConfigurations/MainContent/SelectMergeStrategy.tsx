@@ -27,10 +27,10 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { MERGE_STRATEGY_OPTIONS } from './constants'
 import { SelectMergeStrategyProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const PatchStrategyTooltipInfo = importComponentFromFELibrary('PatchStrategyTooltipInfo', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')

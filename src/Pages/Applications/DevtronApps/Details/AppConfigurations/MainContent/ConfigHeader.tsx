@@ -21,10 +21,10 @@ import {
     InvalidYAMLTippyWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICErrorExclamation from '@Icons/ic-error-exclamation.svg?react'
-
 import { ConfigHeaderProps, ConfigHeaderTabProps } from './types'
 import { getConfigHeaderTabConfig } from './utils'
+
+import ICErrorExclamation from '@Icons/ic-error-exclamation.svg?react'
 
 import './ConfigHeader.scss'
 

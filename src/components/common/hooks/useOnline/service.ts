@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Routes } from '@Config/constants'
-
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 import { CheckConnectivityParamsType, FetchConnectivityParamsType } from './types'
+
+import { Routes } from '@Config/constants'
 
 const fetchWithTimeout = ({ url, options, controller }: FetchConnectivityParamsType): Promise<any> => {
     const timeoutId = setTimeout(() => controller.abort(), INTERNET_CONNECTIVITY_INTERVAL)

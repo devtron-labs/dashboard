@@ -27,10 +27,10 @@ import {
     ServerError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
+
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
 import { HostURLConfig } from '@Services/service.types'
-
-import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
 
 export interface NotifierState {
     code: number
@@ -242,6 +242,7 @@ export interface WebhookFormTypes {
     webhookUrl: string
     isLoading: boolean
     payload: string
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     header: Object
 }
 
@@ -367,6 +368,7 @@ export interface ModifyRecipientsModalState {
     recipientWithoutEmailAgent: boolean
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export interface AddNotificationsProps extends RouterV5Props<{}> {}
 
 export enum FilterOptions {
@@ -449,6 +451,7 @@ export interface ModifyRecipientPopUpType extends Pick<NotificationTabState, 'se
     onChangeCheckboxHandler: (e, value) => () => void
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export interface NotificationsProps extends RouterV5Props<{}> {
     isSuperAdmin: boolean
 }

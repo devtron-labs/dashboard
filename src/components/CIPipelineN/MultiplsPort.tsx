@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
-import { PortMap, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import Close from '../../assets/icons/ic-close.svg?react'
+import { useContext } from 'react'
+
 import Add from '../../assets/icons/ic-add.svg?react'
-import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+import Close from '../../assets/icons/ic-close.svg?react'
+import { PortMap, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 const MultiplePort = () => {
     const { selectedTaskIndex, formData, setFormData, activeStageName } = useContext(pipelineContext)
@@ -57,20 +58,27 @@ const MultiplePort = () => {
                     taskField={TaskFieldLabel.PORTMAPPING}
                     contentDescription={TaskFieldDescription.PORTMAPPING}
                 />
-                <div
+                <button
+                    type="button"
                     data-testid="custom-script-container-image-add-port-button"
-                    className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32"
+                    className="dc__transparent cb-5 fw-6 fs-13 flexbox content-fit lh-32"
                     onClick={addMultiplePort}
                 >
                     <Add className="add-icon mt-6" />
                     Add port
-                </div>
+                </button>
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap?.map((elm, index) => {
                 return (
                     elm[PortMap.PORTONLOCAL] !== 0 &&
                     elm[PortMap.PORTONCONTAINER] !== 0 && (
-                        <div className="custom-input__port-map pl-220 mt-8" key={`multiple-port-${index}`}>
+                        <div
+                            className="custom-input__port-map pl-220 mt-8"
+                            key={`multiple-port-${
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                index
+                            }`}
+                        >
                             <input
                                 data-testid="custom-script-container-image-host-port-textbox"
                                 style={{ width: '80% !important' }}

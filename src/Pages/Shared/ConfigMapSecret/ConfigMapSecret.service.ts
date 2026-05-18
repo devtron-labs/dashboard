@@ -21,13 +21,13 @@ import {
     CMSecretComponentType,
     ConfigResourceType,
     DraftMetadataDTO,
+    GetResolvedDeploymentTemplateProps,
+    GetTemplateAPIRouteType,
     get,
     getAppEnvDeploymentConfig,
     getIsRequestAborted,
     getResolvedDeploymentTemplate,
-    GetResolvedDeploymentTemplateProps,
     getTemplateAPIRoute,
-    GetTemplateAPIRouteType,
     getUrlWithSearchParams,
     JobCMSecretDataDTO,
     post,
@@ -35,9 +35,6 @@ import {
     trash,
     ValuesAndManifestFlagDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { importComponentFromFELibrary } from '@Components/common'
-import { Routes } from '@Config/constants'
 
 import {
     ConfigMapSecretManifestDTO,
@@ -50,6 +47,9 @@ import {
     OverrideConfigMapSecretProps,
     UpdateConfigMapSecretProps,
 } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { Routes } from '@Config/constants'
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 

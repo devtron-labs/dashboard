@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
 import { ReactNode } from 'react'
 import { generatePath, Link, useParams } from 'react-router-dom'
-import moment from 'moment'
 
 import {
     ActionMenu,
@@ -34,15 +34,11 @@ import {
     ImageWithFallback,
     PortalContainer,
     ROUTER_URLS,
-    SearchBar,
     SERVER_MODE,
+    SearchBar,
     stringComparatorBySortOrder,
     UserIdentifier,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { getAppId } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import { Moment12HourFormat } from '@Config/constants'
-import { URLS } from '@Config/routes'
 
 import { CHART_DETAILS_NEW_PRESET_VALUE_ID, CHART_DETAILS_PORTAL_CONTAINER_ID } from './constants'
 import {
@@ -55,6 +51,10 @@ import {
     PresetValuesTableRowActionsOnHoverComponentProps,
     PresetValuesTableViewWrapperProps,
 } from './types'
+
+import { getAppId } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import { Moment12HourFormat } from '@Config/constants'
+import { URLS } from '@Config/routes'
 
 // PRESET VALUES TABLE
 const PresetValuesTableLinkCellComponent = ({ value, row }: PresetValuesTableCellComponentProps) => {

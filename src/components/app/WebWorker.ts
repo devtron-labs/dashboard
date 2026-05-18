@@ -18,6 +18,7 @@ export default class WebWorker {
     constructor(worker) {
         const code = worker.toString()
         const blob = new Blob([`(${code})()`])
+        // biome-ignore lint/correctness/noConstructorReturn: Legacy
         return new Worker(URL.createObjectURL(blob))
     }
 }

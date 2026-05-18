@@ -16,9 +16,9 @@
 
 import { BulkEditVersion, get, post } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { Routes } from '../../config'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const postBulkEditScript = importComponentFromFELibrary('postBulkEditScript', null, 'function')
 const dryRunBulkEditScript = importComponentFromFELibrary('dryRunBulkEditScript', null, 'function')

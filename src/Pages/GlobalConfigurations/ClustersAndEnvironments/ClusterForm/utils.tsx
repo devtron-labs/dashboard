@@ -1,9 +1,9 @@
 import { AuthenticationType, RemoteConnectionType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { SSHAuthenticationType } from '../cluster.type'
 import { ClusterFormKeys, GetClusterFormValidationSchemaProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
 
@@ -109,6 +109,7 @@ export const getClusterFormValidationSchema = ({
             ? {}
             : {
                   required: true,
+                  // biome-ignore lint/correctness/noEmptyCharacterClassInRegex: Legacy
                   validator: { error: 'token is required', regex: /[^]+/ },
               },
     endpoint: {

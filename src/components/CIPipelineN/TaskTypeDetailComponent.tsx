@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-import { useContext, useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
+import { useContext, useEffect, useState } from 'react'
+
 import {
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
+    ClipboardButton,
+    CustomInput,
+    MountPath,
+    OptionType,
     RadioGroup,
     RadioGroupItem,
-    MountPath,
     ScriptType,
-    CustomInput,
-    ClipboardButton,
     SelectPicker,
-    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { components } from 'react-select'
-import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import OutputDirectoryPath from './OutputDirectoryPath'
-import MultiplePort from './MultiplsPort'
-import TaskFieldTippyDescription from './TaskFieldTippyDescription'
-import MountFromHost from './MountFromHost'
-import CustomScript from './CustomScript'
+
 import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { ValidationRules } from '../ciPipeline/validationRules'
 import Info from '../../assets/icons/ic-info-filled.svg?react'
+import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
+import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import CustomScript from './CustomScript'
+import MountFromHost from './MountFromHost'
+import MultiplePort from './MultiplsPort'
+import OutputDirectoryPath from './OutputDirectoryPath'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 export const TaskTypeDetailComponent = () => {
     const {
@@ -85,12 +85,6 @@ export const TaskTypeDetailComponent = () => {
         }
     }, [formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType])
 
-    const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
-        setFormData(_formData)
-    }
-
     const handleCustomChange = (e, key: 'script' | 'storeScriptAt' | 'mountCodeToContainerPath') => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
@@ -98,6 +92,7 @@ export const TaskTypeDetailComponent = () => {
         _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] =
             validationRules.requiredField(e.target.value)
         _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key].isValid =
+            // biome-ignore lint/correctness/noSelfAssign: Legacy, Don't know why this is required.
             _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key].isValid
         setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
@@ -156,25 +151,6 @@ export const TaskTypeDetailComponent = () => {
                 <hr />
                 <OutputDirectoryPath />
             </>
-        )
-    }
-
-    const Option = (_props) => {
-        const { selectProps, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({ padding: '4px 10px' })
-        if (data.description) {
-            return (
-                <Tippy className="variable-description" arrow={false} placement="left" content={data.description}>
-                    <div className="flex left">
-                        <components.Option {..._props}>{_props.children}</components.Option>
-                    </div>
-                </Tippy>
-            )
-        }
-        return (
-            <div className="flex left">
-                <components.Option {..._props}>{_props.children}</components.Option>
-            </div>
         )
     }
 
@@ -271,7 +247,7 @@ export const TaskTypeDetailComponent = () => {
                         }}
                         rootClassName="top"
                         value={CHECKBOX_VALUE.CHECKED}
-                        onChange={(e) => handleCustomScript()}
+                        onChange={() => handleCustomScript()}
                         id="mountCustomScriptCheck"
                     >
                         <Tippy
@@ -430,5 +406,6 @@ export const TaskTypeDetailComponent = () => {
     if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE) {
         return renderContainerScript()
     }
+    // biome-ignore lint/complexity/noUselessFragments: Legacy
     return <></>
 }

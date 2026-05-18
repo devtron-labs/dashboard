@@ -15,41 +15,44 @@
  */
 
 import { useState } from 'react'
+
 import {
-    showError,
-    ServerErrors,
-    DeploymentAppTypes,
-    ToastManager,
-    ToastVariantType,
-    ForceDeleteConfirmationModal,
     ActionMenu,
+    ActionMenuProps,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    DeploymentAppTypes,
+    ForceDeleteConfirmationModal,
     Icon,
-    ActionMenuProps,
     ROUTER_URLS,
+    ServerErrors,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import { useNavigate, useParams } from 'react-router-dom'
-import IndexStore from '../index.store'
+
+import BinWithDots from '../../../../assets/icons/ic-delete-dots.svg?react'
+import LinkIcon from '../../../../assets/icons/ic-link.svg?react'
+import ScaleObjects from '../../../../assets/icons/ic-scale-objects.svg?react'
+import { checkIfDevtronOperatorHelmRelease, DELETE_ACTION } from '../../../../config'
+import { DELETE_DEPLOYMENT_PIPELINE } from '../../../../config/constantMessaging'
+import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
+import { deleteInstalledChart } from '../../../charts/charts.service'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
+import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { useSharedState } from '../../utils/useSharedState'
 import { AppType } from '../appDetails.type'
-import ScaleObjects from '../../../../assets/icons/ic-scale-objects.svg?react'
-import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
-import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
-import LinkIcon from '../../../../assets/icons/ic-link.svg?react'
-import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
-import { deleteInstalledChart } from '../../../charts/charts.service'
-import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
-import BinWithDots from '../../../../assets/icons/ic-delete-dots.svg?react'
-import { DELETE_DEPLOYMENT_PIPELINE } from '../../../../config/constantMessaging'
-import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
-import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
-import { getEnvironmentName } from './utils'
+import IndexStore from '../index.store'
 import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
-import { DeleteChartDialog } from '@Components/v2/values/chartValuesDiff/DeleteChartDialog'
+import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
+import { getEnvironmentName } from './utils'
+
 import { ClusterActionMenuOptionIdEnum } from '@Components/ResourceBrowser/ResourceList/constants'
+import { DeleteChartDialog } from '@Components/v2/values/chartValuesDiff/DeleteChartDialog'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -95,6 +98,7 @@ const EnvironmentSelectorComponent = ({
 
     const setForceDeleteDialogData = (serverError) => {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteDialogTitle(userMessage)
                 setForceDeleteDialogMessage(internalMessage)
@@ -169,7 +173,7 @@ const EnvironmentSelectorComponent = ({
         await deleteResourceAction(DELETE_ACTION.DELETE)
     }
 
-    const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
+    const deployedAppDetail = isExternalApp && params.appId?.split('|')
 
     const handleScaleWorkloads = () => {
         setShowWorkloadsModal(true)
@@ -195,6 +199,7 @@ const EnvironmentSelectorComponent = ({
             <div>
                 <div className="flex left h-32">
                     <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
+                        {/** biome-ignore lint/a11y/noSvgWithoutTitle: No need decorative only */}
                         <svg
                             viewBox="0 0 200 40"
                             preserveAspectRatio="none"
@@ -259,6 +264,7 @@ const EnvironmentSelectorComponent = ({
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
+                            type="button"
                             className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
                             onClick={showInfoUrl}
                             data-testid="url-button-app-details"
@@ -269,6 +275,7 @@ const EnvironmentSelectorComponent = ({
                     )}
                     {!isVirtualEnvironment && (
                         <button
+                            type="button"
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
                             onClick={handleScaleWorkloads}
                             data-testid="scale-workload-button-app-details"

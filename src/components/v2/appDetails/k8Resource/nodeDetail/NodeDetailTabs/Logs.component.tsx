@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
+import commandLineParser from 'command-line-parser'
 import { type JSX, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { useLocation, useParams } from 'react-router-dom'
 import Select from 'react-select'
-import Tippy from '@tippyjs/react'
-import commandLineParser from 'command-line-parser'
 
 import {
     AppThemeType,
-    Checkbox,
     CHECKBOX_VALUE,
+    Checkbox,
     getComponentSpecificThemeClass,
     Host,
     noop,
     Progressing,
     SearchBar,
+    SelectPickerOptionType,
     ToastManager,
     ToastVariantType,
     useDownload,
     useKeyDown,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import Abort from '@Icons/ic-abort.svg?react'
-import Download from '@Icons/ic-arrow-line-down.svg?react'
-import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
-import LinesIcon from '@Icons/ic-lines.svg?react'
-import PlayButton from '@Icons/ic-play-filled.svg?react'
-import StopButton from '@Icons/ic-stop-filled.svg?react'
 
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { Subject } from '../../../../../../util/Subject'
@@ -68,6 +62,13 @@ import {
 import CustomLogsModal from './CustomLogsModal/CustomLogsModal'
 import LogViewerComponent from './LogViewer.component'
 import { SelectedCustomLogFilterType } from './node.type'
+
+import Abort from '@Icons/ic-abort.svg?react'
+import Download from '@Icons/ic-arrow-line-down.svg?react'
+import ICHelpOutline from '@Icons/ic-help-outline.svg?react'
+import LinesIcon from '@Icons/ic-lines.svg?react'
+import PlayButton from '@Icons/ic-play-filled.svg?react'
+import StopButton from '@Icons/ic-stop-filled.svg?react'
 
 import './nodeDetailTab.scss'
 
@@ -237,7 +238,7 @@ const LogsComponent = ({
     }
 
     const handleMessage = (event: any) => {
-        if (!event || !event.data || !event.data.result || logsPausedRef.current) {
+        if (!event?.data?.result || logsPausedRef.current) {
             noop()
         } else if (event.data.result?.length === 1 && event.data.signal === 'CUSTOM_ERR_STREAM') {
             if (!showStreamErrorRef.current) {
@@ -320,8 +321,8 @@ const LogsComponent = ({
         workerRef.current = new WebWorker(sseWorker)
         workerRef.current['addEventListener' as any]('message', handleMessage)
 
-        const pods = []
-        const urls = []
+        const pods: string[] = []
+        const urls: string[] = []
 
         if (isResourceBrowserView) {
             const nodeName = podContainerOptions.podOptions[0].name
@@ -471,8 +472,8 @@ const LogsComponent = ({
     }, [logState, prevContainer, newFilteredLogs])
 
     const getPodGroups = () => {
-        const allGroupPods = []
-        const individualPods = []
+        const allGroupPods: SelectPickerOptionType<string, string>[] = []
+        const individualPods: SelectPickerOptionType<string, string>[] = []
 
         const podCreate = (podGroupName, _pod: Options) => {
             podGroupName.push({
@@ -528,6 +529,7 @@ const LogsComponent = ({
                             placement="bottom"
                             content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
                         >
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <div
                                 className={`mr-8 ${logsPaused ? 'play' : 'stop'} flex`}
                                 onClick={() => handleLogsPause()}
@@ -555,76 +557,74 @@ const LogsComponent = ({
                             <>
                                 <div className="h-16 dc__border-right ml-8 mr-8" />
 
-                                <>
-                                    <div className="cn-6 ml-8 mr-10 ">Pods</div>
-                                    <div className="cn-6 flex left">
-                                        <div style={{ width: '200px' }}>
-                                            <Select
-                                                placeholder="Select Pod"
-                                                options={getPodGroups()}
-                                                defaultValue={getFirstOrNull<{ label: string; value: string }>(
-                                                    podContainerOptions.podOptions.map((_pod) => ({
-                                                        label: _pod.name,
-                                                        value: _pod.name,
-                                                    })),
-                                                )}
-                                                onChange={(selected) => handlePodSelection(selected.value)}
-                                                styles={{
-                                                    ...multiSelectStyles,
-                                                    menu: (base) => ({
-                                                        ...base,
-                                                        zIndex: 9999,
-                                                        backgroundColor: 'var(--bg-menu-primary)',
-                                                        textAlign: 'left',
-                                                    }),
-                                                    control: (base) => ({
-                                                        ...base,
-                                                        borderColor: 'transparent',
-                                                        backgroundColor: 'transparent',
-                                                        minHeight: '24px !important',
-                                                        cursor: 'pointer',
-                                                    }),
-                                                    valueContainer: (base) => ({
-                                                        ...base,
-                                                        padding: '0 8px',
-                                                    }),
-                                                    input: (base) => ({
-                                                        ...base,
-                                                        margin: '0',
-                                                        paddingTop: '0',
-                                                        color: 'var(--N900)',
-                                                    }),
-                                                    groupHeading: (base) => ({
-                                                        ...base,
-                                                        fontWeight: 600,
-                                                        fontSize: '10px',
-                                                        color: 'var(--N700)',
-                                                        marginLeft: 0,
-                                                    }),
-                                                    singleValue: (base) => ({
-                                                        ...base,
-                                                        fontWeight: 600,
-                                                        color: 'var(--N900)',
-                                                        direction: 'rtl',
-                                                        textAlign: 'left',
-                                                        marginLeft: '2px',
-                                                    }),
-                                                    indicatorsContainer: (provided) => ({
-                                                        ...provided,
-                                                    }),
-                                                    dropdownIndicator: (base) => ({
-                                                        ...base,
-                                                        padding: '0',
-                                                    }),
-                                                }}
-                                                components={{
-                                                    IndicatorSeparator: null,
-                                                    Option: renderOption,
-                                                }}
-                                            />
-                                        </div>
+                                <div className="cn-6 ml-8 mr-10 ">Pods</div>
+                                <div className="cn-6 flex left">
+                                    <div style={{ width: '200px' }}>
+                                        <Select
+                                            placeholder="Select Pod"
+                                            options={getPodGroups()}
+                                            defaultValue={getFirstOrNull<{ label: string; value: string }>(
+                                                podContainerOptions.podOptions.map((_pod) => ({
+                                                    label: _pod.name,
+                                                    value: _pod.name,
+                                                })),
+                                            )}
+                                            onChange={(selected) => handlePodSelection(selected.value)}
+                                            styles={{
+                                                ...multiSelectStyles,
+                                                menu: (base) => ({
+                                                    ...base,
+                                                    zIndex: 9999,
+                                                    backgroundColor: 'var(--bg-menu-primary)',
+                                                    textAlign: 'left',
+                                                }),
+                                                control: (base) => ({
+                                                    ...base,
+                                                    borderColor: 'transparent',
+                                                    backgroundColor: 'transparent',
+                                                    minHeight: '24px !important',
+                                                    cursor: 'pointer',
+                                                }),
+                                                valueContainer: (base) => ({
+                                                    ...base,
+                                                    padding: '0 8px',
+                                                }),
+                                                input: (base) => ({
+                                                    ...base,
+                                                    margin: '0',
+                                                    paddingTop: '0',
+                                                    color: 'var(--N900)',
+                                                }),
+                                                groupHeading: (base) => ({
+                                                    ...base,
+                                                    fontWeight: 600,
+                                                    fontSize: '10px',
+                                                    color: 'var(--N700)',
+                                                    marginLeft: 0,
+                                                }),
+                                                singleValue: (base) => ({
+                                                    ...base,
+                                                    fontWeight: 600,
+                                                    color: 'var(--N900)',
+                                                    direction: 'rtl',
+                                                    textAlign: 'left',
+                                                    marginLeft: '2px',
+                                                }),
+                                                indicatorsContainer: (provided) => ({
+                                                    ...provided,
+                                                }),
+                                                dropdownIndicator: (base) => ({
+                                                    ...base,
+                                                    padding: '0',
+                                                }),
+                                            }}
+                                            components={{
+                                                IndicatorSeparator: null,
+                                                Option: renderOption,
+                                            }}
+                                        />
                                     </div>
-                                </>
+                                </div>
                             </>
                         )}
 
@@ -795,6 +795,7 @@ const LogsComponent = ({
                             {logsPaused && (
                                 <div className="w-100 cn-0">
                                     Stopped printing logs.{' '}
+                                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                     <span onClick={() => handleLogsPause()} className="pointer dc__underline">
                                         Resume ( Ctrl+c )
                                     </span>
@@ -803,6 +804,7 @@ const LogsComponent = ({
                             {readyState === 2 && (
                                 <div className="w-100 cn-0">
                                     Disconnected.{' '}
+                                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                     <span onClick={() => fetchLogs()} className="pointer dc__underline">
                                         Reconnect
                                     </span>

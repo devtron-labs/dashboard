@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
+import Tippy from '@tippyjs/react'
 import { Component } from 'react'
 import { Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+
 import {
     CIMaterialType,
     ConsequenceType,
+    getWorkflowNodeStatusTitle,
     Icon,
     RouterV5Props,
-    getWorkflowNodeStatusTitle,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerStatus } from '../../../../config'
-import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
+
 import IcLink from '../../../../../../assets/icons/ic-link.svg?react'
-import { DEFAULT_ENV } from '../../Constants'
+import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { TriggerStatus } from '../../../../config'
+import { DEFAULT_ENV } from '../../Constants'
 import { WorkflowProps } from '../../types'
 
 export interface TriggerCINodeProps
-    extends RouterV5Props<{ appId: string }>, Pick<WorkflowProps, 'openCIMaterialModal'> {
+    extends RouterV5Props<{ appId: string }>,
+        Pick<WorkflowProps, 'openCIMaterialModal'> {
     x: number
     y: number
     height: number
@@ -128,9 +131,11 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
 
     renderCardContent() {
         const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let _selectedEnv
         if (this.props.isJobView) {
             const _selectedPipeline = this.props.filteredCIPipelines?.find(
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 (_ciPipeline) => _ciPipeline?.id == this.props.id,
             )
             let envId = _selectedPipeline?.environmentId
@@ -139,12 +144,14 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             } else if (_selectedPipeline?.lastTriggeredEnvId !== -1) {
                 envId = _selectedPipeline?.lastTriggeredEnvId
             }
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         }
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
-                onClick={(e) => {
+                onClick={() => {
                     if (!hideDetails) {
                         this.redirectToCIDetails()
                     }
@@ -201,6 +208,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 {this.renderStatus()}
                 <div className="workflow-node__btn-grp">
                     <button
+                        type="button"
                         data-testid={`workflow-build-select-material-button-${this.props.index}`}
                         className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
                         onClick={(event) => {

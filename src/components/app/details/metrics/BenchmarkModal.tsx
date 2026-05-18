@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import ReactGA from 'react-ga4'
+
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import Close from '../../../../assets/icons/ic-close.svg?react'
+
 import Tip from '../../../../assets/icons/ic-bulb.svg?react'
-import { renderCategoryTag, getTimeperiod } from './deploymentMetrics.util'
+import Close from '../../../../assets/icons/ic-close.svg?react'
+import { getTimeperiod, renderCategoryTag } from './deploymentMetrics.util'
 
 export interface BenchmarkModalProps {
     valueLabel: string
@@ -29,6 +31,7 @@ export interface BenchmarkModalProps {
     close: (event) => void
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export class BenchmarkModal extends Component<BenchmarkModalProps, {}> {
     constructor(props) {
         super(props)
@@ -180,7 +183,7 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}> {
                         </p>
                         <p className="pro-tip__subtitle m-0"> {benchmark.tip}</p>
                     </div>
-                    <button className="cta cancel dc__align-right" onClick={this.props.close}>
+                    <button type="button" className="cta cancel dc__align-right" onClick={this.props.close}>
                         Close
                     </button>
                 </div>

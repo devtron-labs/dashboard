@@ -24,21 +24,14 @@ import {
     DeploymentAppTypes,
     GenericModal,
     Icon,
-    saveCDPipeline,
     ServerErrors,
+    saveCDPipeline,
     showError,
     ToastManager,
     ToastVariantType,
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { saveCIPipeline } from '@Components/ciPipeline/ciPipeline.service'
-import { CIPipelineBuildType } from '@Components/ciPipeline/types'
-import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
-import NoGitOpsRepoConfiguredWarning, {
-    ReloadNoGitOpsRepoConfiguredModal,
-} from '@Components/workflowEditor/NoGitOpsRepoConfiguredWarning'
 
 import { checkForGitOpsRepoNotConfigured } from '../utils'
 import { CDStepperContent } from './CDStepperContent'
@@ -54,6 +47,13 @@ import {
     getSaveCIPipelineMaterialsPayload,
     validateCreateCICDPipelineData,
 } from './utils'
+
+import { saveCIPipeline } from '@Components/ciPipeline/ciPipeline.service'
+import { CIPipelineBuildType } from '@Components/ciPipeline/types'
+import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
+import NoGitOpsRepoConfiguredWarning, {
+    ReloadNoGitOpsRepoConfiguredModal,
+} from '@Components/workflowEditor/NoGitOpsRepoConfiguredWarning'
 
 import './createCICDPipeline.scss'
 

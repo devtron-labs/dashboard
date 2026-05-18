@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-import { type JSX, Fragment, useEffect, useState } from 'react'
+import { Fragment, type JSX, useEffect, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    Drawer,
-    ToastVariantType,
-    ToastManager,
-    ClipboardButton,
     Button,
-    ButtonVariantType,
+    ButtonComponentType,
     ButtonStyleType,
+    ButtonVariantType,
+    ClipboardButton,
     ComponentSizeType,
-    OptionType,
+    Drawer,
     getDocumentationUrl,
-    ButtonComponentType
+    OptionType,
+    Progressing,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DEVTRON_IFRAME_PRIMARY } from '@Config/constants'
+
+import AddIcon from '../../../assets/icons/ic-add.svg?react'
+import Close from '../../../assets/icons/ic-close.svg?react'
+import Help from '../../../assets/icons/ic-help.svg?react'
 import { createGroupedItemsByKey } from '../../common'
-import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
 import {
     AddExternalLinkType,
@@ -44,9 +47,9 @@ import {
     OptionTypeWithIcon,
 } from '../ExternalLinks.type'
 import { availableVariables, sortByUpdatedOn } from '../ExternalLinks.utils'
-import AddIcon from '../../../assets/icons/ic-add.svg?react'
-import Close from '../../../assets/icons/ic-close.svg?react'
-import Help from '../../../assets/icons/ic-help.svg?react'
+import ConfigureLinkAction from './ConfigureLinkAction'
+
+import { DEVTRON_IFRAME_PRIMARY } from '@Config/constants'
 import ICOpenBook from '@Icons/ic-book-open.svg?react'
 import './AddExternalLink.scss'
 
@@ -193,7 +196,7 @@ export default function AddExternalLink({
                 linksData[key].tool = value as OptionTypeWithIcon
                 break
             case 'onClusterSelection':
-            case 'onAppSelection':
+            case 'onAppSelection': {
                 const _selectedOption = value as IdentifierOptionType[]
                 const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '*') !== -1
                 const areAllOptionsAlredySeleted =
@@ -204,7 +207,7 @@ export default function AddExternalLink({
                         ? [{ label: 'All clusters', value: '*', type: ExternalLinkIdentifierType.Cluster }]
                         : [{ label: 'All applications', value: '*', type: ExternalLinkIdentifierType.AllApps }]
                 const identifiersLength = action === 'onClusterSelection' ? clusters.length : allApps.length
-                let _newSelections = []
+                let _newSelections: IdentifierOptionType[] = []
 
                 if (areAllOptionsSelected && !areAllOptionsAlredySeleted) {
                     _newSelections = allOptions
@@ -218,6 +221,7 @@ export default function AddExternalLink({
 
                 linksData[key].identifiers = _newSelections
                 break
+            }
             case 'onNameChange':
                 linksData[key].name = value as string
                 break
@@ -270,6 +274,7 @@ export default function AddExternalLink({
         return (
             <div className="configure-link-action-container flexbox-col flex-grow-1 dc__overflow-auto p-20 mw-720 dc__border-right dc__break-word">
                 {!selectedLink && (
+                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                     <div
                         className="link-add-another fs-13 fw-6 mb-16 cursor"
                         onClick={() => handleLinksDataActions('add')}
@@ -277,31 +282,33 @@ export default function AddExternalLink({
                         <AddIcon className="icon-dim-20 mr-8" /> Add another
                     </div>
                 )}
-                {linksData &&
-                    linksData.map((link, idx) => {
-                        return (
-                            <Fragment key={`ConfigureLinkAction-${idx}`}>
-                                <ConfigureLinkAction
-                                    isFullMode={isFullMode}
-                                    isAppConfigView={isAppConfigView}
-                                    index={idx}
-                                    link={link}
-                                    clusters={clusters}
-                                    allApps={allApps}
-                                    selectedIdentifiers={getSelectedIdentifiers(link)}
-                                    toolGroupedOptions={_toolGroupedOptions}
-                                    onToolSelection={(key, selected) =>
-                                        onMonitoringToolSelectionHandler(key, selected, link)
-                                    }
-                                    handleLinksDataActions={handleLinksDataActions}
-                                    showDelete={linksLen > 1}
-                                />
-                                {linksLen > 1 && idx !== linksLen - 1 && (
-                                    <div className="divider__primary" />
-                                )}
-                            </Fragment>
-                        )
-                    })}
+                {linksData?.map((link, idx) => {
+                    return (
+                        <Fragment
+                            key={`ConfigureLinkAction-${
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                idx
+                            }`}
+                        >
+                            <ConfigureLinkAction
+                                isFullMode={isFullMode}
+                                isAppConfigView={isAppConfigView}
+                                index={idx}
+                                link={link}
+                                clusters={clusters}
+                                allApps={allApps}
+                                selectedIdentifiers={getSelectedIdentifiers(link)}
+                                toolGroupedOptions={_toolGroupedOptions}
+                                onToolSelection={(key, selected) =>
+                                    onMonitoringToolSelectionHandler(key, selected, link)
+                                }
+                                handleLinksDataActions={handleLinksDataActions}
+                                showDelete={linksLen > 1}
+                            />
+                            {linksLen > 1 && idx !== linksLen - 1 && <div className="divider__primary" />}
+                        </Fragment>
+                    )
+                })}
             </div>
         )
     }
@@ -322,7 +329,7 @@ export default function AddExternalLink({
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.small}
                         component={ButtonComponentType.anchor}
-                        anchorProps={{href: getDocumentationUrl({docLinkKey : "EXTERNAL_LINKS"}) }}
+                        anchorProps={{ href: getDocumentationUrl({ docLinkKey: 'EXTERNAL_LINKS' }) }}
                         showAriaLabelInTippy={false}
                         showTooltip
                         tooltipProps={{
@@ -538,6 +545,7 @@ export default function AddExternalLink({
                 </div>
                 <div className="modal__buttons dc__border-top">
                     <button
+                        type="button"
                         className="cta lh-36 h-36"
                         onClick={saveLinks}
                         disabled={savingLinks}

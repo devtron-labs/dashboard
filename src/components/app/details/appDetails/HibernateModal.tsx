@@ -16,12 +16,12 @@
 
 import { ConfirmationModal, ConfirmationModalVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
-import ICHibernate from '@Icons/ic-medium-hibernate.svg?react'
-import ICUnhibernate from '@Icons/ic-medium-unhibernate.svg?react'
-import { importComponentFromFELibrary } from '@Components/common'
-
 import { HibernationModalTypes } from './appDetails.type'
 import { HibernationModalProps } from './types'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import ICHibernate from '@Icons/ic-medium-hibernate.svg?react'
+import ICUnhibernate from '@Icons/ic-medium-unhibernate.svg?react'
 
 const ConfigurePatchDialog = importComponentFromFELibrary('ConfigurePatchDialog', null, 'function')
 
