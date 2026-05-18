@@ -47,6 +47,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 <div className="bg__tertiary dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
                     Build container image
                 </div>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div
                     className="pipeline-select-item flexbox p-12 pointer"
                     data-testid="build-deploy-from-source-code-button"
@@ -61,6 +62,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                         </p>
                     </div>
                 </div>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div
                     className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={CIPipelineNodeType.LINKED_CI}
@@ -76,6 +78,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                     </div>
                 </div>
                 <div className="bg__tertiary pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Receive container image</div>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div
                     className="pipeline-select-item flexbox p-12 pointer"
                     data-testid="deploy-image-external-service-link"
@@ -94,6 +97,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 {window._env_.ENABLE_CI_JOB && (
                     <>
                         <div className="bg__tertiary pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Create job pipeline</div>
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <div
                             className="pipeline-select-item flexbox p-12 pointer"
                             data-testid="job-ci-pipeline-button"

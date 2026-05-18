@@ -255,7 +255,7 @@ const CollapsedList = ({
     isCADataPresent,
     isTLSCertDataPresent,
     isTLSKeyDataPresent,
-    ...props
+    ..._props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
     const [enabled, setEnabled] = useState<boolean>(active)
@@ -420,7 +420,7 @@ const GitForm = ({
     isCADataPresent,
     isTLSCertDataPresent,
     isTLSKeyDataPresent,
-    ...props
+    ..._props
 }) => {
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -605,12 +605,13 @@ const GitForm = ({
             return
         }
 
-        if (gitHost.value && gitHost.value.__isNew__) {
+        if (gitHost.value?.__isNew__) {
             const gitHostPayload = {
                 name: gitHost.value.value,
                 active: true,
             }
             try {
+                // biome-ignore lint/correctness/noUnusedVariables: Legacy, If remove this then result from saveGitHost would be unused I don't know why its being used so leaving as if for now
                 let gitHostId = gitHost.value.value
                 const { result } = await saveGitHost(gitHostPayload)
                 await getHostList()
@@ -644,6 +645,7 @@ const GitForm = ({
         }
 
         const savedAuth = state.auth.value
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if ((savedAuth == 'SSH' && selectedAuth != 'SSH') || (savedAuth != 'SSH' && selectedAuth == 'SSH')) {
             return false
         }
@@ -850,6 +852,7 @@ const GitForm = ({
             <div className="form__label dc__required-field">Authentication type</div>
             <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
                 {AuthType.map(({ label: Lable, value }, index) => (
+                    // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                     <div
                         data-testid={`git-account-auth-type-${index}`}
                         className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}

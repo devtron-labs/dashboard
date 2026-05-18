@@ -258,7 +258,8 @@ export default function DevtronStackManager({
         try {
             const { result } = await getLogPodName()
             setLogPodName(result?.podName)
-        } catch (e) {
+        } catch {
+            // biome-ignore lint/suspicious/noConsole: Legacy
             console.error('Error in fetching pod name')
         }
     }
@@ -276,7 +277,8 @@ export default function DevtronStackManager({
                     setSelectedModule(currentModule)
                 }
             }
-        } catch (e) {
+        } catch {
+            // biome-ignore lint/suspicious/noConsole: Legacy
             console.error('Error in fetching pod name')
         }
     }
@@ -340,7 +342,8 @@ export default function DevtronStackManager({
                 // 4. Update the stackDetails
                 setStackDetails(_stackDetails)
             })
-            .catch((e) => {
+            .catch(() => {
+                // biome-ignore lint/suspicious/noConsole: Legacy
                 console.error('Error in fetching some integrations details')
             })
     }

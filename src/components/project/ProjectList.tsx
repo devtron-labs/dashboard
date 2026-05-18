@@ -116,7 +116,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.setState({ projects })
     }
 
-    addProject(e): void {
+    addProject(): void {
         const { projects } = { ...this.state }
         const emptyProject = {
             id: 0,
@@ -175,7 +175,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             <Project
                 saveProject={this.saveProject}
                 handleChange={this.handleChange}
-                onCancel={(event) => this.discard(index)}
+                onCancel={() => this.discard(index)}
                 isValid={this.state.isValid}
                 errorMessage={this.state.errorMessage}
                 id={project.id}
@@ -193,6 +193,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         const unSavedItem = this.state.projects.find((item) => !item.id)
         if (!unSavedItem) {
             return (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <div
                     data-testid="project-add-project-button"
                     className="white-card white-card--add-new-item mb-16 dashed"
@@ -229,7 +230,12 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                     {this.renderAddProject()}
                     {this.state.projects.map((project, index) => {
                         return (
-                            <React.Fragment key={`${project.name}-${index}`}>
+                            <React.Fragment
+                                key={`${project.name}-${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    index
+                                }`}
+                            >
                                 {this.renderProjects(project, index)}
                             </React.Fragment>
                         )

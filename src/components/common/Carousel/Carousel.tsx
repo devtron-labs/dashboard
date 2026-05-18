@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 import ArrowIcon from '../../../assets/icons/ic-arrow-left.svg?react'
 import './Carousel.scss'
@@ -63,16 +63,24 @@ export default function Carousel({ imageUrls, className }: { imageUrls: string[]
         <div className={`carousel-container ${className || ''}`}>
             {imageUrls.map((url, idx) => {
                 return (
-                    <div key={`carousel-slide-${idx}`} className="carousel-slide">
+                    <div
+                        key={`carousel-slide-${
+                            // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                            idx
+                        }`}
+                        className="carousel-slide"
+                    >
                         <img src={url} alt={`carousel-img-${idx}`} />
                     </div>
                 )
             })}
             <div className="carousel-slide__action-buttons flex">
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div className="carousel-slide__action flex cursor" onClick={prevSlide}>
                     <ArrowIcon className="icon-dim-20 action-prev__icon" />
                 </div>
                 <div className="carousel-slide__slide-count ml-12 mr-12" />
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div className="carousel-slide__action flex cursor" onClick={nextSlide}>
                     <ArrowIcon className="icon-dim-20 action-next__icon" />
                 </div>

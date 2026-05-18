@@ -119,6 +119,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map(
                     (chart) =>
+                        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                         chart.id != 1 && (
                             <CollapsedList
                                 {...chart}
@@ -144,7 +145,7 @@ const CollapsedList = ({
     password = '',
     reload,
     allowInsecureConnection,
-    ...props
+    ..._props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
 
@@ -225,7 +226,7 @@ const ChartForm = ({
     collapsed,
     isEditable,
     allowInsecureConnection,
-    ...props
+    ..._props
 }) => {
     const [validationError, setValidationError] = useState({ errtitle: '', errMessage: '' })
     const [validationStatus, setValidationStatus] = useState(
@@ -361,7 +362,7 @@ const ChartForm = ({
             })
     }
 
-    async function onClickSave(e) {
+    async function onClickSave() {
         if (!isFormValid()) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
@@ -401,7 +402,7 @@ const ChartForm = ({
         }
     }
 
-    function toggleIsPublicChartType(e) {
+    function toggleIsPublicChartType() {
         setCustomState((state) => ({
             ...state,
             password: { value: '', error: '' },
@@ -415,7 +416,7 @@ const ChartForm = ({
         }
     }
 
-    function allowInsecureConnectionHandler(e) {
+    function allowInsecureConnectionHandler() {
         setAllowInsecure(!allowInsecure)
     }
     const showConfirmationModal = () => setConfirmation(true)
@@ -468,6 +469,7 @@ const ChartForm = ({
                     onChange={toggleIsPublicChartType}
                 >
                     {CHART_REPO_LABEL.map(({ label, value }) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                         <RadioGroupItem dataTestId={`${label}`} value={value}>
                             <span className={`dc__no-text-transform ${chartRepoType === value ? 'fw-6' : 'fw-4'}`}>
                                 {label}

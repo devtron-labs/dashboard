@@ -36,7 +36,7 @@ import {
     getChartVersionsMin,
     validateAppNames,
 } from './charts.service'
-import { Chart, ChartGroup, ChartGroupEntry, ChartGroupExports, ChartGroupState } from './charts.types'
+import { Chart, ChartGroupEntry, ChartGroupExports, ChartGroupState } from './charts.types'
 import { PaginationParams } from './charts.util'
 import { APP_NAME_TAKEN, DUPLICATE_NAME, EMPTY_ENV, NAME_REGEX_PATTERN } from './constants'
 
@@ -77,6 +77,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             try {
                 await Promise.allSettled([
                     getChartRepoListMin(),
+                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                     serverMode == SERVER_MODE.FULL
                         ? getChartGroups()
                         : { value: { status: 'fulfilled', result: undefined } },
@@ -263,6 +264,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
             const allNames = state.charts.map((chart) => chart.name.value)
             const duplicateNames = allNames.filter((name, index) => {
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (allNames.indexOf(name) != index) {
                     return index
                 }
@@ -317,6 +319,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             setState((state) => ({ ...state, charts: tempCharts }))
             return validated
         } catch (err) {
+            // biome-ignore lint/suspicious/noConsole: Legacy
             console.error(err)
             ToastManager.showToast({
                 variant: ToastVariantType.warn,
@@ -481,13 +484,14 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     loading: false,
                 }
             }
-        } catch (err) {
+        } catch {
             tempCharts[index].loading = false
         } finally {
             setState((state) => ({ ...state, charts: tempCharts }))
         }
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     async function handleChartVersionChange(index: number, versionId: number) {
         const tempCharts = [...state.charts]
         tempCharts[index].appStoreApplicationVersionId = versionId
@@ -564,7 +568,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         const { valuesYaml, appStoreApplicationVersionId, id: chartId } = state.charts[index]
         try {
             const {
-                result: { id, appStoreVersionId, name: newName, values: newValues },
+                result: { id },
             } = await createChartValuesService({
                 appStoreVersionId: appStoreApplicationVersionId,
                 values: valuesYaml,
@@ -579,6 +583,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     async function updateChartGroupNameAndDescription(name: string, description) {
         return setState((state) => ({ ...state, name, description }))
     }

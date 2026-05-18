@@ -30,7 +30,7 @@ export const Option = (props) => {
         <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             <input
                 checked={props.isSelected}
-                onChange={(e) => selectOption(data)}
+                onChange={() => selectOption(data)}
                 type="checkbox"
                 style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
                 className="mr-8"
@@ -46,12 +46,13 @@ export const Option = (props) => {
 export const SingleSelectOption = (props) => {
     const { selectOption, data } = props
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
-    const onClick = (e) => selectOption(data)
+    const onClick = () => selectOption(data)
     return (
         <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             {props.isSelected ? (
                 <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
             ) : (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <span onClick={onClick} className="mr-8" style={style} />
             )}
             <components.Option {...props} />
@@ -65,7 +66,7 @@ export const SingleSelectOption = (props) => {
  */
 export const MultiValueContainer = (props) => {
     const { children, data, innerProps, selectProps } = props
-    const { label, value } = data
+    const { label } = data
     return (
         <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
             <div className="flex fs-12 ml-4 cn-9">{label}</div>
@@ -97,13 +98,12 @@ export const MultiValueRemove = (props) => {
     const {
         data,
         innerProps: { onClick, onMouseDown },
-        selectProps,
     } = props
     return (
         <components.MultiValueRemove {...props}>
             <ClearIcon
                 {...{ onClick, onMouseDown }}
-                onClick={(e) => onClick(data)}
+                onClick={() => onClick(data)}
                 style={{ height: '18px', width: '18px' }}
             />
         </components.MultiValueRemove>
@@ -140,7 +140,7 @@ export const multiSelectStyles = {
         minheight: '24px !important',
         backgroundColor: 'var(--bg-secondary)',
     }),
-    menu: (base, state) => ({
+    menu: (base) => ({
         ...base,
         top: `40px`,
         backgroundColor: 'var(--bg-menu-primary)',
@@ -162,7 +162,7 @@ export const multiSelectStyles = {
         ...base,
         color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
     }),
-    singleValue: (base, state) => ({
+    singleValue: (base) => ({
         ...base,
         color: 'var(--N900)',
         fontSize: '13px',

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, SyntheticEvent, useContext, useState } from 'react'
+import { Fragment, useContext, useState } from 'react'
 
 import {
     ActionMenu,
@@ -236,16 +236,6 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         }
     }
 
-    const handleTriggerDelete = (e: SyntheticEvent) => {
-        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
-        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.DELETE)
-    }
-
-    const handleTriggerMoveToOtherStage = (e: SyntheticEvent): void => {
-        const taskIndex = +(e.currentTarget as HTMLButtonElement).dataset.index
-        handleTaskAction(taskIndex, PipelineStageTaskActionModalType.MOVE_PLUGIN)
-    }
-
     const handleClearTaskActionModalState = () => {
         setTaskActionModalState(null)
     }
@@ -290,8 +280,8 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
     }
 
     const reCalculatePrevStepVar = (_formData: PipelineFormType, newTaskIndex: number): void => {
-        let preBuildVariable
-        let postBuildVariable
+        let preBuildVariable: ReturnType<typeof calculateLastStepDetail>['calculatedStageVariables']
+        let postBuildVariable: ReturnType<typeof calculateLastStepDetail>['calculatedStageVariables']
         if (activeStageName === BuildStageVariable.PreBuild) {
             preBuildVariable = calculateLastStepDetail(
                 false,
@@ -364,7 +354,13 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
         <>
             <div className={withWarning ? 'with-warning' : ''}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
-                    <Fragment key={`task-item-${index}`}>
+                    <Fragment
+                        key={`task-item-${
+                            // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                            index
+                        }`}
+                    >
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <div
                             className={`task-item fw-4 fs-13 pointer flex-justify ${
                                 selectedTaskIndex === index ? 'task-item__selected-list' : ''
@@ -440,6 +436,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                     />
                 )}
             </div>
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 data-testid="sidebar-add-task-button"
                 className="task-item add-task-container cb-5 fw-6 fs-13 flexbox"

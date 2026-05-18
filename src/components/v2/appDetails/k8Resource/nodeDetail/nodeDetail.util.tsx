@@ -23,6 +23,7 @@ import {
     OptionsBase,
     PodMetaData,
     SelectedResourceType,
+    SelectPickerOptionType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -162,6 +163,7 @@ export function getPodContainerOptions(
         )
     }
     const _allPods = IndexStore.getAllPods().sort()
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     if (_allPods.length == 0) {
         return {
             containerOptions: [],
@@ -170,6 +172,7 @@ export function getPodContainerOptions(
     }
     const podOptions = additionalPodOptions.concat(_allPods.map((_pod) => ({ name: _pod.name, selected: false })))
     if (logState.selectedPodOption) {
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         podOptions.forEach(
             (_po) => (_po.selected = _po.name.toLowerCase() === logState.selectedPodOption.toLowerCase()),
         )
@@ -180,6 +183,7 @@ export function getPodContainerOptions(
     const containers = (getContainersData(_allSelectedPods[0]) ?? []).sort()
     const containerOptions = containers.map((_container, index) => ({ ..._container, selected: index === 0 }))
     if (logState.selectedContainerOption) {
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         containerOptions.forEach(
             (_co) => (_co.selected = _co.name.toLowerCase() === logState.selectedContainerOption.toLowerCase()),
         )
@@ -223,7 +227,11 @@ export function getInitialPodContainerSelection(
     const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
         .flatMap((_ps) => _ps[0].split('/').splice(-1))
         .sort()
-    const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: `All ${rn}`, selected: index == 0 }))
+    const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({
+        name: `All ${rn}`,
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
+        selected: index == 0,
+    }))
 
     const _selectedPodOption = additionalPodOptions.find((_po) => _po.selected)?.name ?? ''
 
@@ -236,6 +244,7 @@ export function getInitialPodContainerSelection(
     }
 
     const containers = new Set(_allSelectedPods.flatMap((_pod) => flatContainers(_pod) ?? []))
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     const _selectedContainerOption = [...containers].sort().find((_container, index) => index == 0) ?? ''
     return {
         selectedContainerOption: _selectedContainerOption,
@@ -287,6 +296,7 @@ export const getTimeFromTimestamp = (timestamp) => {
     const value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
         .toString()
         .padStart(2, '0')}`
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     return ALLOW_UNTIL_TIME_OPTIONS.filter((option) => option.value == value)
 }
 
@@ -297,17 +307,18 @@ export const getDurationUnits = () => [
 
 export const getGroupedContainerOptions = (
     containers: Options[],
-    isTerminal?,
+    _isTerminal?,
     isResourceBrowserView?,
     setContainers?,
     selectedNamespace?,
     selectedClusterId?,
     selectedPodName?,
     switchSelectedContainer?,
-    params?,
+    _params?,
 ) => {
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     const containerOptions = []
-    const initContainerOptions = []
+    const initContainerOptions: SelectPickerOptionType<string, string>[] = []
     const ephemeralContainerOptions = [] as EphemeralContainerOptionsType[]
 
     if (Array.isArray(containers) && containers.length > 0) {

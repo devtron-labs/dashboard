@@ -51,7 +51,7 @@ const DropdownIndicator = () => {
 }
 
 const getNearestTimeOptionBeforeNow = () => {
-    let nearestTimeOption
+    let nearestTimeOption: (typeof ALLOW_UNTIL_TIME_OPTIONS)[0]
     ALLOW_UNTIL_TIME_OPTIONS.forEach((option) => {
         const today = moment().format('YYYY-MM-DD')
         const dateTimeToCompare = moment(`${today}T${option.value}`)
@@ -68,14 +68,10 @@ export const InputForSelectedOption = ({
 }: InputSelectionProps): JSX.Element => {
     const [untilTimeOptions, setUntilTimeOptions] =
         useState<{ label: string; value: string; isDisabled?: boolean }[]>(ALLOW_UNTIL_TIME_OPTIONS)
-    const [focused, setFocused] = useState(false)
-    const handleFocusChange = ({ focused: isFocused }) => {
-        setFocused(isFocused)
-    }
 
     const setUntilTimeOptionsWithExcluded = () => {
         const nearestOption = getNearestTimeOptionBeforeNow()
-        const index = ALLOW_UNTIL_TIME_OPTIONS.findIndex((option) => option === nearestOption)
+        const index = ALLOW_UNTIL_TIME_OPTIONS.indexOf(nearestOption)
         const newOptions = excludeFutureTimingsOptions(ALLOW_UNTIL_TIME_OPTIONS, index)
         setUntilTimeOptions(newOptions)
     }
@@ -119,7 +115,7 @@ export const InputForSelectedOption = ({
     }
 
     const checkInputError = (e) => {
-        let errorString
+        let errorString: string
         if (e.target.value === '') {
             errorString = 'This field is required'
         } else if (Number(e.target.value) <= 0) {
@@ -345,7 +341,7 @@ const CustomLogsModal = ({
                         className="custom-logs-radio-group dc__no-shrink"
                     >
                         {CUSTOM_LOGS_OPTIONS.map(({ label, value }) => (
-                            <RadioGroupItem value={value}>
+                            <RadioGroupItem key={`${value}-${label}-radio`} value={value}>
                                 <span className="custom-selection-radio">{label}</span>
                             </RadioGroupItem>
                         ))}

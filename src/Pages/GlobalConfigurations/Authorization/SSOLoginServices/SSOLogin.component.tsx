@@ -90,6 +90,7 @@ const SSOLoginTab: FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveS
                 <SSOProviderIcon provider={value} size={24} />
             </aside>
             <aside className="login__text-alignment">{SSOName}</aside>
+            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
             <label>
                 {lastActiveSSO?.name === value ? (
                     <aside className="dc__position-abs dc__right-0 dc__top-0">
@@ -103,6 +104,7 @@ const SSOLoginTab: FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveS
     </label>
 )
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginState> {
     /**
      * Ref to store the value from the API, used for showing the modal
@@ -204,15 +206,19 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
 
     setSecretPlaceHolderInResponse(response): void {
         const config = response.result?.config?.config
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.clientID) && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.clientSecret) && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.bindPW) && config?.bindPW === '') {
             response.result.config.config.bindPW = DEFAULT_SECRET_PLACEHOLDER
         }
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
         if (config?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && config?.usernamePrompt === '') {
             response.result.config.config.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
         }
@@ -267,24 +273,28 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
 
     checkConfigJson(ssoConfig) {
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientID) &&
             (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)
         ) {
             ssoConfig.clientID = ''
         }
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientSecret) &&
             (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)
         ) {
             ssoConfig.clientSecret = ''
         }
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.bindPW) &&
             (ssoConfig?.bindPW === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.bindPW)
         ) {
             ssoConfig.bindPW = ''
         }
         if (
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Legacy
             ssoConfig?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) &&
             (ssoConfig?.usernamePrompt === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.usernamePrompt)
         ) {
@@ -544,6 +554,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
             return
         }
         if (this.state.sso === OIDCType) {
+            // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
             let config
             try {
                 config = yamlJsParser.parse(value)
@@ -617,6 +628,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
         if (this.state.configMap !== SwitchItemValues.Configuration) {
             return
         }
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let newConfig
         try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)

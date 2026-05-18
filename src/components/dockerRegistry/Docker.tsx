@@ -65,7 +65,7 @@ import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
 import ICHelpOutline from '../../assets/icons/ic-help-outline.svg?react'
 import InfoFilled from '../../assets/icons/ic-info-filled.svg?react'
 import Info from '../../assets/icons/ic-info-outlined.svg?react'
-import Error from '../../assets/icons/ic-warning.svg?react'
+import ErrorIcon from '../../assets/icons/ic-warning.svg?react'
 import {
     EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
     OCIRegistryConfigConstants,
@@ -377,11 +377,11 @@ const DockerForm = ({
               CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
           },
     registryCredentialsType,
-    ...rest
+    ..._rest
 }) => {
     const re = PATTERNS.APP_NAME
     const regExp = new RegExp(re)
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             registryType: { value: registryType || 'ecr', error: '' },
             advanceSelect: { value: connection || CERTTYPE.SECURE, error: '' },
@@ -496,7 +496,8 @@ const DockerForm = ({
     }
     let _ignoredClusterIdsCsv = !ipsConfig
         ? []
-        : ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != '-1'
+        : // biome-ignore lint/suspicious/noDoubleEquals: Legacy
+          ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != '-1'
           ? ipsConfig.ignoredClusterIdsCsv.split(',').map((clusterId) => {
                 return clusterlistMap.get(clusterId)
             })
@@ -509,7 +510,8 @@ const DockerForm = ({
     let _appliedClusterIdsCsv = ipsConfig?.appliedClusterIdsCsv
         ? ipsConfig.appliedClusterIdsCsv.indexOf('-1') >= 0
             ? clusterOption
-            : ipsConfig.appliedClusterIdsCsv.split(',').map((clusterId) => {
+            : // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
+              ipsConfig.appliedClusterIdsCsv.split(',').map((clusterId) => {
                   if (clusterId || clusterlistMap.get(clusterId)) {
                       return clusterlistMap.get(clusterId)
                   }
@@ -743,7 +745,7 @@ const DockerForm = ({
     function isValidJson(inputString: string): boolean {
         try {
             JSON.parse(inputString)
-        } catch (e) {
+        } catch {
             return false
         }
         return true
@@ -863,7 +865,7 @@ const DockerForm = ({
         }
     }
 
-    const handleDefaultChange = (e) => {
+    const handleDefaultChange = () => {
         if (isDefault) {
             ToastManager.showToast({
                 variant: ToastVariantType.success,
@@ -908,7 +910,7 @@ const DockerForm = ({
             return
         }
 
-        let awsRegion
+        let awsRegion: string
         if (selectedDockerRegistryType.value === RegistryType.ECR) {
             awsRegion = fetchAWSRegion()
             if (!awsRegion) {
@@ -934,6 +936,7 @@ const DockerForm = ({
             })
         } catch (err) {
             if (err instanceof ServerErrors && Array.isArray(err.errors) && err.code === 409) {
+                // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                 err.errors.map(({ userMessage, internalMessage }) => {
                     setRepositoryError(userMessage || internalMessage)
                 })
@@ -1223,13 +1226,10 @@ const DockerForm = ({
     })
 
     const renderRegistryCredentialText = () => {
-        if (
-            ipsConfig?.ignoredClusterIdsCsv === '-1' ||
-            ignoredClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0
-        ) {
+        if (ipsConfig?.ignoredClusterIdsCsv === '-1' || ignoredClusterList.indexOf('All clusters') >= 0) {
             return <div className="fw-6">No Cluster</div>
         }
-        if (appliedClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0) {
+        if (appliedClusterList.indexOf('All clusters') >= 0) {
             return <div className="fw-6">All Clusters</div>
         }
         if (appliedClusterList.length > 0) {
@@ -1254,6 +1254,7 @@ const DockerForm = ({
                                 iconClassName="icon-dim-16 fcn-6"
                             />
                         </div>
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>
                             Manage
                         </div>
@@ -1325,7 +1326,7 @@ const DockerForm = ({
                             </span>
                             {!(isContainerStore || isOCIRegistryHelmPush || showHelmPull) && (
                                 <span className="form__error">
-                                    <Error className="form__icon form__icon--error" />
+                                    <ErrorIcon className="form__icon form__icon--error" />
                                     This field is mandatory
                                 </span>
                             )}
@@ -1424,6 +1425,7 @@ const DockerForm = ({
                                 }
                             >
                                 Use as chart repository (Pull helm charts and show in
+                                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                 <span className="ml-4 dc__link cursor" onClick={handleChartStoreRedirection}>
                                     chart store
                                 </span>
@@ -1917,13 +1919,14 @@ const DockerForm = ({
                 {selectedDockerRegistryType.value === RegistryType.OTHER && (
                     <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-16'}`}>
                         <Dropdown
-                            onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
+                            onClick={() => setToggleCollapsedAdvancedRegistry(not)}
                             className="rotate icon-dim-18 pointer fcn-6"
                             style={{ ['--rotateBy' as any]: !toggleCollapsedAdvancedRegistry ? '-90deg' : '0deg' }}
                         />
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl lint/a11y/noNoninteractiveElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <label
                             className="fs-13 mb-0 ml-8 pointer"
-                            onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
+                            onClick={() => setToggleCollapsedAdvancedRegistry(not)}
                         >
                             Advanced Registry URL Connection Options
                         </label>
@@ -1935,10 +1938,12 @@ const DockerForm = ({
                 {toggleCollapsedAdvancedRegistry && selectedDockerRegistryType.value === RegistryType.OTHER && (
                     <div className="form__row ml-3" style={{ width: '100%' }}>
                         {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => (
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                             <div>
                                 <label
                                     key={value}
                                     className={`flex left pointer secureFont workflow-node__text-light ${
+                                        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                                         value != CERTTYPE.SECURE ? 'mt-20' : 'mt-18'
                                     }`}
                                 >
@@ -1950,6 +1955,7 @@ const DockerForm = ({
                                         checked={value === state.advanceSelect.value}
                                     />
                                     <span className="ml-10 fs-13">{Lable}</span>
+                                    {/** biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                                     {value != CERTTYPE.SECURE && (
                                         <Tippy
                                             className="default-tt ml-10"
@@ -1963,7 +1969,9 @@ const DockerForm = ({
                                         </Tippy>
                                     )}
                                 </label>
+                                {/** biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                                 {value == CERTTYPE.SECURE_WITH_CERT &&
+                                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                                     state.advanceSelect.value == CERTTYPE.SECURE_WITH_CERT && (
                                         <div className="ml-20">
                                             <Textarea

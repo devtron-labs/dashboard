@@ -15,7 +15,7 @@
  */
 
 import Tippy from '@tippyjs/react'
-import React, { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 import {
     CIBuildType,
@@ -227,6 +227,7 @@ export default function CIDockerFileConfig({
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
                     const showTick = canShowTick(option.id)
+                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                     const isDisabled = isAirgapped && option.id != CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
                     const content = !isDisabled ? option.info : FEATURE_DISABLED
                     const condition = (configOverrideView && allowOverride) || isDisabled
@@ -241,6 +242,7 @@ export default function CIDockerFileConfig({
                                     </Tippy>
                                 )}
                             >
+                                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                 <div
                                     id={option.id}
                                     data-testid={`${option.id}-button`}
@@ -405,6 +407,7 @@ export default function CIDockerFileConfig({
                 <div className="flex column h-250 dc__gap-12">
                     <ErrorIcon className="icon-dim-20" />
                     <h3 className="fs-13 fw-6 cn-9 m-0">Failed to fetch</h3>
+                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                     <span className="fs-12 fw-6 cb-5 cursor" onClick={fetchBuildPackAndTemplateData}>
                         Retry
                     </span>

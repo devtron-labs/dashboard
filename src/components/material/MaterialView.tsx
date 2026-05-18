@@ -97,10 +97,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     renderCollapsedView() {
         if (this.props.material.id) {
             return (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <div
                     key={`${this.props.material.id}`}
                     className="white-card artifact-collapsed"
-                    tabIndex={0}
                     onClick={this.props.toggleCollapse}
                     data-testid="already-existing-git-material"
                 >
@@ -114,6 +114,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             )
         }
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className="white-card white-card--add-new-item mb-16 dashed"
                 onClick={this.props.toggleCollapse}
@@ -129,6 +130,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         const res =
             this.props.providers?.filter((provider) => provider?.id === this.props.material?.gitProvider?.id) || []
         if (key === 'host') {
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             return res[0]?.authMode == 'SSH' ? 'ssh' : 'https'
         }
         if (key === 'placeholder') {
@@ -136,6 +138,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 return 'e.g. git-codecommit.ap-south-1.amazonaws.com/v1/repos/repo_name'
             }
 
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             return res[0]?.authMode == 'SSH' ? 'e.g. git@github.com:abc/xyz.git' : 'e.g. https://gitlab.com/abc/xyz.git'
         }
     }
@@ -720,7 +723,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <Checkbox
                                         isChecked={this.props.material.isExcludeRepoChecked}
                                         value={CHECKBOX_VALUE.CHECKED}
-                                        tabIndex={3}
                                         onChange={this.props.handleExcludeRepoCheckbox}
                                         rootClassName="fs-14 cn-9 m-0 flex top dc_max-width__max-content"
                                     >
@@ -758,6 +760,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             <p className="fw-4 fs-13 mb-0-imp">
                                                 Use following pattern to include/exclude specific files/folder in this
                                                 repo.
+                                                {/** biome-ignore lint/a11y/noStaticElementInteractions: Legacy */}
                                                 <a
                                                     data-testid={`${
                                                         !this.props.isLearnHowClicked
@@ -765,6 +768,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                             : 'exclude-include-hide'
                                                     }`}
                                                     className="dc__link ml-4 cursor"
+                                                    // biome-ignore lint/a11y/useValidAnchor: Legacy
                                                     onClick={this.props.handleLearnHowClick}
                                                     rel="noopener noreferrer"
                                                     target="_blank"
@@ -863,12 +867,12 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 )}
                             </>
                         )}
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         <label className="m-0 flexbox-col dc__gap-16">
                             <div>
                                 <Checkbox
                                     isChecked={this.props.isChecked}
                                     value={CHECKBOX_VALUE.CHECKED}
-                                    tabIndex={4}
                                     onChange={this.props.handleCheckoutPathCheckbox}
                                     rootClassName="fs-14 cn-9 mb-8 flex top"
                                 >
@@ -921,7 +925,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <Checkbox
                                     isChecked={this.props.material.fetchSubmodules}
                                     value={CHECKBOX_VALUE.CHECKED}
-                                    tabIndex={5}
                                     onChange={this.props.handleSubmoduleCheckbox}
                                     rootClassName="fs-14 cn-9 flex top"
                                 >

@@ -75,7 +75,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
         })
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (prevProps.rows.length !== this.props.rows.length) {
             this.setState({
                 rows: this.props.rows,
@@ -218,7 +218,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
             <tr className="deployment-table__row">
                 <th
                     className="deployment-table__header-cell deployment-table__cell-deployed cursor"
-                    onClick={(event) => {
+                    onClick={() => {
                         this.sort('releaseTime')
                     }}
                 >
@@ -226,7 +226,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                 </th>
                 <th
                     className="deployment-table__header-cell deployment-table__cell-cycle cursor"
-                    onClick={(event) => {
+                    onClick={() => {
                         this.sort('cycleTime')
                     }}
                 >
@@ -234,7 +234,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                 </th>
                 <th
                     className="deployment-table__header-cell deployment-table__cell-lead cursor"
-                    onClick={(event) => {
+                    onClick={() => {
                         this.sort('leadTime')
                     }}
                 >
@@ -242,7 +242,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                 </th>
                 <th
                     className="deployment-table__header-cell deployment-table__cell-size cursor"
-                    onClick={(event) => {
+                    onClick={() => {
                         this.sort('deploymentSize')
                     }}
                 >
@@ -251,7 +251,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                 </th>
                 <th
                     className="deployment-table__header-cell deployment-table__cell-recovery cursor"
-                    onClick={(event) => {
+                    onClick={() => {
                         this.sort('recoveryTime')
                     }}
                 >
@@ -302,6 +302,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                         {this.renderTableHeader()}
                         {rows.map((row, index) => {
                             return (
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                                 <tr key={index + row.releaseTime.value} className="deployment-table__row">
                                     <td className="deployment-table__cell-deployed">
                                         {row.releaseStatus === 1 ? (

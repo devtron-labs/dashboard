@@ -56,6 +56,7 @@ import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/Applica
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
 import { HOST_ERROR_MESSAGE } from '@Config/constantMessaging'
 
+// biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
@@ -145,7 +146,7 @@ export function useForm(stateSchema, validationSchema = {}, callback, errorMessa
         // multiple validators
         const _validators = validationSchema[name]?.validators
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
-            const errors = []
+            const errors: string[] = []
             _validators.forEach((_validator) => {
                 if (!_validateSingleValidator(_validator, value)) {
                     errors.push(_validator.error)
@@ -210,6 +211,7 @@ export function useForm(stateSchema, validationSchema = {}, callback, errorMessa
  */
 export function mapByKey<T = Map<any, any>>(arr: any[], id: string): T {
     if (!Array.isArray(arr)) {
+        // biome-ignore lint/suspicious/noConsole: Legacy
         console.error(arr, 'is not array')
         return new Map() as T
     }
@@ -225,7 +227,7 @@ export function usePrevious(value) {
     return ref.current
 }
 
-export function useWhyDidYouUpdate(name, props) {
+export function useWhyDidYouUpdate(_name, props) {
     // Get a mutable ref object where we can store props ...
     // ... for comparison next time this hook runs.
     const previousProps = useRef({})
@@ -477,8 +479,11 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
         if (!shouldRun) {
             return
         }
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let obj
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         let jsonError = null
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         let yamlError = null
         if (language === 'json') {
             try {
@@ -726,6 +731,7 @@ export const setActionWithExpiry = (key: string, days: number): void => {
 export const createGroupedItemsByKey = (arr: any[], key: string) => {
     return arr.reduce((prevObj, currentObj) => {
         return {
+            // biome-ignore lint/performance/noAccumulatingSpread: Legacy
             ...prevObj,
             [currentObj[key]]: (prevObj[currentObj[key]] || []).concat(currentObj),
         }
@@ -808,7 +814,7 @@ export const importComponentFromFELibrary = (componentName: string, defaultCompo
 }
 
 export const getElapsedTime = (createdAt: Date) => {
-    const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
+    const elapsedTime = Math.floor((Date.now() - createdAt.getTime()) / 1000)
     if (elapsedTime >= 0) {
         const days = Math.floor(elapsedTime / (24 * 60 * 60))
         const hrs = Math.floor((elapsedTime / (60 * 60)) % 24) // hrs mod (%) 24 hrs to get elapsed hrs
@@ -970,7 +976,7 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
         const escapedSearchText = searchText.replace(PATTERNS.ESCAPED_CHARACTERS, '\\$&') // Escape special characters handling
         const regex = new RegExp(escapedSearchText, 'gi')
         return matchString.replace(regex, highlightText)
-    } catch (err) {
+    } catch {
         return matchString
     }
 }
@@ -1090,7 +1096,7 @@ export const getPluginIdsFromBuildStage = (
         return []
     }
 
-    const pluginIds = []
+    const pluginIds: number[] = []
     stage.steps.forEach((step) => {
         if (step.pluginRefStepDetail?.pluginId) {
             pluginIds.push(step.pluginRefStepDetail.pluginId)

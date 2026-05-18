@@ -227,7 +227,7 @@ const NodeDetailComponent = ({
                 name: selectedResource.name ? selectedResource.name : nullCaseName,
                 namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
             })) as any
-            const _resourceContainers = []
+            const _resourceContainers: typeof containers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
                     _resourceContainers.push(
@@ -538,6 +538,7 @@ const NodeDetailComponent = ({
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
                                 <EphemeralIcon className="mr-4 icon-dim-16 scb-5" />
                                 Launch Ephemeral Container
@@ -579,6 +580,7 @@ const NodeDetailComponent = ({
                 </div>
                 {isResourceBrowserView &&
                     !hideDeleteButton && ( // hide delete button if resource is deleted or user is not authorized
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={toggleDeleteDialog}>
                             <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
                             {CLUSTER_NODE_ACTIONS_LABELS.delete}

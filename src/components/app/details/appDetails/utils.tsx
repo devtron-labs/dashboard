@@ -161,12 +161,15 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
     try {
         const versionNum = getVersionArr(k8sVersion)
         const sum = versionNum.reduce((sum, item) => {
+            // biome-ignore lint/suspicious/noAssignInExpressions: Legacy
             return (sum += item)
         }, 0)
+
+        // biome-ignore lint/suspicious/noGlobalIsNan: Legacy
         if (isNaN(sum)) {
             return false
         }
-    } catch (error) {
+    } catch {
         return false
     }
     return true
@@ -253,12 +256,15 @@ export function getSelectedNodeItems(
     nodesMap: any,
     kind: string,
 ): SelectedNodeItems[] {
-    let selectedNodeItems = []
+    let selectedNodeItems: SelectedNodeItems[] = []
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     if (selectedNodes == 'All pods') {
         selectedNodeItems = nodeItems
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     } else if (selectedNodes == 'All new pods') {
         const result = nodeItems.filter((item) => item.label.includes('(new)'))
         selectedNodeItems = result
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     } else if (selectedNodes == 'All old pods') {
         const result = nodeItems.filter((item) => item.label.includes('(old)'))
         selectedNodeItems = result
@@ -277,7 +283,7 @@ export function addChartNameExtensionToBaseURL(
     url: string,
     k8sVersion: string,
     chartName: ChartTypes,
-    statusCode?: string,
+    _statusCode?: string,
 ): string {
     switch (chartName) {
         case 'latency':
@@ -319,6 +325,7 @@ const getTimestampFromDateIfAvailable = (dateString: string): string => {
         const formattedDate = `${year}-${prefixZeroIfSingleDigit(Number(month))}-${prefixZeroIfSingleDigit(Number(day))}T${updatedTime}`
         const parsedDate = new Date(formattedDate).getTime()
 
+        // biome-ignore lint/suspicious/noGlobalIsNan: Legacy
         return isNaN(parsedDate) ? dateString : parsedDate.toString()
     } catch {
         return dateString
@@ -359,6 +366,7 @@ export function addQueryParamToGrafanaURL(
         }
     }
     if (chartName === 'latency') {
+        // biome-ignore lint/suspicious/noGlobalIsNan: Legacy
         if (!isNaN(latency)) {
             latency /= 100
         }

@@ -167,8 +167,10 @@ function AppGroupDetails({ isSuperAdmin }: AppGroupAdminType) {
         setAppListLoading(true)
         const { result } = await getEnvGroupList(+envId)
 
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const _groupFilterOption = []
         if (result) {
+            // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
             let _selectedGroup
             for (const group of result) {
                 const processedGroupData = {
@@ -275,8 +277,10 @@ function AppGroupDetails({ isSuperAdmin }: AppGroupAdminType) {
         } catch (err) {
             const _map = new Map<string, boolean>()
             if (err.code === 403) {
+                // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
+                // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                 err.errors.map((errors) => {
                     arrUnauthorized.push([...errors.userMessage.unauthorizedApps])
                     errors.userMessage.unauthorizedApps.forEach((element) => {
@@ -318,7 +322,7 @@ function AppGroupDetails({ isSuperAdmin }: AppGroupAdminType) {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
-        let _selectedGroup
+        let _selectedGroup: (typeof groupFilterOptions)[number]
         const _allAppIds: number[] = []
         if (groupId) {
             _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)

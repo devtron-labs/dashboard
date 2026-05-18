@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { MultiValue } from 'react-select'
 
 import {
@@ -158,7 +158,7 @@ export interface DeployedCommitCardType {
 
 export type ErrorItem = {
     error: string
-    message: string
+    message: ReactNode
 }
 
 export interface IssuesListingModalType {

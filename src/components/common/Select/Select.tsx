@@ -149,6 +149,7 @@ const Option = ({
         active = active || valueComparator(value)
     }
     return name.includes(searchString) ? (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
         <div
             data-testid={`list-${dataTestIdMenuList}`}
             className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
@@ -197,6 +198,7 @@ const Button = ({
                     </div>
                 ) : (
                     <img
+                        alt="Toggle dropdown"
                         src={arrowAsset || arrowTriangle}
                         className="rotate select-button-sort-image"
                         style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }}
@@ -231,7 +233,7 @@ const Search = ({ placeholder = 'search', style = {}, inputStyle = {}, rootClass
 }
 
 const Async: React.FC<SelectAsync> = ({ api }) => {
-    const { loading, setLoading } = useSelectContext()
+    const { setLoading } = useSelectContext()
     useEffect(() => {
         async function triggerAPI() {
             setLoading(true)
@@ -251,6 +253,7 @@ const Async: React.FC<SelectAsync> = ({ api }) => {
 const All = ({ rootClassName = '', style = {} }) => {
     const { handleClick } = useSelectContext()
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
         <div
             className={`select__all ${rootClassName}`}
             style={{ ...style }}

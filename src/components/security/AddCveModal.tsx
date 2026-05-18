@@ -144,6 +144,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                         noValidate
                     >
                         <div className="whitelist-cve__cve-id ml-24 mr-24 mb-20">
+                            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                             <label className="dc__block flex-1 mb-5 mr-16 ">
                                 <CustomInput
                                     name="cve"
@@ -157,13 +158,12 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                 />
                             </label>
                         </div>
-                        <div className="ml-24 mr-24 flexbox" tabIndex={2}>
+                        <div className="ml-24 mr-24 flexbox">
                             <label className="form__label form__label--flex cursor mr-8">
                                 <input
                                     type="radio"
                                     name="policy"
                                     value="allow"
-                                    tabIndex={1}
                                     onClick={this.handlePolicyChange}
                                     checked={this.state.policy === VulnerabilityAction.allow}
                                 />
@@ -175,7 +175,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     type="radio"
                                     name="policy"
                                     value="block"
-                                    tabIndex={2}
                                     onClick={this.handlePolicyChange}
                                     checked={this.state.policy === VulnerabilityAction.block}
                                 />
@@ -186,7 +185,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     type="radio"
                                     name="policy"
                                     value="blockiffixed"
-                                    tabIndex={2}
                                     onClick={this.handlePolicyChange}
                                     checked={this.state.policy === VulnerabilityAction.blockiffixed}
                                 />
@@ -194,19 +192,13 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                             </label>
                         </div>
                         <div className="flex right form-row">
-                            <button
-                                type="button"
-                                tabIndex={3}
-                                className="cta cancel mb-16 mr-16"
-                                onClick={this.props.close}
-                            >
+                            <button type="button" className="cta cancel mb-16 mr-16" onClick={this.props.close}>
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                tabIndex={4}
                                 className="cta mb-16 mr-24"
-                                onClick={(event) => {
+                                onClick={() => {
                                     this.saveCVE()
                                 }}
                             >

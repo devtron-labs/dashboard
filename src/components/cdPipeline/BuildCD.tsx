@@ -198,6 +198,7 @@ export default function BuildCD({
              * Readonly field
              */
             _form.isDigestEnforcedForEnv = _form.environments.find(
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 (env) => env.id == selection.id,
             )?.isDigestEnforcedForEnv
         } else {
@@ -262,7 +263,12 @@ export default function BuildCD({
         setGitopsConflictLoading(true)
         getGitOpsRepoConfig(+appId)
             .then(() => {
-                navigate(`${(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })}/${URLS.APP_GITOPS_CONFIG}`)
+                navigate(
+                    `${
+                        // biome-ignore lint/complexity/noCommaOperator: Legacy
+                        (ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, { appId })
+                    }/${URLS.APP_GITOPS_CONFIG}`,
+                )
             })
             .catch((err) => {
                 if (err.code === 409) {
@@ -333,9 +339,12 @@ export default function BuildCD({
     const selectStrategy = (e): void => {
         const { value } = e.target
         const _form = { ...formData }
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
 
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         if (_form.savedStrategies.length == 0) {
             selection.default = true
         } else {
@@ -356,6 +365,7 @@ export default function BuildCD({
 
     const renderEnvNamespaceAndTriggerType = () => {
         const envId = formData.environmentId
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         const _environment = formData.environments.find((env) => env.id == envId)
         const selectedEnv: EnvironmentWithSelectPickerType = _environment && {
             ..._environment,
@@ -462,12 +472,14 @@ export default function BuildCD({
         const strategies = _form.strategies.map((strategy) => {
             return {
                 ...strategy,
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 default: strategy.deploymentTemplate == selection,
             }
         })
         const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 default: strategy.deploymentTemplate == selection,
             }
         })
@@ -510,21 +522,21 @@ export default function BuildCD({
     }
 
     const handleStrategyChange = (value, selection: string, key: 'json' | 'yaml'): void => {
-        let json
-        let jsonStr
-        let yamlStr
+        let json: Record<string, unknown>
+        let jsonStr: string
+        let yamlStr: string
         if (key === 'json') {
             jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = YAMLStringify(json)
-            } catch (error) {}
+            } catch {}
         } else {
             yamlStr = value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
-            } catch (error) {}
+            } catch {}
         }
         const _form = { ...formData }
         const strategies = _form.savedStrategies.map((strategy) => {
@@ -646,6 +658,7 @@ export default function BuildCD({
                                     {strategy.default ? (
                                         <span className="default-strategy">Default</span>
                                     ) : (
+                                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                         <span
                                             className="set-as-default"
                                             onClick={() => setDefaultStrategy(strategy.deploymentTemplate)}
@@ -658,7 +671,7 @@ export default function BuildCD({
                                     <button
                                         type="button"
                                         className="dc__transparent"
-                                        onClick={(event) => toggleStrategy(strategy.deploymentTemplate)}
+                                        onClick={() => toggleStrategy(strategy.deploymentTemplate)}
                                     >
                                         <img src={settings} alt="config" className="icon-dim-20" />
                                     </button>

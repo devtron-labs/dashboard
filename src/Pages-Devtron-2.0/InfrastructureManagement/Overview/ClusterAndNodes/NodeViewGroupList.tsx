@@ -35,6 +35,7 @@ import { AUTOSCALER_TYPE_LABELS, EXPORT_NODE_LIST_HEADERS, NODE_ERRORS_LABEL_MAP
 import { AutoscalerTypeFilters, NodeErrorsFilters, NodeSchedulingTypeFilters } from './types'
 import { getNodeListFilterOptions } from './utils'
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 const NodeScheduleCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>) => {
     const { schedulable } = row.data
 
@@ -46,6 +47,7 @@ const NodeScheduleCellComponent = ({ row }: TableCellComponentProps<NodeViewGrou
     )
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 const ErrorCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>) => {
     const nodeErrors = row.data.nodeErrors.map((error) => NODE_ERRORS_LABEL_MAP[error])?.join(', ') || ''
 
@@ -58,6 +60,7 @@ const ErrorCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRowTyp
     )
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 const NodeNameCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>) => {
     const { nodeName, clusterId } = row.data
 
@@ -80,6 +83,7 @@ const NodeNameCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRow
     )
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 const ClusterNameCellComponent = ({ row }: TableCellComponentProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>) => {
     const { clusterName } = row.data
 
@@ -94,6 +98,7 @@ const ClusterNameCellComponent = ({ row }: TableCellComponentProps<NodeViewGroup
 
 const AutoscalerTypeCellComponent = ({
     row,
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
 }: TableCellComponentProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>) => {
     const { autoscalerType } = row.data
     const autoscalerTypeLabel = AUTOSCALER_TYPE_LABELS[autoscalerType] || ''
@@ -109,6 +114,7 @@ const AutoscalerTypeCellComponent = ({
 
 const getGroupSpecificTableColumns = (
     nodeViewGroupType: NodeViewGroupType,
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
 ): TableColumnType<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>[] => {
     switch (nodeViewGroupType) {
         case NodeViewGroupType.NODE_ERRORS:
@@ -240,6 +246,7 @@ const NodeViewGroupListWrapper = ({
 
 const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewGroupType }) => {
     const navigate = useNavigate()
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = useCallback(
         async (
             {
@@ -289,6 +296,7 @@ const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewG
     }
 
     return (
+        // biome-ignore lint/complexity/noBannedTypes: Legacy
         <Table<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>
             id="table__node-detailed-list"
             columns={[

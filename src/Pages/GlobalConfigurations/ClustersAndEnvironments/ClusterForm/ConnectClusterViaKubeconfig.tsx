@@ -72,8 +72,8 @@ const ConnectClusterViaKubeconfig = ({ reload, handleModalClose }: ConnectCluste
             const payload = getSaveClusterPayload(dataList)
             await saveClusters(payload).then((response) => {
                 const _clusterList = response.result.map((_clusterSaveDetails) => {
-                    let status
-                    let message
+                    let status: string
+                    let message: string
                     if (
                         _clusterSaveDetails.errorInConnecting.length === 0 &&
                         _clusterSaveDetails.clusterUpdated === false
@@ -251,8 +251,10 @@ const ConnectClusterViaKubeconfig = ({ reload, handleModalClose }: ConnectCluste
                     ) : (
                         saveClusterList.map((clusterListDetail, index) => (
                             <div
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={`api_${index}`}
+                                key={`api_${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    index
+                                }`}
                                 className="saved-cluster-list-row cluster-env-list_table dc__grid dc__column-gap-12 flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                             >
                                 <div
@@ -317,8 +319,10 @@ const ConnectClusterViaKubeconfig = ({ reload, handleModalClose }: ConnectCluste
                     <div style={{ height: 'auto' }}>
                         {dataList.map((clusterDetail, index) => (
                             <div
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={`api_${index}`}
+                                key={`api_${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    index
+                                }`}
                                 className="cluster-list-row-1 border__secondary--bottom flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                                 style={{
                                     height: 'auto',
@@ -345,6 +349,7 @@ const ConnectClusterViaKubeconfig = ({ reload, handleModalClose }: ConnectCluste
                                                   .length > 0
                                     }
                                 />
+                                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                 <div
                                     className="flexbox"
                                     onClick={() => {

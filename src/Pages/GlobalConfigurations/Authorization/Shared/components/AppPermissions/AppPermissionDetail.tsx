@@ -44,18 +44,23 @@ const AppPermissionDetail = ({
     return (
         <>
             <div className={`w-100 pt-6 pb-6 dc__gap-8 display-grid ${rowClass} fw-6 fs-12 cn-7 dc__uppercase`}>
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                 <label className="mb-0">Project</label>
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 3 : 0 }}>
                     Environment{accessType === ACCESS_TYPE_MAP.HELM_APPS ? ' or cluster/namespace' : ''}
                 </label>
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 1 : 0 }}>
                     {isAccessTypeJob ? 'Job Name' : 'Application'}
                 </label>
                 {isAccessTypeJob && (
+                    // biome-ignore lint/a11y/noLabelWithoutControl: Legacy
                     <label className="mb-0" style={{ order: isAccessTypeJob ? 2 : 0 }}>
                         Workflow
                     </label>
                 )}
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 4 : 0 }}>
                     {accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'Permission' : 'Role'}
                 </label>
@@ -73,7 +78,7 @@ const AppPermissionDetail = ({
                         permission.accessType === accessType && (
                             <div
                                 className={`w-100 dc__gap-8 display-grid ${rowClass}`}
-                                // eslint-disable-next-line react/no-array-index-key
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                                 key={idx}
                             >
                                 <DirectPermission

@@ -23,7 +23,7 @@ import AsyncSelect from 'react-select/async'
 import { getNoMatchingResultText, InfoBlock, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import Refetch from '../../../../assets/icons/ic-restore.svg?react'
-import Error from '../../../../assets/icons/ic-warning.svg?react'
+import ErrorIcon from '../../../../assets/icons/ic-warning.svg?react'
 import { getChartsByKeyword } from '../../../charts/charts.service'
 import { getCommonSelectStyle } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
@@ -48,7 +48,7 @@ export const ChartRepoSelector = ({
             try {
                 const { result } = await getChartsByKeyword(chartDetails.chartName)
                 filterMatchedCharts(result)
-            } catch (e) {
+            } catch {
                 filterMatchedCharts([])
             } finally {
                 setRepoChartAPIMade(true)
@@ -64,7 +64,9 @@ export const ChartRepoSelector = ({
 
     function filterMatchedCharts(matchedCharts) {
         if (repoChartOptions !== null) {
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             const deprecatedCharts = []
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             const nonDeprecatedCharts = []
             for (let i = 0; i < matchedCharts.length; i++) {
                 if (matchedCharts[i].deprecated) {
@@ -83,7 +85,7 @@ export const ChartRepoSelector = ({
         try {
             const { result } = await getChartsByKeyword(inputValue)
             return filterMatchedCharts(result)
-        } catch (err) {
+        } catch {
             return filterMatchedCharts([])
         }
     }
@@ -165,6 +167,7 @@ export const ChartRepoSelector = ({
                         arrow={false}
                         content="Fetch latest charts from connected chart repositories"
                     >
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <span
                             className={`refetch-charts cb-5 cursor dc__underline-onhover ${
                                 refetchingCharts ? 'refetching' : ''
@@ -210,7 +213,7 @@ export const ChartRepoSelector = ({
                 {repoChartValue.deprecated && (
                     <div className="chart-deprecated-wrapper flex top left br-4 cn-9 bcy-1 mt-12">
                         <div className="icon-dim-16 mr-10">
-                            <Error className="icon-dim-16 chart-deprecated-icon" />
+                            <ErrorIcon className="icon-dim-16 chart-deprecated-icon" />
                         </div>
                         <span className="chart-deprecated-text fs-12 fw-4">{CHART_DEPCRECATED_TEXTS.InfoText}</span>
                     </div>

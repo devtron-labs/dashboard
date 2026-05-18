@@ -80,7 +80,7 @@ import { ResourceBrowserTabsId } from '@Components/ResourceBrowser/Constants'
 
 const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
-let clusterTimeOut
+let clusterTimeOut: ReturnType<typeof setTimeout>
 
 const ClusterTerminal = ({
     clusterId,
@@ -820,11 +820,13 @@ const ClusterTerminal = ({
             return (
                 <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
+                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                     <span className="cursor dc__underline" onClick={selectEventsTab}>
                         {TERMINAL_TEXT.CHECK_POD_EVENTS}
                     </span>
                     &nbsp;
                     {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
+                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                     <span className="cursor dc__underline" onClick={socketConnecting}>
                         {TERMINAL_TEXT.RETRY_CONNECTION}
                     </span>
@@ -837,6 +839,7 @@ const ClusterTerminal = ({
             return (
                 <div className="pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
+                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                     <span className="cursor dc__underline" onClick={reconnectTerminal}>
                         {TERMINAL_TEXT.INITIATE_CONNECTION}
                     </span>

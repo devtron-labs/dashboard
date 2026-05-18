@@ -83,8 +83,9 @@ export const NoExternalLinksView = ({
             }
             isButtonAvailable
             renderButton={handleButton}
-            children={isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
-        />
+        >
+            {isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
+        </GenericEmptyState>
     )
 }
 
@@ -117,7 +118,7 @@ const renderInfoDescription = (userRole) => {
     )
 }
 
-export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
+export const RoleBasedInfoNote = ({ userRole }: RoleBasedInfoNoteProps) => {
     return (
         <div className="flexbox-col px-20">
             <InfoBlock description={renderInfoDescription(userRole)} />
@@ -272,7 +273,10 @@ export const AppLevelExternalLinks = ({
                     <div className="flex left flex-wrap dc__gap-8">
                         {appLevelExternalLinks.map((link, idx) => (
                             <ExternalLinkChip
-                                key={`${link.label}-${idx}`}
+                                key={`${link.label}-${
+                                    // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                    idx
+                                }`}
                                 linkOption={link}
                                 idx={idx}
                                 handleOpenModal={handleOpenModal}
@@ -350,7 +354,7 @@ export const ValueContainer = (props): JSX.Element => {
                     {React.cloneElement(props.children[1])}
                 </>
             ) : (
-                <>{props.children}</>
+                props.children
             )}
         </components.ValueContainer>
     )
@@ -362,6 +366,7 @@ export const FilterMenuList = (props): JSX.Element => {
             {props.children}
             <div className="flex dc__react-select__bottom bg__primary p-8">
                 <button
+                    type="button"
                     data-testid="external-link-filter-button"
                     className="flex cta apply-filter"
                     onClick={props.handleFilterQueryChanges}
@@ -378,31 +383,29 @@ export const ToolsMenuList = (props): JSX.Element => {
 
     return (
         <components.MenuList {...props}>
-            <>
-                {props.options ? (
-                    <div className="link-tool-options-wrapper">
-                        {props.options.map((_opt, idx) => (
-                            <Fragment key={_opt.label}>
-                                <div className="link-tool-option">
-                                    {_opt.options?.map((_option) => {
-                                        return customOption(
-                                            _option,
-                                            true,
-                                            (_option) => props.selectOption(_option),
-                                            _option.label === props.selectProps?.value?.label,
-                                            true,
-                                            true,
-                                        )
-                                    })}
-                                </div>
-                                {lastIndex !== idx && <div className="dc__border-bottom-n1" />}
-                            </Fragment>
-                        ))}
-                    </div>
-                ) : (
-                    <span className="flex p-8 cn-5">No options</span>
-                )}
-            </>
+            {props.options ? (
+                <div className="link-tool-options-wrapper">
+                    {props.options.map((_opt, idx) => (
+                        <Fragment key={_opt.label}>
+                            <div className="link-tool-option">
+                                {_opt.options?.map((_option) => {
+                                    return customOption(
+                                        _option,
+                                        true,
+                                        (_option) => props.selectOption(_option),
+                                        _option.label === props.selectProps?.value?.label,
+                                        true,
+                                        true,
+                                    )
+                                })}
+                            </div>
+                            {lastIndex !== idx && <div className="dc__border-bottom-n1" />}
+                        </Fragment>
+                    ))}
+                </div>
+            ) : (
+                <span className="flex p-8 cn-5">No options</span>
+            )}
         </components.MenuList>
     )
 }
@@ -426,12 +429,14 @@ export const customOption = (
 
     return (
         _src && (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className={`custom-option-with-icon flex icon-dim-36 ${isSelected ? 'bcb-1' : ''}`}
                 key={data.label}
                 onClick={onClickHandler}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={data.label}>
+                    {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions: Legacy */}
                     <img
                         src={_src}
                         alt={data.label}
@@ -467,7 +472,7 @@ export const customValueContainerWithIcon = (props) => {
                     })}
                 </>
             ) : (
-                <>{props.children}</>
+                props.children
             )}
         </components.ValueContainer>
     )

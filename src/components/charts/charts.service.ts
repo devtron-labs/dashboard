@@ -87,7 +87,7 @@ export function deleteInstalledChart(
 }
 
 export function getChartValuesCategorizedList(chartId: number | string, installedAppVersionId = null): Promise<any> {
-    let URL
+    let URL: string
     if (installedAppVersionId) {
         URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}?installedAppVersionId=${installedAppVersionId}`
     } else {
@@ -106,10 +106,10 @@ export function getChartValuesCategorizedListParsed(
         const deployedCharts = list.find((chartList) => chartList.kind === 'DEPLOYED')
         const defaultCharts = list.find((chartList) => chartList.kind === 'DEFAULT')
         const existingCharts = list.find((chartList) => chartList.kind === 'EXISTING')
-        let savedChartValues = savedCharts && savedCharts.values ? savedCharts.values : []
-        let deployedChartValues = deployedCharts && deployedCharts.values ? deployedCharts.values : []
-        let defaultChartValues = defaultCharts && defaultCharts.values ? defaultCharts.values : []
-        let existingChartValues = existingCharts && existingCharts.values ? existingCharts.values : []
+        let savedChartValues = savedCharts?.values ? savedCharts.values : []
+        let deployedChartValues = deployedCharts?.values ? deployedCharts.values : []
+        let defaultChartValues = defaultCharts?.values ? defaultCharts.values : []
+        let existingChartValues = existingCharts?.values ? existingCharts.values : []
 
         savedChartValues = savedChartValues.map((chart) => {
             return { ...chart, kind: 'TEMPLATE' }

@@ -90,6 +90,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const [showTokenNameError, setTokenNameError] = useState(false)
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     const [webhookResponse, setWebhookResponse] = useState<Object>(null)
     const [generatedAPIToken, setGeneratedAPIToken] = useState<string>(null)
     const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
@@ -112,7 +113,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
 
     const clipboardContent = window.location.href
 
-    const handleCopyButtonClick = async () => {
+    const handleCopyButtonClick = () => {
         setCopyToClipboardPromise(copyToClipboard(clipboardContent))
     }
 
@@ -213,7 +214,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 setTokenList(sortedResult)
             }
             setLoader(false)
-        } catch (error) {
+        } catch {
             setIsSuperAdmin(false)
             setLoader(false)
             setErrorInGetData(true)
@@ -289,6 +290,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const generateTabHeader = (
         tabList: TabDetailsType[],
         selectedTab: string,
+        // biome-ignore lint/suspicious/noConfusingVoidType: Legacy
         setSelectedTab: (selectedTab: string, index: number) => void | React.Dispatch<React.SetStateAction<string>>,
         isChildTab?: boolean,
         index?: number,
@@ -390,7 +392,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         )
     }
 
-    const handleCopyToClipboard = async ({ e, token }: { e: MouseEvent; token: string }) => {
+    const handleCopyToClipboard = ({ e, token }: { e: MouseEvent; token: string }) => {
         stopPropagation(e)
         setCopyToClipboardPromise(copyToClipboard(token))
     }
@@ -565,6 +567,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                             <span className="dc__ellipsis-right">{key}</span>
                             <span className="dc__ellipsis-right">
                                 {data.createLink ? (
+                                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                     <span
                                         className="cb-5 cursor"
                                         onClick={() => handleSchemaClick(`${schemaName}-${key}`)}
@@ -589,7 +592,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             <div>
                 {renderSchema(schema['root'], `${schemaName}-root`)}
                 {Object.keys(schema).map((key) => {
-                    const data = schema[key]
                     if (key === 'root') {
                         return null
                     }
@@ -679,8 +681,12 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 </div>
                 <div className="">
                     {webhookDetails?.payloadOption.map((option, index) => (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
-                            key={`md-${index}`}
+                            key={`md-${
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                index
+                            }`}
                             className={`dc__inline-block bw-1 br-4 mr-8 mb-8 pt-2 pr-8 pb-2 pl-8 ${
                                 option.isSelected ? 'bcb-1 eb-2' : 'en-2'
                             } ${option.mandatory ? '' : 'pointer'}`}
@@ -716,7 +722,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const changePayload = (codeEditorData: string): void => {
         try {
             setModifiedSampleString(codeEditorData)
-        } catch (error) {}
+        } catch {}
     }
 
     const renderCodeEditor = (): JSX.Element => {
@@ -803,6 +809,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         <div>Description</div>
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
+                        // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                         <div className="response-row pt-8 pb-8">
                             <div className="fs-13 fw-4 cn-9" data-testid="response-code">
                                 {response.code}
@@ -833,10 +840,11 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             setTryoutAPITokenError(true)
             return
         }
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let _modifiedPayload
         try {
             _modifiedPayload = JSON.parse(modifiedSampleString)
-        } catch (error) {
+        } catch {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Invalid JSON',

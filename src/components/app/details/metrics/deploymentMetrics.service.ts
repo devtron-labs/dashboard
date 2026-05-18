@@ -50,7 +50,7 @@ export async function getDeploymentMetrics(
 export function createGraphs(responseResult, startTime: string, endTime: string) {
     const s = moment(startTime)
     const e = moment(endTime)
-    if (!responseResult || !responseResult.series || responseResult.series.length === 0 || !s || !e) {
+    if (!responseResult?.series || responseResult.series.length === 0 || !s || !e) {
         return {
             avgFrequency: 0,
             failureRate: 0,
@@ -75,7 +75,9 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
     const numberOfWeeks = Math.ceil(numberOfDays / 7)
     const millisecondsInWeek = 7 * millisecondsInDay
 
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     const frequencyGraph = []
+    // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
     let recoveryTimeGraph = []
 
     if (numberOfDays <= 30) {
@@ -110,12 +112,12 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
         }
     }
 
-    frequencyGraph.forEach((g, i) => {
+    frequencyGraph.forEach((g) => {
         const deployments = allDeployments.filter((d) => d.ts >= g.startTime && d.ts < g.endTime)
         const failures = deployments.filter((d) => d.release_status === 1)
         const success = deployments.filter((d) => d.release_status === 0)
         const leadTimeArr = deployments.map((d) => Math.round(d.lead_time))
-        if (!leadTimeArr || !leadTimeArr.length) {
+        if (!leadTimeArr?.length) {
             leadTimeArr.push(0)
         }
         g.maxLeadTime = Math.max(...leadTimeArr)
@@ -128,11 +130,9 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
         g.failures = failures.length
     })
 
-    let sumRecoveryTime = 0
     recoveryTimeGraph = allDeployments
         .filter((d) => d.release_status === 1)
         .map((d) => {
-            sumRecoveryTime += d.recovery_time
             return {
                 recoveryTime: d.recovery_time,
                 releaseTime: moment(d.release_time),
@@ -182,7 +182,7 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
 function createDeploymentTableRows(responseResult, startTime: string, endTime: string) {
     const s = moment(startTime)
     const e = moment(endTime)
-    if (!responseResult || !responseResult.series || responseResult.series.length === 0 || !s || !e) {
+    if (!responseResult?.series || responseResult.series.length === 0 || !s || !e) {
         return []
     }
 
@@ -204,6 +204,7 @@ function createDeploymentTableRows(responseResult, startTime: string, endTime: s
                 value: Math.round(deployment.recovery_time),
                 label: deployment.recovery_time > 0 ? createTimestamp(deployment.recovery_time) : '-',
             },
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             status: deployment.release_type == 1 ? 'Failed' : 'Success',
             deploymentSize: deployment.deployment_size,
             releaseStatus: deployment.release_status,
@@ -251,6 +252,7 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
 }
 
 export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
+    // biome-ignore lint/suspicious/noGlobalIsNan: Legacy
     if (isNaN(failureRate)) {
         return {
             name: 'UNKNOWN',
@@ -294,6 +296,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
 }
 
 export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
+    // biome-ignore lint/suspicious/noGlobalIsNan: Legacy
     if (isNaN(leadTimeInMinutes)) {
         return {
             name: 'UNKNOWN',
@@ -382,11 +385,14 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
 }
 
 export function createTimestamp(timeInMinutes: number): string {
+    // biome-ignore lint/suspicious/noGlobalIsNan: Legacy
     if (isNaN(timeInMinutes) || timeInMinutes === 0) {
         return `0m`
     }
 
+    // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
     let q
+    // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
     let r
     let result = ''
     let time = timeInMinutes

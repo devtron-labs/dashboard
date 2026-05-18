@@ -40,7 +40,7 @@ import GraphIcon from '../../../../assets/icons/ic-graph.svg?react'
 import OpenInNew from '../../../../assets/icons/ic-open-in-new.svg?react'
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
-import { APP_COMPOSE_STAGE, DEFAULTK8SVERSION, getAppComposeURL, ModuleNameMap, URLS } from '../../../../config'
+import { APP_COMPOSE_STAGE, DEFAULTK8SVERSION, getAppComposeURL, ModuleNameMap } from '../../../../config'
 import { getHostURLConfiguration } from '../../../../services/service'
 import { InValidHostUrlWarningBlock } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -158,7 +158,7 @@ export const AppMetrics: React.FC<{
                     dataSourceName: '',
                 })
             }
-        } catch (error) {
+        } catch {
             setDatasource({
                 ...datasource,
                 isLoading: false,
@@ -497,7 +497,7 @@ const PrometheusError = () => {
     return (
         <div className="flex upgrade-chart-container">
             <div className="upgrade-chart-main">
-                <img src={PrometheusErrorImage} style={{ width: '200px', height: '160px' }} />
+                <img alt="Prometheus Error" src={PrometheusErrorImage} style={{ width: '200px', height: '160px' }} />
                 <div className="flex left column upgrade-chart-text">
                     <b>Unable to show infra metrics</b>
                     <span>
@@ -572,6 +572,7 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
     }
     return (
         <div className="bg__primary w-100 pt-18 pb-18 pl-20 pr-20 cursor">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />

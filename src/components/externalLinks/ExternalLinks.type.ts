@@ -186,7 +186,6 @@ export interface GetAllAppResponseType extends ResponseType {
 
 export interface RoleBasedInfoNoteProps {
     userRole: UserRoleType
-    listingView?: boolean
 }
 
 export interface IdentifierSelectorProps {

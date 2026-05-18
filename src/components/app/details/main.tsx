@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, PropsWithChildren, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { MultiValue } from 'react-select'
 
@@ -51,7 +51,12 @@ import './app.scss'
 
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
-import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+import {
+    CreateGroupAppListType,
+    FilterParentType,
+    GroupOptionType,
+    SetFiltersInLocalStorageParamsType,
+} from '../../ApplicationGroup/AppGroup.types'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
@@ -150,9 +155,9 @@ export default function AppDetailsPage() {
         setAppListLoading(true)
         setGroupFilterOptions([])
         const { result } = await getEnvGroupList(+appId, FilterParentType.app)
-        const _groupFilterOption = []
+        const _groupFilterOption: GroupOptionType[] = []
         if (result) {
-            let _selectedGroup
+            let _selectedGroup: SetFiltersInLocalStorageParamsType['groupList'][number]
             for (const group of result) {
                 const processedGroupData = {
                     value: group.id.toString(),
@@ -231,8 +236,10 @@ export default function AppDetailsPage() {
         } catch (err) {
             const _map = new Map<string, boolean>()
             if (err['code'] === 403) {
+                // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
+                // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                 err['errors'].map((errors) => {
                     arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
                     errors['userMessage']['unauthorizedApps'].forEach((element) => {
@@ -275,7 +282,7 @@ export default function AppDetailsPage() {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
-        let _selectedGroup
+        let _selectedGroup: GroupOptionType
         const _allAppIds: number[] = []
         if (groupId) {
             _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)

@@ -20,7 +20,7 @@ import { MaterialSourceProps } from './types'
 
 import { getGitProviderIcon } from '@Components/common'
 import Refresh from '@Icons/ic-restore.svg?react'
-import Error from '@Icons/ic-warning.svg?react'
+import ErrorIcon from '@Icons/ic-warning.svg?react'
 
 export default function MaterialSource({
     material,
@@ -55,7 +55,7 @@ export default function MaterialSource({
         if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError || mat.isMaterialSelectionError) {
             return (
                 <div data-testid="material-error" className="flex fs-10">
-                    <Error className="form__icon--error icon-dim-14 mr-5" />
+                    <ErrorIcon className="form__icon--error icon-dim-14 mr-5" />
                     <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
@@ -100,7 +100,9 @@ export default function MaterialSource({
         <div className="flexbox-col flex-grow-1">
             {material.map((mat, index) => {
                 return (
+                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                     <div
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                         key={index}
                         data-id={mat.id}
                         data-testid={`material-list-item-${index}`}
@@ -125,6 +127,7 @@ export default function MaterialSource({
                         {refreshMaterial ? (
                             <div className="material-info w-100">
                                 {renderMaterialUpdateInfo(mat)}
+                                {/** biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                                 {mat.type != SourceTypeMap.WEBHOOK && renderRefreshButton(mat)}
                             </div>
                         ) : null}

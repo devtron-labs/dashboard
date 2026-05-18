@@ -18,6 +18,7 @@ import {
     CIBuildType,
     DockerConfigOverrideType,
     getUniqueId,
+    Material,
     multiSelectStyles,
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -58,7 +59,7 @@ export const _multiSelectStyles = {
 
 export const tempMultiSelectStyles = {
     ...multiSelectStyles,
-    multiValue: (base, state) => {
+    multiValue: (base) => {
         return {
             ...base,
             border: `1px solid var(--N200)`,
@@ -129,16 +130,14 @@ export const getCIConfigFormState = (
             value:
                 (selectedCIPipeline?.isDockerConfigOverridden
                     ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
-                    : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
-                      ciConfig.ciBuildConfig.dockerBuildConfig?.dockerfileRelativePath) || 'Dockerfile',
+                    : ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath) || 'Dockerfile',
             error: '',
         },
         projectPath: {
             value:
                 (selectedCIPipeline?.isDockerConfigOverridden
                     ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildPackConfig?.projectPath
-                    : ciConfig?.ciBuildConfig?.buildPackConfig &&
-                      ciConfig.ciBuildConfig.buildPackConfig?.projectPath) || '',
+                    : ciConfig?.ciBuildConfig?.buildPackConfig?.projectPath) || '',
             error: '',
         },
         registry: { value: currentRegistry?.id, error: '' },
@@ -153,7 +152,7 @@ export const getCIConfigFormState = (
         buildContext: {
             value: selectedCIPipeline?.isDockerConfigOverridden
                 ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
-                : ciConfig?.ciBuildConfig?.dockerBuildConfig && ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext,
+                : ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext,
             error: '',
         },
         useRootBuildContext: {
@@ -422,14 +421,16 @@ const updateBuildpackDiffValues = (
 export const getCIConfigDiffValues = (
     globalCIConfig: DockerConfigOverrideType,
     ciConfigOverride: DockerConfigOverrideType,
-    materials,
+    materials: Material[],
     gitMaterials,
 ): CIConfigDiffType[] => {
     const globalCIBuildType = globalCIConfig.ciBuildConfig?.ciBuildType
     const ciBuildTypeOverride = ciConfigOverride?.ciBuildConfig?.ciBuildType
-    let globalGitMaterialName
-    let currentMaterialName
+    let globalGitMaterialName: Material['materialName']
+    let currentMaterialName: Material['materialName']
+    // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
     let globalBuildContextGitMaterialItem
+    // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
     let currentBuildContextGitMaterialItem
     let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext
     let currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext

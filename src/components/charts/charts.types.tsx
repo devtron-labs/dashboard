@@ -69,8 +69,10 @@ export interface HeaderProps {
     tabs: [{ key: string; isActive: boolean }]
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export interface ChartsProps extends RouterV5Props<{}> {}
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export interface DeployedChartProps extends RouterV5Props<{}> {}
 
 export interface DeployedChartState {
@@ -178,6 +180,7 @@ interface ChartGroupCreate {
     name: string
     description?: string
 }
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export interface CreateChartGroupProps extends RouterV5Props<{}> {
     closeChartGroupModal: (props: ChartGroupCreate | null) => void
     chartGroupId?: number
@@ -234,8 +237,10 @@ export interface ChartGroupListProps {
     chartGroups: ChartGroup[]
 }
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export interface DiscoverChartsContainerProps extends RouterV5Props<{}> {}
 
+// biome-ignore lint/complexity/noBannedTypes: Legacy
 export type ChartGroupProviderProps = {}
 
 export interface DiscoverChartsContainerState {
@@ -372,6 +377,7 @@ export interface EmptyCharts {
     onClickViewChartButton?: () => void
     buttonText?: string
     subTitle?: string
+    // biome-ignore lint/complexity/noBannedTypes: Legacy
     styles?: {}
     showChartGroupModal?: boolean
     toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>

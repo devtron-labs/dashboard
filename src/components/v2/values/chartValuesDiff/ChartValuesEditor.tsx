@@ -68,7 +68,7 @@ const CompareWithDropdown = ({
     ])
 
     useEffect(() => {
-        const _groupedOptions = []
+        const _groupedOptions: typeof groupedOptions = []
         if (deploymentHistoryOptionsList?.length > 0) {
             _groupedOptions.push({
                 label: GROUPED_OPTION_LABELS.PreviousDeployments,
@@ -156,10 +156,10 @@ export default function ChartValuesEditor({
             chartValuesList.length > 0 &&
             (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
         if (ExternalModeCondition || FullModeCondition) {
-            const deployedChartValues = []
-            const defaultChartValues = []
-            const presetChartValues = []
-            let _selectedVersionForDiff
+            const deployedChartValues: ValuesForDiffStateType['deployedChartValues'] = []
+            const defaultChartValues: ValuesForDiffStateType['defaultChartValues'] = []
+            const presetChartValues: ValuesForDiffStateType['presetChartValues'] = []
+            let _selectedVersionForDiff: ValuesForDiffStateType['selectedVersionForDiff']
 
             for (let index = 0; index < chartValuesList.length; index++) {
                 const _chartValue = chartValuesList[index]
@@ -259,7 +259,7 @@ export default function ChartValuesEditor({
                             let _selectedValues: string
                             try {
                                 _selectedValues = YAMLStringify(JSON.parse(res.result.valuesYaml))
-                            } catch (error) {
+                            } catch {
                                 _selectedValues = res.result.valuesYaml
                             }
                             _valuesForDiff.set(_version, _selectedValues)
@@ -303,7 +303,7 @@ export default function ChartValuesEditor({
             (!comparisonView && valuesForDiffState.selectedVersionForDiff) ||
             (comparisonView && !valuesForDiffState.selectedVersionForDiff)
         ) {
-            let _selectedVersionForDiff
+            let _selectedVersionForDiff: ValuesForDiffStateType['selectedVersionForDiff']
             if (isCreateValueView && selectedChartValues && valuesForDiffState.selectedVersionForDiff) {
                 if (valuesForDiffState.selectedVersionForDiff.value !== selectedChartValues?.id) {
                     const listToTraverse =

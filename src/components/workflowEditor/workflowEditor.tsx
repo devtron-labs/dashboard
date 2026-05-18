@@ -167,8 +167,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
-                let isDeletionInProgress
-                const _envIds = []
+                let isDeletionInProgress: boolean | undefined
+                const _envIds: number[] = []
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
                         if (node.type === WorkflowNodeType.CI) {
@@ -221,7 +221,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .then((response) => {
                 this.setState({ hostURLConfig: response.result })
             })
-            .catch((error) => {})
+            .catch(() => {})
     }
 
     async checkGitOpsConfiguration(): Promise<void> {
@@ -234,7 +234,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 if (!result.isInstalled || !result.isConfigured) {
                     this.setState({ noGitOpsModuleInstalledAndConfigured: true })
                 }
-            } catch (error) {}
+            } catch {}
         }
     }
 
@@ -415,7 +415,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.navigate(LINK)
     }
 
-    openEditWorkflow = (event, workflowId: number): string => {
+    openEditWorkflow = (_event, workflowId: number): string => {
         return `${workflowId}/edit`
     }
 
@@ -518,7 +518,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         // and compute the maximum y of the bufferNodes and if there are downstreams > 1 then also for maxY, we will check maxY using node.y and depth
         if (selectedNode) {
             // would check if selectedNode.type and selectedNode.id is same as node.id and node.type
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             let _wf = null
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             let _node = null
             this.state.workflows.forEach((wf) => {
                 if (!_wf) {
@@ -534,6 +536,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             if (_node) {
                 const { downstreamNodes } = getAllChildDownstreams(_node, _wf)
                 const firstLevelDownstreamMaxY = getMaxYFromFirstLevelDownstream(_node, _wf)
+                // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
                 const bufferNodes = []
                 if (downstreamNodes.length > 0) {
                     _wf.nodes.forEach((wfNode) => {

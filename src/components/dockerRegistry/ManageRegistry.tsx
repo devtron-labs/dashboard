@@ -127,6 +127,7 @@ const ManageRegistry = ({
             <div className="flex dc__content-space center">
                 <div className="flexbox">
                     If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
+                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                     <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
                         Confirm to edit
                     </span>
@@ -157,7 +158,7 @@ const ManageRegistry = ({
         )
     }
 
-    const renderNotDefinedView = (key: string): JSX.Element => {
+    const renderNotDefinedView = (): JSX.Element => {
         return (
             <div className="flex dc__content-space en-2 bw-1 bcn-1 br-4 pl-10 pr-10 pt-8 pb-8">
                 <div className="bcn-1 cursor-not-allowed">Not defined</div>
@@ -235,7 +236,7 @@ const ManageRegistry = ({
             return renderNoSelectionView()
         }
         if (whiteList.length === 0 && !blackListEnabled) {
-            return renderNotDefinedView('blacklist')
+            return renderNotDefinedView()
         }
         return (
             <Select
@@ -284,7 +285,7 @@ const ManageRegistry = ({
             return renderNoSelectionView()
         }
         if (blackList.length === 0 && blackListEnabled) {
-            return renderNotDefinedView('whitelist')
+            return renderNotDefinedView()
         }
         if (blackList.length === 0) {
             return (
@@ -368,6 +369,7 @@ const ManageRegistry = ({
 
     return (
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div
                 className="p-16 dc__border-bottom flex dc__content-space"
                 style={{ backgroundColor: 'var(--bg-secondary)' }}

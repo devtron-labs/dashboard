@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { SyntheticEvent, useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 
 import { MODAL_TYPE, Progressing, stopPropagation, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -110,32 +110,32 @@ export const HibernateModal = ({
 
     return (
         <VisibleModal close={closeModal} onEscape={closeModal} className="">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: stopPropagation */}
             <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
                 {isDeploymentWindowLoading ? (
                     <div className="mh-150 flex">
                         <Progressing />
                     </div>
                 ) : (
-                    <>
-                        <div className="flexbox-col dc__gap-12">
-                            {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? (
-                                <HibernateModalIcon className="dc__align-left" />
-                            ) : (
-                                <ICUnHibernate className="dc__align-left" />
-                            )}
-                            <span className="fs-16 fw-6">
-                                {`${openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'} '${
-                                    isCurrentSelected
-                                        ? selectedAppDetailsList.application
-                                        : `${selectedAppDetailsList.length} applications`
-                                }' on '${envName}'`}
-                            </span>
-                            {renderHibernateModalBody()}
-                        </div>
-                    </>
+                    <div className="flexbox-col dc__gap-12">
+                        {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? (
+                            <HibernateModalIcon className="dc__align-left" />
+                        ) : (
+                            <ICUnHibernate className="dc__align-left" />
+                        )}
+                        <span className="fs-16 fw-6">
+                            {`${openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'} '${
+                                isCurrentSelected
+                                    ? selectedAppDetailsList.application
+                                    : `${selectedAppDetailsList.length} applications`
+                            }' on '${envName}'`}
+                        </span>
+                        {renderHibernateModalBody()}
+                    </div>
                 )}
                 <div className="pt-40 flexbox dc__content-end w-100 dc__align-end dc__gap-12">
                     <button
+                        type="button"
                         onClick={closeModal}
                         className="flex bg__primary dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                     >

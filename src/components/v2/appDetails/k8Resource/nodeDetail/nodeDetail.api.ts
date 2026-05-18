@@ -260,6 +260,7 @@ export const downloadLogs = (
     }
     const selectedNamespace = ad.resourceTree?.nodes?.find((node) => node.name === nodeName)?.namespace
     const isExternalArgoApp = ad.appType === AppType.EXTERNAL_ARGO_APP
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.ARGO ? `${ad.appName}` : ad.appName
     const appId = generateAppIdentifier(ad, applicationObject)
     let logsURL = `${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
@@ -274,7 +275,7 @@ export const downloadLogs = (
         }
     }
     logsURL += `${filter}`
-    handleDownload({ downloadUrl: logsURL, fileName: `podlogs-${nodeName}-${new Date().getTime()}.log` })
+    handleDownload({ downloadUrl: logsURL, fileName: `podlogs-${nodeName}-${Date.now()}.log` })
 }
 
 export const getLogsURL = (
@@ -297,6 +298,7 @@ export const getLogsURL = (
     } else {
         filter = getFilterWithValue(logsOption.type, logsOption.value)
     }
+    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.ARGO ? `${ad.appName}` : ad.appName
     const selectedNamespace = ad.resourceTree?.nodes?.find(
         (nd) => nd.name === podName || nd.name === nodeName,
@@ -324,6 +326,7 @@ export const getPodRestartRBACPayload = (appDetails?: AppDetails) => {
     }
 
     const applicationObject =
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         appDetails.deploymentAppType == DeploymentAppTypes.ARGO ? `${appDetails.appName}` : appDetails.appName
 
     const appId = generateAppIdentifier(appDetails, applicationObject)
@@ -378,6 +381,7 @@ export const generateEphemeralUrl = ({
     params,
 }: EphemeralContainerProps) => {
     const appIds =
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType })
@@ -399,6 +403,7 @@ export const deleteEphemeralUrl = ({
     params,
 }: EphemeralContainerProps) => {
     const appIds =
+        // biome-ignore lint/suspicious/noDoubleEquals: Legacy
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType })

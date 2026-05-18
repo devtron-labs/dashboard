@@ -122,7 +122,7 @@ export function getCDPipelineV2(appId: string, pipelineId: string, isTemplateVie
     return get(URL)
 }
 
-export async function getCDPipelineConfig(
+export function getCDPipelineConfig(
     appId: string,
     pipelineId: string,
     isTemplateView: AppConfigProps['isTemplateView'],
@@ -138,6 +138,7 @@ export async function getCDPipelineConfig(
                     id: env.id,
                     name: env.environment_name,
                     namespace: env.namespace || '',
+                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                     active: envId == env.id,
                     isClusterCdActive: env.isClusterCdActive,
                     allowedDeploymentTypes: env.allowedDeploymentTypes || [],
@@ -171,14 +172,14 @@ export function getConfigMapAndSecrets(appId: string, envId, isTemplateView: App
         getEnvironmentConfigs(appId, envId, isTemplateView),
         getEnvironmentSecrets(appId, envId, isTemplateView),
     ]).then(([configMapResponse, secretResponse]) => {
-        const configmaps =
-            configMapResponse.result && configMapResponse.result.configData ? configMapResponse.result.configData : []
-        const secrets =
-            secretResponse.result && secretResponse.result.configData ? secretResponse.result.configData : []
+        const configmaps = configMapResponse.result?.configData ? configMapResponse.result.configData : []
+        const secrets = secretResponse.result?.configData ? secretResponse.result.configData : []
 
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         configmaps.sort((a, b) => {
             sortCallback('name', a, b)
         })
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
         secrets.sort((a, b) => {
             sortCallback('name', a, b)
         })

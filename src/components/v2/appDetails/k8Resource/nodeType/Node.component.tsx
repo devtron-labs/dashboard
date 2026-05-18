@@ -106,8 +106,8 @@ const NodeComponent = ({
 
     useEffect(() => {
         if (externalLinks?.length > 0) {
-            const _podLevelExternalLinks = []
-            const _containerLevelExternalLinks = []
+            const _podLevelExternalLinks: OptionTypeWithIcon[] = []
+            const _containerLevelExternalLinks: OptionTypeWithIcon[] = []
 
             externalLinks.forEach((link) => {
                 if (link.url.includes('{podName}') && !link.url.includes('{containerName}')) {
@@ -173,7 +173,7 @@ const NodeComponent = ({
                     _healthyNodeCount += 1
                 }
             })
-            let podsType = []
+            let podsType: iNode[] = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
                     podMetaData?.some((f) => f.name === el.name && !!f.isNew === podType),
@@ -387,8 +387,12 @@ const NodeComponent = ({
                 : null
 
             return (
-                // eslint-disable-next-line react/no-array-index-key
-                <Fragment key={`grt${index}`}>
+                <Fragment
+                    key={`grt${
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        index
+                    }`}
+                >
                     {showNodeHeader &&
                         renderGroupHeader(
                             node.kind,
@@ -398,6 +402,7 @@ const NodeComponent = ({
                     <div
                         className={`node-row dc__align-items-center resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier} ${showAIButton ? 'explain-ai-button' : ''}`}
                     >
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <div
                             className="flex left dc__gap-8"
                             onClick={() => {
@@ -435,9 +440,12 @@ const NodeComponent = ({
                                                     } dc__border br-4 dc__w-fit-content lh-18`}
                                                 >
                                                     {getNodeDetailTabs(node.kind as NodeType).map((kind, idx) => (
+                                                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                                         <div
-                                                            // eslint-disable-next-line react/no-array-index-key
-                                                            key={`tab__${idx}`}
+                                                            key={`tab__${
+                                                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                                                idx
+                                                            }`}
                                                             data-name={kind}
                                                             data-testid={`${kind.toLowerCase()}-tab`}
                                                             onClick={onClickNodeDetailsTab}
@@ -477,9 +485,7 @@ const NodeComponent = ({
                                             {nodeStatus}
                                         </span>
                                     )}
-                                    {window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
-                                        renderConfigDriftDetectedText &&
-                                        renderConfigDriftDetectedText(node)}
+                                    {window._env_.FEATURE_CONFIG_DRIFT_ENABLE && renderConfigDriftDetectedText?.(node)}
                                     {node?.health?.message && (
                                         <>
                                             <span className="dc__bullet mw-4" />
@@ -624,8 +630,10 @@ const NodeComponent = ({
                         >
                             {tableHeader.map((cell, index) => (
                                 <div
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    key={`${cell}-${index}`} // NOTE: cell can be empty string therefore need to put index in key
+                                    key={`${cell}-${
+                                        // biome-ignore lint/suspicious/noArrayIndexKey: cell can be empty string therefore need to put index in key
+                                        index
+                                    }`}
                                     className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
                                 >
                                     <SortableTableHeaderCell isSortable={false} title={cell} />

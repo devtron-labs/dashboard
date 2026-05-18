@@ -80,6 +80,7 @@ export const renderConfigMapOutput = (configMap) => {
                 <br />
                 {configMap.message?.map((elm, index) => {
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                         <React.Fragment key={index}>
                             {elm}
                             <br />
@@ -96,13 +97,10 @@ export const renderConfigMapOutput = (configMap) => {
                 {configMap.failure == null ? (
                     <>No Result Found</>
                 ) : (
-                    <>
-                        {configMap.failure.map((elm, index) => {
-                            return (
-                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
-                            )
-                        })}
-                    </>
+                    configMap.failure.map((elm, index) => {
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                    })
                 )}
             </div>
             --------------------------
@@ -113,13 +111,10 @@ export const renderConfigMapOutput = (configMap) => {
                 {configMap.successful == null ? (
                     <>No Result Found</>
                 ) : (
-                    <>
-                        {configMap.successful.map((elm, index) => {
-                            return (
-                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
-                            )
-                        })}
-                    </>
+                    configMap.successful.map((elm, index) => {
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                    })
                 )}
             </div>
             {OutputDivider}
@@ -205,6 +200,7 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
                 <br />
                 {deploymentTemplate.message?.map((elm, index) => {
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                         <div key={index}>
                             {elm}
                             <br />
@@ -221,11 +217,10 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
                 {deploymentTemplate.failure === null ? (
                     <>No Result Found</>
                 ) : (
-                    <>
-                        {deploymentTemplate.failure.map((elm, index) => {
-                            return <React.Fragment key={index}>{renderDTResponseForOneApp(elm)}</React.Fragment>
-                        })}
-                    </>
+                    deploymentTemplate.failure.map((elm, index) => {
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        return <React.Fragment key={index}>{renderDTResponseForOneApp(elm)}</React.Fragment>
+                    })
                 )}
                 <br />
             </div>
@@ -237,11 +232,10 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
                 {deploymentTemplate.successful == null ? (
                     <>No Result Found</>
                 ) : (
-                    <>
-                        {deploymentTemplate.successful.map((elm, index) => {
-                            return <React.Fragment key={index}>{renderDTResponseForOneApp(elm)}</React.Fragment>
-                        })}
-                    </>
+                    deploymentTemplate.successful.map((elm, index) => {
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        return <React.Fragment key={index}>{renderDTResponseForOneApp(elm)}</React.Fragment>
+                    })
                 )}
             </div>
             {OutputDivider}
@@ -261,6 +255,7 @@ export const renderSecretOutput = (secret) => {
                 <br />
                 {secret.message?.map((elm, index) => {
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                         <React.Fragment key={index}>
                             {elm}
                             <br />
@@ -277,13 +272,10 @@ export const renderSecretOutput = (secret) => {
                 {secret.failure == null ? (
                     <>No Result Found</>
                 ) : (
-                    <>
-                        {secret.failure.map((elm, index) => {
-                            return (
-                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
-                            )
-                        })}
-                    </>
+                    secret.failure.map((elm, index) => {
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                    })
                 )}
                 <br />
             </div>
@@ -295,13 +287,10 @@ export const renderSecretOutput = (secret) => {
                 {secret.successful == null ? (
                     <>No Result Found</>
                 ) : (
-                    <>
-                        {secret.successful.map((elm, index) => {
-                            return (
-                                <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
-                            )
-                        })}
-                    </>
+                    secret.successful.map((elm, index) => {
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                        return <React.Fragment key={index}>{renderCmAndSecretResponseForOneApp(elm)}</React.Fragment>
+                    })
                 )}
             </div>
             {OutputDivider}

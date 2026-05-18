@@ -316,9 +316,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             <section className="graph-modal flexbox w-100 h-100">
                 <div className="graph-modal__left">
                     {this.props.infraMetrics && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className={`app-details-graph pt-4 cursor ${this.state.mainChartName === 'cpu' ? 'app-details-graph__iframe--selected' : ''}`}
-                            onClick={(e) => this.handleChartChange(ChartType.Cpu)}
+                            onClick={() => this.handleChartChange(ChartType.Cpu)}
                         >
                             <h3 className="app-details-graph__title pl-16">CPU Usage</h3>
                             <div className="app-details-graph__iframe-container">
@@ -328,9 +329,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                         </div>
                     )}
                     {this.props.infraMetrics && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className={`app-details-graph pt-4 cursor  ${this.state.mainChartName === 'ram' ? 'app-details-graph__iframe--selected' : ''}`}
-                            onClick={(e) => this.handleChartChange(ChartType.Ram)}
+                            onClick={() => this.handleChartChange(ChartType.Ram)}
                         >
                             <h3 className="app-details-graph__title pl-16">Memory Usage</h3>
                             <div className="app-details-graph__iframe-container">
@@ -340,9 +342,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                         </div>
                     )}
                     {this.props.appMetrics && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className={`app-details-graph pt-4 cursor  ${this.state.mainChartName?.toLowerCase() === ChartType.Status && this.state.statusCode === 'Throughput' ? 'app-details-graph__iframe--selected' : ''}`}
-                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.Throughput)}
+                            onClick={() => this.handleChartChange(ChartType.Status, StatusType.Throughput)}
                         >
                             <h3 className="app-details-graph__title pl-16">Throughput</h3>
                             <div className="app-details-graph__iframe-container">
@@ -352,9 +355,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                         </div>
                     )}
                     {this.props.appMetrics && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('2') ? 'app-details-graph__iframe--selected' : ''}`}
-                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status2xx)}
+                            onClick={() => this.handleChartChange(ChartType.Status, StatusType.status2xx)}
                         >
                             <h3 className="app-details-graph__title pl-16">Status 2xx</h3>
                             <div className="app-details-graph__iframe-container">
@@ -364,9 +368,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                         </div>
                     )}
                     {this.props.appMetrics && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('4') ? 'app-details-graph__iframe--selected' : ''}`}
-                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status4xx)}
+                            onClick={() => this.handleChartChange(ChartType.Status, StatusType.status4xx)}
                         >
                             <h3 className="app-details-graph__title pl-16">Status 4xx</h3>
                             <div className="app-details-graph__iframe-container">
@@ -376,9 +381,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                         </div>
                     )}
                     {this.props.appMetrics && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('5') ? 'app-details-graph__iframe--selected' : ''}`}
-                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status5xx)}
+                            onClick={() => this.handleChartChange(ChartType.Status, StatusType.status5xx)}
                         >
                             <h3 className="app-details-graph__title pl-16">Status 5xx</h3>
                             <div className="app-details-graph__iframe-container">
@@ -388,9 +394,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                         </div>
                     )}
                     {this.props.appMetrics && (
+                        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                         <div
                             className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Latency ? 'app-details-graph__iframe--selected' : ''}`}
-                            onClick={(e) => this.handleChartChange(ChartType.Latency)}
+                            onClick={() => this.handleChartChange(ChartType.Latency)}
                         >
                             <h3 className="app-details-graph__title pl-16">Latency {this.state.selectedLatency}</h3>
                             <div className="app-details-graph__iframe-container">

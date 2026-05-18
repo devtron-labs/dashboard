@@ -101,6 +101,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
 
     const setForceDeleteDialogData = (serverError) => {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteDialogTitle(userMessage)
                 setForceDeleteDialogMessage(internalMessage)
@@ -108,6 +109,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
         }
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     const nonCascadeDeleteArgoCDApp = async (force: boolean): Promise<void> => {
         showForceDeleteDialog(false)
         deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force)
@@ -120,6 +122,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
                 }
             })
             .catch((error: ServerErrors) => {
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (!forceDeleteDialog && error.code != 403) {
                     showForceDeleteDialog(true)
                     setForceDeleteDialogData(error)
@@ -157,6 +160,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
 
     return (
         <div className="top flex left column w-100 bcr-1 pl-20 pr-20 fs-13">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div className="flex left w-100 cursor h-56" onClick={toggleErrorHeader}>
                 <AlertTriangle className="icon-dim-20 mr-8" />
                 <span className="cr-5 fs-14 fw-6">{errorCounter === 1 ? '1 Error' : `${errorCounter} Errors`}</span>
@@ -188,6 +192,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
                                         clusterName ? ` '${clusterName}'` : ''
                                     } is not
                                     reachable at the moment.`}
+                                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                     <span className="pointer ml-8 cb-5" onClick={setNonCascadeDelete}>
                                         Force Delete
                                     </span>
@@ -195,6 +200,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
                             </tr>
                         )}
                         {conditions.map((condition) => (
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                             <tr>
                                 <td className="pb-8 min-width">{condition.type}</td>
                                 <td className="pl-24 pb-8">{condition.message}</td>

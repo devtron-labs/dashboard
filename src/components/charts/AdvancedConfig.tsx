@@ -59,7 +59,6 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         loading,
         chartMetaData: { chartName },
         valuesYaml,
-        id,
         appStoreValuesChartVersion,
         appStoreApplicationVersionId,
         appStoreValuesVersionId,
@@ -79,7 +78,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         valuesId: appStoreApplicationVersionId,
         kind,
     })
-    const [readmeLoading, readmeResult, error, reload] = useAsync(
+    const [_readmeLoading, readmeResult] = useAsync(
         () => getReadme(appStoreApplicationVersionId),
         [appStoreApplicationVersionId],
     )
@@ -116,12 +115,12 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         }
     }
 
-    function discardValuesYamlChangesAdvancedConfig(e) {
+    function discardValuesYamlChangesAdvancedConfig() {
         discardValuesYamlChanges(index)
         toggleValuesYamlDialog(false)
     }
 
-    function copyValuesYamlToClipBoard(e) {
+    function copyValuesYamlToClipBoard() {
         const textarea = document.createElement('textarea')
         const main = document.getElementsByClassName('main')[0]
         main.appendChild(textarea)
@@ -133,7 +132,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         handleChartValueChange(index, valuesYamlSelection.kind, Number(valuesYamlSelection.valuesId))
     }
 
-    async function handleDiff(e) {
+    async function handleDiff() {
         if (!chart.availableChartValues) {
             setChartValuesLoading(true)
             try {
@@ -211,6 +210,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                                     appName.suggestedName ? (
                                         <>
                                             Suggested Name:
+                                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                             <span
                                                 className="anchor pointer"
                                                 onClick={() => handleNameChange(index, appName.suggestedName)}
@@ -344,6 +344,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                                             </Select.Option>
                                         ))}
                                         {(!values || values?.length === 0) && (
+                                            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                                             <div
                                                 onClick={(e) => e.stopPropagation()}
                                                 className="select__option-with-subtitle select__option-with-subtitle--empty-state"
@@ -411,7 +412,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                                         <button
                                             className="cta small  cancel"
                                             type="button"
-                                            onClick={(e) => setReadme(true)}
+                                            onClick={() => setReadme(true)}
                                             data-testid="advanced-option-readme-button"
                                         >
                                             Readme
@@ -431,7 +432,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                     <ReadmeCharts
                         readme={readmeResult.result.readme}
                         valuesYaml={valuesYaml}
-                        handleClose={(e) => setReadme(false)}
+                        handleClose={() => setReadme(false)}
                         chart={chart}
                         onChange={handleValuesYaml ? (valuesYaml) => handleValuesYaml(index, valuesYaml) : null}
                     />
@@ -446,7 +447,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                         kind={kind}
                         selectedChartValue={selectedChartValue}
                         availableChartValues={chart.availableChartValues || []}
-                        handleClose={(e) => setDiff(false)}
+                        handleClose={() => setDiff(false)}
                         onChange={handleValuesYaml ? (valuesYaml) => handleValuesYaml(index, valuesYaml) : null}
                         fetchChartValues={() => fetchChartValues(chart.id, index)}
                     />
@@ -504,7 +505,7 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose} data-testid="readme-done-button">
+                <button type="button" className="cta secondary" onClick={handleClose} data-testid="readme-done-button">
                     Done
                 </button>
             </div>
@@ -546,7 +547,7 @@ const ValuesDiffViewer = ({
         }
     }, [DEPLOYED, DEFAULT, TEMPLATE, kind, versionId])
 
-    const [loading, result, error, reload] = useAsync(() => getChartValues(versionId, kind), [versionId, kind])
+    const [loading, result] = useAsync(() => getChartValues(versionId, kind), [versionId, kind])
     useEffect(() => {
         if (!result) {
             return
@@ -588,7 +589,7 @@ const ValuesDiffViewer = ({
                             </Select.Button>
                             <Select.OptGroup className="select__option-group" label="DEPLOYED VALUES">
                                 {DEPLOYED?.map((value) => (
-                                    <Select.Option key={value.id} value={`DEPLOYED` + `--${value.id}`} id={value.id}>
+                                    <Select.Option key={value.id} value={`DEPLOYED--${value.id}`} id={value.id}>
                                         <div className="flex column left">
                                             <div className="dc__ellipsis-right">
                                                 {value.name}
@@ -606,7 +607,7 @@ const ValuesDiffViewer = ({
                             </Select.OptGroup>
                             <Select.OptGroup className="select__option-group" label="CUSTOM VALUES">
                                 {TEMPLATE?.map((value) => (
-                                    <Select.Option key={value.id} value={`TEMPLATE` + `--${value.id}`} id={value.id}>
+                                    <Select.Option key={value.id} value={`TEMPLATE--${value.id}`} id={value.id}>
                                         {value.name} (v{value.chartVersion})
                                     </Select.Option>
                                 ))}
@@ -618,7 +619,7 @@ const ValuesDiffViewer = ({
                             </Select.OptGroup>
                             <Select.OptGroup className="select__option-group" label="DEFAULT VALUES">
                                 {DEFAULT?.map((value) => (
-                                    <Select.Option key={value.id} value={`DEFAULT` + `--${value.id}`} id={value.id}>
+                                    <Select.Option key={value.id} value={`DEFAULT--${value.id}`} id={value.id}>
                                         Default (v{value.chartVersion})
                                     </Select.Option>
                                 ))}
@@ -651,7 +652,12 @@ const ValuesDiffViewer = ({
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose} data-testid="check-diff-done-button">
+                <button
+                    type="button"
+                    className="cta secondary"
+                    onClick={handleClose}
+                    data-testid="check-diff-done-button"
+                >
                     Done
                 </button>
             </div>

@@ -41,7 +41,9 @@
 }
 
 .containers-select__group {
+    /* biome-ignore lint/complexity/noImportantStyles: Legacy */
     padding-top: 0 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Legacy */
     padding-bottom: 0 !important;
 }
 

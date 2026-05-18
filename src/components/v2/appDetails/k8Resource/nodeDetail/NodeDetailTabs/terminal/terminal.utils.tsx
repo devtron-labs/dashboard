@@ -317,6 +317,7 @@ const manifestEditButtons = ({
         const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit
 
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <span
                 className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left"
                 data-testid={`${buttonSelectionState}-manifest`}
@@ -333,6 +334,7 @@ const manifestEditButtons = ({
             <span className="bcn-2 h-32" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
+                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                 <span
                     className="ml-12 cn-7 fw-6 fs-12 cursor"
                     data-testid="cancel-edit-manifest"

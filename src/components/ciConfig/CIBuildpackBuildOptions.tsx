@@ -22,7 +22,6 @@ import {
     CIBuildType,
     ComponentSizeType,
     CustomInput,
-    DOCUMENTATION,
     getUniqueId,
     InfoIconTippy,
     OptionType,
@@ -198,7 +197,7 @@ export default function CIBuildpackBuildOptions({
     const initBuilderData = () => {
         const _supportedLanguagesList: LanguageOptionType[] = []
         const _builderLanguageSupportMap: Record<string, LanguageBuilderOptionType> = {}
-        let initOption = null
+        let initOption: InitLanguageOptionType = null
         for (const _languageBuilder of buildersAndFrameworks.builders) {
             const versionOptions: VersionsOptionType[] =
                 _languageBuilder.Versions?.map((ver) => ({
@@ -472,7 +471,7 @@ export default function CIBuildpackBuildOptions({
                 currentCIBuildConfig.buildPackConfig.languageVersion !== version)
         ) {
             let isArgPresent = false
-            let argIdx
+            let argIdx: number
             _buildEnvArgs.forEach((_arg, idx) => {
                 if (
                     !isArgPresent &&
@@ -518,6 +517,7 @@ export default function CIBuildpackBuildOptions({
             <div className="form-row__docker buildpack-option-wrapper mb-4">
                 <div className="flex top project-material-options">
                     <div className="form__field">
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         <label className="form__label">Repository containing code</label>
 
                         <div className="flex left">
@@ -525,6 +525,7 @@ export default function CIBuildpackBuildOptions({
                             <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                         </div>
 
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         {repository.error && <label className="form__error">{repository.error}</label>}
                     </div>
 
@@ -537,6 +538,7 @@ export default function CIBuildpackBuildOptions({
                 <div className="flex top buildpack-options">
                     <div className="buildpack-language-options">
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                             <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Language}</label>
 
                             <div className="flex left">
@@ -554,6 +556,7 @@ export default function CIBuildpackBuildOptions({
                         </div>
 
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                            {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                             <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
                             <span className="fs-14 fw-4 lh-20 cn-9">
                                 {buildersAndFrameworks.selectedVersion?.value}
@@ -562,6 +565,7 @@ export default function CIBuildpackBuildOptions({
                     </div>
 
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         <label className="form__label flexbox-imp flex-align-center">
                             {CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading}
 
@@ -603,6 +607,7 @@ export default function CIBuildpackBuildOptions({
                         size={ComponentSizeType.large}
                     />
 
+                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                     {repository.error && <label className="form__error">{repository.error}</label>}
                 </div>
                 <div className="form__field">
@@ -641,6 +646,7 @@ export default function CIBuildpackBuildOptions({
                         />
                     </div>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                         <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
                         <SelectPicker
                             inputId="build-pack-language-version"
@@ -655,6 +661,7 @@ export default function CIBuildpackBuildOptions({
                     </div>
                 </div>
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                    {/** biome-ignore lint/a11y/noLabelWithoutControl: Legacy */}
                     <label className="form__label flexbox-imp flex-align-center">
                         {CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
                         <BuilderTippy />
@@ -664,7 +671,6 @@ export default function CIBuildpackBuildOptions({
                         classNamePrefix="build-pack-select-builder-dropdown"
                         placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
                         className="m-0"
-                        tabIndex={3}
                         isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
                         options={
                             builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]

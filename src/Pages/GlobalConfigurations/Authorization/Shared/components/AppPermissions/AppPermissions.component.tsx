@@ -306,7 +306,7 @@ const AppPermissions = () => {
         } catch (_error) {
             showError(_error)
             setAppsListHelmApps((appListHelmApps) =>
-                missingProjects.reduce((appList, projectId) => {
+                missingProjects.reduce((_appList, projectId) => {
                     appListHelmApps.set(projectId, { loading: false, result: [], error: _error })
                     return appListHelmApps
                 }, appListHelmApps),
@@ -361,6 +361,7 @@ const AppPermissions = () => {
     }
 
     function setClusterValues(startsWithHash, clusterName) {
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const defaultValueArr = []
         if (startsWithHash) {
             defaultValueArr.push({
@@ -406,6 +407,7 @@ const AppPermissions = () => {
         }
 
         if (directRoleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+            // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
             const returnArr = []
             const envArr = directRoleFilter.environment.split(',')
             const envMap: Map<string, boolean> = new Map()
@@ -483,8 +485,11 @@ const AppPermissions = () => {
     const populateDataFromAPI = async (roleFilters: APIRoleFilter[]) => {
         setIsLoading(true)
 
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const uniqueProjectIdsDevtronApps = []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const uniqueProjectIdsHelmApps = []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const uniqueProjectIdsJobs = []
 
         let foundDevtronApps = false
@@ -793,6 +798,7 @@ const AppPermissions = () => {
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
                 const allWorkflowOptions = workflowList?.options?.reduce(
+                    // biome-ignore lint/performance/noAccumulatingSpread: Legacy
                     (acc, _option) => [...acc, ..._option.options],
                     [],
                 )
@@ -873,7 +879,7 @@ const AppPermissions = () => {
             let foundHelmApps = false
             let foundJobs = false
 
-            const permissionArr = permission.filter((perm, idx) => idx !== index)
+            const permissionArr = permission.filter((_perm, idx) => idx !== index)
 
             for (let i = 0; i < permissionArr.length; i++) {
                 if (permissionArr[i].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {

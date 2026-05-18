@@ -254,7 +254,7 @@ const ChartValuesView = ({
                 },
             })
             setAllowedCustomBool(result.allowCustomRepository === true)
-        } catch (error) {}
+        } catch {}
     }
 
     useEffect(() => {
@@ -411,7 +411,7 @@ const ChartValuesView = ({
                         payload: _deploymentHistoryArr,
                     })
                 })
-                .catch((e) => {})
+                .catch(() => {})
         }
 
         if (!isDeployChartView && !isCreateValueView) {
@@ -441,7 +441,7 @@ const ChartValuesView = ({
                                 modifiedValuesYaml: response.result.values || '',
                             },
                         })
-                        let _valueName
+                        let _valueName: string
                         if (isCreateValueView && commonState.chartValues.kind === ChartKind.TEMPLATE) {
                             if (valueName === '') {
                                 setValueName(response.result.name)
@@ -507,8 +507,7 @@ const ChartValuesView = ({
 
     useEffect(() => {
         if (
-            commonState.installedConfig &&
-            commonState.installedConfig.environmentId &&
+            commonState.installedConfig?.environmentId &&
             commonState.installedConfig.teamId &&
             commonState.environments.length > 0 &&
             commonState.projects.length > 0
@@ -620,7 +619,7 @@ const ChartValuesView = ({
                     },
                 },
             })
-        } catch (e: any) {
+        } catch {
             dispatch({ type: ChartValuesViewActionTypes.isLoading, payload: false })
         }
     }
@@ -709,7 +708,7 @@ const ChartValuesView = ({
                         description: TOAST_INFO.DELETION_INITIATED,
                     })
 
-                    init && init()
+                    init?.()
                     navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM)
                     return
                 }
@@ -752,6 +751,7 @@ const ChartValuesView = ({
                     let forceDeleteTitle = ''
                     let forceDeleteMessage = ''
                     if (error instanceof ServerErrors && Array.isArray(error.errors)) {
+                        // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
                         error.errors.map(({ userMessage, internalMessage }) => {
                             forceDeleteTitle = userMessage
                             forceDeleteMessage = internalMessage
@@ -797,6 +797,7 @@ const ChartValuesView = ({
         }
         // Delete: helm chart preset values
         if (isCreateValueView) {
+            // biome-ignore lint/correctness/useParseIntRadix: Legacy
             return deleteChartValues(parseInt(chartValueId))
         }
         // Delete: helm app
@@ -983,8 +984,9 @@ const ChartValuesView = ({
         }
 
         try {
+            // biome-ignore lint/suspicious/noImplicitAnyLet lint/suspicious/noEvolvingTypes: Can't give type since throwing error on other lines
             let res
-            let toastMessage
+            let toastMessage: string
 
             if (isExternalApp && !commonState.installedAppInfo) {
                 if (commonState.repoChartValue?.chartRepoName) {
@@ -1033,6 +1035,7 @@ const ChartValuesView = ({
                     const chartVersionObj = commonState.chartVersionsData.find(
                         (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
                     )
+                    // biome-ignore lint/correctness/useParseIntRadix: Legacy
                     payload['id'] = parseInt(chartValueId)
                     payload['chartVersion'] = chartVersionObj.version
                     toastMessage = CHART_VALUE_TOAST_MSGS.Updated
@@ -1133,6 +1136,7 @@ const ChartValuesView = ({
         }
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     const redirectToChartValues = async () => {
         const _chartId = commonState.repoChartValue?.chartId || commonState.installedConfig?.appStoreId
         if (_chartId) {
@@ -1230,6 +1234,7 @@ const ChartValuesView = ({
 
     const renderReadMeOption = (disabled?: boolean) => {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <span
                 className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ml-8 ${
                     commonState.openReadMe ? 'opened' : ''
@@ -1267,6 +1272,7 @@ const ChartValuesView = ({
 
     const renderComparisonOption = (disabled?: boolean) => {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <span
                 className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
                     commonState.openComparison ? 'opened' : ''
@@ -1331,7 +1337,7 @@ const ChartValuesView = ({
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
             if (commonState.activeTab === 'manifest') {
-                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.length
+                return commonState.deploymentHistoryArr?.length
                     ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest
                     : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
             }
@@ -1652,7 +1658,7 @@ const ChartValuesView = ({
     }
 
     const renderData = () => {
-        const deployedAppDetail = isExternalApp && appId && appId.split('|')
+        const deployedAppDetail = isExternalApp && appId?.split('|')
         const showDeploymentTools =
             !isExternalApp &&
             !isCreateValueView &&
@@ -1953,6 +1959,7 @@ const ChartValuesView = ({
         )
     }
 
+    // biome-ignore lint/complexity/noUselessFragments: Legacy
     return !isExternalApp || (commonState.releaseInfo && commonState.repoChartValue) ? renderData() : <></>
 }
 

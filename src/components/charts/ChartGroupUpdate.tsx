@@ -48,7 +48,7 @@ import useChartGroup from './useChartGroup'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId/edit`
 
-export default function ChartGroupUpdate({}) {
+export default function ChartGroupUpdate() {
     const navigate = useNavigate()
     const location = useLocation()
     const { groupId } = useParams<{ groupId }>()
@@ -76,7 +76,6 @@ export default function ChartGroupUpdate({}) {
     const isLeavingPageNotAllowed = useRef(false)
     const [selectedChartRepo, setSelectedChartRepo] = useState([])
     const [appStoreName, setAppStoreName] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
     const [includeDeprecated, setIncludeDeprecated] = useState(0)
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
@@ -106,10 +105,11 @@ export default function ChartGroupUpdate({}) {
     )
 
     isLeavingPageNotAllowed.current = state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
+        // biome-ignore lint/suspicious/noAssignInExpressions: Legacy
         return (acc = acc || chart.isUnsaved)
     }, false)
 
-    async function handleSave(e) {
+    async function handleSave() {
         setLoading(true)
         try {
             const requestBody = {
@@ -203,7 +203,9 @@ export default function ChartGroupUpdate({}) {
         const deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
         const appStoreName: string = searchParams.get(QueryParams.AppStoreName)
         const chartCategoryCsv: string = searchParams.get(QueryParams.ChartCategoryId)
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         let chartRepoIdArray = []
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         let ociRegistryArray = []
         if (allChartRepoIds) {
             chartRepoIdArray = allChartRepoIds.split(',')
@@ -211,9 +213,11 @@ export default function ChartGroupUpdate({}) {
         if (allRegistryIds) {
             ociRegistryArray = allRegistryIds.split(',')
         }
+        // biome-ignore lint/correctness/useParseIntRadix: Legacy
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId))
         ociRegistryArray = ociRegistryArray.map((ociRegistryId) => ociRegistryId)
 
+        // biome-ignore lint/suspicious/noEvolvingTypes: Legacy
         const selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
             const chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
@@ -231,15 +235,14 @@ export default function ChartGroupUpdate({}) {
             setSelectedChartRepo(selectedRepos)
         }
         if (deprecated) {
+            // biome-ignore lint/correctness/useParseIntRadix: Legacy
             setIncludeDeprecated(parseInt(deprecated))
         } else {
             setIncludeDeprecated(0)
         }
         if (appStoreName) {
-            setSearchApplied(true)
             setAppStoreName(appStoreName)
         } else {
-            setSearchApplied(false)
             setAppStoreName('')
         }
         if (chartCategoryCsv) {
@@ -267,7 +270,7 @@ export default function ChartGroupUpdate({}) {
     const renderChartGroupEditActionButton = () => {
         return (
             <div className="dc__page-header__cta-container flex right">
-                <button className="cta h-32 flex cancel cta__no-svg-override mr-16" onClick={handleSave}>
+                <button type="button" className="cta h-32 flex cancel cta__no-svg-override mr-16" onClick={handleSave}>
                     {loading ? (
                         <Progressing />
                     ) : (
@@ -277,7 +280,12 @@ export default function ChartGroupUpdate({}) {
                         </div>
                     )}
                 </button>
-                <button className="cta flex cancel h-32" onClick={redirectToGroupDetail} data-testid="group-detail">
+                <button
+                    type="button"
+                    className="cta flex cancel h-32"
+                    onClick={redirectToGroupDetail}
+                    data-testid="group-detail"
+                >
                     Group Detail
                 </button>
             </div>

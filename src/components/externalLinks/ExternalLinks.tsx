@@ -276,7 +276,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 </div>
             </div>
             {isAppConfigView ? (
-                <RoleBasedInfoNote userRole={userRole} listingView />
+                <RoleBasedInfoNote userRole={userRole} />
             ) : (
                 <FilterChips<ExternalListUrlFiltersType>
                     filterConfig={filterConfig}

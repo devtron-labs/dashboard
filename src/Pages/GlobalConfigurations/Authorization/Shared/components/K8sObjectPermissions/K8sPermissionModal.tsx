@@ -55,7 +55,7 @@ const K8sPermissionModal = ({
                 _k8sPermissionList = [getPermissionObject(_k8sPermissionList.length), ..._k8sPermissionList]
                 break
             case K8sPermissionActionType.delete:
-                _k8sPermissionList = _k8sPermissionList.filter((permission, index) => index !== key)
+                _k8sPermissionList = _k8sPermissionList.filter((_permission, index) => index !== key)
                 break
             case K8sPermissionActionType.clone: {
                 const currentLen = _k8sPermissionList.length
@@ -150,9 +150,11 @@ const K8sPermissionModal = ({
 
     return (
         <Drawer onEscape={close} position="right" width="800px">
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: stopPropagation */}
             <div onClick={stopPropagation} className="h-100 h-100 flexbox-col flex-grow-1 dc__content-space">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bg__primary dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>
+                    {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                     <span
                         className="icon-dim-20 cursor icon-use-fill-n6 flex"
                         data-testid="k8s-permission-drawer-close"
@@ -164,6 +166,7 @@ const K8sPermissionModal = ({
                 <div className="p-20 fs-13 dc__overflow-auto flexbox-col flex-grow-1 bg__tertiary">
                     {!selectedPermissionAction && (
                         <div className="flex left fs-13 fw-6">
+                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                             <span className="flex cb-5 cursor dc__gap-12" onClick={addNewPermissionCard}>
                                 <AddIcon className="icon-dim-20 fcb-5" />
                                 Add another
@@ -184,8 +187,10 @@ const K8sPermissionModal = ({
                             objectMapping={objectMapping}
                             setObjectMapping={setObjectMapping}
                             selectedPermissionAction={selectedPermissionAction}
-                            // eslint-disable-next-line react/no-array-index-key
-                            key={`${_k8sPermission.key}-${index}`}
+                            key={`${_k8sPermission.key}-${
+                                // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
+                                index
+                            }`}
                         />
                     ))}
                 </div>

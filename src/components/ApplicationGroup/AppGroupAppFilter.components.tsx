@@ -44,7 +44,7 @@ export const ValueContainer = (props): JSX.Element => {
         selectedGroupFilter,
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
-    let selectorText
+    let selectorText: string
     const selectedAppsLength = props.getValue().length
     if (selectedFilterTab === AppFilterTabs.GROUP_FILTER && selectedGroupFilter[0]) {
         selectorText = selectedGroupFilter[0]?.label
@@ -56,28 +56,24 @@ export const ValueContainer = (props): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
             {!props.selectProps.inputValue ? (
-                <>
-                    {!props.selectProps.menuIsOpen ? (
-                        <div className="flexbox dc__gap-4 dc__align-items-center">
-                            {selectedAppsLength > 0 ? (
-                                <ShowIconFilterApplied className="icon-dim-16 mw-18 dc__no-shrink" />
-                            ) : (
-                                <ShowIconFilter className="icon-dim-16 mw-18 dc__no-shrink" />
-                            )}
-                            <span data-testid="app-group-selector-text" className="cn-9 ml-2">
-                                {selectorText}
-                            </span>
-                            <ShortcutKeyBadge shortcutKey="F" rootClassName="dc__position-rel-imp" />
-                        </div>
-                    ) : (
-                        <>
-                            <Search className="icon-dim-16 mr-4 mw-18" />
-                            <span className="dc__position-abs dc__left-35 cn-5 ml-2">
-                                {props.selectProps.placeholder}
-                            </span>
-                        </>
-                    )}
-                </>
+                !props.selectProps.menuIsOpen ? (
+                    <div className="flexbox dc__gap-4 dc__align-items-center">
+                        {selectedAppsLength > 0 ? (
+                            <ShowIconFilterApplied className="icon-dim-16 mw-18 dc__no-shrink" />
+                        ) : (
+                            <ShowIconFilter className="icon-dim-16 mw-18 dc__no-shrink" />
+                        )}
+                        <span data-testid="app-group-selector-text" className="cn-9 ml-2">
+                            {selectorText}
+                        </span>
+                        <ShortcutKeyBadge shortcutKey="F" rootClassName="dc__position-rel-imp" />
+                    </div>
+                ) : (
+                    <>
+                        <Search className="icon-dim-16 mr-4 mw-18" />
+                        <span className="dc__position-abs dc__left-35 cn-5 ml-2">{props.selectProps.placeholder}</span>
+                    </>
+                )
             ) : (
                 <Search className="icon-dim-16 mr-4 mw-18" />
             )}
@@ -252,6 +248,7 @@ export const MenuList = (props: any): JSX.Element => {
                         className="dc__react-select__bottom dc__no-top-radius dc__align-right bg__primary fw-6 fs-13 cb-5 pt-8 pr-12 pb-8 pl-12 cursor"
                         style={{ boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)' }}
                     >
+                        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                         <span onClick={openCreateGroup}>Save selection as filter</span>
                     </div>
                 )}

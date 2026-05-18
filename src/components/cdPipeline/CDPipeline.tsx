@@ -581,7 +581,7 @@ export default function CDPipeline({
                 active: env.id === pipelineConfigFromRes.environmentId,
             }
         })
-        const savedStrategies = []
+        const savedStrategies: typeof formData.strategies = []
         if (pipelineConfigFromRes.strategies) {
             for (let i = 0; i < pipelineConfigFromRes.strategies.length; i++) {
                 savedStrategies.push({
@@ -857,6 +857,7 @@ export default function CDPipeline({
      * @description This method is called only in case when we render basic view, i.e, CD creation first modal
      */
     const handleStrategy = (value: string): void => {
+        // biome-ignore lint/suspicious/noEvolvingTypes lint/suspicious/noImplicitAnyLet: Legacy
         let newSelection
         newSelection = {}
         newSelection['deploymentTemplate'] = value
@@ -1016,6 +1017,7 @@ export default function CDPipeline({
                 )
                 let envName = pipelineConfigFromRes.environmentName
                 if (!envName) {
+                    // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                     const selectedEnv: Environment = environmentRes.result.find((env) => env.id == _form.environmentId)
                     envName = selectedEnv.name
                 }
@@ -1055,6 +1057,7 @@ export default function CDPipeline({
         const _forceDeleteData = { ...forceDeleteData }
         setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 _forceDeleteData.forceDeleteDialogMessage = internalMessage
                 _forceDeleteData.forceDeleteDialogTitle = userMessage
@@ -1068,6 +1071,7 @@ export default function CDPipeline({
             formData.deploymentAppType === DeploymentAppTypes.ARGO && formData.deploymentAppCreated && !force
         const payload = {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
+            // biome-ignore lint/correctness/useParseIntRadix: Legacy
             appId: parseInt(appId),
             pipeline: {
                 id: +cdPipelineId,
@@ -1119,6 +1123,7 @@ export default function CDPipeline({
                 //For now we are removing check for error code 422 which is of deployment window,
                 // so in that case force delete modal would be shown.
                 // This should be done at BE and when done we will revert our changes
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (!force && error.code != 403 && error.code != 412) {
                     setForceDeleteDialogData(error)
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
@@ -1133,6 +1138,7 @@ export default function CDPipeline({
     const handleAdvanceClick = () => {
         const form = { ...formData }
         const strategies = form.strategies.filter(
+            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
             (strategy) => strategy.deploymentTemplate != form.savedStrategies[0].deploymentTemplate,
         )
         form.strategies = strategies
@@ -1354,7 +1360,7 @@ export default function CDPipeline({
     }
 
     const renderCDPipelineModal = () => {
-        let title
+        let title: string
         if (isWebhookCD && workflowId === '0') {
             title = DEPLOY_IMAGE_EXTERNALSOURCE
         } else if (isWebhookCD && changeCIPayload) {
@@ -1518,6 +1524,7 @@ export default function CDPipeline({
             activeStageName === BuildStageVariable.Build ||
             hideScopedVariableWidget
         ) {
+            // biome-ignore lint/complexity/noUselessFragments: Legacy
             return <></>
         }
 

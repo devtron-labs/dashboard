@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** biome-ignore-all lint/suspicious/noImplicitAnyLet: Legacy */
+/** biome-ignore-all lint/suspicious/noEvolvingTypes: Legacy */
 
 /* eslint-disable no-fallthrough */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
@@ -31,18 +33,15 @@
 
 export function murmurhash3_32_gc(key, seed) {
     let remainder
-    let bytes
     let h1
     let h1b
     let c1
-    let c1b
     let c2
-    let c2b
     let k1
     let i
 
     remainder = key.length & 3 // key.length % 4
-    bytes = key.length - remainder
+    const bytes = key.length - remainder
     h1 = seed
     c1 = 0xcc9e2d51
     c2 = 0x1b873593
@@ -70,9 +69,11 @@ export function murmurhash3_32_gc(key, seed) {
 
     switch (remainder) {
         // @ts-expect-error
+        // biome-ignore lint/suspicious/noFallthroughSwitchClause: Legacy
         case 3:
             k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16
         // @ts-expect-error
+        // biome-ignore lint/suspicious/noFallthroughSwitchClause: Legacy
         case 2:
             k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8
         case 1:

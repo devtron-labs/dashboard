@@ -20,7 +20,7 @@ import { ClipboardButton, copyToClipboard, InfoBlock } from '@devtron-labs/devtr
 
 import Add from '../../assets/icons/ic-add.svg?react'
 import Webhook from '../../assets/icons/ic-CIWebhook.svg?react'
-import Info from '../../assets/icons/ic-info-filled-purple.svg?react'
+import { WebhookConditionType } from './types'
 import { WebhookSelectorCondition } from './WebhookSelectorCondition'
 
 export const ConfigureWebhook = ({
@@ -45,8 +45,9 @@ export const ConfigureWebhook = ({
         setCopyToClipboardSecretPromise(copyToClipboard(gitHost.webhookSecret))
     }
 
-    const _allSelectorIdsInConditions = []
-    webhookConditionList.map((_condition, index) => {
+    const _allSelectorIdsInConditions: number[] = []
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
+    webhookConditionList.map((_condition) => {
         _allSelectorIdsInConditions.push(Number(_condition.selectorId))
     })
 
@@ -68,6 +69,7 @@ export const ConfigureWebhook = ({
                 <div className="flex left fs-12 fw-6 mt-12">
                     {gitHost.webhookUrl && (
                         <button
+                            type="button"
                             className="bg__primary pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor dc__transparent--unstyled"
                             data-testid="build-copy-webhook-url-button"
                             onClick={handleCopyUrl}
@@ -83,6 +85,7 @@ export const ConfigureWebhook = ({
                     )}
                     {gitHost.webhookSecret && (
                         <button
+                            type="button"
                             className="bg__primary pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor dc__transparent--unstyled"
                             data-testid="build-copy-secret-key-button"
                             onClick={handleCopySecret}
@@ -126,18 +129,20 @@ export const ConfigureWebhook = ({
                     </a>
                 </p>
                 {webhookConditionList.map((_condition, index) => {
-                    const _masterSelectorList = []
+                    const _masterSelectorList: WebhookConditionType['masterSelectorList'] = []
                     let _canEditSelectorCondition = canEditPipeline
                     selectedWebhookEvent.selectors.forEach((_selector) => {
                         const _selectorId = _selector.id
                         if (
                             _selector.toShowInCiFilter &&
+                            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                             (!_allSelectorIdsInConditions.includes(_selectorId) || _condition.selectorId == _selectorId)
                         ) {
                             _masterSelectorList.push({ label: _selector.name, value: _selector.id })
                         }
                         if (
                             _canEditSelectorCondition &&
+                            // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                             _condition.selectorId == _selector.id &&
                             !!_selector.fixValue
                         ) {
@@ -146,6 +151,7 @@ export const ConfigureWebhook = ({
                     })
                     _masterSelectorList.sort((a, b) => a.label.localeCompare(b.label))
                     return (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                         <div key={index}>
                             <WebhookSelectorCondition
                                 conditionIndex={index}
@@ -161,6 +167,7 @@ export const ConfigureWebhook = ({
                 })}
 
                 {canEditPipeline && (
+                    // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                     <div
                         className="cb-5 fw-6 fs-14 cursor add-filter"
                         data-testid="build-webhook-add-filter-button"

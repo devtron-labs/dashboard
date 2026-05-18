@@ -102,6 +102,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
 
     const setForceDeleteDialogData = (serverError) => {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            // biome-ignore lint/suspicious/useIterableCallbackReturn: Legacy
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteDialogTitle(userMessage)
                 setForceDeleteDialogMessage(internalMessage)
@@ -109,6 +110,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
         }
     }
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     const nonCascadeDeleteArgoCDApp = async (force: boolean): Promise<void> => {
         showForceDeleteDialog(false)
         deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force)
@@ -121,6 +123,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                 }
             })
             .catch((error: ServerErrors) => {
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 if (!forceDeleteDialog && error.code != 403) {
                     showForceDeleteDialog(true)
                     setForceDeleteDialogData(error)
@@ -150,7 +153,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
     }
 
     const getErrorsList = (): ErrorItem[] => {
-        const errorsList = []
+        const errorsList: ErrorItem[] = []
 
         if (clusterConnectionError) {
             errorsList.push({
@@ -207,6 +210,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
     const onCloseForceDeleteModal = () => showForceDeleteDialog(false)
 
     return (
+        // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
         <div
             data-testid="issues-card"
             onClick={cardLoading ? noop : showIssuesListingModal}
@@ -246,6 +250,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                         `imagePullBackOff${conditions?.length > 0 ? ', ' : ''}`}
                     {conditions?.map((condition) => condition.type).join(', ')}
                 </span>
+                {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                 <div
                     className="app-details-info-card__bottom-container__details fs-12 fw-6"
                     onClick={setNonCascadeDelete}

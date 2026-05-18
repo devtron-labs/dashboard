@@ -39,6 +39,7 @@ import {
     ResourceBrowserActionMenuEnum,
     ResourceDetail,
     ROUTER_URLS,
+    ServerError,
     ServerErrors,
     SortableTableHeaderCell,
     SortingOrder,
@@ -74,7 +75,7 @@ import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Const
 import Success from '@Icons/appstatus/healthy.svg?react'
 import AlertTriangle from '@Icons/ic-alert-triangle.svg?react'
 import Dropdown from '@Icons/ic-chevron-down.svg?react'
-import Error from '@Icons/ic-error-exclamation.svg?react'
+import ErrorIcon from '@Icons/ic-error-exclamation.svg?react'
 import Info from '@Icons/ic-info-filled.svg?react'
 import Edit from '@Icons/ic-pencil.svg?react'
 import Storage from '@Icons/ic-storage.svg?react'
@@ -237,11 +238,12 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                     <div>Message</div>
                 </div>
                 {nodeDetail.conditions.map((condition) => (
+                    // biome-ignore lint/correctness/useJsxKeyInIterable: Legacy
                     <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
                         <div>{condition.type}</div>
                         <div className="flexbox">
                             {condition.haveIssue ? (
-                                <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
+                                <ErrorIcon className="mt-2 mb-2 mr-8 icon-dim-18" />
                             ) : (
                                 <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
                             )}
@@ -410,6 +412,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         onClickHandler: React.Dispatch<React.SetStateAction<boolean>>,
     ): JSX.Element => {
         return (
+            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
             <div
                 className="cb-5 cursor flexbox fs-13 fw-6"
                 onClick={() => {
@@ -431,6 +434,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                 id: 'labels-tab',
                 label: `Labels (${nodeDetail.labels.length})`,
                 tabType: 'button',
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 active: selectedSubTabIndex == 0,
                 props: {
                     onClick: () => {
@@ -442,6 +446,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                 id: 'annotation-tab',
                 label: `Annotation (${nodeDetail.annotations.length})`,
                 tabType: 'button',
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 active: selectedSubTabIndex == 1,
                 props: {
                     onClick: () => {
@@ -453,6 +458,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                 id: 'taints-tab',
                 label: `Taints (${nodeDetail.taints?.length || 0})`,
                 tabType: 'button',
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 active: selectedSubTabIndex == 2,
                 props: {
                     onClick: () => {
@@ -471,8 +477,11 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     <div className=" pr-20 pl-20 pt-12 pb-12">
+                        {/* biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                         {selectedSubTabIndex == 0 && renderLabelTab()}
+                        {/* biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                         {selectedSubTabIndex == 1 && renderAnnotationTab()}
+                        {/* biome-ignore lint/suspicious/noDoubleEquals: Legacy */}
                         {selectedSubTabIndex == 2 && renderTaintTab()}
                     </div>
                 </div>
@@ -487,7 +496,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         return (
             <div className="mb-12 en-2 bw-1 br-4 bg__primary">
                 <div className="flexbox bcr-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
-                    <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
+                    <ErrorIcon className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-0">
                         {`${nodeErrorKeys.length} Error${nodeErrorKeys.length > 1 ? 's' : ''}`}
                     </span>
@@ -743,6 +752,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         />
     )
 
+    // biome-ignore lint/suspicious/useAwait: Legacy
     const getPodListData = async (): Promise<void> => {
         getData([])
     }
@@ -775,6 +785,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
                                     <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center dc__content-space">
                                         <Tooltip content={pod.name} interactive>
+                                            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
                                             <span
                                                 className="dc__inline-block dc__ellipsis-right cb-5 cursor"
                                                 style={{ maxWidth: 'calc(100% - 20px)' }}
@@ -966,7 +977,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                     }
                 })
                 .catch((error) => {
-                    let modifiedYAMLError
+                    let modifiedYAMLError: ServerError
                     if (error instanceof ServerErrors && Array.isArray(error.errors)) {
                         modifiedYAMLError = error.errors.find((errorData) => Number(errorData.code) === 409)
                     }
@@ -1056,6 +1067,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         return (
             <ErrorScreenManager
                 code={errorResponseCode}
+                // biome-ignore lint/suspicious/noDoubleEquals: Legacy
                 subtitle={errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''}
             />
         )

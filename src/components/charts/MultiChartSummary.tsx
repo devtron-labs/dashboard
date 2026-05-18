@@ -72,6 +72,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                     </div>
                     <div className="flexbox mb-12">
                         {typeof configureChartIndex === 'number' && (
+                            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                             <div
                                 className="cb-5 fcb-5 bg__primary en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100 mr-10"
                                 onClick={chartListing}
@@ -81,6 +82,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                             </div>
                         )}
                         {charts.length > 0 && (
+                            // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
                             <div
                                 className="cr-5 scr-5 bg__primary en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100"
                                 onClick={removeAllCharts}
@@ -104,7 +106,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                 <div className="overflow selected-widgets-container">
                     {charts?.map((chart: ChartGroupEntry, index) => (
                         <SelectedChartWidget
-                            selectChart={configureChart ? (e) => configureChart(index) : null}
+                            selectChart={configureChart ? () => configureChart(index) : null}
                             selectChartVersion={
                                 handleChartVersionChange
                                     ? (e) => {
@@ -115,8 +117,9 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                             selectChartValues={({ kind, id }) =>
                                 id === chart.appStoreValuesVersionId ? noop : handleChartValueChange(index, kind, id)
                             }
+                            // biome-ignore lint/suspicious/noArrayIndexKey: Legacy
                             key={index}
-                            remove={removeChart ? (e) => removeChart(index) : null}
+                            remove={removeChart ? () => removeChart(index) : null}
                             toggleChart={toggleChart && configureChartIndex !== index ? () => toggleChart(index) : null}
                             chart={chart}
                             selected={configureChartIndex === index}
@@ -246,101 +249,99 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                 chart?.name?.error || chart?.environment?.error ? 'selected-chart-widget--error' : ''
             }`}
         >
+            {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy */}
             <div className="p-12 flex left" onClick={configureChart}>
                 <div className="chart-bg">
+                    {/** biome-ignore lint/a11y/noNoninteractiveElementInteractions: onError is fine for img tag */}
                     <img className="chart-icon" src={icon || ''} alt="" onError={handleImageError} />
                 </div>
                 <div className="flex left column ml-18">
                     <b className="chart-name" data-testid={`selected-chart-${index}`}>
                         {chartRepoName}/{chartName}
                     </b>
-                    {chart.isEnabled && (
-                        <>
-                            {selectChartValues && selectChartVersion ? (
-                                <>
-                                    <Select
-                                        autoWidth={false}
-                                        rootClassName="multi-chart-summary__versions-select"
-                                        onChange={selectChartVersion}
-                                        value={appStoreApplicationVersionId}
-                                    >
-                                        {!availableChartVersions?.length && (
-                                            <Select.Async api={getChartVersionsAndValues} />
-                                        )}
-                                        <Select.Button arrowAsset={DropDownFilled}>
-                                            Version:
-                                            <span className="ml-5 select-button__selected-option">
-                                                v{selectecChartVersion.version}
-                                            </span>
-                                        </Select.Button>
-                                        {availableChartVersions?.map(({ id, version }) => (
-                                            <Select.Option key={id} value={id}>
-                                                {version}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                    <Select
-                                        autoWidth={false}
-                                        rootClassName="multi-chart-summary__versions-select"
-                                        onChange={handleChartValues}
-                                        value={`${kind}..${appStoreValuesVersionId}`}
-                                    >
-                                        {!chartValuesDropDown?.length && (
-                                            <Select.Async api={getChartVersionsAndValues} />
-                                        )}
-                                        <Select.Button arrowAsset={DropDownFilled}>
-                                            Values:
-                                            <span
-                                                className="ml-5 select-button__selected-option dc__ellipsis-right"
-                                                style={{ maxWidth: '95px' }}
-                                            >
-                                                {selectedChartValue.name} {selectedChartValue.chartVersion}
-                                            </span>
-                                        </Select.Button>
-                                        {chartValuesDropDown?.map(({ kind, values }) => (
-                                            <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
-                                                {values?.map(({ chartVersion, id, name, environmentName }) => (
-                                                    <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}`}>
-                                                        <div className="flex left column values-option">
+                    {chart.isEnabled &&
+                        (selectChartValues && selectChartVersion ? (
+                            <>
+                                <Select
+                                    autoWidth={false}
+                                    rootClassName="multi-chart-summary__versions-select"
+                                    onChange={selectChartVersion}
+                                    value={appStoreApplicationVersionId}
+                                >
+                                    {!availableChartVersions?.length && (
+                                        <Select.Async api={getChartVersionsAndValues} />
+                                    )}
+                                    <Select.Button arrowAsset={DropDownFilled}>
+                                        Version:
+                                        <span className="ml-5 select-button__selected-option">
+                                            v{selectecChartVersion.version}
+                                        </span>
+                                    </Select.Button>
+                                    {availableChartVersions?.map(({ id, version }) => (
+                                        <Select.Option key={id} value={id}>
+                                            {version}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                                <Select
+                                    autoWidth={false}
+                                    rootClassName="multi-chart-summary__versions-select"
+                                    onChange={handleChartValues}
+                                    value={`${kind}..${appStoreValuesVersionId}`}
+                                >
+                                    {!chartValuesDropDown?.length && <Select.Async api={getChartVersionsAndValues} />}
+                                    <Select.Button arrowAsset={DropDownFilled}>
+                                        Values:
+                                        <span
+                                            className="ml-5 select-button__selected-option dc__ellipsis-right"
+                                            style={{ maxWidth: '95px' }}
+                                        >
+                                            {selectedChartValue.name} {selectedChartValue.chartVersion}
+                                        </span>
+                                    </Select.Button>
+                                    {chartValuesDropDown?.map(({ kind, values }) => (
+                                        <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
+                                            {values?.map(({ chartVersion, id, name, environmentName }) => (
+                                                <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}`}>
+                                                    <div className="flex left column values-option">
+                                                        <span
+                                                            style={{ color: 'var(--N900)', fontSize: '14px' }}
+                                                            className="values-option__name-version "
+                                                        >
+                                                            {name} ({chartVersion})
+                                                        </span>
+                                                        {environmentName && (
                                                             <span
-                                                                style={{ color: 'var(--N900)', fontSize: '14px' }}
-                                                                className="values-option__name-version "
+                                                                style={{ color: 'var(--N700)', fontSize: '12px' }}
+                                                                className="values-option__env"
                                                             >
-                                                                {name} ({chartVersion})
+                                                                ENV: {environmentName}
                                                             </span>
-                                                            {environmentName && (
-                                                                <span
-                                                                    style={{ color: 'var(--N700)', fontSize: '12px' }}
-                                                                    className="values-option__env"
-                                                                >
-                                                                    ENV: {environmentName}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </Select.Option>
-                                                ))}
-                                                {(!values || values?.length === 0) && (
-                                                    <div
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className="select__option-with-subtitle select__option-with-subtitle--empty-state"
-                                                    >
-                                                        No Results
+                                                        )}
                                                     </div>
-                                                )}
-                                            </Select.OptGroup>
-                                        ))}
-                                    </Select>
-                                </>
-                            ) : (
-                                <div className="flex left column">
-                                    <div className="version-values-label">Version: v{selectecChartVersion.version}</div>
-                                    <div className="version-values-label">
-                                        Values: {selectedChartValue.name} {selectedChartValue.chartVersion}
-                                    </div>
+                                                </Select.Option>
+                                            ))}
+                                            {(!values || values?.length === 0) && (
+                                                // biome-ignore lint/a11y/noNoninteractiveElementInteractions lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Legacy
+                                                <div
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="select__option-with-subtitle select__option-with-subtitle--empty-state"
+                                                >
+                                                    No Results
+                                                </div>
+                                            )}
+                                        </Select.OptGroup>
+                                    ))}
+                                </Select>
+                            </>
+                        ) : (
+                            <div className="flex left column">
+                                <div className="version-values-label">Version: v{selectecChartVersion.version}</div>
+                                <div className="version-values-label">
+                                    Values: {selectedChartValue.name} {selectedChartValue.chartVersion}
                                 </div>
-                            )}
-                        </>
-                    )}
+                            </div>
+                        ))}
                     {!chart.isEnabled && <span>Enable to deploy</span>}
                 </div>
             </div>

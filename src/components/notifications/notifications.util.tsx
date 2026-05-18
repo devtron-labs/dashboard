@@ -39,8 +39,6 @@ import {
 } from './types'
 
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
-import CD from '@Icons/ic-CD.svg?react'
-import CI from '@Icons/ic-CI.svg?react'
 import Webhook from '@Icons/ic-CIWebhook.svg?react'
 import ArrowDown from '@Icons/ic-chevron-down.svg?react'
 import RedWarning from '@Icons/ic-error-medium.svg?react'
@@ -57,7 +55,7 @@ export const multiSelectStyles = {
         height: '100%',
         backgroundColor: 'var(--bg-secondary)',
     }),
-    menu: (base, state) => ({
+    menu: (base) => ({
         ...base,
         top: `38px`,
         backgroundColor: 'var(--bg-menu-primary)',
@@ -90,7 +88,7 @@ export const multiSelectStyles = {
         userSelect: `none`,
         display: `inline-flex`,
     }),
-    multiValueLabel: (base, state) => ({
+    multiValueLabel: (base) => ({
         ...base,
         display: `flex`,
         alignItems: `center`,
@@ -152,7 +150,7 @@ export const MultiValueContainer = ({ validator, ...props }) => {
 
 export const Option = (props) => {
     const item = props.data
-    if (item && item?.__isNew__) {
+    if (item?.__isNew__) {
         return <components.Option {...props}>{props.children}</components.Option>
     }
     return (
@@ -186,7 +184,6 @@ export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: IconBaseSiz
             return <Icon name="ic-slack" color={null} size={size} />
         case ConfigurationsTabTypes.WEBHOOK:
             return <Icon name="ic-webhook" color={null} size={size} />
-        case ConfigurationsTabTypes.SES:
         default:
             return <Icon name="ic-ses" color={null} size={size} />
     }
