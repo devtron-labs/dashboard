@@ -78,7 +78,7 @@ const getDefaultRedirectPath = (isFirstLoginUser: boolean, serverMode: SERVER_MO
             pageHeaderTab === URLS.APP_DEPLOYMENT_METRICS ||
             pageHeaderTab === COMMON_URLS.APP_CONFIG
         ) {
-            parts[0] = `${BASE_ROUTES.APPLICATION_MANAGEMENT.ROOT}/${BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP}`
+            parts[0] = `${BASE_ROUTES.APPLICATION_MANAGEMENT.ROOT}/${BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.ROOT}`
             const newPath = parts.join('/')
             return newPath
         }
