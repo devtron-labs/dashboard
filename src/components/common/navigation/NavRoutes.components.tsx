@@ -60,7 +60,7 @@ const getDefaultRedirectPath = (isFirstLoginUser: boolean, serverMode: SERVER_MO
         return ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APPS
     }
 
-    const parts = pathname.split('/').filter((part) => part)
+    const parts = pathname.split('/').filter(Boolean)
 
     if (parts?.[0] === 'app') {
         if (Number.isNaN(Number(parts?.[1]))) {
