@@ -33,6 +33,7 @@ export const URLS = {
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_GIT_CONFIG: 'materials',
+    APP_DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_DOCKER_CONFIG: 'docker-build-config',
     APP_GITOPS_CONFIG: 'gitops-config',
     APP_DEPLOYMENT_CONFIG: EnvResourceType.DeploymentTemplate,

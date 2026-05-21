@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useEffect, useMemo, useState } from 'react'
+import { lazy, useMemo, useState } from 'react'
 import { generatePath, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 
@@ -23,8 +23,11 @@ import {
     InfrastructureManagementAppListType,
     ROUTER_URLS,
     SERVER_MODE,
+    URLS as COMMON_URLS,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '@Config/index'
 
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 import { AppContext } from '../Contexts'
@@ -40,7 +43,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
-const getDefaultRedirectPath = (isFirstLoginUser: boolean, serverMode: SERVER_MODE) => {
+const getDefaultRedirectPath = (isFirstLoginUser: boolean, serverMode: SERVER_MODE, pathname: string) => {
     if (window._env_.K8S_CLIENT) {
         return ROUTER_URLS.RESOURCE_BROWSER.ROOT
     }
@@ -53,21 +56,42 @@ const getDefaultRedirectPath = (isFirstLoginUser: boolean, serverMode: SERVER_MO
     if (window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
         return ROUTER_URLS.RESOURCE_BROWSER.ROOT
     }
-    return serverMode === SERVER_MODE.EA_ONLY
-        ? ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APPS
-        : ROUTER_URLS.DEVTRON_APP_LIST
+    if (serverMode === SERVER_MODE.EA_ONLY) {
+        return ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APPS
+    }
+
+    const parts = pathname.split('/').filter((part) => part)
+
+    if (parts?.[0] === 'app') {
+        if (Number.isNaN(Number(parts?.[1]))) {
+            Sentry.captureMessage(`redirecting to ${ROUTER_URLS.DEVTRON_APP_LIST} from ${pathname}`, 'warning')
+            return ROUTER_URLS.DEVTRON_APP_LIST
+        }
+
+        const pageHeaderTab = parts?.[2]
+
+        if (
+            pageHeaderTab === COMMON_URLS.APP_DETAILS ||
+            pageHeaderTab === URLS.APP_TRIGGER ||
+            pageHeaderTab === URLS.APP_CI_DETAILS ||
+            pageHeaderTab === URLS.APP_CD_DETAILS ||
+            pageHeaderTab === URLS.APP_DEPLOYMENT_METRICS ||
+            pageHeaderTab === COMMON_URLS.APP_CONFIG
+        ) {
+            parts[0] = `${BASE_ROUTES.APPLICATION_MANAGEMENT.ROOT}/${BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP}`
+            const newPath = parts.join('/')
+            return newPath
+        }
+    }
+
+    Sentry.captureMessage(`redirecting to ${ROUTER_URLS.DEVTRON_APP_LIST} from ${pathname}`, 'warning')
+    return ROUTER_URLS.DEVTRON_APP_LIST
 }
 
 export const RedirectUserWithSentry = ({ isFirstLoginUser }: { isFirstLoginUser: boolean }) => {
     const { pathname } = useLocation()
     const { serverMode } = useMainContext()
-    const redirectPath = getDefaultRedirectPath(isFirstLoginUser, serverMode)
-
-    useEffect(() => {
-        if (pathname !== '/') {
-            Sentry.captureMessage(`redirecting to ${redirectPath} from ${pathname}`, 'warning')
-        }
-    }, [])
+    const redirectPath = getDefaultRedirectPath(isFirstLoginUser, serverMode, pathname)
 
     return <Navigate to={redirectPath} replace />
 }
