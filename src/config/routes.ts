@@ -27,11 +27,13 @@ export const URLS = {
     APP_DETAILS_K8: 'k8s-resources', // for V2
     APP_DETAILS_LOG: 'log-analyzer', // for V2
     APP_DIFF_VIEW: 'diff-view',
+    APP_TRIGGER: 'trigger',
     APP_OVERVIEW: 'overview',
     MANAGE_TRAFFIC: 'manage-traffic',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_GIT_CONFIG: 'materials',
+    APP_DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_DOCKER_CONFIG: 'docker-build-config',
     APP_GITOPS_CONFIG: 'gitops-config',
     APP_DEPLOYMENT_CONFIG: EnvResourceType.DeploymentTemplate,
