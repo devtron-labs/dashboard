@@ -27,6 +27,7 @@ import { ClusterConfigPages, ClusterConfigurationsProps } from './types'
 
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
 const AssignCategorySelect = importComponentFromFELibrary('AssignCategorySelect', null, 'function')
+const AutoscalerProfileSelect = importComponentFromFELibrary('AutoscalerProfileSelect', null, 'function')
 
 const ClusterConfigurations = ({
     id,
@@ -45,6 +46,8 @@ const ClusterConfigurations = ({
     initialIsTlsConnection,
     getIsConnectProtocolConfigInvalid,
     getIsTLSConfigInvalid,
+    autoscalerProfile,
+    setAutoscalerProfile,
 }: ClusterConfigurationsProps) => {
     const [clusterConfigPage, setClusterConfigPage] = useState<ClusterConfigPages>(ClusterConfigPages.BASIC_CONFIG)
 
@@ -302,14 +305,24 @@ const ClusterConfigurations = ({
                     </RadioGroup>
                 </div>
 
-                {AssignCategorySelect && (
-                    <div className="w-250">
-                        <AssignCategorySelect
-                            selectedCategory={selectedCategory}
-                            setSelectedCategory={setSelectedCategory}
-                        />
-                    </div>
-                )}
+                <div className="flex left dc__gap-12">
+                    {AssignCategorySelect && (
+                        <div className="w-250">
+                            <AssignCategorySelect
+                                selectedCategory={selectedCategory}
+                                setSelectedCategory={setSelectedCategory}
+                            />
+                        </div>
+                    )}
+                    {window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && AutoscalerProfileSelect && (
+                        <div className="w-250">
+                            <AutoscalerProfileSelect
+                                autoscalerProfile={autoscalerProfile}
+                                setAutoscalerProfile={setAutoscalerProfile}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
             {id !== DEFAULT_CLUSTER_ID && (
                 <div className="flexbox-col dc__gap-12">

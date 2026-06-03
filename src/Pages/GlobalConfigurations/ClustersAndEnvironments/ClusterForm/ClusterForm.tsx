@@ -38,6 +38,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
@@ -62,6 +63,8 @@ import '../cluster.scss'
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getCategoryPayload = importComponentFromFELibrary('getCategoryPayload', null, 'function')
 const ClusterCostConfig = importComponentFromFELibrary('ClusterCostConfig', null, 'function')
+const attachProfileToCluster = importComponentFromFELibrary('attachProfileToCluster', null, 'function')
+const getProfileAttachedToCluster = importComponentFromFELibrary('getProfileAttachedToCluster', null, 'function')
 
 const ClusterForm = ({
     id = null,
@@ -126,6 +129,19 @@ const ClusterForm = ({
     const [isUpdating, setIsUpdating] = useState<boolean>(false)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(!!proxyUrl)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
+    const [autoscalerProfile, setAutoscalerProfile] = useState<SelectPickerOptionType<number>>(null)
+
+    const { data: profileData } = useQuery({
+        queryKey: ['getProfileAttachedToCluster', clusterName],
+        queryFn: () => getProfileAttachedToCluster(clusterName),
+        enabled: !!clusterName && window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && !!getProfileAttachedToCluster,
+    })
+
+    useEffect(() => {
+        if (profileData) {
+            setAutoscalerProfile(profileData)
+        }
+    }, [profileData])
 
     const isPrometheusEnabled = costModuleState.enabled || isAppMetricsEnabled
 
@@ -322,6 +338,9 @@ const ClusterForm = ({
         try {
             setIsUpdating(true)
             await api(payload)
+            if (window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && attachProfileToCluster) {
+                attachProfileToCluster(autoscalerProfile?.value, payload.cluster_name)
+            }
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: `Successfully ${id ? 'updated' : 'saved'}`,
@@ -541,6 +560,8 @@ const ClusterForm = ({
                             initialIsTlsConnection={initialIsTlsConnection}
                             getIsConnectProtocolConfigInvalid={getIsConnectProtocolConfigInvalid}
                             getIsTLSConfigInvalid={getIsTLSConfigInvalid}
+                            autoscalerProfile={autoscalerProfile}
+                            setAutoscalerProfile={setAutoscalerProfile}
                         />
                     </div>
                 )

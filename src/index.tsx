@@ -180,6 +180,7 @@ if (!window || !window._env_) {
         FEATURE_STORAGE_ENABLE: true,
         FEATURE_ATHENA_DEBUG_MODE_ENABLE: false,
         GRAFANA_ORG_ID: 2,
+        FEATURE_NODE_AUTOSCALER_ENABLE: false,
     }
 }
 
