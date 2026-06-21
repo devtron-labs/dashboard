@@ -326,7 +326,15 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
         id: 'audit-logs',
         title: 'Audit logs',
         icon: 'ic-file-log-search',
-        href: ROUTER_URLS.AUDIT_LOGS,
+        items: [
+            {
+                id: 'audit-logs',
+                title: 'Audit logs',
+                dataTestId: 'audit-logs',
+                icon: 'ic-file-log-search',
+                href: ROUTER_URLS.AUDIT_LOGS,
+            },
+        ],
     },
 ]
 
