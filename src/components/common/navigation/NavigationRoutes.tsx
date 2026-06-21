@@ -126,6 +126,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 const DataProtectionManagementRouter = importComponentFromFELibrary('DataProtectionManagementRouter', null, 'function')
+const AuditLogsRouter = importComponentFromFELibrary('AuditLogs', null, 'function')
 const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
     importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
 const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter', null, 'function')
@@ -668,6 +669,13 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             key={BASE_ROUTES.DATA_PROTECTION_MANAGEMENT.ROOT}
                                             path={`${BASE_ROUTES.DATA_PROTECTION_MANAGEMENT.ROOT}/*`}
                                             element={<DataProtectionManagementRouter />}
+                                        />
+                                    )}
+                                    {serverMode === SERVER_MODE.FULL && AuditLogsRouter && (
+                                        <Route
+                                            key={BASE_ROUTES.AUDIT_LOGS.ROOT}
+                                            path={`${BASE_ROUTES.AUDIT_LOGS.ROOT}/*`}
+                                            element={<AuditLogsRouter />}
                                         />
                                     )}
                                     <Route

@@ -322,6 +322,12 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
         ],
         isAvailableInEA: true,
     },
+    {
+        id: 'audit-logs',
+        title: 'Audit logs',
+        icon: 'ic-file-log-search',
+        href: ROUTER_URLS.AUDIT_LOGS,
+    },
 ]
 
 export const getNavigationList = (serverMode: SERVER_MODE): NavigationGroupType[] => {
