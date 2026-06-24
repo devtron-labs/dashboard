@@ -113,6 +113,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const Observability = importComponentFromFELibrary('Observability', null, 'function')
 const AskDevtronButton = importComponentFromFELibrary('AskDevtronButton', null, 'function')
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
@@ -586,6 +587,15 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                             key={BASE_ROUTES.AUTOMATION_AND_ENABLEMENT.ROOT}
                                                             path={`${BASE_ROUTES.AUTOMATION_AND_ENABLEMENT.ROOT}/*`}
                                                             element={<AutomationAndEnablementRouter />}
+                                                        />,
+                                                    ]
+                                                  : []),
+                                              ...(Observability
+                                                  ? [
+                                                        <Route
+                                                            key={BASE_ROUTES.OBSERVABILITY.ROOT}
+                                                            path={`${BASE_ROUTES.OBSERVABILITY.ROOT}/*`}
+                                                            element={<Observability />}
                                                         />,
                                                     ]
                                                   : []),

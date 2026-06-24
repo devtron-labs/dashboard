@@ -16,7 +16,13 @@
 
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { ActionTypes, EntityTypes, useGetUserRoles, UserStatus } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ActionTypes,
+    EntityTypes,
+    ObservabilityPermissionFilter,
+    useGetUserRoles,
+    UserStatus,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { PermissionType } from '../../../constants'
@@ -60,6 +66,7 @@ export const PermissionConfigurationFormProvider = ({
         ...getDefaultStatusAndTimeout(),
     })
     const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([])
+    const [observabilityPermission, setObservabilityPermission] = useState<ObservabilityPermissionFilter[]>([])
 
     const currentK8sPermissionRef = useRef<K8sPermissionFilter[]>([])
     const [userRoleGroups, _setUserRoleGroups] = useState<User['userRoleGroups']>([])
@@ -123,6 +130,8 @@ export const PermissionConfigurationFormProvider = ({
             setDirectPermission,
             chartPermission,
             setChartPermission,
+            observabilityPermission,
+            setObservabilityPermission,
             k8sPermission,
             setK8sPermission,
             currentK8sPermissionRef,
@@ -148,6 +157,8 @@ export const PermissionConfigurationFormProvider = ({
             setDirectPermission,
             chartPermission,
             setChartPermission,
+            observabilityPermission,
+            setObservabilityPermission,
             k8sPermission,
             setK8sPermission,
             currentK8sPermissionRef,

@@ -83,6 +83,8 @@ const EditAPIToken = ({
         userRoleGroups,
         isSaveDisabled,
         allowManageAllAccess,
+        observabilityPermission,
+        setObservabilityPermission,
     } = usePermissionConfiguration()
 
     const navigate = useNavigate()
@@ -106,7 +108,15 @@ const EditAPIToken = ({
     }
 
     const handleUpdatedToken = async (tokenId) => {
-        if (!validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid) {
+        if (
+            !validateDirectPermissionForm(
+                directPermission,
+                setDirectPermission,
+                observabilityPermission,
+                setObservabilityPermission,
+                allowManageAllAccess,
+            ).isValid
+        ) {
             return
         }
 
@@ -135,6 +145,7 @@ const EditAPIToken = ({
                     permissionType,
                     userGroups: [],
                     canManageAllAccess: allowManageAllAccess,
+                    observabilityPermission,
                     ...getDefaultUserStatusAndTimeout(),
                 })
 
