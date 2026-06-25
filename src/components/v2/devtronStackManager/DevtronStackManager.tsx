@@ -406,9 +406,9 @@ export default function DevtronStackManager({
 
         navigate({
             pathname: fromDiscoverModules
-                    ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS
-                    : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES_DETAILS,
-                search: `?${queryParams.toString()}`,
+                ? ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS
+                : ROUTER_URLS.STACK_MANAGER.INSTALLED_MODULES_DETAILS,
+            search: `?${queryParams.toString()}`,
         })
     }
 
@@ -437,104 +437,122 @@ export default function DevtronStackManager({
     const Body = () => {
         return (
             <Routes>
-                <Route path={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES_DETAILS}>
-                    <ModuleDetailsView
-                        modulesList={stackDetails.discoverModulesList}
-                        moduleDetails={selectedModule}
-                        setDetailsMode={setDetailsMode}
-                        serverInfo={serverInfo}
-                        upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
-                        logPodName={logPodName}
-                        fromDiscoverModules
-                        isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
-                        handleActionTrigger={handleActionTrigger}
-                        setShowResourceStatusModal={setShowResourceStatusModal}
-                        isSuperAdmin={isSuperAdmin}
-                        setSelectedModule={setSelectedModule}
-                        setStackDetails={setStackDetails}
-                        stackDetails={stackDetails}
-                        dialog={dialog}
-                        setDialog={setDialog}
-                        retryState={retryState}
-                        setRetryState={setRetryState}
-                        successState={successState}
-                        setSuccessState={setSuccessState}
-                        setToggled={setToggled}
-                        toggled={toggled}
-                    />
-                </Route>
-                <Route path={BASE_ROUTES.STACK_MANAGER.INSTALLED_MODULES_DETAILS}>
-                    <ModuleDetailsView
-                        modulesList={stackDetails.installedModulesList}
-                        moduleDetails={selectedModule}
-                        setDetailsMode={setDetailsMode}
-                        serverInfo={serverInfo}
-                        upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
-                        logPodName={logPodName}
-                        isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
-                        handleActionTrigger={handleActionTrigger}
-                        setShowResourceStatusModal={setShowResourceStatusModal}
-                        setSelectedModule={setSelectedModule}
-                        isSuperAdmin={isSuperAdmin}
-                        setStackDetails={setStackDetails}
-                        stackDetails={stackDetails}
-                        dialog={dialog}
-                        setDialog={setDialog}
-                        retryState={retryState}
-                        setRetryState={setRetryState}
-                        successState={successState}
-                        setSuccessState={setSuccessState}
-                        setToggled={setToggled}
-                        toggled={toggled}
-                    />
-                </Route>
-                <Route path={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES}>
-                    <ModulesListingView
-                        modulesList={stackDetails.discoverModulesList}
-                        isDiscoverModulesView
-                        handleModuleCardClick={handleModuleSelection}
-                    />
-                </Route>
-                <Route path={BASE_ROUTES.STACK_MANAGER.INSTALLED_MODULES}>
-                    <ModulesListingView
-                        modulesList={stackDetails.installedModulesList}
-                        handleModuleCardClick={handleModuleSelection}
-                    />
-                </Route>
-                <Route path={BASE_ROUTES.STACK_MANAGER.ABOUT}>
-                    <AboutDevtronView
-                        parentRef={stackManagerRef}
-                        releaseNotes={stackDetails.releaseNotes}
-                        serverInfo={serverInfo}
-                        canViewLogs={serverMode === SERVER_MODE.FULL}
-                        logPodName={logPodName}
-                        selectedTabIndex={selectedTabIndex}
-                        handleTabChange={handleTabChange}
-                        isActionTriggered={actionTriggered.serverAction}
-                        handleActionTrigger={handleActionTrigger}
-                        showPreRequisiteConfirmationModal={showPreRequisiteConfirmationModal}
-                        setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
-                        preRequisiteChecked={preRequisiteChecked}
-                        setPreRequisiteChecked={setPreRequisiteChecked}
-                    />
-                </Route>
-                <Route path={BASE_ROUTES.STACK_MANAGER.ABOUT_RELEASES}>
-                    <AboutDevtronView
-                        parentRef={stackManagerRef}
-                        releaseNotes={stackDetails.releaseNotes}
-                        serverInfo={serverInfo}
-                        canViewLogs={serverMode === SERVER_MODE.FULL}
-                        logPodName={logPodName}
-                        selectedTabIndex={selectedTabIndex}
-                        handleTabChange={handleTabChange}
-                        isActionTriggered={actionTriggered.serverAction}
-                        handleActionTrigger={handleActionTrigger}
-                        showPreRequisiteConfirmationModal={showPreRequisiteConfirmationModal}
-                        setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
-                        preRequisiteChecked={preRequisiteChecked}
-                        setPreRequisiteChecked={setPreRequisiteChecked}
-                    />
-                </Route>
+                <Route
+                    path={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES_DETAILS}
+                    element={
+                        <ModuleDetailsView
+                            modulesList={stackDetails.discoverModulesList}
+                            moduleDetails={selectedModule}
+                            setDetailsMode={setDetailsMode}
+                            serverInfo={serverInfo}
+                            upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
+                            logPodName={logPodName}
+                            fromDiscoverModules
+                            isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
+                            handleActionTrigger={handleActionTrigger}
+                            setShowResourceStatusModal={setShowResourceStatusModal}
+                            isSuperAdmin={isSuperAdmin}
+                            setSelectedModule={setSelectedModule}
+                            setStackDetails={setStackDetails}
+                            stackDetails={stackDetails}
+                            dialog={dialog}
+                            setDialog={setDialog}
+                            retryState={retryState}
+                            setRetryState={setRetryState}
+                            successState={successState}
+                            setSuccessState={setSuccessState}
+                            setToggled={setToggled}
+                            toggled={toggled}
+                        />
+                    }
+                />
+                <Route
+                    path={BASE_ROUTES.STACK_MANAGER.INSTALLED_MODULES_DETAILS}
+                    element={
+                        <ModuleDetailsView
+                            modulesList={stackDetails.installedModulesList}
+                            moduleDetails={selectedModule}
+                            setDetailsMode={setDetailsMode}
+                            serverInfo={serverInfo}
+                            upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
+                            logPodName={logPodName}
+                            isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
+                            handleActionTrigger={handleActionTrigger}
+                            setShowResourceStatusModal={setShowResourceStatusModal}
+                            setSelectedModule={setSelectedModule}
+                            isSuperAdmin={isSuperAdmin}
+                            setStackDetails={setStackDetails}
+                            stackDetails={stackDetails}
+                            dialog={dialog}
+                            setDialog={setDialog}
+                            retryState={retryState}
+                            setRetryState={setRetryState}
+                            successState={successState}
+                            setSuccessState={setSuccessState}
+                            setToggled={setToggled}
+                            toggled={toggled}
+                        />
+                    }
+                />
+                <Route
+                    path={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES}
+                    element={
+                        <ModulesListingView
+                            modulesList={stackDetails.discoverModulesList}
+                            isDiscoverModulesView
+                            handleModuleCardClick={handleModuleSelection}
+                        />
+                    }
+                />
+                <Route
+                    path={BASE_ROUTES.STACK_MANAGER.INSTALLED_MODULES}
+                    element={
+                        <ModulesListingView
+                            modulesList={stackDetails.installedModulesList}
+                            handleModuleCardClick={handleModuleSelection}
+                        />
+                    }
+                />
+                <Route
+                    path={BASE_ROUTES.STACK_MANAGER.ABOUT}
+                    element={
+                        <AboutDevtronView
+                            parentRef={stackManagerRef}
+                            releaseNotes={stackDetails.releaseNotes}
+                            serverInfo={serverInfo}
+                            canViewLogs={serverMode === SERVER_MODE.FULL}
+                            logPodName={logPodName}
+                            selectedTabIndex={selectedTabIndex}
+                            handleTabChange={handleTabChange}
+                            isActionTriggered={actionTriggered.serverAction}
+                            handleActionTrigger={handleActionTrigger}
+                            showPreRequisiteConfirmationModal={showPreRequisiteConfirmationModal}
+                            setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
+                            preRequisiteChecked={preRequisiteChecked}
+                            setPreRequisiteChecked={setPreRequisiteChecked}
+                        />
+                    }
+                />
+                <Route
+                    path={BASE_ROUTES.STACK_MANAGER.ABOUT_RELEASES}
+                    element={
+                        <AboutDevtronView
+                            parentRef={stackManagerRef}
+                            releaseNotes={stackDetails.releaseNotes}
+                            serverInfo={serverInfo}
+                            canViewLogs={serverMode === SERVER_MODE.FULL}
+                            logPodName={logPodName}
+                            selectedTabIndex={selectedTabIndex}
+                            handleTabChange={handleTabChange}
+                            isActionTriggered={actionTriggered.serverAction}
+                            handleActionTrigger={handleActionTrigger}
+                            showPreRequisiteConfirmationModal={showPreRequisiteConfirmationModal}
+                            setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
+                            preRequisiteChecked={preRequisiteChecked}
+                            setPreRequisiteChecked={setPreRequisiteChecked}
+                        />
+                    }
+                />
                 <Route path="*" element={<Navigate to={BASE_ROUTES.STACK_MANAGER.DISCOVER_MODULES} />} />
             </Routes>
         )
