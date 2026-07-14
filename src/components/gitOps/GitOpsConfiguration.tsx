@@ -35,6 +35,7 @@ import {
     PasswordField,
     DocLink,
     DocLinkProps,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -68,12 +69,19 @@ import {
     LinkAndLabelSpec,
     DefaultErrorFields,
     PROVIDER_DOC_LINK_MAP,
+    UNABLE_TO_DELETE_WARNING,
 } from './constants'
-import { getGitOpsLabelText } from './utils'
+import {
+    getGitAccessPasswordInputLabel,
+    getGitOpsLabelText,
+    getGitAccessUsernameInputPlaceholder,
+    getGitAccessUsernameInputLabel,
+} from './utils'
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { GitProviderType } from '@Components/common/GitTabs/types'
 import { GitProviderTab } from '@Components/common/GitTabs/GitProviderTab'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
+import BitbucketCloudAuthSelector from './BitbucketCloudAuthSelector'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 const BitBucketDCCredentials = importComponentFromFELibrary('BitBucketDCCredentials', null, 'function')
@@ -342,7 +350,12 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
         // We do not need any https url in aws code commit tab
         const isURLValidationOptional =
             key === 'host' || this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()
-        const validateUserName = key === 'username' && !this.getIsOtherGitOpsTabSelected()
+        // Empty username is allowed in case of bitbucket cloud with access token (only send token i.e. Bearer token)
+        const validateUserName =
+            key === 'username' &&
+            (!this.getIsOtherGitOpsTabSelected() ||
+                (this.state.form.provider === GitProvider.BITBUCKET_CLOUD &&
+                    this.state.form.authMode === GitOpsAuthModeType.ACCESS_TOKEN))
         const shouldValidateSSHUrl = key === 'sshHost' && this.isAWSCodeCommitTabSelected()
 
         const isCredentialKey = key === 'token' || key === 'sshKey'
@@ -428,9 +441,12 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
         }
 
         const isBitBucketDC = this.state.form.provider === 'BITBUCKET_DC'
+        const isBitBucketCloud = this.state.form.provider === GitProvider.BITBUCKET_CLOUD
         const isBitBucketDCCreateView =
             !this.state.form.id || this.state.form.authMode !== this.state.initialBitBucketDCAuthMode
-        const isTokenRequired = isBitBucketDC && isBitBucketDCCreateView
+        
+        const isTokenRequired = (isBitBucketDC && isBitBucketDCCreateView) || isBitBucketCloud
+        const isUsernameRequired = !(isBitBucketCloud && this.state.form.authMode === GitOpsAuthModeType.ACCESS_TOKEN)
 
         const isSSHKeyRequired =
             isBitBucketDC &&
@@ -442,7 +458,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
 
         return {
             host: this.requiredFieldCheck(form.host),
-            username: this.requiredFieldCheck(form.username),
+            username: isUsernameRequired ? this.requiredFieldCheck(form.username) : '',
             token: this.state.form.id && !isTokenRequired ? '' : this.requiredFieldCheck(form.token),
             gitHubOrgId: this.requiredFieldCheck(form.gitHubOrgId),
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
@@ -823,7 +839,10 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
             username: '',
             sshKey: '',
         }
-        const formState = this.getFormStateOnCredentialTypeChange(selectedAuthMode)
+        const formState =
+            this.state.form.provider === 'BITBUCKET_DC'
+                ? this.getFormStateOnCredentialTypeChange(selectedAuthMode)
+                : { ...this.state.form, authMode: selectedAuthMode, username: '', token: '' }
 
         this.setState({
             form: formState,
@@ -1013,12 +1032,10 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
     render() {
         const suggestedURL = this.suggestedValidGitOpsUrl()
         const key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
-        const warning =
-            'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
         const isAuthModeSSH = this.getIsAuthModeSSH(this.state.form.authMode, this.state.form.provider)
-        // Would be showing TLS Config Form if auth mode is Password
+        // Would be showing TLS Config Form if auth mode is Password and provider is not Bitbucket Cloud
         const formAuthMode = this.getFormAuthMode(this.state.form.authMode, this.state.form.provider)
-        const isTLSConfigFormVisible = formAuthMode === GitOpsAuthModeType.PASSWORD
+        const isTLSConfigFormVisible = formAuthMode === GitOpsAuthModeType.PASSWORD && !this.state.isBitbucketCloud
 
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -1094,6 +1111,95 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
             </div>
         )
 
+        const renderGitAccessCredentials = () => {
+            if (BitBucketDCCredentials && this.state.form.provider === 'BITBUCKET_DC') {
+                return (
+                    <div className={`flexbox-col ${isTLSConfigFormVisible ? 'mb-16' : ''}`}>
+                        <BitBucketDCCredentials
+                            authMode={this.state.form.authMode}
+                            initialAuthMode={this.state.initialBitBucketDCAuthMode}
+                            handleAuthModeChange={this.handleAuthModeChange}
+                            handleChange={this.handleChange}
+                            username={{
+                                value: this.state.form.username,
+                                error: this.state.isError.username,
+                            }}
+                            sshKey={{
+                                value: this.state.form.sshKey,
+                                error: this.state.isError.sshKey,
+                            }}
+                            token={{
+                                value: this.state.form.token,
+                                error: this.state.isError.token,
+                            }}
+                            id={this.state.form.id}
+                        />
+                    </div>
+                )
+            }
+
+            return (
+                <div className="flexbox-col dc__gap-12 w-100">
+                    {this.state.form.provider === GitProvider.BITBUCKET_CLOUD && (
+                        <BitbucketCloudAuthSelector
+                            authMode={this.state.form.authMode}
+                            handleAuthModeChange={this.handleAuthModeChange}
+                        />
+                    )}
+                    {this.state.form.provider === GitProvider.BITBUCKET_CLOUD &&
+                    this.state.form.authMode === GitOpsAuthModeType.ACCESS_TOKEN ? (
+                        <Textarea
+                            name="bitbucket-cloud-access-token"
+                            value={this.state.form.token}
+                            onChange={(event) => this.handleChange(event, 'token')}
+                            error={this.state.isError.token}
+                            label={getGitAccessPasswordInputLabel(this.state.form.provider, this.state.form.authMode)}
+                            placeholder="Enter bearer token"
+                            required
+                        />
+                    ) : (
+                        <div className="form__row--two-third w-100">
+                            <div>
+                                <CustomInput
+                                    value={this.state.form.username}
+                                    onChange={(event) => this.handleChange(event, 'username')}
+                                    name="Enter username"
+                                    placeholder={getGitAccessUsernameInputPlaceholder(
+                                        this.state.form.provider,
+                                        this.state.form.authMode,
+                                    )}
+                                    error={this.state.isError.username}
+                                    label={getGitAccessUsernameInputLabel(
+                                        this.state.form.provider,
+                                        this.state.form.authMode,
+                                    )}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <PasswordField
+                                    shouldShowDefaultPlaceholderOnBlur={false}
+                                    name="token"
+                                    placeholder="Enter access token"
+                                    value={this.state.form.token}
+                                    onChange={(event) => this.handleChange(event, 'token')}
+                                    error={this.state.isError.token}
+                                    {...getInputLabelProps(
+                                        getGitAccessPasswordInputLabel(
+                                            this.state.form.provider,
+                                            this.state.form.authMode,
+                                        ),
+                                        PROVIDER_DOC_LINK_MAP[this.state.form.provider],
+                                        'Check permissions required for PAT',
+                                    )}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )
+        }
+
         const renderGitOpsFormInputs = () => {
             /* Not adding check for isAuthModeSSH since that no relation with form itself */
             return (this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()) && OtherGitOpsForm ? (
@@ -1156,7 +1262,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                             validationError={this.state.validationError}
                             validationStatus={this.state.validationStatus}
                             configName="gitops"
-                            warning={this.state.deleteRepoError ? warning : ''}
+                            warning={this.state.deleteRepoError ? UNABLE_TO_DELETE_WARNING : ''}
                         />
                     )}
                     <div className="flex-grow-1 w-100">
@@ -1210,7 +1316,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                                     'Bitbucket Workspace ID',
                                     GitLink.BITBUCKET_WORKSPACE,
                                     'How to create workspace in bitbucket?',
-                                    true
+                                    true,
                                 )}
                             />
                         </div>
@@ -1239,68 +1345,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                         Git access credentials
                     </div>
 
-                    {BitBucketDCCredentials && this.state.form.provider === 'BITBUCKET_DC' ? (
-                        <div className={`flexbox-col ${isTLSConfigFormVisible ? 'mb-16' : ''}`}>
-                            <BitBucketDCCredentials
-                                authMode={this.state.form.authMode}
-                                initialAuthMode={this.state.initialBitBucketDCAuthMode}
-                                handleAuthModeChange={this.handleAuthModeChange}
-                                handleChange={this.handleChange}
-                                username={{
-                                    value: this.state.form.username,
-                                    error: this.state.isError.username,
-                                }}
-                                sshKey={{
-                                    value: this.state.form.sshKey,
-                                    error: this.state.isError.sshKey,
-                                }}
-                                token={{
-                                    value: this.state.form.token,
-                                    error: this.state.isError.token,
-                                }}
-                                id={this.state.form.id}
-                            />
-                        </div>
-                    ) : (
-                        <div className="form__row--two-third w-100">
-                            <div>
-                                <CustomInput
-                                    value={this.state.form.username}
-                                    onChange={(event) => this.handleChange(event, 'username')}
-                                    name="Enter username"
-                                    placeholder="Enter username"
-                                    error={this.state.isError.username}
-                                    label={
-                                        this.state.providerTab === GitProvider.GITLAB
-                                            ? 'GitLab Username'
-                                            : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                              ? 'Azure DevOps Username'
-                                              : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                                ? 'Bitbucket Username'
-                                                : 'GitHub Username'
-                                    }
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <PasswordField
-                                    shouldShowDefaultPlaceholderOnBlur={!!this.state.form.id}
-                                    name="token"
-                                    placeholder="Enter access token"
-                                    value={this.state.form.token}
-                                    onChange={(event) => this.handleChange(event, 'token')}
-                                    error={this.state.isError.token}
-                                    {...getInputLabelProps(
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'Azure DevOps Access Token '
-                                            : 'Personal Access Token ',
-                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
-                                        'Check permissions required for PAT',
-                                    )}
-                                />
-                            </div>
-                        </div>
-                    )}
+                    {renderGitAccessCredentials()}
                 </Fragment>
             )
         }
