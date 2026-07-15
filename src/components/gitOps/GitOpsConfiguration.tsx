@@ -444,7 +444,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
         const isBitBucketCloud = this.state.form.provider === GitProvider.BITBUCKET_CLOUD
         const isBitBucketDCCreateView =
             !this.state.form.id || this.state.form.authMode !== this.state.initialBitBucketDCAuthMode
-        
+
         const isTokenRequired = (isBitBucketDC && isBitBucketDCCreateView) || isBitBucketCloud
         const isUsernameRequired = !(isBitBucketCloud && this.state.form.authMode === GitOpsAuthModeType.ACCESS_TOKEN)
 
@@ -611,6 +611,11 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
             ...(this.state.isBitbucketCloud
                 ? {
                       bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, ''),
+                  }
+                : {}),
+            ...(this.state.form.provider === GitProvider.BITBUCKET_CLOUD
+                ? {
+                      authMode: this.state.form.authMode,
                   }
                 : {}),
             ...(this.state.form.provider === 'BITBUCKET_DC' && {
@@ -1178,7 +1183,9 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                             </div>
                             <div>
                                 <PasswordField
-                                    shouldShowDefaultPlaceholderOnBlur={false}
+                                    shouldShowDefaultPlaceholderOnBlur={
+                                        this.state.form.token === DEFAULT_SECRET_PLACEHOLDER
+                                    }
                                     name="token"
                                     placeholder="Enter access token"
                                     value={this.state.form.token}
