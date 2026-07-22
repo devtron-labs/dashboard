@@ -73,7 +73,7 @@ export default function ChartGroupDetails() {
         handleEnvironmentChangeOfAllCharts,
         setEnvironmentList,
         handleGitRepoUrlChange,
-        handleDeploymentAppTypeChange,
+        handleDeploymentAppTypeChangeOfAllCharts,
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         pagePathPattern,
@@ -137,7 +137,7 @@ export default function ChartGroupDetails() {
             if (!validated) {
                 return
             }
-            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
+            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts, state.allowCustomRepository)
             const { result } = await deployChartGroup(projectId, deployableCharts, Number(groupId))
             // TODO: Proper error handling in case of deployment is failed.
             renderChartGroupDeploymentToastMessage(result)
@@ -357,7 +357,7 @@ export default function ChartGroupDetails() {
                     setEnvironments={setEnvironmentList}
                     handleGitRepoUrlChange={handleGitRepoUrlChange}
                     allowCustomRepository={state.allowCustomRepository}
-                    handleDeploymentAppTypeChange={handleDeploymentAppTypeChange}
+                    handleDeploymentAppTypeChangeOfAllCharts={handleDeploymentAppTypeChangeOfAllCharts}
                 />
             ) : null}
             {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}

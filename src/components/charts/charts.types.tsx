@@ -326,7 +326,8 @@ export interface AdvancedConfigHelpers extends CommonHelpers {
     handleValuesYaml?: (index: number, valuesYaml: string) => void
     handleEnvironmentChange?: (index: number, envId: number) => void
     handleEnvironmentChangeOfAllCharts?: (envId: number) => void
-    handleDeploymentAppTypeChange?: (deploymentAppType: DeploymentAppTypes) => void
+    handleDeploymentAppTypeChange?: (index: number, deploymentAppType: DeploymentAppTypes) => void
+    handleDeploymentAppTypeChangeOfAllCharts?: (deploymentAppType: DeploymentAppTypes) => void
     handleNameChange?: (index: number, name: string) => void
     handleGitRepoUrlChange?: (index: number, gitRepoUrl: string) => void
     createChartValues?: (index: number, name: string) => void

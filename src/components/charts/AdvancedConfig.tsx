@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, SyntheticEvent } from 'react'
 import {
     showError,
     Progressing,
@@ -24,6 +24,7 @@ import {
     CodeEditor,
     MarkDown,
     MODES,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useNavigate } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
@@ -34,10 +35,12 @@ import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import LockIcon from '../../assets/icons/ic-locked.svg?react'
 import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
 import { getSavedValuesListURL } from './charts.helper'
+import { DeploymentAppRadioGroup } from '@Components/v2/values/chartValuesDiff/ChartValuesView.component'
 
 interface AdvancedConfigProps extends AdvancedConfigHelpers {
     chart: ChartGroupEntry
     index: number
+    allowCustomRepository?: boolean
 }
 
 const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
@@ -46,11 +49,14 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
     fetchChartValues,
     getChartVersionsAndValues,
     handleEnvironmentChange,
+    handleDeploymentAppTypeChange,
+    handleGitRepoUrlChange,
     handleChartValueChange,
     handleChartVersionChange,
     handleValuesYaml,
     handleNameChange,
     discardValuesYamlChanges,
+    allowCustomRepository,
 }) => {
     const {
         environment,
@@ -67,6 +73,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         availableChartVersions,
         availableChartValues,
         appStoreApplicationVersion,
+        deploymentAppType,
     } = chart
     const [environments, setEnvironments] = useState(new Map())
     const [showReadme, setReadme] = useState(false)
@@ -86,7 +93,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
     useEffect(() => {
         async function getEnvironments() {
             try {
-                const { result } = await getEnvironmentListMin()
+                const { result } = await getEnvironmentListMin(true)
                 setEnvironments(mapByKey(result, 'id'))
             } catch (err) {
                 showError(err)
@@ -184,8 +191,15 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         chartValuesDropDown = chartValuesDropDown.filter((arr) => arr.kind !== 'DEPLOYED')
     }
 
+    function updateDeploymentAppType(e: SyntheticEvent) {
+        const deploymentAppType = (e.target as HTMLInputElement).value as DeploymentAppTypes
+        handleDeploymentAppTypeChange(index, deploymentAppType)
+    }
+
     // TODO: use default state for variables, so that you don't have to apply ?. before every object.
     const warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version
+
+    const selectedEnvironment = environments.has(environment?.id) ? environments.get(environment.id) : null
 
     return (
         <>
@@ -271,6 +285,37 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                                     data-testid="advanced-option-namespace-box"
                                 />
                             </div>
+                        </div>
+                    )}
+                    {handleDeploymentAppTypeChange &&
+                        selectedEnvironment &&
+                        !window._env_.HIDE_GITOPS_OR_HELM_OPTION && (
+                            <div className="flexbox-col dc__gap-6 w-100 chart-group-deployment-radio mb-16">
+                                <span className="fs-13 cn-7 lh-20 fw-4">How do you want to deploy?</span>
+                                <DeploymentAppRadioGroup
+                                    isDisabled={false}
+                                    deploymentAppType={deploymentAppType}
+                                    handleOnChange={updateDeploymentAppType}
+                                    allowedDeploymentTypes={selectedEnvironment?.allowedDeploymentTypes || []}
+                                    rootClassName="flexbox"
+                                />
+                                <span className="fs-11 lh-16 cr-5 fw-4">This cannot be changed after deployment</span>
+                            </div>
+                        )}
+                    {deploymentAppType !== DeploymentAppTypes.HELM && allowCustomRepository && (
+                        <div className="mb-16">
+                            <CustomInput
+                                placeholder="Enter Git Repo URL"
+                                name={`git-repo-url-input-${index}`}
+                                label="Git Repo URL"
+                                value={chart.gitRepoUrl?.value || ''}
+                                onChange={(event) => {
+                                    handleGitRepoUrlChange(index, event.target.value)
+                                }}
+                                error={chart.gitRepoUrl?.error}
+                                required
+                                fullWidth
+                            />
                         </div>
                     )}
                     <div className="flex top mb-16">

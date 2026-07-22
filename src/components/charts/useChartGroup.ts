@@ -141,6 +141,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         appStoreValuesVersionName,
                         referenceType,
                         appStoreValuesChartVersion,
+                        deploymentAppType,
+                        gitRepoURL,
                     } = chartGroup
                     return {
                         id: chartMetaData.appStoreId,
@@ -166,6 +168,11 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         },
                         loading: false,
                         isUnsaved: false,
+                        deploymentAppType: deploymentAppType ?? DeploymentAppTypes.HELM,
+                        gitRepoUrl: {
+                            value: gitRepoURL || '',
+                            error: '',
+                        }
                     }
                 }, []) || []
             setState((state) => ({ ...state, name, description, charts: tempCharts, loading: false }))
@@ -278,7 +285,9 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     !nameRegexp.test(chart.name.value) ||
                     !chart?.environment?.id ||
                     duplicateNames.length > 0 ||
-                    (chart.deploymentAppType !== DeploymentAppTypes.HELM && state.allowCustomRepository && !chart.gitRepoUrl?.value)
+                    (chart.deploymentAppType !== DeploymentAppTypes.HELM &&
+                        state.allowCustomRepository &&
+                        !chart.gitRepoUrl?.value)
                 ) {
                     validated = false
                 }
@@ -294,12 +303,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         ...chart.environment,
                         error: chart?.environment?.id ? '' : EMPTY_ENV,
                     },
-                    ...(chart.deploymentAppType !== DeploymentAppTypes.HELM && state.allowCustomRepository && {
-                        gitRepoUrl: {
-                            ...chart.gitRepoUrl,
-                            error: chart.gitRepoUrl?.value ? '' : REQ_FIELD,
-                        },
-                    }),
+                    ...(chart.deploymentAppType !== DeploymentAppTypes.HELM &&
+                        state.allowCustomRepository && {
+                            gitRepoUrl: {
+                                ...chart.gitRepoUrl,
+                                error: chart.gitRepoUrl?.value ? '' : REQ_FIELD,
+                            },
+                        }),
                 }
             })
             if (!validated) {
@@ -563,7 +573,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, charts: tempCharts }))
     }
 
-    function handleDeploymentAppTypeChange(deploymentAppType: DeploymentAppTypes): void {
+    function handleDeploymentAppTypeChange(index: number, deploymentAppType: DeploymentAppTypes): void {
+        const tempCharts = [...state.charts]
+        tempCharts[index].deploymentAppType = deploymentAppType
+        setState((state) => ({ ...state, charts: tempCharts }))
+    }
+
+    function handleDeploymentAppTypeChangeOfAllCharts(deploymentAppType: DeploymentAppTypes): void {
         setState((state) => ({ ...state, deploymentAppType }))
     }
 
@@ -639,6 +655,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         handleNameChange,
         handleGitRepoUrlChange,
         handleDeploymentAppTypeChange,
+        handleDeploymentAppTypeChangeOfAllCharts,
         chartListing,
         createChartValues,
         validateData,

@@ -48,7 +48,7 @@ interface ChartGroupBasicDeployProps {
     deployChartGroup: () => void
     handleProjectChange: (...args) => void
     handleEnvironmentChangeOfAllCharts: (envId: number) => void
-    handleDeploymentAppTypeChange: (selectedType: DeploymentAppTypes) => void
+    handleDeploymentAppTypeChangeOfAllCharts: (selectedType: DeploymentAppTypes) => void
     handleNameChange: (chartEntryIndex: number, name: string) => void
     handleGitRepoUrlChange: (chartEntryIndex: number, gitRepoUrl: string) => void
     closeDeployModal: () => void
@@ -103,7 +103,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
     handleDeploymentAppTypeChange = (e: SyntheticEvent) => {
         const selectedType = (e.target as HTMLInputElement).value as DeploymentAppTypes
         this.setState({ selectedDeploymentAppType: selectedType })
-        this.props.handleDeploymentAppTypeChange(selectedType)
+        this.props.handleDeploymentAppTypeChangeOfAllCharts(selectedType)
     }
 
     async deployChartGroup() {
@@ -242,7 +242,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         </span>
                     </div>
                     {selectedEnvironment && !window._env_.HIDE_GITOPS_OR_HELM_OPTION && (
-                        <div className="flexbox-col dc__gap-6 w-100 chart-group-deployment-radio">
+                        <div className="flexbox-col dc__gap-6 w-100 chart-group-deployment-radio mb-16">
                             <span className="fs-13 cn-7 lh-20 fw-4">How do you want to deploy?</span>
                             <DeploymentAppRadioGroup
                                 isDisabled={false}
