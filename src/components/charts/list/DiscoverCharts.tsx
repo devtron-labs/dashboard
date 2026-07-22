@@ -90,13 +90,16 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         removeChart,
         handleEnvironmentChange,
         handleNameChange,
+        handleGitRepoUrlChange,
         handleEnvironmentChangeOfAllCharts,
         discardValuesYamlChanges,
         chartListing,
         applyFilterOnCharts,
         resetPaginationOffset,
         setGitOpsConfigAvailable,
+        setAllowCustomRepository,
         setEnvironmentList,
+        handleDeploymentAppTypeChange,
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -159,6 +162,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     async function getGitOpsModuleInstalledAndConfigured() {
         await isGitOpsModuleInstalledAndConfigured().then((response) => {
             setGitOpsConfigAvailable(response.result.isInstalled && !response.result.isConfigured)
+            setAllowCustomRepository(response.result.allowCustomRepository)
         })
     }
 
@@ -643,6 +647,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                     redirectToAdvancedOptions={redirectToConfigure}
                     validateData={validateData}
                     setEnvironments={setEnvironmentList}
+                    allowCustomRepository={state.allowCustomRepository}
+                    handleGitRepoUrlChange={handleGitRepoUrlChange}
+                    handleDeploymentAppTypeChange={handleDeploymentAppTypeChange}
                 />
             ) : null}
 

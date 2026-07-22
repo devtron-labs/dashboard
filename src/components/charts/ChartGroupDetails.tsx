@@ -72,6 +72,8 @@ export default function ChartGroupDetails() {
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
         setEnvironmentList,
+        handleGitRepoUrlChange,
+        handleDeploymentAppTypeChange,
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         pagePathPattern,
@@ -353,6 +355,9 @@ export default function ChartGroupDetails() {
                         navigate('deploy', { state: { charts: state.charts, projectId } })
                     }}
                     setEnvironments={setEnvironmentList}
+                    handleGitRepoUrlChange={handleGitRepoUrlChange}
+                    allowCustomRepository={state.allowCustomRepository}
+                    handleDeploymentAppTypeChange={handleDeploymentAppTypeChange}
                 />
             ) : null}
             {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}

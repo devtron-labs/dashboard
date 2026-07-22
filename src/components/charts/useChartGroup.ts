@@ -16,6 +16,7 @@
 
 import { useState, useEffect } from 'react'
 import {
+    DeploymentAppTypes,
     getTeamListMin,
     showError,
     ToastManager,
@@ -36,7 +37,7 @@ import { getAvailableCharts, getChartRepoListMin } from '../../services/service'
 import { mapByKey, sortOptionsByLabel } from '../common'
 import { SERVER_MODE } from '../../config'
 import { PaginationParams } from './charts.util'
-import { APP_NAME_TAKEN, DUPLICATE_NAME, EMPTY_ENV, NAME_REGEX_PATTERN } from './constants'
+import { APP_NAME_TAKEN, DUPLICATE_NAME, EMPTY_ENV, NAME_REGEX_PATTERN, REQ_FIELD } from './constants'
 
 function getSelectedInstances(charts) {
     return charts.reduce((agg, curr, idx) => {
@@ -67,6 +68,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         pageOffset: PaginationParams.pageOffset,
         pageSize: PaginationParams.pageSize,
         hasMoreCharts: true,
+        allowCustomRepository: false,
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
 
@@ -272,7 +274,12 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     // dont consider disabled charts
                     return chart
                 }
-                if (!nameRegexp.test(chart.name.value) || !chart?.environment?.id || duplicateNames.length > 0) {
+                if (
+                    !nameRegexp.test(chart.name.value) ||
+                    !chart?.environment?.id ||
+                    duplicateNames.length > 0 ||
+                    (chart.deploymentAppType !== DeploymentAppTypes.HELM && state.allowCustomRepository && !chart.gitRepoUrl?.value)
+                ) {
                     validated = false
                 }
                 return {
@@ -287,6 +294,12 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         ...chart.environment,
                         error: chart?.environment?.id ? '' : EMPTY_ENV,
                     },
+                    ...(chart.deploymentAppType !== DeploymentAppTypes.HELM && state.allowCustomRepository && {
+                        gitRepoUrl: {
+                            ...chart.gitRepoUrl,
+                            error: chart.gitRepoUrl?.value ? '' : REQ_FIELD,
+                        },
+                    }),
                 }
             })
             if (!validated) {
@@ -375,6 +388,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             availableChartValues: [],
             valuesYaml: '',
             originalValuesYaml: '',
+            deploymentAppType: DeploymentAppTypes.HELM,
         })
         setState((state) => ({ ...state, charts: tempCharts }))
     }
@@ -542,6 +556,17 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         tempCharts[index].name = { value: appName, error: '' }
         setState((state) => ({ ...state, charts: tempCharts }))
     }
+
+    function handleGitRepoUrlChange(index: number, gitRepoUrl: string): void {
+        const tempCharts = [...state.charts]
+        tempCharts[index].gitRepoUrl = { value: gitRepoUrl, error: '' }
+        setState((state) => ({ ...state, charts: tempCharts }))
+    }
+
+    function handleDeploymentAppTypeChange(deploymentAppType: DeploymentAppTypes): void {
+        setState((state) => ({ ...state, deploymentAppType }))
+    }
+
     // TODO: function name must be a verb
     function chartListing() {
         setState((state) => ({ ...state, configureChartIndex: null, advanceVisited: false }))
@@ -585,6 +610,10 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, noGitOpsConfigAvailable: isGitOpsConfigAvailable }))
     }
 
+    function setAllowCustomRepository(allowCustomRepository: boolean): void {
+        setState((state) => ({ ...state, allowCustomRepository }))
+    }
+
     function setEnvironmentList(envList): void {
         setState((state) => ({ ...state, environments: envList }))
     }
@@ -608,6 +637,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         handleEnvironmentChange,
         handleEnvironmentChangeOfAllCharts,
         handleNameChange,
+        handleGitRepoUrlChange,
+        handleDeploymentAppTypeChange,
         chartListing,
         createChartValues,
         validateData,
@@ -618,5 +649,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setCharts,
         setGitOpsConfigAvailable,
         setEnvironmentList,
+        setAllowCustomRepository,
     }
 }

@@ -16,7 +16,13 @@
 
 import { Dispatch, SetStateAction } from 'react'
 
-import { ActionMenuProps, OptionType, ResponseType, RouterV5Props } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ActionMenuProps,
+    DeploymentAppTypes,
+    OptionType,
+    ResponseType,
+    RouterV5Props,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartGroupCardProps {
     chartGroup: ChartGroup
@@ -210,6 +216,11 @@ export interface ChartGroupEntry {
         suggestedName?: string
     }
     isUnsaved: boolean // accounts only values and version selection
+    deploymentAppType: DeploymentAppTypes
+    gitRepoUrl?: {
+        value: string
+        error?: string
+    }
 }
 
 export interface ChartMetaData {
@@ -273,6 +284,7 @@ export interface EnvironmentType {
     isClusterCdActive?: string
     isVirtualEnvironment?: boolean
     namespace?: string
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
 export interface ChartGroupState {
@@ -293,6 +305,7 @@ export interface ChartGroupState {
     pageOffset?: number
     pageSize?: number
     hasMoreCharts?: boolean
+    allowCustomRepository: boolean
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {
@@ -313,7 +326,9 @@ export interface AdvancedConfigHelpers extends CommonHelpers {
     handleValuesYaml?: (index: number, valuesYaml: string) => void
     handleEnvironmentChange?: (index: number, envId: number) => void
     handleEnvironmentChangeOfAllCharts?: (envId: number) => void
+    handleDeploymentAppTypeChange?: (deploymentAppType: DeploymentAppTypes) => void
     handleNameChange?: (index: number, name: string) => void
+    handleGitRepoUrlChange?: (index: number, gitRepoUrl: string) => void
     createChartValues?: (index: number, name: string) => void
     validateData?: () => Promise<boolean>
     discardValuesYamlChanges?: (index: number) => void
@@ -339,6 +354,7 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     setCharts: (charts: ChartGroupEntry[]) => void
     resetPaginationOffset: () => void
     setGitOpsConfigAvailable: (isGitOpsConfigAvailable: boolean) => void
+    setAllowCustomRepository: (allowCustomRepository: boolean) => void
     setEnvironmentList: (environmentList) => void
 }
 
