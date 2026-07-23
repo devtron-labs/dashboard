@@ -15,7 +15,7 @@
  */
 
 import { useParams, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -54,6 +54,7 @@ import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
+import { isGitOpsModuleInstalledAndConfigured } from '@Services/service'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId`
 
@@ -72,9 +73,21 @@ export default function ChartGroupDetails() {
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
         setEnvironmentList,
+        setAllowCustomRepository,
         handleGitRepoUrlChange,
         handleDeploymentAppTypeChangeOfAllCharts,
     } = useChartGroup(groupId)
+
+    function getGitOpsModuleInstalledAndConfigured() {
+        isGitOpsModuleInstalledAndConfigured().then((response) => {
+            setAllowCustomRepository(response.result.allowCustomRepository)
+        })
+    }
+
+    useEffect(() => {
+        getGitOpsModuleInstalledAndConfigured()
+    }, [])
+
     const { breadcrumbs } = useBreadcrumb(
         pagePathPattern,
         {
