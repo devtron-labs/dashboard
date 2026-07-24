@@ -327,6 +327,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
         title: 'Audit logs',
         icon: 'ic-file-log-search',
         href: `${ROUTER_URLS.AUDIT_LOGS}?sortBy=timeStamp&sortOrder=DESC`,
+        forceHideEnvKey: 'ENABLE_AUDIT_LOG',
     },
 ]
 
