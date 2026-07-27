@@ -320,11 +320,11 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                     )}
                     <div className="flex top mb-16">
                         <div className="flex column left top half">
-                            <label htmlFor="" className="form__label" data-testid="advanced-option-chart-version">
+                            <label htmlFor="" className="form__label mb-8-imp" data-testid="advanced-option-chart-version">
                                 Chart version
                             </label>
                             <Select
-                                rootClassName="select-button--default"
+                                rootClassName="select-button--default h-40"
                                 value={appStoreApplicationVersionId}
                                 onChange={(e) => handleChartVersionChangeAdvancedConfig(index, e.target.value)}
                             >
