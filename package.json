@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "4.0.8",
+        "@devtron-labs/devtron-fe-common-lib": "4.0.9",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@sentry/browser": "7.119.1",
         "@sentry/integrations": "7.50.0",
@@ -92,7 +92,7 @@
         "svgo": "^3.3.2",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
-        "vite": "8.0.8",
+        "vite": "8.0.16",
         "vite-plugin-compression2": "2.4.0",
         "vite-plugin-pwa": "1.2.0",
         "vite-plugin-require-transform": "1.0.21",
@@ -110,7 +110,7 @@
     "packageManager": "yarn@4.9.2",
     "overrides": {
         "vite-plugin-svgr": {
-            "vite": "8.0.8"
+            "vite": "8.0.16"
         }
     }
 }
