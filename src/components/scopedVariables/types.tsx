@@ -23,6 +23,8 @@ import { parseIntoYAMLString } from './utils'
 export enum VariableCategories {
     APPLICATION_ENV = 'ApplicationEnv',
     APPLICATION = 'Application',
+    PROJECT_ENV = 'ProjectEnv',
+    PROJECT = 'Project',
     ENVIRONMENT = 'Env',
     CLUSTER = 'Cluster',
     GLOBAL = 'Global',
