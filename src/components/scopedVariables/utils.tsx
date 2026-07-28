@@ -137,7 +137,7 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
     })
 
     // Sorting on the basis of category
-    const precedingOrder = ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global']
+    const precedingOrder = ['ApplicationEnv', 'Application', 'ProjectEnv', 'Project', 'Env', 'Cluster', 'Global']
     mutatedVariablesObj.spec.forEach((variablesObj) => {
         variablesObj.values.sort((a, b) => {
             if (precedingOrder.indexOf(a.category) < precedingOrder.indexOf(b.category)) {
