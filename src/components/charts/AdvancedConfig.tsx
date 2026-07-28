@@ -29,19 +29,13 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
 import { getEnvironmentListMin } from '../../services/service'
-import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
+import { ChartValuesNativeType, ChartVersionType, AdvancedConfigProps } from './charts.types'
 import { getReadme, getChartValues } from './charts.service'
 import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import LockIcon from '../../assets/icons/ic-locked.svg?react'
 import WarningIcon from '../../assets/icons/ic-alert-triangle.svg?react'
 import { getSavedValuesListURL } from './charts.helper'
 import { DeploymentAppRadioGroup } from '@Components/v2/values/chartValuesDiff/ChartValuesView.component'
-
-interface AdvancedConfigProps extends AdvancedConfigHelpers {
-    chart: ChartGroupEntry
-    index: number
-    allowCustomRepository?: boolean
-}
 
 const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
     chart,
@@ -196,6 +190,10 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
         handleDeploymentAppTypeChange(index, deploymentAppType)
     }
 
+    function handleChangeGitRepoUrl(e: React.ChangeEvent<HTMLInputElement>) {
+        handleGitRepoUrlChange(index, e.target.value)
+    }
+
     // TODO: use default state for variables, so that you don't have to apply ?. before every object.
     const warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version
 
@@ -309,9 +307,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                                 name={`git-repo-url-input-${index}`}
                                 label="Git Repo URL"
                                 value={chart.gitRepoUrl?.value || ''}
-                                onChange={(event) => {
-                                    handleGitRepoUrlChange(index, event.target.value)
-                                }}
+                                onChange={handleChangeGitRepoUrl}
                                 error={chart.gitRepoUrl?.error}
                                 required
                                 fullWidth
@@ -320,7 +316,11 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                     )}
                     <div className="flex top mb-16">
                         <div className="flex column left top half">
-                            <label htmlFor="" className="form__label mb-8-imp" data-testid="advanced-option-chart-version">
+                            <label
+                                htmlFor=""
+                                className="form__label mb-8-imp"
+                                data-testid="advanced-option-chart-version"
+                            >
                                 Chart version
                             </label>
                             <Select

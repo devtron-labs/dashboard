@@ -509,3 +509,9 @@ export interface ChartSourceAccordionProps {
     onChange: (option: SelectedChartRepositoryType) => void
     dataTestId: string
 }
+
+export interface AdvancedConfigProps extends AdvancedConfigHelpers {
+    chart: ChartGroupEntry
+    index: number
+    allowCustomRepository?: boolean
+}

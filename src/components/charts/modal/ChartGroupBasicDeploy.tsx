@@ -33,6 +33,7 @@ import { getEnvironmentListMin } from '../../../services/service'
 import { DeploymentAppRadioGroup } from '@Components/v2/values/chartValuesDiff/ChartValuesView.component'
 
 import './chartGroupBasicDeploy.scss'
+import { ApplicationNameListProps } from './deployChart.types'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
@@ -287,16 +288,21 @@ const ApplicationNameList = ({
     handleGitRepoUrlChange,
     deploymentAppType,
     allowCustomRepository,
-}) => {
+}: ApplicationNameListProps) => {
     function handleImageError(e) {
         const target = e.target as HTMLImageElement
         target.onerror = null
         target.src = placeHolder
     }
 
-    let listClassNames = 'deploy-selected-chart__list'
-    if (showAppNames) {
-        listClassNames = `${listClassNames} show`
+    const listClassNames = showAppNames ? 'deploy-selected-chart__list show' : 'deploy-selected-chart__list'
+
+    const handleUpdateAppName = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleNameChange(index, e.target.value)
+    }
+
+    const handleUpdateGitRepoUrl = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleGitRepoUrlChange(index, e.target.value)
     }
 
     return (
@@ -319,9 +325,7 @@ const ApplicationNameList = ({
                                         name={`chart-name-edit-input-${index}`}
                                         label="Application Name"
                                         value={chart.name.value}
-                                        onChange={(event) => {
-                                            handleNameChange(index, event.target.value)
-                                        }}
+                                        onChange={handleUpdateAppName(index)}
                                         error={chart.name.error}
                                         required
                                         helperText={
@@ -330,7 +334,7 @@ const ApplicationNameList = ({
                                                     Suggested Name:
                                                     <span
                                                         className="anchor pointer"
-                                                        onClick={(e) =>
+                                                        onClick={() =>
                                                             handleNameChange(index, chart.name.suggestedName)
                                                         }
                                                     >
@@ -347,9 +351,7 @@ const ApplicationNameList = ({
                                             name={`git-repo-url-input-${index}`}
                                             label="Git Repo URL"
                                             value={chart.gitRepoUrl?.value || ''}
-                                            onChange={(event) => {
-                                                handleGitRepoUrlChange(index, event.target.value)
-                                            }}
+                                            onChange={handleUpdateGitRepoUrl(index)}
                                             error={chart.gitRepoUrl?.error}
                                             required
                                             fullWidth
