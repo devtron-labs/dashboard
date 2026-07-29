@@ -581,7 +581,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     function handleDeploymentAppTypeChangeOfAllCharts(deploymentAppType: DeploymentAppTypes): void {
         const tempCharts = [...state.charts]
-        tempCharts.map((chart) => {
+        tempCharts.forEach((chart) => {
             chart.deploymentAppType = deploymentAppType
         })
         setState((state) => ({ ...state, charts: tempCharts }))
