@@ -27,10 +27,10 @@ import {
     SelectPicker,
     SelectPickerProps,
     SelectPickerVariantType,
-    prefixZeroIfSingleDigit,
     AppEnvironment,
     SelectPickerOptionType,
     IconsProps,
+    getTimestampFromDateIfAvailable,
     DateTimePickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType, GrafanaPresetOptionHandlerType } from './types'
@@ -300,25 +300,6 @@ export function addChartNameExtensionToBaseURL(
             return ''
     }
     return url
-}
-
-// Need to send either the relative time like: now-5m or the timestamp to grafana
-// Assuming format is 'DD-MM-YYYY hh:mm:ss'
-const getTimestampFromDateIfAvailable = (dateString: string): string => {
-    try {
-        const [day, month, yearAndTime] = dateString.split('-')
-        const [year, time] = yearAndTime.split(' ')
-        const updatedTime = time
-            .split(':')
-            .map((item) => (['0', '00'].includes(item) ? '00' : prefixZeroIfSingleDigit(Number(item))))
-            .join(':')
-        const formattedDate = `${year}-${prefixZeroIfSingleDigit(Number(month))}-${prefixZeroIfSingleDigit(Number(day))}T${updatedTime}`
-        const parsedDate = new Date(formattedDate).getTime()
-
-        return isNaN(parsedDate) ? dateString : parsedDate.toString()
-    } catch {
-        return dateString
-    }
 }
 
 export function addQueryParamToGrafanaURL(

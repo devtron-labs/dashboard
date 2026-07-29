@@ -25,6 +25,7 @@ import {
     DeleteConfirmationModalProps,
     EntityTypes,
     K8sResourceListPayloadType,
+    ObservabilityPermissionFilter,
     OptionType,
     ResourceKindType,
     UserGroupDTO,
@@ -51,7 +52,12 @@ export interface UserAndGroupPermissionsWrapProps {
 type PermissionStatusAndTimeout = Pick<UserRoleGroup, 'status' | 'timeToLive'>
 
 export interface APIRoleFilterDto {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
+    entity:
+        | EntityTypes.DIRECT
+        | EntityTypes.CHART_GROUP
+        | EntityTypes.CLUSTER
+        | EntityTypes.JOB
+        | EntityTypes.OBSERVABILITY
     team?: string
     entityName?: string
     environment?: string
@@ -72,6 +78,7 @@ export interface APIRoleFilterDto {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource?: any
     workflow?: string
+    tenant?: string
     status: UserStatusDto
     timeoutWindowExpression: string
     /**
@@ -277,7 +284,7 @@ interface RoleFilter {
 
 export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
     entity: EntityTypes.DIRECT | EntityTypes.JOB
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    accessType: ACCESS_TYPE_MAP
     team: OptionType
     entityName: OptionType[]
     entityNameError?: string
@@ -319,6 +326,7 @@ export interface CreateUserPermissionPayloadParams
     chartPermission: ChartGroupPermissionsFilter
     k8sPermission: K8sPermissionFilter[]
     permissionType: PermissionType
+    observabilityPermission: ObservabilityPermissionFilter[]
 }
 
 export interface DeleteUserPermissionProps

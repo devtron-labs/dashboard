@@ -102,6 +102,8 @@ const CreateAPIToken = ({
         userRoleGroups,
         isSaveDisabled,
         allowManageAllAccess,
+        observabilityPermission,
+        setObservabilityPermission,
     } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Date>(dayjs().add(1, 'day').toDate())
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
@@ -180,7 +182,15 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid) {
+        if (
+            !validateDirectPermissionForm(
+                directPermission,
+                setDirectPermission,
+                observabilityPermission,
+                setObservabilityPermission,
+                allowManageAllAccess,
+            ).isValid
+        ) {
             return
         }
 
@@ -226,6 +236,7 @@ const CreateAPIToken = ({
                     k8sPermission,
                     permissionType,
                     userGroups: [],
+                    observabilityPermission,
                     canManageAllAccess: allowManageAllAccess,
                     ...getDefaultUserStatusAndTimeout(),
                 })
