@@ -90,13 +90,17 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         removeChart,
         handleEnvironmentChange,
         handleNameChange,
+        handleGitRepoUrlChange,
         handleEnvironmentChangeOfAllCharts,
         discardValuesYamlChanges,
         chartListing,
         applyFilterOnCharts,
         resetPaginationOffset,
         setGitOpsConfigAvailable,
+        setAllowCustomRepository,
         setEnvironmentList,
+        handleDeploymentAppTypeChange,
+        handleDeploymentAppTypeChangeOfAllCharts,
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -159,6 +163,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     async function getGitOpsModuleInstalledAndConfigured() {
         await isGitOpsModuleInstalledAndConfigured().then((response) => {
             setGitOpsConfigAvailable(response.result.isInstalled && !response.result.isConfigured)
+            setAllowCustomRepository(response.result.allowCustomRepository)
         })
     }
 
@@ -217,7 +222,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 })
                 return
             }
-            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
+            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts, state.allowCustomRepository)
             await deployChartGroup(project.id, deployableCharts)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
@@ -434,6 +439,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                 handleEnvironmentChange={handleEnvironmentChange}
                                                 handleNameChange={handleNameChange}
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
+                                                handleDeploymentAppTypeChange={handleDeploymentAppTypeChange}
+                                                handleGitRepoUrlChange={handleGitRepoUrlChange}
+                                                allowCustomRepository={state.allowCustomRepository}
                                             />
                                         ) : (
                                             renderChartStoreEmptyState()
@@ -453,6 +461,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                 handleEnvironmentChange={handleEnvironmentChange}
                                                 handleNameChange={handleNameChange}
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
+                                                handleDeploymentAppTypeChange={handleDeploymentAppTypeChange}
+                                                handleGitRepoUrlChange={handleGitRepoUrlChange}
+                                                allowCustomRepository={state.allowCustomRepository}
                                             />
                                         ) : (
                                             <div className={`h-100 ${!isGrid ? 'chart-list-view ' : ''}`}>
@@ -643,6 +654,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                     redirectToAdvancedOptions={redirectToConfigure}
                     validateData={validateData}
                     setEnvironments={setEnvironmentList}
+                    allowCustomRepository={state.allowCustomRepository}
+                    handleGitRepoUrlChange={handleGitRepoUrlChange}
+                    handleDeploymentAppTypeChangeOfAllCharts={handleDeploymentAppTypeChangeOfAllCharts}
                 />
             ) : null}
 
@@ -667,7 +681,7 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
         <Routes>
             <Route path="group/*" element={<ChartGroupRouter />} />
             <Route path={`${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} element={<ChartValues />} />
-            <Route path={`${URLS.CHART}/:chartId/*`} element={<ChartDetailsWithKey />} />                    
+            <Route path={`${URLS.CHART}/:chartId/*`} element={<ChartDetailsWithKey />} />
             <Route index element={<DiscoverChartList isSuperAdmin={isSuperAdmin} />} />
         </Routes>
     )
@@ -797,9 +811,7 @@ export const ChartGroupListMin = ({
                 </div>
             </div>
             <div className={`chart-grid ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
-                {chartGroups?.map((chartGroup, idx) => (
-                    <ChartGroupCard key={idx} chartGroup={chartGroup} />
-                ))}
+                {chartGroups?.map((chartGroup, idx) => <ChartGroupCard key={idx} chartGroup={chartGroup} />)}
             </div>
         </div>
     )

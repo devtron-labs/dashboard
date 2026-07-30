@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DeployableCharts } from '../charts.service'
 import { ChartGroupEntry } from '../charts.types'
 
 export const CHART_STORE_TIPPY_CONTENT =
     'The Chart Store offers popular third-party Helm charts for quick deployment. If you don’t find what you need, connect your own chart sources to fetch additional Helm charts.'
 
-export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
+export function getDeployableChartsFromConfiguredCharts(
+    charts: ChartGroupEntry[],
+    allowCustomRepository: boolean,
+): DeployableCharts[] {
     return charts
         .filter((chart) => chart.isEnabled)
         .map((chart) => ({
@@ -31,5 +36,9 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
             referenceValueId: chart.appStoreValuesVersionId || chart.appStoreApplicationVersionId,
             referenceValueKind: chart.kind,
             chartGroupEntryId: chart.installedId,
+            deploymentAppType: chart.deploymentAppType,
+            ...(allowCustomRepository && chart.deploymentAppType !== DeploymentAppTypes.HELM && chart.gitRepoUrl
+                ? { gitRepoURL: chart.gitRepoUrl?.value }
+                : {}),
         }))
 }
