@@ -11,6 +11,7 @@ import {
 
 import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
 import { getNavigationList } from '@Components/Navigation'
+import { hasNavigationGroupItems } from '@Components/Navigation/utils'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 import { URLS } from '@Config/routes'
 
@@ -103,36 +104,46 @@ const getNavItemBreakdownItems = (
 
 export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boolean): CommandBarGroupType[] =>
     getNavigationList(serverMode).map<CommandBarGroupType>((group) => {
-        const parsedItems = group.items.flatMap<CommandBarGroupType['items'][number]>(
-            ({ hasSubMenu, subItems, title, href, id, icon, keywords }) => {
-                if (hasSubMenu && subItems?.length) {
-                    return subItems.map<CommandBarGroupType['items'][number]>((subItem) => ({
-                        title: `${title} / ${subItem.title}`,
-                        id: subItem.id,
-                        // Since icon is not present for some subItems, using from group
-                        icon: NAV_SUB_ITEMS_ICON_MAPPING[id] || group.icon,
-                        // TODO: No href present for some subItems
-                        href: subItem.href ?? null,
-                        keywords: subItem.keywords || [],
-                    }))
-                }
+        const parsedItems = hasNavigationGroupItems(group)
+            ? group.items.flatMap<CommandBarGroupType['items'][number]>(
+                  ({ hasSubMenu, subItems, title, href, id, icon, keywords }) => {
+                      if (hasSubMenu && subItems?.length) {
+                          return subItems.map<CommandBarGroupType['items'][number]>((subItem) => ({
+                              title: `${title} / ${subItem.title}`,
+                              id: subItem.id,
+                              // Since icon is not present for some subItems, using from group
+                              icon: NAV_SUB_ITEMS_ICON_MAPPING[id] || group.icon,
+                              // TODO: No href present for some subItems
+                              href: subItem.href ?? null,
+                              keywords: subItem.keywords || [],
+                          }))
+                      }
 
-                const breakdownItems = getNavItemBreakdownItems(id, serverMode, isSuperAdmin)
+                      const breakdownItems = getNavItemBreakdownItems(id, serverMode, isSuperAdmin)
 
-                if (breakdownItems.length) {
-                    return breakdownItems
-                }
+                      if (breakdownItems.length) {
+                          return breakdownItems
+                      }
 
-                return {
-                    title,
-                    id,
-                    icon: icon || 'ic-arrow-right',
-                    // TODO: No href present for some items
-                    href: href ?? null,
-                    keywords: keywords || [],
-                }
-            },
-        )
+                      return {
+                          title,
+                          id,
+                          icon: icon || 'ic-arrow-right',
+                          // TODO: No href present for some items
+                          href: href ?? null,
+                          keywords: keywords || [],
+                      }
+                  },
+              )
+            : [
+                  {
+                      title: group.title,
+                      id: group.id,
+                      icon: group.icon,
+                      href: group.href,
+                      keywords: [],
+                  } as CommandBarGroupType['items'][number],
+              ]
 
         return {
             title: group.title,
