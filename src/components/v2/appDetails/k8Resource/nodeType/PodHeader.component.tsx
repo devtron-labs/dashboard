@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
 import { ComponentSizeType, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useSharedState } from '../../../utils/useSharedState'
-import { iNode } from '../../appDetails.type'
+import { iNode, PodTabType } from '../../appDetails.type'
 import IndexStore from '../../index.store'
 import { getFilteredPodStatus, getNodeStatus } from './nodeType.util'
 import { NodePodStatus } from './types'
 
 import './nodeType.scss'
 
-const PodHeaderComponent = ({ callBack }: { callBack: (isNewPod: boolean) => void }) => {
-    const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
+const PodHeaderComponent = ({
+    podTab,
+    setPodTab,
+}: {
+    podTab: PodTabType
+    setPodTab: Dispatch<SetStateAction<PodTabType>>
+}) => {
     const podMetaData = IndexStore.getPodMetaData()
     const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
     const [newPods, setNewPods] = useState<NodePodStatus>({ running: 0, all: 0 })
@@ -38,7 +43,6 @@ const PodHeaderComponent = ({ callBack }: { callBack: (isNewPod: boolean) => voi
     )
 
     useEffect(() => {
-        callBack(podTab === 'new')
         // initialize new pods and old pods
         const newPodStats = { running: 0, all: 0 }
         const oldPodStats = { running: 0, all: 0 }
@@ -69,7 +73,7 @@ const PodHeaderComponent = ({ callBack }: { callBack: (isNewPod: boolean) => voi
             tabType: 'button',
             active: podTab === 'new',
             props: {
-                onClick: () => selectPodTab('new'),
+                onClick: () => setPodTab('new'),
                 'data-testid': 'all-pods-new',
             },
             badge: newPods.all,
@@ -83,7 +87,7 @@ const PodHeaderComponent = ({ callBack }: { callBack: (isNewPod: boolean) => voi
             tabType: 'button',
             active: podTab === 'old',
             props: {
-                onClick: () => selectPodTab('old'),
+                onClick: () => setPodTab('old'),
                 'data-testid': 'all-pods-old',
             },
             badge: oldPods.all,

@@ -73,6 +73,8 @@ const NodeComponent = ({
     addTab,
     tabs,
     removeTabByIdentifier,
+    podTab,
+    setPodTab,
 }: NodeComponentProps) => {
     const navigate = useNavigate()
     const { aiAgentContext } = useMainContext()
@@ -82,7 +84,7 @@ const NodeComponent = ({
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
     const [tableHeader, setTableHeader] = useState([])
-    const [podType, setPodType] = useState(false)
+    const isNewPod = podTab === 'new'
     const appDetails = IndexStore.getAppDetails()
     const params = useParams<{ nodeType: NodeType; resourceName: string; namespace: string; name: string }>()
     const podMetaData = IndexStore.getPodMetaData()
@@ -176,14 +178,14 @@ const NodeComponent = ({
             let podsType = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
-                    podMetaData?.some((f) => f.name === el.name && !!f.isNew === podType),
+                    podMetaData?.some((f) => f.name === el.name && !!f.isNew === isNewPod),
                 )
             }
             setSelectedNodes(isPodAvailable ? [...podsType] : [..._selectedNodes])
 
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
-    }, [params.nodeType, podType, location.pathname, filteredNodes, podLevelExternalLinks])
+    }, [params.nodeType, isNewPod, location.pathname, filteredNodes, podLevelExternalLinks])
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -601,7 +603,7 @@ const NodeComponent = ({
                 <div className="node-container-fluid">
                     <div className="dc__position-sticky dc__top-0 dc__zi-1 bg__primary flexbox-col">
                         {isPodAvailable ? (
-                            <PodHeaderComponent callBack={setPodType} />
+                            <PodHeaderComponent podTab={podTab} setPodTab={setPodTab} />
                         ) : (
                             <div className="px-16 dc__border-bottom-n1">
                                 <TabGroup

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from 'react'
+import { UIEvent, useEffect, useMemo, useRef } from 'react'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
@@ -54,6 +54,9 @@ export const K8ResourceComponent = ({
     removeTabByIdentifier,
     tabs,
     handleUpdateK8sResourceTabUrl,
+    podTab,
+    setPodTab,
+    podListScrollTopRef,
 }: K8ResourceComponentProps) => {
     const navigate = useNavigate()
     const location = useLocation()
@@ -61,9 +64,26 @@ export const K8ResourceComponent = ({
     const { nodeType: currentNode, ...restParams } = useParams<{ nodeType: string }>()
     const currentFilter = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
+    const nodeDetailsContainerRef = useRef<HTMLDivElement>(null)
+
     useEffect(() => {
         handleMarkK8sResourceTabSelected()
     }, [])
+
+    // Restore the resource list's scroll position on mount (e.g. when navigating back
+    // from a pod's Manifest/Events panel, which unmounts this component) instead of
+    // always starting scrolled to the top.
+    useEffect(() => {
+        if (nodeDetailsContainerRef.current) {
+            nodeDetailsContainerRef.current.scrollTop = podListScrollTopRef.current
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const handleNodeDetailsScroll = (e: UIEvent<HTMLDivElement>) => {
+        // eslint-disable-next-line no-param-reassign
+        podListScrollTopRef.current = e.currentTarget.scrollTop
+    }
 
     useEffect(() => {
         IndexStore.updateFilterType(currentFilter.toUpperCase())
@@ -154,7 +174,12 @@ export const K8ResourceComponent = ({
                             />
                         </div>
                     </div>
-                    <div className="flex-grow-1 dc__overflow-auto" data-testid="k8-resources-node-details">
+                    <div
+                        ref={nodeDetailsContainerRef}
+                        onScroll={handleNodeDetailsScroll}
+                        className="flex-grow-1 dc__overflow-auto"
+                        data-testid="k8-resources-node-details"
+                    >
                         <NodeComponent
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}
@@ -164,6 +189,8 @@ export const K8ResourceComponent = ({
                             addTab={addTab}
                             tabs={tabs}
                             removeTabByIdentifier={removeTabByIdentifier}
+                            podTab={podTab}
+                            setPodTab={setPodTab}
                         />
                     </div>
                 </div>

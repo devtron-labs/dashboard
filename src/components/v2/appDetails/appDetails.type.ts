@@ -453,6 +453,14 @@ export type ManifestActionPropsType = Omit<
         isManifestEditable: boolean
     }
 
+/**
+ * The pods tab selected in `PodHeaderComponent` ("New Pods" / "Old Pods").
+ * Lifted up to `NodeTreeDetailTab` (see `podTab`/`setPodTab` below) so it
+ * survives the pods list unmounting/remounting when a pod's Manifest/Events
+ * panel is opened and closed.
+ */
+export type PodTabType = 'old' | 'new'
+
 export interface NodeTreeDetailTabProps {
     appDetails: AppDetails
     isReloadResourceTreeInProgress: boolean
@@ -473,10 +481,12 @@ export interface NodeComponentProps
     isDevtronApp?: boolean
     clusterId?: number
     isDeploymentBlocked?: boolean
+    podTab: PodTabType
+    setPodTab: Dispatch<SetStateAction<PodTabType>>
 }
 
 export interface K8ResourceComponentProps
-    extends Pick<NodeComponentProps, 'addTab'>,
+    extends Pick<NodeComponentProps, 'addTab' | 'podTab' | 'setPodTab'>,
         Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
     clickedNodes: Map<string, string>
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
@@ -487,6 +497,13 @@ export interface K8ResourceComponentProps
     isDeploymentBlocked?: boolean
     handleMarkK8sResourceTabSelected: () => void
     handleUpdateK8sResourceTabUrl: (props: Omit<UpdateTabUrlParamsType, 'id'>) => void
+    /**
+     * Remembers the pods/resource list's scroll offset across remounts of
+     * `K8ResourceComponent` (e.g. when the pod's Manifest/Events panel,
+     * rendered by a sibling `<Route>`, is closed) so the list doesn't jump
+     * back to the top.
+     */
+    podListScrollTopRef: MutableRefObject<number>
 }
 
 export interface AppDetailsComponentType
