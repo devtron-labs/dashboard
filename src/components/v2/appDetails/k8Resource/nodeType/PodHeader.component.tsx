@@ -64,7 +64,7 @@ const PodHeaderComponent = ({
         // update new pods and old pods state
         setNewPods({ ...newPodStats })
         setOldPods({ ...oldPodStats })
-    }, [filteredNodes, podTab])
+    }, [filteredNodes])
 
     const tabs: TabProps[] = [
         {

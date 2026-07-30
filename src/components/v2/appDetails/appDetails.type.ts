@@ -498,12 +498,12 @@ export interface K8ResourceComponentProps
     handleMarkK8sResourceTabSelected: () => void
     handleUpdateK8sResourceTabUrl: (props: Omit<UpdateTabUrlParamsType, 'id'>) => void
     /**
-     * Remembers the pods/resource list's scroll offset across remounts of
+     * Remembers the resource list's scroll offset across remounts of
      * `K8ResourceComponent` (e.g. when the pod's Manifest/Events panel,
      * rendered by a sibling `<Route>`, is closed) so the list doesn't jump
      * back to the top.
      */
-    podListScrollTopRef: MutableRefObject<number>
+    resourceListScrollTopRef: MutableRefObject<number>
 }
 
 export interface AppDetailsComponentType

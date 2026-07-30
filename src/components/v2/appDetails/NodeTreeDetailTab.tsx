@@ -77,7 +77,7 @@ const NodeTreeDetailTab = ({
     // pods list restore the selected New/Old pods tab and scroll offset instead of resetting them
     // every time a pod's Manifest/Events panel is opened and closed.
     const [podTab, setPodTab] = useState<PodTabType>('new')
-    const podListScrollTopRef = useRef(0)
+    const resourceListScrollTopRef = useRef(0)
 
     const showContent = !!(appDetails?.resourceTree?.nodes?.length > 0 && tabs.length)
 
@@ -193,7 +193,7 @@ const NodeTreeDetailTab = ({
                                         handleUpdateK8sResourceTabUrl={handleUpdateK8sResourceTabUrl}
                                         podTab={podTab}
                                         setPodTab={setPodTab}
-                                        podListScrollTopRef={podListScrollTopRef}
+                                        resourceListScrollTopRef={resourceListScrollTopRef}
                                     />
                                 }
                             />
@@ -237,7 +237,7 @@ const NodeTreeDetailTab = ({
                                     handleUpdateK8sResourceTabUrl={handleUpdateK8sResourceTabUrl}
                                     podTab={podTab}
                                     setPodTab={setPodTab}
-                                    podListScrollTopRef={podListScrollTopRef}
+                                    resourceListScrollTopRef={resourceListScrollTopRef}
                                 />
                             }
                         />

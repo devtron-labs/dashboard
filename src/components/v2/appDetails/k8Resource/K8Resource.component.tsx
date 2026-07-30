@@ -56,7 +56,7 @@ export const K8ResourceComponent = ({
     handleUpdateK8sResourceTabUrl,
     podTab,
     setPodTab,
-    podListScrollTopRef,
+    resourceListScrollTopRef,
 }: K8ResourceComponentProps) => {
     const navigate = useNavigate()
     const location = useLocation()
@@ -75,14 +75,13 @@ export const K8ResourceComponent = ({
     // always starting scrolled to the top.
     useEffect(() => {
         if (nodeDetailsContainerRef.current) {
-            nodeDetailsContainerRef.current.scrollTop = podListScrollTopRef.current
+            nodeDetailsContainerRef.current.scrollTop = resourceListScrollTopRef.current
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [nodeDetailsContainerRef, resourceListScrollTopRef])
 
     const handleNodeDetailsScroll = (e: UIEvent<HTMLDivElement>) => {
-        // eslint-disable-next-line no-param-reassign
-        podListScrollTopRef.current = e.currentTarget.scrollTop
+        const scrollTopRef = resourceListScrollTopRef
+        scrollTopRef.current = e.currentTarget.scrollTop
     }
 
     useEffect(() => {
