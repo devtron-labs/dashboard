@@ -81,9 +81,6 @@ const NodeComponent = ({
 
     const location = useLocation()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
-    const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
-    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
-    const [tableHeader, setTableHeader] = useState([])
     const isNewPod = podTab === 'new'
     const appDetails = IndexStore.getAppDetails()
     const params = useParams<{ nodeType: NodeType; resourceName: string; namespace: string; name: string }>()
@@ -98,6 +95,80 @@ const NodeComponent = ({
     const nodeRowClassModifier = nodeRowClassModifierMap[params.nodeType]
         ? `node-row--${nodeRowClassModifierMap[params.nodeType]}`
         : ''
+
+    // Derives the table header, the (possibly pod-tab-filtered) node list, and the healthy node
+    // count for the currently selected resource kind. Used both to lazily seed state on mount (so
+    // the very first render already has the real rows instead of an empty list — otherwise the
+    // resource list's container has zero scrollHeight on mount and any scroll-position restore
+    // effect that runs on mount has nothing to scroll to) and from the effect below that keeps
+    // this derived state in sync as the relevant inputs change after mount.
+    const computeNodeListState = (): {
+        tableHeader: string[]
+        selectedNodes: Array<iNode> | undefined
+        selectedHealthyNodeCount: number
+    } => {
+        if (!params.nodeType) {
+            return { tableHeader: [], selectedNodes: undefined, selectedHealthyNodeCount: 0 }
+        }
+
+        let tableHeaders: string[]
+
+        switch (params.nodeType) {
+            case NodeType.Pod.toLowerCase():
+                tableHeaders = ['Name', 'Ready', 'Restarts', 'Age', '', '']
+                if (podLevelExternalLinks.length > 0) {
+                    tableHeaders = ['Name', 'Ready', 'Restarts', 'Age', 'Links', '']
+                }
+                break
+            case NodeType.Service.toLowerCase():
+                tableHeaders = ['Name', 'URL', '']
+                break
+            default:
+                tableHeaders = ['Name', '', '']
+                break
+        }
+
+        // splitting with /group as group is present in application-group url as well
+        let [, _selectedResource] = location.pathname.split('/group/')
+        let _selectedNodes: Array<iNode>
+        if (_selectedResource) {
+            _selectedResource = _selectedResource.replace(/\/$/, '')
+            _selectedNodes = IndexStore.getPodsForRootNode(_selectedResource).sort((a, b) => (a.name > b.name ? 1 : -1))
+        } else {
+            _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a, b) => (a.name > b.name ? 1 : -1))
+        }
+        let _healthyNodeCount = 0
+
+        _selectedNodes.forEach((node: Node) => {
+            if (node.health?.status?.toLowerCase() === 'healthy') {
+                _healthyNodeCount += 1
+            }
+        })
+        let podsType: Array<iNode> = []
+        if (isPodAvailable) {
+            podsType = _selectedNodes.filter((el) =>
+                podMetaData?.some((f) => f.name === el.name && !!f.isNew === isNewPod),
+            )
+        }
+
+        return {
+            tableHeader: tableHeaders,
+            selectedNodes: isPodAvailable ? [...podsType] : [..._selectedNodes],
+            selectedHealthyNodeCount: _healthyNodeCount,
+        }
+    }
+
+    // Lazily initialized (instead of starting empty/undefined and being filled in by the effect
+    // below) so the resource rows are already present in the very first render/commit. See
+    // K8ResourceComponent's scroll-position-restore effect, which runs on mount and needs the
+    // list's DOM to already reflect its real height at that point.
+    const [selectedNodes, setSelectedNodes] = useState<Array<iNode> | undefined>(
+        () => computeNodeListState().selectedNodes,
+    )
+    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(
+        () => computeNodeListState().selectedHealthyNodeCount,
+    )
+    const [tableHeader, setTableHeader] = useState<string[]>(() => computeNodeListState().tableHeader)
 
     const showingAIButtonInAnyNode =
         ExplainWithAIButton &&
@@ -138,52 +209,10 @@ const NodeComponent = ({
 
     useEffect(() => {
         if (params.nodeType) {
-            let tableHeaders: string[]
-
-            switch (params.nodeType) {
-                case NodeType.Pod.toLowerCase():
-                    tableHeaders = ['Name', 'Ready', 'Restarts', 'Age', '', '']
-                    if (podLevelExternalLinks.length > 0) {
-                        tableHeaders = ['Name', 'Ready', 'Restarts', 'Age', 'Links', '']
-                    }
-                    break
-                case NodeType.Service.toLowerCase():
-                    tableHeaders = ['Name', 'URL', '']
-                    break
-                default:
-                    tableHeaders = ['Name', '', '']
-                    break
-            }
-
-            setTableHeader(tableHeaders)
-
-            // splitting with /group as group is present in application-group url as well
-            let [, _selectedResource] = location.pathname.split('/group/')
-            let _selectedNodes: Array<iNode>
-            if (_selectedResource) {
-                _selectedResource = _selectedResource.replace(/\/$/, '')
-                _selectedNodes = IndexStore.getPodsForRootNode(_selectedResource).sort((a, b) =>
-                    a.name > b.name ? 1 : -1,
-                )
-            } else {
-                _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a, b) => (a.name > b.name ? 1 : -1))
-            }
-            let _healthyNodeCount = 0
-
-            _selectedNodes.forEach((node: Node) => {
-                if (node.health?.status?.toLowerCase() === 'healthy') {
-                    _healthyNodeCount += 1
-                }
-            })
-            let podsType = []
-            if (isPodAvailable) {
-                podsType = _selectedNodes.filter((el) =>
-                    podMetaData?.some((f) => f.name === el.name && !!f.isNew === isNewPod),
-                )
-            }
-            setSelectedNodes(isPodAvailable ? [...podsType] : [..._selectedNodes])
-
-            setSelectedHealthyNodeCount(_healthyNodeCount)
+            const nextState = computeNodeListState()
+            setTableHeader(nextState.tableHeader)
+            setSelectedNodes(nextState.selectedNodes)
+            setSelectedHealthyNodeCount(nextState.selectedHealthyNodeCount)
         }
     }, [params.nodeType, isNewPod, location.pathname, filteredNodes, podLevelExternalLinks])
 
