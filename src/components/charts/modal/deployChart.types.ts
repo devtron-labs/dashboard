@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ChartValuesType } from '../charts.types'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ChartGroupEntry, ChartValuesType } from '../charts.types'
 
 export interface DeployChartProps {
     //  extends RouteComponentProps<{ chartId: string }>
@@ -43,4 +45,13 @@ export interface TextAreaProps {
     val: string
     onChange?: any
     callbackRef?: any
+}
+
+export interface ApplicationNameListProps {
+    charts: ChartGroupEntry[]
+    handleNameChange: (index: number, name: string) => void
+    showAppNames: boolean
+    handleGitRepoUrlChange: (index: number, gitRepoUrl: string) => void
+    deploymentAppType: DeploymentAppTypes
+    allowCustomRepository: boolean
 }

@@ -23,6 +23,7 @@ import {
     ResponseType,
     getUrlWithSearchParams,
     getAPIOptionsWithTriggerTimeout,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DELETE_ACTION, Routes } from '../../config'
 import { handleUTCTime } from '../common'
@@ -255,6 +256,8 @@ export interface DeployableCharts {
     referenceValueId: number
     referenceValueKind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING'
     chartGroupEntryId?: number
+    deploymentAppType: DeploymentAppTypes
+    gitRepoURL?: string
 }
 
 export function deployChartGroup(projectId: number, charts: DeployableCharts[], chartGroupId?: number) {

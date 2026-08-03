@@ -708,18 +708,13 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
 
     const handleResourceClick = (e) => {
         const { name, tab = ResourceBrowserActionMenuEnum.manifest, namespace } = e.currentTarget.dataset
-        navigate(
-            getUrlWithSearchParams(
-                generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
-                    clusterId,
-                    group: selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP,
-                    kind: 'pod',
-                    name,
-                    namespace,
-                }),
-                { tab },
-            ),
-        )
+        navigate(generatePath(`${RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL}/${tab}`, {
+                clusterId,
+                group: selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP,
+                kind: 'pod',
+                name,
+                namespace,
+            }))
     }
 
     const getTriggerSortingHandler =
