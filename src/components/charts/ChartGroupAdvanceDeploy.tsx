@@ -56,6 +56,8 @@ export default function ChartGroupAdvanceDeploy() {
         handleValuesYaml,
         handleNameChange,
         handleEnvironmentChange,
+        handleDeploymentAppTypeChange,
+        handleGitRepoUrlChange,
         configureChart,
         toggleChart,
         fetchChartValues,
@@ -100,10 +102,7 @@ export default function ChartGroupAdvanceDeploy() {
             return
         }
         if (state.charts.length === 0) {
-            navigate(
-                generatePath(`${ROUTER_URLS.CHART_STORE}/group/${groupId}`, { groupId }),
-                { replace: true },
-            )
+            navigate(generatePath(`${ROUTER_URLS.CHART_STORE}/group/${groupId}`, { groupId }), { replace: true })
         }
         configureChart((location?.state as any)?.configureChartIndex || 0)
     }, [state.loading])
@@ -141,7 +140,7 @@ export default function ChartGroupAdvanceDeploy() {
                 })
                 return
             }
-            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
+            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts, state.allowCustomRepository)
             const { result } = await deployChartGroup(project.id, deployableCharts, Number(groupId))
             setDeployed(true)
             // TODO: Proper error handling in case of deployment is failed.
@@ -181,6 +180,9 @@ export default function ChartGroupAdvanceDeploy() {
                                     handleEnvironmentChange={handleEnvironmentChange}
                                     handleNameChange={handleNameChange}
                                     discardValuesYamlChanges={discardValuesYamlChanges}
+                                    handleDeploymentAppTypeChange={handleDeploymentAppTypeChange}
+                                    handleGitRepoUrlChange={handleGitRepoUrlChange}
+                                    allowCustomRepository={state.allowCustomRepository}
                                 />
                             )}
                         </div>

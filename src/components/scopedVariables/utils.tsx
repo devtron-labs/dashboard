@@ -115,9 +115,11 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
         2) Then we are going to sort based on the values array based on the category of the variable, The precendence is as follows:
             i) ApplicationEnv
             ii) Application
-            iii) Env
-            iv) Cluster
-            v) Global
+            iii) ProjectEnv
+            iv) Project
+            v) Env
+            vi) Cluster
+            vii) Global
            If the values array has multiple values with the same category, then we are going to sort them based on the attributeSelectors key
            In case of Global there are no selectors but that won't be trouble since only one global will be there
     */
@@ -135,7 +137,7 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
     })
 
     // Sorting on the basis of category
-    const precedingOrder = ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global']
+    const precedingOrder = ['ApplicationEnv', 'Application', 'ProjectEnv', 'Project', 'Env', 'Cluster', 'Global']
     mutatedVariablesObj.spec.forEach((variablesObj) => {
         variablesObj.values.sort((a, b) => {
             if (precedingOrder.indexOf(a.category) < precedingOrder.indexOf(b.category)) {
