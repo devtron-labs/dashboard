@@ -15,7 +15,7 @@
  */
 
 import { useParams, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -54,6 +54,7 @@ import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
+import { isGitOpsModuleInstalledAndConfigured } from '@Services/service'
 
 const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group/:groupId`
 
@@ -72,7 +73,21 @@ export default function ChartGroupDetails() {
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
         setEnvironmentList,
+        setAllowCustomRepository,
+        handleGitRepoUrlChange,
+        handleDeploymentAppTypeChangeOfAllCharts,
     } = useChartGroup(groupId)
+
+    function getGitOpsModuleInstalledAndConfigured() {
+        isGitOpsModuleInstalledAndConfigured().then((response) => {
+            setAllowCustomRepository(response.result.allowCustomRepository)
+        })
+    }
+
+    useEffect(() => {
+        getGitOpsModuleInstalledAndConfigured()
+    }, [])
+
     const { breadcrumbs } = useBreadcrumb(
         pagePathPattern,
         {
@@ -135,7 +150,7 @@ export default function ChartGroupDetails() {
             if (!validated) {
                 return
             }
-            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
+            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts, state.allowCustomRepository)
             const { result } = await deployChartGroup(projectId, deployableCharts, Number(groupId))
             // TODO: Proper error handling in case of deployment is failed.
             renderChartGroupDeploymentToastMessage(result)
@@ -353,6 +368,9 @@ export default function ChartGroupDetails() {
                         navigate('deploy', { state: { charts: state.charts, projectId } })
                     }}
                     setEnvironments={setEnvironmentList}
+                    handleGitRepoUrlChange={handleGitRepoUrlChange}
+                    allowCustomRepository={state.allowCustomRepository}
+                    handleDeploymentAppTypeChangeOfAllCharts={handleDeploymentAppTypeChangeOfAllCharts}
                 />
             ) : null}
             {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}

@@ -153,7 +153,7 @@ const ApiTokens = () => {
     )
 
     const redirectToCreate = () => {
-        navigate(`../create`)
+        navigate('create')
     }
 
     const renderGenerateButton = () => (

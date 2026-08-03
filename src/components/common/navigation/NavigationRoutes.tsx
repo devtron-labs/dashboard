@@ -132,6 +132,8 @@ const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter'
 const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
 const AIChatProvider = importComponentFromFELibrary('AIChatProvider', null, 'function')
 
+const AuditLogsRouter = importComponentFromFELibrary('AuditLogs', null, 'function')
+
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const navigate = useNavigate()
     const location = useLocation()
@@ -564,6 +566,13 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         path={`${BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.ROOT}/*`}
                                         element={<InfrastructureManagementRouter isSuperAdmin={isSuperAdmin} />}
                                     />
+                                    {serverMode === SERVER_MODE.FULL && AuditLogsRouter && (
+                                        <Route
+                                            key={BASE_ROUTES.AUDIT_LOGS.ROOT}
+                                            path={`${BASE_ROUTES.AUDIT_LOGS.ROOT}/*`}
+                                            element={<AuditLogsRouter />}
+                                        />
+                                    )}
                                     {!window._env_.K8S_CLIENT
                                         ? [
                                               ...(serverMode === SERVER_MODE.FULL
