@@ -16,7 +16,7 @@
         "command-line-parser": "^0.2.10",
         "compute-histogram": "^0.9.11",
         "dayjs": "^1.11.13",
-        "dompurify": "^3.3.3",
+        "dompurify": "^3.4.12",
         "fast-json-patch": "^3.1.1",
         "jsonpath-plus": "^10.3.0",
         "moment": "^2.29.4",
@@ -88,15 +88,15 @@
         "prettier": "^3.1.1",
         "react-draggable": "^4.4.5",
         "sass": "^1.69.7",
-        "sharp": "^0.33.5",
-        "svgo": "^3.3.2",
+        "sharp": "^0.35.0",
+        "svgo": "^3.3.4",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
-        "vite": "8.0.16",
+        "vite": "8.2.0",
         "vite-plugin-compression2": "2.4.0",
         "vite-plugin-pwa": "1.2.0",
         "vite-plugin-require-transform": "1.0.21",
-        "vite-plugin-svgr": "4.5.0"
+        "vite-plugin-svgr": "5.2.0"
     },
     "resolutions": {
         "nanoid": "^3.3.8",
@@ -109,8 +109,20 @@
     },
     "packageManager": "yarn@4.9.2",
     "overrides": {
-        "vite-plugin-svgr": {
-            "vite": "8.0.16"
-        }
+        "@rjsf/utils": {
+            "fast-uri": "^3.1.4"
+        },
+        "codemirror-json-schema": {
+            "markdown-it": {
+                "linkify-it": "^5.0.2"
+            }
+        },
+        "vite-plugin-pwa": {
+            "lodash": "^4.18.0"
+        },
+        "patch-package": {
+            "tmp": "^0.2.6"
+        },
+        "brace-expansion": "^5.0.7"
     }
 }
