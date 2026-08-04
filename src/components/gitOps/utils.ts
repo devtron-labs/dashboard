@@ -15,6 +15,7 @@
  */
 
 import { GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { GitProviderType } from '@Components/common/GitTabs/types'
 
@@ -47,7 +48,10 @@ export const getGitAccessPasswordInputLabel = (providerTab: GitProviderType, aut
     return 'Personal Access Token '
 }
 
-export const getGitAccessUsernameInputLabel = (providerTab: GitProviderType | 'BITBUCKET_DC', authMode: GitOpsAuthModeType): string => {
+export const getGitAccessUsernameInputLabel = (
+    providerTab: GitProviderType | 'BITBUCKET_DC',
+    authMode: GitOpsAuthModeType,
+): string => {
     if (providerTab === GitProvider.GITLAB) {
         return 'GitLab Username'
     }

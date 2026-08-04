@@ -117,7 +117,8 @@ export const PROVIDER_DOC_LINK_MAP: Record<
     [GitProvider.BITBUCKET_CLOUD]: 'GLOBAL_CONFIG_GITOPS_BITBUCKET',
 }
 
-export const UNABLE_TO_DELETE_WARNING = 'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
+export const UNABLE_TO_DELETE_WARNING =
+    'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
 
 export const BITBUCKET_CLOUD_AUTH_MODE_OPTIONS = [
     { label: 'App Password', value: GitOpsAuthModeType.PASSWORD },
