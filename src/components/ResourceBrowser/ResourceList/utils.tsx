@@ -297,7 +297,10 @@ export const isItemASearchMatchForNodeListing = (item: Record<string, any>, sear
                     )
                 }
 
-                return String(item[objectKey] ?? '').includes(trimmedText) && isFound
+                // NOTE: exact match is required here since a substring/includes match would
+                // incorrectly match distinct but similarly named values (e.g. filtering by
+                // node group 'presto-gateway' should not also match 'presto-gateway-2')
+                return String(item[objectKey] ?? '') === trimmedText && isFound
             })
         }, true)
 
@@ -537,7 +540,9 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
                 }
             })
 
-            if (!acc.nodeGroups.has(curr.data.nodeGroup as string)) {
+            // NOTE: skip nodes without a node group (e.g. control-plane/master nodes) so an
+            // empty-value option never gets added to the node group filter list
+            if (curr.data.nodeGroup && !acc.nodeGroups.has(curr.data.nodeGroup as string)) {
                 acc.nodeGroups.set(curr.data.nodeGroup as string, {
                     label: `${curr.data.nodeGroup}`,
                     value: curr.data.nodeGroup as string,

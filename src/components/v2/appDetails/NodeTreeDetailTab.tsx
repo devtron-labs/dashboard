@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
@@ -35,7 +35,7 @@ import {
     getInitialTabs,
     getRoutePatternForNodeTree,
 } from './appDetails.store'
-import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType } from './appDetails.type'
+import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType, PodTabType } from './appDetails.type'
 import IndexStore from './index.store'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 
@@ -71,6 +71,13 @@ const NodeTreeDetailTab = ({
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const displayLogAnalyzer = IndexStore.getNodesByKind(NodeType.Pod).length > 0 && !isVirtualEnvironment
+    // Lifted above the pods list (K8ResourceComponent -> NodeComponent -> PodHeaderComponent) and
+    // kept here, since this component stays mounted while the pods list route and the pod
+    // Manifest/Events route (rendered by sibling `<Route>`s below) swap in and out. That lets the
+    // pods list restore the selected New/Old pods tab and scroll offset instead of resetting them
+    // every time a pod's Manifest/Events panel is opened and closed.
+    const [podTab, setPodTab] = useState<PodTabType>('new')
+    const resourceListScrollTopRef = useRef(0)
 
     const showContent = !!(appDetails?.resourceTree?.nodes?.length > 0 && tabs.length)
 
@@ -184,6 +191,9 @@ const NodeTreeDetailTab = ({
                                         tabs={tabs}
                                         removeTabByIdentifier={removeTabByIdentifier}
                                         handleUpdateK8sResourceTabUrl={handleUpdateK8sResourceTabUrl}
+                                        podTab={podTab}
+                                        setPodTab={setPodTab}
+                                        resourceListScrollTopRef={resourceListScrollTopRef}
                                     />
                                 }
                             />
@@ -225,6 +235,9 @@ const NodeTreeDetailTab = ({
                                     tabs={tabs}
                                     removeTabByIdentifier={removeTabByIdentifier}
                                     handleUpdateK8sResourceTabUrl={handleUpdateK8sResourceTabUrl}
+                                    podTab={podTab}
+                                    setPodTab={setPodTab}
+                                    resourceListScrollTopRef={resourceListScrollTopRef}
                                 />
                             }
                         />
