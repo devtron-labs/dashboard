@@ -57,8 +57,6 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@playwright/test": "^1.32.1",
-        "@sentry/cli": "^2.2.0",
         "@tanstack/eslint-plugin-query": "^5.91.4",
         "@types/node": "^25.5.0",
         "@types/react": "^19.2.14",
@@ -105,23 +103,11 @@
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
         "@emotion/react": "^11.14.0",
-        "tslib": "^2.7.0"
+        "tslib": "^2.7.0",
+        "tar": "^7.5.19",
+        "@rjsf/utils/fast-uri": "^3.1.4",
+        "vite-plugin-pwa/lodash": "^4.18.0",
+        "patch-package/tmp": "^0.2.6"
     },
-    "packageManager": "yarn@4.9.2",
-    "overrides": {
-        "@rjsf/utils": {
-            "fast-uri": "^3.1.4"
-        },
-        "codemirror-json-schema": {
-            "markdown-it": {
-                "linkify-it": "^5.0.2"
-            }
-        },
-        "vite-plugin-pwa": {
-            "lodash": "^4.18.0"
-        },
-        "patch-package": {
-            "tmp": "^0.2.6"
-        }
-    }
+    "packageManager": "yarn@4.9.2"
 }
