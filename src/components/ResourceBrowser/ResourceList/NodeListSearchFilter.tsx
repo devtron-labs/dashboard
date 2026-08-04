@@ -103,8 +103,13 @@ const NodeListSearchFilter = ({
             handleQueryParamsUpdate((queryObject) => {
                 const updatedQueryObject = structuredClone(queryObject)
 
-                if (filtersToApply.length) {
-                    updatedQueryObject[nodeSearchKey] = filtersToApply.map(({ value }) => value).join(',')
+                // NOTE: drop any entry with a falsy value before persisting to the query string so a
+                // stray blank filter can never be appended alongside a real one (which would otherwise
+                // neutralize the filter entirely, since an empty value matches every node)
+                const nonEmptyFiltersToApply = filtersToApply.filter(({ value }) => !!value)
+
+                if (nonEmptyFiltersToApply.length) {
+                    updatedQueryObject[nodeSearchKey] = nonEmptyFiltersToApply.map(({ value }) => value).join(',')
                 } else {
                     delete updatedQueryObject[nodeSearchKey]
                 }
@@ -223,10 +228,12 @@ const NodeListSearchFilter = ({
                     [NODE_SEARCH_KEYS.NODE_GROUP]: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP]
                         .filter(({ value }) => !!value)
                         .map(({ value }) => value),
-                    [NODE_SEARCH_KEYS.LABEL]: appliedFilters[NODE_SEARCH_KEYS.LABEL].map(({ value }) => value),
-                    [NODE_K8S_VERSION_FILTER_KEY]: appliedFilters[NODE_K8S_VERSION_FILTER_KEY].map(
-                        ({ value }) => value,
-                    ),
+                    [NODE_SEARCH_KEYS.LABEL]: appliedFilters[NODE_SEARCH_KEYS.LABEL]
+                        .filter(({ value }) => !!value)
+                        .map(({ value }) => value),
+                    [NODE_K8S_VERSION_FILTER_KEY]: appliedFilters[NODE_K8S_VERSION_FILTER_KEY].filter(
+                        ({ value }) => !!value,
+                    ).map(({ value }) => value),
                 }}
                 onRemoveFilter={handleRemoveFilter}
                 clearFilters={handleClearFilters}
