@@ -171,3 +171,8 @@ export interface UpdateConfirmationDialogProps
      */
     enableBitBucketSource: boolean
 }
+
+export interface BitbucketCloudAuthSelectorProps {
+    authMode: GitOpsAuthModeType
+    handleAuthModeChange: (event: React.SyntheticEvent) => void
+}
