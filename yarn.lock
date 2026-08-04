@@ -1738,9 +1738,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:4.0.12":
-  version: 4.0.12
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:4.0.12"
+"@devtron-labs/devtron-fe-common-lib@npm:4.0.12-pre-0":
+  version: 4.0.12-pre-0
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:4.0.12-pre-0"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1786,7 +1786,7 @@ __metadata:
     tslib: "npm:2.7.0"
   peerDependencies:
     "@typeform/embed-react": 2.20.0
-    dompurify: ^3.3.3
+    dompurify: ^3.4.12
     patch-package: ^8.0.0
     react: ^19.2.4
     react-dom: ^19.2.4
@@ -1794,7 +1794,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.8.3
-  checksum: 10c0/f4fb753ff5eefd9ee32e6d190d7e1d97583b189912503f59bee892dbcd72cae27d9c7267ad57d985d91f65db618c73b56a4d8c3a69da83773feebae4c9335610
+  checksum: 10c0/8e509b55fa6ab96de551ebd6ab42284ededf43ef48a2f3c46121b8947044bb2cb91c9b9d53eb540b23af12bcfd831c0864940825617d03c69880d4efd535ab60
   languageName: node
   linkType: hard
 
@@ -5472,7 +5472,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:4.0.12"
+    "@devtron-labs/devtron-fe-common-lib": "npm:4.0.12-pre-0"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@sentry/browser": "npm:7.119.1"
