@@ -48,6 +48,7 @@ import {
     TableColumnType,
     useAsync,
     useMainContext,
+    useQuery,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -84,6 +85,7 @@ const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 
 const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
+const getClusterAutoscalerProfileMap = importComponentFromFELibrary('getClusterAutoscalerProfileMap', null, 'function')
 
 const ClusterList = () => {
     const { isSuperAdmin } = useMainContext()
@@ -117,6 +119,12 @@ const ClusterList = () => {
         [],
         isSuperAdmin && !isK8sClient,
     )
+
+    const { data: clusterNameVsAutoscalerProfile, refetch: refetchProfileMap } = useQuery({
+        queryKey: ['clusterNameVsAutoscalerProfile'],
+        queryFn: getClusterAutoscalerProfileMap,
+        enabled: !!getClusterAutoscalerProfileMap && !!window._env_.FEATURE_NODE_AUTOSCALER_ENABLE,
+    })
 
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
 
@@ -169,7 +177,7 @@ const ClusterList = () => {
                 {
                     field: ClusterListFields.CLUSTER_NAME,
                     label: 'CLUSTER',
-                    size: { fixed: 200 },
+                    size: { fixed: 180 },
                     isSortable: true,
                     comparator: stringComparatorBySortOrder,
                     CellComponent: ClusterListCellComponent,
@@ -180,7 +188,7 @@ const ClusterList = () => {
                           {
                               field: ClusterListFields.ENV_COUNT,
                               label: 'ENVIRONMENTS',
-                              size: { fixed: 150 },
+                              size: { fixed: 120 },
                               isSortable: true,
                               comparator: numberComparatorBySortOrder,
                               CellComponent: ClusterListCellComponent,
@@ -199,11 +207,21 @@ const ClusterList = () => {
                           {
                               field: ClusterListFields.CLUSTER_CATEGORY,
                               label: 'CATEGORY',
-                              size: { fixed: 150 },
+                              size: { fixed: 100 },
                               isSortable: true,
                               comparator: stringComparatorBySortOrder,
                               CellComponent: ClusterListCellComponent,
                           } as TableColumnType<ClusterRowData, FiltersTypeEnum.STATE, {}>,
+                      ]
+                    : []),
+                ...(window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && getClusterAutoscalerProfileMap
+                    ? [
+                          {
+                              field: ClusterListFields.AUTOSCALER_PROFILE,
+                              label: 'AUTOSCALER PROFILE',
+                              size: { fixed: 140 },
+                              CellComponent: ClusterListCellComponent,
+                          },
                       ]
                     : []),
                 {
@@ -233,6 +251,7 @@ const ClusterList = () => {
                             clusterCategory: (category?.label as string) ?? '',
                             isVirtualCluster,
                             status,
+                            autoscalerProfile: clusterNameVsAutoscalerProfile?.[clusterName] ?? null,
                         },
                     }
                 },
@@ -291,6 +310,11 @@ const ClusterList = () => {
             pathname: ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV,
             search,
         })
+    }
+
+    const handleCloseEditClusterModal = async () => {
+        await refetchProfileMap()
+        handleRedirectToClusterList()
     }
 
     const renderList = () => {
@@ -479,7 +503,7 @@ const ClusterList = () => {
                             <EditCluster
                                 clusterList={clusterListResult ?? []}
                                 reloadClusterList={reloadClusterList}
-                                handleClose={handleRedirectToClusterList}
+                                handleClose={handleCloseEditClusterModal}
                             />
                         }
                     />
