@@ -86,6 +86,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
                             error.type === '[403]' ||
                             error.type === '[504]' ||
                             error.type === '[503]' ||
+                            error.type === '[0]' ||
                             error.type === 'ChunkLoadError')) ||
                         (error.value &&
                             (error.value.includes('write data discarded, use flow control to avoid losing data') ||
