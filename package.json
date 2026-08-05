@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "4.0.11-pre-0",
+        "@devtron-labs/devtron-fe-common-lib": "4.0.12-pre-0",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@sentry/browser": "7.119.1",
         "@sentry/integrations": "7.50.0",
@@ -16,7 +16,7 @@
         "command-line-parser": "^0.2.10",
         "compute-histogram": "^0.9.11",
         "dayjs": "^1.11.13",
-        "dompurify": "^3.3.3",
+        "dompurify": "^3.4.12",
         "fast-json-patch": "^3.1.1",
         "jsonpath-plus": "^10.3.0",
         "moment": "^2.29.4",
@@ -57,8 +57,6 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@playwright/test": "^1.32.1",
-        "@sentry/cli": "^2.2.0",
         "@tanstack/eslint-plugin-query": "^5.91.4",
         "@types/node": "^25.5.0",
         "@types/react": "^19.2.14",
@@ -88,15 +86,14 @@
         "prettier": "^3.1.1",
         "react-draggable": "^4.4.5",
         "sass": "^1.69.7",
-        "sharp": "^0.33.5",
-        "svgo": "^3.3.2",
+        "sharp": "^0.35.0",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
-        "vite": "8.0.16",
+        "vite": "8.2.0",
         "vite-plugin-compression2": "2.4.0",
         "vite-plugin-pwa": "1.2.0",
         "vite-plugin-require-transform": "1.0.21",
-        "vite-plugin-svgr": "4.5.0"
+        "vite-plugin-svgr": "5.2.0"
     },
     "resolutions": {
         "nanoid": "^3.3.8",
@@ -105,12 +102,13 @@
         "cross-spawn": "^7.0.5",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
-        "@emotion/react": "^11.14.0"
+        "@emotion/react": "^11.14.0",
+        "tslib": "^2.7.0",
+        "tar": "^7.5.19",
+        "fast-uri": "^3.1.4",
+        "lodash": "^4.18.0",
+        "tmp": "^0.2.6",
+        "linkify-it": "^5.0.2"
     },
-    "packageManager": "yarn@4.9.2",
-    "overrides": {
-        "vite-plugin-svgr": {
-            "vite": "8.0.16"
-        }
-    }
+    "packageManager": "yarn@4.9.2"
 }
