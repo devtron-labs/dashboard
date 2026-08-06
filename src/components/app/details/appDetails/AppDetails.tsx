@@ -310,7 +310,6 @@ const Details: React.FC<DetailsType> = ({
 
     const handleCloseCDModal = () => {
         setCDModalMaterialType(null)
-        navigate({ search: '' })
     }
 
     const renderSelectImageButton = () => (
