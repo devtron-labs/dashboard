@@ -922,11 +922,14 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
     }
     // Parses time(format:- ex. 4h20m) in second
     const matchesNumber = duration.match(/\d+/g)
-    const matchesChar = duration.match(/[dhms]/g)
+    const matchesChar = duration.match(/[ydhms]/g)
     for (let i = 0; i < matchesNumber.length; i++) {
         const _unit = matchesChar[i]
         const _unitVal = +matchesNumber[i]
         switch (_unit) {
+            case 'y':
+                totalTimeInSec += _unitVal * 365 * 24 * 60 * 60
+                break
             case 'd':
                 totalTimeInSec += _unitVal * 24 * 60 * 60
                 break
