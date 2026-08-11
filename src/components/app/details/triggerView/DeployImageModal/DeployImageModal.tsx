@@ -165,7 +165,7 @@ const DeployImageModal = ({
         materialResponse?.deploymentApprovalInfo?.approvalConfigData,
     )
     const canApproverDeploy = materialResponse?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG && searchParams.deploy
+    const showConfigDiffView = searchParams.mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG && !!searchParams.deploy
     const isSelectImageTrigger = materialType === MATERIAL_TYPE.inputMaterialList
     const areAllImagesExcluded = materialList.every(
         (materialDetails) => materialDetails.filterState !== FilterStates.ALLOWED,
@@ -266,9 +266,13 @@ const DeployImageModal = ({
     }
 
     const handleClose = () => {
-        if (isRedirectedFromAppDetails && showConfigDiffView) {
-            onClickSetInitialParams(URL_PARAM_MODE_TYPE.LIST)
-        }
+        navigate({
+            ...(isRedirectedFromAppDetails && showConfigDiffView
+                ? { pathname: `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}` }
+                : {}),
+
+            search: '',
+        })
         handleCloseProp?.()
     }
 
