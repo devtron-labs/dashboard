@@ -658,6 +658,8 @@ const DeployImageContent = ({
             <div className="bg__tertiary dc__overflow-auto flex-grow-1">
                 <RuntimeParameters
                     appId={appId}
+                    pipelineId={pipelineId}
+                    stage={stageType}
                     parameters={runtimeParamsList}
                     handleChange={handleRuntimeParamsChange}
                     errorState={runtimeParamsErrorState}
