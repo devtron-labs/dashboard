@@ -22,6 +22,12 @@ const RESOURCE_WATCHER_NAV_ITEM: NavigationItemType = importComponentFromFELibra
     'function',
 )
 
+const OBSERVABILITY_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
+    'OBSERVABILITY_NAV_ITEM',
+    null,
+    'function',
+)
+
 const SECURITY_ENABLEMENT_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
     'SECURITY_ENABLEMENT_NAV_ITEM',
     null,
@@ -202,6 +208,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 isAvailableInEA: true,
             },
             ...(RESOURCE_WATCHER_NAV_ITEM ? [RESOURCE_WATCHER_NAV_ITEM] : []),
+            ...(OBSERVABILITY_NAV_ITEM ? [OBSERVABILITY_NAV_ITEM] : []),
         ],
         isAvailableInEA: true,
     },
