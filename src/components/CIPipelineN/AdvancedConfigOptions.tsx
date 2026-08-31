@@ -15,17 +15,31 @@
  */
 
 import { useContext, useEffect, useState } from 'react'
-import { CIBuildConfigType, CIBuildType, KeyValueTableProps, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import {
+    BuildSecretType,
+    CIBuildConfigType,
+    CIBuildType,
+    KeyValueTableProps,
+    noop,
+    OptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
+
 import CIConfig from '../ciConfig/CIConfig'
-import DockerArgs from './DockerArgs'
-import CustomImageTags from './CustomImageTags'
+import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import '../ciConfig/CIConfig.scss'
+import CustomImageTags from './CustomImageTags'
+import DockerArgs from './DockerArgs'
 import { ComponentStates } from './types'
+
+import '../ciConfig/CIConfig.scss'
+
+const BuildSecrets = importComponentFromFELibrary('BuildSecrets', null, 'function')
 
 export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateView }: AdvancedConfigOptionsProps) {
     const { formData, setFormData, loadingState, setLoadingState, formDataErrorObj, setFormDataErrorObj } =
@@ -52,6 +66,22 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
     const isCurrentCITypeBuildpack = parentState.currentCIBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
     const hasParentLoaded = parentState?.loadingState === ComponentStates.loaded
     const showNonBuildpackOptions = hasParentLoaded && (isGlobalAndNotBuildpack || !isCurrentCITypeBuildpack)
+
+    // Shows the current override draft if present; else the pipeline's saved override (fetched via
+    // app/ci-pipeline/:appId/:ciPipelineId) if it already has one; else the global config as the starting
+    // point to override - same precedence populateCurrentPlatformsData uses for targetPlatform below
+    const currentSecrets: BuildSecretType[] =
+        formData.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.secrets ??
+        (allowOverride && parentState.selectedCIPipeline?.isDockerConfigOverridden
+            ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.secrets
+            : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.secrets) ??
+        []
+    const currentSSH: BuildSecretType[] =
+        formData.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.ssh ??
+        (allowOverride && parentState.selectedCIPipeline?.isDockerConfigOverridden
+            ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.ssh
+            : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.ssh) ??
+        []
 
     useEffect(() => {
         if (parentState.ciConfig) {
@@ -99,7 +129,7 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
 
     const updateDockerConfigOverride = (
         key: string,
-        value: CIBuildConfigType | OptionType[] | boolean | string,
+        value: CIBuildConfigType | OptionType[] | boolean | string | BuildSecretType[],
     ): void => {
         setFormData((prevFormData) => {
             const _form = structuredClone(prevFormData)
@@ -143,6 +173,22 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
                 _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.buildContext = value as string
             } else if (key === DockerConfigOverrideKeys.projectPath) {
                 _form.dockerConfigOverride.ciBuildConfig.buildPackConfig.projectPath = value as string
+            } else if (key === DockerConfigOverrideKeys.secrets) {
+                _form.dockerConfigOverride.ciBuildConfig = {
+                    ..._form.dockerConfigOverride.ciBuildConfig,
+                    dockerBuildConfig: {
+                        ..._form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig,
+                        secrets: value as BuildSecretType[],
+                    },
+                }
+            } else if (key === DockerConfigOverrideKeys.ssh) {
+                _form.dockerConfigOverride.ciBuildConfig = {
+                    ..._form.dockerConfigOverride.ciBuildConfig,
+                    dockerBuildConfig: {
+                        ..._form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig,
+                        ssh: value as BuildSecretType[],
+                    },
+                }
             } else {
                 _form.dockerConfigOverride.ciBuildConfig = value as CIBuildConfigType
             }
@@ -153,6 +199,28 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
             }
 
             return _form
+        })
+    }
+
+    const handleBuildSecretsUpdate = (secrets: BuildSecretType[]): void => {
+        updateDockerConfigOverride(DockerConfigOverrideKeys.secrets, secrets)
+    }
+
+    const handleSSHUpdate = (ssh: BuildSecretType[]): void => {
+        updateDockerConfigOverride(DockerConfigOverrideKeys.ssh, ssh)
+    }
+
+    const handleBuildSecretsError = (hasError: boolean): void => {
+        setFormDataErrorObj({
+            ...formDataErrorObj,
+            secretsError: { isValid: !hasError, message: 'Invalid build secrets' },
+        })
+    }
+
+    const handleSSHError = (hasError: boolean): void => {
+        setFormDataErrorObj({
+            ...formDataErrorObj,
+            sshError: { isValid: !hasError, message: 'Invalid SSH keys' },
         })
     }
 
@@ -230,6 +298,18 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
                         args={formData.args}
                         handleDockerArgsUpdate={handleDockerArgsUpdate}
                         handleDockerArgsError={handleDockerArgsError}
+                    />
+                )}
+
+                {showNonBuildpackOptions && BuildSecrets && (
+                    <BuildSecrets
+                        appId={appId}
+                        secrets={currentSecrets}
+                        ssh={currentSSH}
+                        onSecretsChange={handleBuildSecretsUpdate}
+                        onSSHChange={handleSSHUpdate}
+                        onSecretsError={handleBuildSecretsError}
+                        onSSHError={handleSSHError}
                     />
                 )}
             </div>

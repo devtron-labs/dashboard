@@ -269,6 +269,8 @@ export const DockerConfigOverrideKeys = {
     dockerfileRelativePath: 'dockerfileRelativePath',
     targetPlatform: 'targetPlatform',
     buildContext: 'buildContext',
+    secrets: 'secrets',
+    ssh: 'ssh',
 }
 
 export interface CIPipelineType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
