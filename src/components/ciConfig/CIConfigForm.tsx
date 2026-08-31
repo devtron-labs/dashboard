@@ -16,6 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import {
+    BuildSecretType,
     CIBuildConfigType,
     CIBuildType,
     showError,
@@ -134,6 +135,10 @@ export default function CIConfigForm({
         args: false,
         buildEnvArgs: false,
     })
+    const [secrets, setSecrets] = useState<BuildSecretType[]>([])
+    const [ssh, setSsh] = useState<BuildSecretType[]>([])
+    const [secretsError, setSecretsError] = useState<boolean>(false)
+    const [sshError, setSshError] = useState<boolean>(false)
     const [loadingDataState, setLoadingDataState] = useState<LoadingState>({
         loading: false,
         failed: false,
@@ -182,6 +187,10 @@ export default function CIConfigForm({
 
         // Buildpack - build env arguments
         setBuildEnvArgs(processBuildArgs(currentCIBuildConfig.buildPackConfig?.args))
+
+        // Build secrets and SSH keys
+        setSecrets(ciConfig?.ciBuildConfig?.dockerBuildConfig?.secrets ?? [])
+        setSsh(ciConfig?.ciBuildConfig?.dockerBuildConfig?.ssh ?? [])
     }
 
     const updateParentCIBuildTypeState = () => {
@@ -199,6 +208,14 @@ export default function CIConfigForm({
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Please ensure build arguments are valid',
+            })
+            return
+        }
+
+        if (!isBuildpackType && (secretsError || sshError)) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please ensure build secrets and SSH keys are valid',
             })
             return
         }
@@ -247,6 +264,8 @@ export default function CIConfigForm({
                 dockerfileRepository: repository.value,
                 targetPlatform: targetPlatforms,
                 buildContext: buildContext.value,
+                secrets: secrets.filter((secret) => secret.secretName && secret.id && secret.key),
+                ssh: ssh.filter((sshKey) => sshKey.secretName && sshKey.id && sshKey.key),
             }
         }
 
@@ -405,6 +424,13 @@ export default function CIConfigForm({
                             buildEnvArgs={buildEnvArgs}
                             setBuildEnvArgs={setBuildEnvArgs}
                             setArgsError={setArgsError}
+                            appId={appId}
+                            secrets={secrets}
+                            setSecrets={setSecrets}
+                            ssh={ssh}
+                            setSsh={setSsh}
+                            setSecretsError={setSecretsError}
+                            setSshError={setSshError}
                             handleOnChangeConfig={handleOnChangeConfig}
                             selectedTargetPlatforms={selectedTargetPlatforms}
                             setSelectedTargetPlatforms={setSelectedTargetPlatforms}
