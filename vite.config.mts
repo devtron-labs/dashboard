@@ -30,7 +30,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { compression, defineAlgorithm } from 'vite-plugin-compression2'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
-const TARGET_URL = 'https://preview.devtron.ai/'
+const TARGET_URL = 'https://staging.devtron.info/'
 
 function reactVirtualized(): PluginOption {
     return {

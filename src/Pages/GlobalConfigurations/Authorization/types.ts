@@ -56,7 +56,12 @@ export interface APIRoleFilterDto {
     entityName?: string
     environment?: string
     action: string
-    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    accessType?:
+        | ACCESS_TYPE_MAP.DEVTRON_APPS
+        | ACCESS_TYPE_MAP.HELM_APPS
+        | ACCESS_TYPE_MAP.ARGO_APPS
+        | ACCESS_TYPE_MAP.FLUX_APPS
+        | ACCESS_TYPE_MAP.JOBS
     /**
      * denotes if the user has deploymentApprover role
      */
@@ -235,6 +240,14 @@ export interface UserRole {
      * @note This key is present only when superAdmin is false
      */
     role?: UserRoleType
+    /**
+     * If true, the user holds at least one Argo CD app permission row
+     */
+    hasArgoAppAccess?: boolean
+    /**
+     * If true, the user holds at least one Flux CD app permission row
+     */
+    hasFluxAppAccess?: boolean
 }
 
 export type UserBulkDeletePayload =
@@ -277,7 +290,12 @@ interface RoleFilter {
 
 export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
     entity: EntityTypes.DIRECT | EntityTypes.JOB
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    accessType:
+        | ACCESS_TYPE_MAP.DEVTRON_APPS
+        | ACCESS_TYPE_MAP.HELM_APPS
+        | ACCESS_TYPE_MAP.ARGO_APPS
+        | ACCESS_TYPE_MAP.FLUX_APPS
+        | ACCESS_TYPE_MAP.JOBS
     team: OptionType
     entityName: OptionType[]
     entityNameError?: string
@@ -332,6 +350,10 @@ export enum UserAccessResourceKind {
     DEVTRON_APPS = ResourceKindType.devtronApplication,
     HELM_APPS = ResourceKindType.helmChart,
     HELM_ENVS = 'environment/helm',
+    ARGO_ENVS = 'environment/argo',
+    FLUX_ENVS = 'environment/flux',
+    ARGO_APP_OPTIONS = 'application/argo',
+    FLUX_APP_OPTIONS = 'application/flux',
     CLUSTER = ResourceKindType.cluster,
     CHART_GROUP = 'chartGroup',
     JOBS = 'jobs',
@@ -344,10 +366,29 @@ export enum UserAccessResourceKind {
 export interface GetUserPermissionResourcesPayload
     extends Partial<Pick<K8sResourceListPayloadType, 'clusterId' | 'k8sRequest'>> {
     entity: EntityTypes
-    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+    accessType?:
+        | ACCESS_TYPE_MAP.DEVTRON_APPS
+        | ACCESS_TYPE_MAP.HELM_APPS
+        | ACCESS_TYPE_MAP.ARGO_APPS
+        | ACCESS_TYPE_MAP.FLUX_APPS
     teamIds?: number[]
     appIds?: string[]
     appNames?: string[]
+    /**
+     * Only for Argo/Flux app options (entity: apps, accessType: argo-app/flux-app)
+     */
+    clusterIds?: number[]
+    /**
+     * Only for Argo/Flux app options (entity: apps, accessType: argo-app/flux-app)
+     */
+    environmentIdentifiers?: string[]
+}
+
+export interface ArgoFluxAppOption {
+    appName: string
+    namespace: string
+    clusterId: number
+    clusterName: string
 }
 
 export interface GetUserResourceOptionsProps {

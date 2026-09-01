@@ -16,11 +16,11 @@
 
 import { useMemo } from 'react'
 
-import { ACCESS_TYPE_MAP, ComponentSizeType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ALL_ENVIRONMENTS_OPTION, DirectPermissionFieldName } from './constants'
 import { DirectPermissionRowProps } from './types'
-import { getDisplayTextByName, getEnvironmentDisplayText } from './utils'
+import { getDisplayTextByName, getEnvironmentDisplayText, isClusterNamespaceAccessType } from './utils'
 
 const EnvironmentSelector = ({
     permission,
@@ -31,7 +31,7 @@ const EnvironmentSelector = ({
     DirectPermissionRowProps,
     'permission' | 'handleDirectPermissionChange' | 'environmentClusterOptions' | 'getEnvironmentOptions'
 >) => {
-    const isAccessTypeHelm = permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
+    const isAccessTypeHelm = isClusterNamespaceAccessType(permission.accessType)
 
     const options = useMemo(() => {
         if (isAccessTypeHelm) {

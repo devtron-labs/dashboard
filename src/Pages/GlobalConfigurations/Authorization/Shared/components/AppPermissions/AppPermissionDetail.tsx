@@ -22,7 +22,7 @@ import { importComponentFromFELibrary } from '../../../../../../components/commo
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import DirectPermission from './DirectPermission'
 import { AppPermissionsDetailType } from './types'
-import { getPermissionDetailRowClass } from './utils'
+import { getPermissionDetailRowClass, isClusterNamespaceAccessType, isProjectlessAccessType } from './utils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
@@ -44,9 +44,9 @@ const AppPermissionDetail = ({
     return (
         <>
             <div className={`w-100 pt-6 pb-6 dc__gap-8 display-grid ${rowClass} fw-6 fs-12 cn-7 dc__uppercase`}>
-                <label className="mb-0">Project</label>
+                {!isProjectlessAccessType(accessType) && <label className="mb-0">Project</label>}
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 3 : 0 }}>
-                    Environment{accessType === ACCESS_TYPE_MAP.HELM_APPS ? ' or cluster/namespace' : ''}
+                    Environment{isClusterNamespaceAccessType(accessType) ? ' or cluster/namespace' : ''}
                 </label>
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 1 : 0 }}>
                     {isAccessTypeJob ? 'Job Name' : 'Application'}
@@ -57,7 +57,7 @@ const AppPermissionDetail = ({
                     </label>
                 )}
                 <label className="mb-0" style={{ order: isAccessTypeJob ? 4 : 0 }}>
-                    {accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'Permission' : 'Role'}
+                    {isClusterNamespaceAccessType(accessType) ? 'Permission' : 'Role'}
                 </label>
                 {showStatus && (
                     <div style={{ order: 5 }}>

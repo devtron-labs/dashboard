@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { ACCESS_TYPE_MAP, ActionTypes, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACCESS_TYPE_MAP,
+    ActionTypes,
+    capitalizeFirstLetter,
+    EntityTypes,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { SELECT_ALL_VALUE } from '../../../../../../config'
+import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
@@ -56,6 +62,25 @@ export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
 export const emptyDirectPermissionHelmApps = {
     ...emptyDirectPermissionDevtronApps,
     accessType: ACCESS_TYPE_MAP.HELM_APPS,
+}
+
+// Argo/Flux apps have no Devtron project concept (no Project column), so rows always
+// use the "Unassigned apps" bucket rather than waiting for a project pick
+const unassignedProjectTeam = {
+    label: capitalizeFirstLetter(HELM_APP_UNASSIGNED_PROJECT),
+    value: HELM_APP_UNASSIGNED_PROJECT,
+}
+
+export const emptyDirectPermissionArgoApps = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.ARGO_APPS,
+    team: unassignedProjectTeam,
+}
+
+export const emptyDirectPermissionFluxApps = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.FLUX_APPS,
+    team: unassignedProjectTeam,
 }
 
 export const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {

@@ -36,13 +36,18 @@ type JobsList = Map<number, { loading: boolean; result: JobList['result']['jobCo
 export type ProjectsListType = Record<ACCESS_TYPE_MAP, Teams[]>
 export type EnvironmentsListType = Record<ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.JOBS, EnvListMinDTO[]>
 
+type PermissionTabAccessType =
+    | ACCESS_TYPE_MAP.DEVTRON_APPS
+    | ACCESS_TYPE_MAP.HELM_APPS
+    | ACCESS_TYPE_MAP.ARGO_APPS
+    | ACCESS_TYPE_MAP.FLUX_APPS
+    | ACCESS_TYPE_MAP.JOBS
+
 export interface AppPermissionsDetailType {
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    accessType: PermissionTabAccessType
     handleDirectPermissionChange: (...rest) => void
     removeDirectPermissionRow: (index: number) => void
-    addNewPermissionRow: (
-        accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
-    ) => void
+    addNewPermissionRow: (accessType: PermissionTabAccessType) => void
     appsListHelmApps: AppsList
     jobsList: JobsList
     appsList: AppsList

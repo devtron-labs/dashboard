@@ -38,6 +38,8 @@ import {
     getUserAccessAllWorkflows,
     getUserAccessChartGroups,
     getUserAccessEnvironmentList,
+    getUserAccessEnvListForArgoApps,
+    getUserAccessEnvListForFluxApps,
     getUserAccessEnvListForHelmApps,
     getUserAccessJobList,
     getUserAccessProjectFilteredApps,
@@ -60,7 +62,9 @@ import AppPermissionDetail from './AppPermissionDetail'
 import {
     ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
     DirectPermissionFieldName,
+    emptyDirectPermissionArgoApps,
     emptyDirectPermissionDevtronApps,
+    emptyDirectPermissionFluxApps,
     emptyDirectPermissionHelmApps,
     emptyDirectPermissionJobs,
     SELECT_ALL_OPTION,
@@ -72,7 +76,10 @@ import {
     getEnvironmentOptions,
     getNavLinksConfig,
     getRoleConfigForRoleFilter,
+    isClusterNamespaceAccessType,
 } from './utils'
+
+const EMPTY_APPS_LIST: AppPermissionsDetailType['appsListHelmApps'] = new Map()
 
 const AppPermissions = () => {
     const { serverMode } = useMainContext()
@@ -110,6 +117,9 @@ const AppPermissions = () => {
                 : getUserAccessEnvironmentList(),
             serverMode === SERVER_MODE.EA_ONLY ? null : getUserAccessChartGroups(),
             getUserAccessEnvListForHelmApps(),
+            // Argo/Flux RBAC endpoints are new; don't let a missing/failing backend block the whole permissions page
+            getUserAccessEnvListForArgoApps().catch(() => []),
+            getUserAccessEnvListForFluxApps().catch(() => []),
         ]),
     )
 
@@ -126,6 +136,9 @@ const AppPermissions = () => {
         const projectList: ProjectsListType = {
             [ACCESS_TYPE_MAP.DEVTRON_APPS]: configData?.[0]?.[ACCESS_TYPE_MAP.DEVTRON_APPS] ?? [],
             [ACCESS_TYPE_MAP.HELM_APPS]: configData?.[0]?.[ACCESS_TYPE_MAP.HELM_APPS] ?? [],
+            // Argo/Flux apps are fully external (no Devtron project concept); rows use the "Unassigned apps" bucket
+            [ACCESS_TYPE_MAP.ARGO_APPS]: [],
+            [ACCESS_TYPE_MAP.FLUX_APPS]: [],
             [ACCESS_TYPE_MAP.JOBS]: configData?.[0][ACCESS_TYPE_MAP.JOBS] ?? [],
         }
 
@@ -144,19 +157,34 @@ const AppPermissions = () => {
         }
     }, [configData])
 
-    const { environmentClusterOptions, envClustersList } = useMemo(() => {
-        const _envClustersList = (configData?.[3] ?? [])
-            .map((cluster) => ({
-                ...cluster,
-                environments: (cluster.environments ?? []).sort((a, b) =>
-                    stringComparatorBySortOrder(a.environmentName, b.environmentName),
-                ),
-            }))
-            .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
+    const { environmentClusterOptionsMap, envClustersListMap } = useMemo(() => {
+        const buildClusterEnvList = (rawList: (typeof configData)[3]) =>
+            (rawList ?? [])
+                .map((cluster) => ({
+                    ...cluster,
+                    environments: (cluster.environments ?? []).sort((a, b) =>
+                        stringComparatorBySortOrder(a.environmentName, b.environmentName),
+                    ),
+                }))
+                .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
+
+        const helmClusterEnvList = buildClusterEnvList(configData?.[3])
+        const argoClusterEnvList = buildClusterEnvList(configData?.[4])
+        const fluxClusterEnvList = buildClusterEnvList(configData?.[5])
+
+        const _envClustersListMap = {
+            [ACCESS_TYPE_MAP.HELM_APPS]: helmClusterEnvList,
+            [ACCESS_TYPE_MAP.ARGO_APPS]: argoClusterEnvList,
+            [ACCESS_TYPE_MAP.FLUX_APPS]: fluxClusterEnvList,
+        }
 
         return {
-            envClustersList: _envClustersList,
-            environmentClusterOptions: getEnvironmentClusterOptions(_envClustersList),
+            envClustersListMap: _envClustersListMap,
+            environmentClusterOptionsMap: {
+                [ACCESS_TYPE_MAP.HELM_APPS]: getEnvironmentClusterOptions(helmClusterEnvList),
+                [ACCESS_TYPE_MAP.ARGO_APPS]: getEnvironmentClusterOptions(argoClusterEnvList),
+                [ACCESS_TYPE_MAP.FLUX_APPS]: getEnvironmentClusterOptions(fluxClusterEnvList),
+            },
         }
     }, [configData])
 
@@ -320,6 +348,10 @@ const AppPermissions = () => {
                 return appsList
             case ACCESS_TYPE_MAP.HELM_APPS:
                 return appsListHelmApps
+            case ACCESS_TYPE_MAP.ARGO_APPS:
+            case ACCESS_TYPE_MAP.FLUX_APPS:
+                // Application list for Argo/Flux apps is resolved via cluster/namespace, not project
+                return EMPTY_APPS_LIST
             case ACCESS_TYPE_MAP.JOBS:
                 return jobsList
             default:
@@ -360,7 +392,7 @@ const AppPermissions = () => {
         }
     }
 
-    function setClusterValues(startsWithHash, clusterName) {
+    function setClusterValues(startsWithHash, clusterName, accessType: ACCESS_TYPE_MAP) {
         const defaultValueArr = []
         if (startsWithHash) {
             defaultValueArr.push({
@@ -376,7 +408,7 @@ const AppPermissions = () => {
             namespace: '',
             clusterName: '',
         })
-        const selectedCluster = envClustersList?.find((cluster) => cluster.clusterName === clusterName)
+        const selectedCluster = envClustersListMap[accessType]?.find((cluster) => cluster.clusterName === clusterName)
 
         return [
             ...defaultValueArr,
@@ -385,6 +417,7 @@ const AppPermissions = () => {
                 value: env.environmentIdentifier,
                 namespace: env.namespace,
                 clusterName,
+                clusterId: selectedCluster.clusterId,
             })) ?? []),
         ]
     }
@@ -405,7 +438,7 @@ const AppPermissions = () => {
             ]
         }
 
-        if (directRoleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+        if (isClusterNamespaceAccessType(directRoleFilter.accessType)) {
             const returnArr = []
             const envArr = directRoleFilter.environment.split(',')
             const envMap: Map<string, boolean> = new Map()
@@ -413,13 +446,13 @@ const AppPermissions = () => {
                 const endsWithStar = element.endsWith(SELECT_ALL_VALUE)
                 if (endsWithStar) {
                     const clusterName = element.slice(0, -3)
-                    returnArr.push(...setClusterValues(endsWithStar, clusterName))
+                    returnArr.push(...setClusterValues(endsWithStar, clusterName, directRoleFilter.accessType))
                 } else {
                     envMap.set(element, true)
                 }
             })
             if (envMap.size !== 0) {
-                envClustersList.forEach((element) => {
+                envClustersListMap[directRoleFilter.accessType].forEach((element) => {
                     if (envMap.size !== 0) {
                         element.environments.some((env) => {
                             if (envMap.get(env.environmentIdentifier)) {
@@ -428,6 +461,7 @@ const AppPermissions = () => {
                                     value: env.environmentIdentifier,
                                     namespace: env.namespace,
                                     clusterName: element.clusterName,
+                                    clusterId: element.clusterId,
                                 })
                                 envMap.delete(env.environmentName)
                                 if (envMap.size === 0) {
@@ -473,6 +507,10 @@ const AppPermissions = () => {
                 return devtronAppsProjectsMap.get(teamName)?.id
             case ACCESS_TYPE_MAP.HELM_APPS:
                 return helmAppsProjectsMap.get(teamName)?.id
+            case ACCESS_TYPE_MAP.ARGO_APPS:
+            case ACCESS_TYPE_MAP.FLUX_APPS:
+                // Argo/Flux apps have no Devtron project concept; rows always use the "Unassigned apps" bucket
+                return undefined
             case ACCESS_TYPE_MAP.JOBS:
                 return jobsProjectsMap.get(teamName)?.id
             default:
@@ -489,6 +527,8 @@ const AppPermissions = () => {
 
         let foundDevtronApps = false
         let foundHelmApps = false
+        let foundArgoApps = false
+        let foundFluxApps = false
         let foundJobs = false
 
         // Devtron apps, helm apps and jobs
@@ -537,6 +577,10 @@ const AppPermissions = () => {
                         foundDevtronApps = true
                     } else if (directRoleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                         foundHelmApps = true
+                    } else if (directRoleFilter.accessType === ACCESS_TYPE_MAP.ARGO_APPS) {
+                        foundArgoApps = true
+                    } else if (directRoleFilter.accessType === ACCESS_TYPE_MAP.FLUX_APPS) {
+                        foundFluxApps = true
                     } else if (directRoleFilter.entity === EntityTypes.JOB) {
                         foundJobs = true
                     }
@@ -589,6 +633,12 @@ const AppPermissions = () => {
         }
         if (!foundHelmApps) {
             directPermissions.push(structuredClone(emptyDirectPermissionHelmApps))
+        }
+        if (!foundArgoApps) {
+            directPermissions.push(structuredClone(emptyDirectPermissionArgoApps))
+        }
+        if (!foundFluxApps) {
+            directPermissions.push(structuredClone(emptyDirectPermissionFluxApps))
         }
         setDirectPermission(directPermissions)
 
@@ -667,7 +717,7 @@ const AppPermissions = () => {
         const startsWithHash = value?.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE)
         if (value?.startsWith(SELECT_ALL_VALUE) || startsWithHash) {
             const currentAccessType = tempPermissions[index].accessType
-            if (currentAccessType === ACCESS_TYPE_MAP.HELM_APPS) {
+            if (isClusterNamespaceAccessType(currentAccessType)) {
                 const _clusterName = value.substring(1)
                 // uncheck all environments
                 tempPermissions[index][name] = tempPermissions[index][name]?.filter(
@@ -680,7 +730,7 @@ const AppPermissions = () => {
                     // check all environments
                     tempPermissions[index][name] = [
                         ...tempPermissions[index][name],
-                        ...setClusterValues(startsWithHash, _clusterName),
+                        ...setClusterValues(startsWithHash, _clusterName, currentAccessType),
                     ]
                     tempPermissions[index].environmentError = null
                 }
@@ -711,7 +761,7 @@ const AppPermissions = () => {
                 tempPermissions[index][name] = []
             }
         } else {
-            if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+            if (isClusterNamespaceAccessType(tempPermissions[index].accessType)) {
                 tempPermissions[index][name] = selectedValue.filter(
                     ({ value: _value }) =>
                         _value !== `${SELECT_ALL_VALUE}${clusterName}` &&
@@ -734,6 +784,10 @@ const AppPermissions = () => {
             case ACCESS_TYPE_MAP.HELM_APPS:
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 fetchAppListHelmApps([projectId])
+                break
+            case ACCESS_TYPE_MAP.ARGO_APPS:
+            case ACCESS_TYPE_MAP.FLUX_APPS:
+                // No project-scoped app list to fetch; Argo/Flux apps are resolved via cluster/namespace
                 break
             case ACCESS_TYPE_MAP.JOBS:
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -871,6 +925,8 @@ const AppPermissions = () => {
         setDirectPermission((permission) => {
             let foundDevtronApps = false
             let foundHelmApps = false
+            let foundArgoApps = false
+            let foundFluxApps = false
             let foundJobs = false
 
             const permissionArr = permission.filter((perm, idx) => idx !== index)
@@ -880,6 +936,10 @@ const AppPermissions = () => {
                     foundDevtronApps = true
                 } else if (permissionArr[i].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                     foundHelmApps = true
+                } else if (permissionArr[i].accessType === ACCESS_TYPE_MAP.ARGO_APPS) {
+                    foundArgoApps = true
+                } else if (permissionArr[i].accessType === ACCESS_TYPE_MAP.FLUX_APPS) {
+                    foundFluxApps = true
                 } else if (permissionArr[i].accessType === ACCESS_TYPE_MAP.JOBS) {
                     foundJobs = true
                 }
@@ -896,6 +956,12 @@ const AppPermissions = () => {
             if (!foundHelmApps) {
                 permissionArr.push(structuredClone(emptyDirectPermissionHelmApps))
             }
+            if (!foundArgoApps) {
+                permissionArr.push(structuredClone(emptyDirectPermissionArgoApps))
+            }
+            if (!foundFluxApps) {
+                permissionArr.push(structuredClone(emptyDirectPermissionFluxApps))
+            }
             return permissionArr
         })
     }
@@ -907,6 +973,12 @@ const AppPermissions = () => {
                 break
             case ACCESS_TYPE_MAP.HELM_APPS:
                 setDirectPermission((permission) => [...permission, structuredClone(emptyDirectPermissionHelmApps)])
+                break
+            case ACCESS_TYPE_MAP.ARGO_APPS:
+                setDirectPermission((permission) => [...permission, structuredClone(emptyDirectPermissionArgoApps)])
+                break
+            case ACCESS_TYPE_MAP.FLUX_APPS:
+                setDirectPermission((permission) => [...permission, structuredClone(emptyDirectPermissionFluxApps)])
                 break
             case ACCESS_TYPE_MAP.JOBS:
                 setDirectPermission((permission) => [...permission, structuredClone(emptyDirectPermissionJobs)])
@@ -945,6 +1017,8 @@ const AppPermissions = () => {
             if (!data) {
                 const emptyPermissionArr = [
                     structuredClone(emptyDirectPermissionHelmApps),
+                    structuredClone(emptyDirectPermissionArgoApps),
+                    structuredClone(emptyDirectPermissionFluxApps),
                     structuredClone(emptyDirectPermissionDevtronApps),
                     structuredClone(emptyDirectPermissionJobs),
                 ]
@@ -1013,7 +1087,7 @@ const AppPermissions = () => {
                                             appsList={appsList}
                                             projectsList={projectsList}
                                             getEnvironmentOptions={_getEnvironmentOptions}
-                                            environmentClusterOptions={environmentClusterOptions}
+                                            environmentClusterOptions={environmentClusterOptionsMap[accessType]}
                                             getListForAccessType={getListForAccessType}
                                         />
                                     }

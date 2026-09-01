@@ -77,7 +77,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     const navigate = useNavigate()
     const location = useLocation()
     const params = useParams<{ appType: InfrastructureManagementAppListType }>()
-    const { serverMode, isSuperAdmin } = useMainContext()
+    const { serverMode, isSuperAdmin, hasArgoAppAccess, hasFluxAppAccess } = useMainContext()
 
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<string>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
@@ -372,7 +372,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                 'data-testid': 'helm-app-list-button',
             },
         },
-        ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && isSuperAdmin
+        ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && (isSuperAdmin || hasArgoAppAccess)
             ? [
                   {
                       id: InfrastructureManagementAppListType.ARGO_CD,
@@ -388,7 +388,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                   },
               ]
             : []),
-        ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && isSuperAdmin
+        ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (isSuperAdmin || hasFluxAppAccess)
             ? [
                   {
                       id: InfrastructureManagementAppListType.FLUX_CD,

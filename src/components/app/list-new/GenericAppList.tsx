@@ -66,12 +66,13 @@ const GenericAppList = ({
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [appsList, setAppsList] = useState<GenericAppType[]>([])
     const sseConnectionRef = useRef<EventSource>(null)
-    const { isSuperAdmin } = useMainContext()
+    const { isSuperAdmin, hasArgoAppAccess, hasFluxAppAccess } = useMainContext()
 
     const navigate = useNavigate()
 
     const isArgoCDAppList = appType === InfrastructureManagementAppListType.ARGO_CD
     const isFluxCDAppList = appType === InfrastructureManagementAppListType.FLUX_CD
+    const hasAppTypeAccess = isSuperAdmin || (isArgoCDAppList ? hasArgoAppAccess : hasFluxAppAccess)
 
     const { searchKey, templateType, namespace, cluster } = filterConfig
 
@@ -271,7 +272,7 @@ const GenericAppList = ({
         }
     }
 
-    if (!isSuperAdmin) {
+    if (!hasAppTypeAccess) {
         return (
             <div className="flex-grow-1">
                 <ErrorScreenManager code={403} />
