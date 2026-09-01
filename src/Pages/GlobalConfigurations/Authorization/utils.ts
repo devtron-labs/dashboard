@@ -394,7 +394,10 @@ export const getRolesAndAccessRoles = ({
     'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission' | 'canManageAllAccess'
 >) => {
     const filteredDirectPermissions = directPermission.filter(
-        (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
+        (permission) =>
+            (isProjectlessAccessType(permission.accessType) || permission.team?.value) &&
+            permission.environment.length &&
+            permission.entityName.length,
     )
     const { roleFilters: directRoleFilters, accessRoleFilters } = getRoleAndAccessFiltersFromDirectPermission({
         directPermission: filteredDirectPermissions,
