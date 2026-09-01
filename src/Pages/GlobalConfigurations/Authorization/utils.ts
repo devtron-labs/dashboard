@@ -41,6 +41,7 @@ import { importComponentFromFELibrary } from '../../../components/common'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
+import { isProjectlessAccessType } from './Shared/components/AppPermissions/utils'
 import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
 import {
     AccessTypeToErrorMapType,
@@ -492,7 +493,16 @@ export const validateDirectPermissionForm = (
             const updatedPermission = structuredClone(permission)
             const { roleConfig } = updatedPermission
 
-            if (updatedPermission.team) {
+            // Argo/Flux rows have no project picker (team is always pre-filled with the
+            // "Unassigned apps" bucket), so `team` truthiness can't signal a user-touched row
+            // for them the way it does for Devtron/Helm/Jobs. Use environment selection instead -
+            // it's the first field a user can actually pick for these access types - so that the
+            // default, untouched Argo/Flux rows added to every form don't block saving.
+            const isRowConfigured = isProjectlessAccessType(updatedPermission.accessType)
+                ? updatedPermission.environment.length > 0
+                : !!updatedPermission.team
+
+            if (isRowConfigured) {
                 if (updatedPermission.entityName.length === 0) {
                     isErrorInCurrentItem = true
                     updatedPermission.entityNameError = `${updatedPermission.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
