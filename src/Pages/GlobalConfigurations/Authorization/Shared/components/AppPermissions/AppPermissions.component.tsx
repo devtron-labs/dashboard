@@ -117,9 +117,16 @@ const AppPermissions = () => {
                 : getUserAccessEnvironmentList(),
             serverMode === SERVER_MODE.EA_ONLY ? null : getUserAccessChartGroups(),
             getUserAccessEnvListForHelmApps(),
-            // Argo/Flux RBAC endpoints are new; don't let a missing/failing backend block the whole permissions page
-            getUserAccessEnvListForArgoApps().catch(() => []),
-            getUserAccessEnvListForFluxApps().catch(() => []),
+            // Argo/Flux RBAC endpoints are new; don't let a missing/failing backend block the whole permissions page,
+            // but still surface the failure instead of silently leaving the dropdown empty
+            getUserAccessEnvListForArgoApps().catch((err) => {
+                showError(err)
+                return []
+            }),
+            getUserAccessEnvListForFluxApps().catch((err) => {
+                showError(err)
+                return []
+            }),
         ]),
     )
 
