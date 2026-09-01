@@ -264,8 +264,8 @@ export default function CIConfigForm({
                 dockerfileRepository: repository.value,
                 targetPlatform: targetPlatforms,
                 buildContext: buildContext.value,
-                secrets: secrets.filter((secret) => secret.secretName && secret.id && secret.key),
-                ssh: ssh.filter((sshKey) => sshKey.secretName && sshKey.id && sshKey.key),
+                secrets: secrets.filter((secret) => secret.type && secret.secretName && secret.id && secret.key),
+                ssh: ssh.filter((sshKey) => sshKey.type && sshKey.secretName && sshKey.id && sshKey.key),
             }
         }
 
