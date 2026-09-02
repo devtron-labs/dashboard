@@ -18,6 +18,7 @@ import React from 'react'
 
 import {
     AppConfigProps,
+    BuildSecretType,
     CIBuildConfigType,
     CIBuildType,
     CiPipeline,
@@ -285,6 +286,13 @@ export interface CIDockerFileConfigProps {
     buildEnvArgs: CIBuildArgType[]
     setBuildEnvArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
     setArgsError: React.Dispatch<React.SetStateAction<{ args: boolean; buildEnvArgs: boolean }>>
+    appId: string
+    secrets: BuildSecretType[]
+    setSecrets: React.Dispatch<React.SetStateAction<BuildSecretType[]>>
+    ssh: BuildSecretType[]
+    setSsh: React.Dispatch<React.SetStateAction<BuildSecretType[]>>
+    setSecretsError: React.Dispatch<React.SetStateAction<boolean>>
+    setSshError: React.Dispatch<React.SetStateAction<boolean>>
     handleOnChangeConfig: (e) => void
     selectedTargetPlatforms: any
     setSelectedTargetPlatforms: any
@@ -336,7 +344,20 @@ export interface CIBuildpackBuildOptionsProps {
     readOnly?: boolean
 }
 
-export interface CIAdvancedConfigProps extends Pick<CIDockerFileConfigProps, 'args' | 'setArgs' | 'setArgsError'> {
+export interface CIAdvancedConfigProps
+    extends Pick<
+        CIDockerFileConfigProps,
+        | 'args'
+        | 'setArgs'
+        | 'setArgsError'
+        | 'appId'
+        | 'secrets'
+        | 'setSecrets'
+        | 'ssh'
+        | 'setSsh'
+        | 'setSecretsError'
+        | 'setSshError'
+    > {
     configOverrideView: boolean
     allowOverride: boolean
     isBuildpackType: boolean

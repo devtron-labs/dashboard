@@ -222,6 +222,8 @@ export interface PipelineFormDataErrorType {
     containerRegistryError?: { isValid: boolean; message?: string }
     repositoryError?: { isValid: boolean; message?: string }
     dockerArgsError?: { isValid: boolean; message?: string }
+    secretsError?: { isValid: boolean; message?: string }
+    sshError?: { isValid: boolean; message?: string }
     preBuildStage: {
         steps: TaskErrorObj[]
         isValid: boolean
