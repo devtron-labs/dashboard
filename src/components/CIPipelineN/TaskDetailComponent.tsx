@@ -40,6 +40,7 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PluginDetailHeaderProps, TaskDetailComponentParamsType } from './types'
 import { filterInvalidConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
 import { VariableDataTable } from './VariableDataTable'
+import { setVariableStepIndexInPlugin } from './ciPipeline.utils'
 
 export const TaskDetailComponent = () => {
     const {
@@ -141,14 +142,18 @@ export const TaskDetailComponent = () => {
                 }
             }
 
-            return inputVariable
+            // Brand new variables introduced by the new plugin version still carry the plugin
+            // store's raw `variableStepIndex` and need the same normalization applied when a
+            // plugin is freshly added, otherwise output variable propagation to downstream tasks
+            // breaks silently.
+            return setVariableStepIndexInPlugin(inputVariable)
         })
 
         _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
             ..._formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
             pluginId,
             inputVariables: newInputVariables,
-            outputVariables: newPluginVersionData.outputVariables,
+            outputVariables: newPluginVersionData.outputVariables.map(setVariableStepIndexInPlugin),
             conditionDetails: filterInvalidConditionDetails(
                 _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails,
                 newInputVariables.length,
