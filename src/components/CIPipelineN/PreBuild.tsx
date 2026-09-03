@@ -19,7 +19,6 @@ import {
     PluginType,
     ScriptType,
     VariableType,
-    RefVariableType,
     Progressing,
     CDEmptyState,
     PluginListContainer,
@@ -36,7 +35,7 @@ import Add from '../../assets/icons/ic-add.svg?react'
 import { TaskDetailComponent } from './TaskDetailComponent'
 import nojobs from '../../assets/img/empty-joblist.webp'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { getConditionDetailsAndVariablesFromPlugin } from './ciPipeline.utils'
+import { getConditionDetailsAndVariablesFromPlugin, setVariableStepIndexInPlugin } from './ciPipeline.utils'
 
 export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     const {
@@ -61,16 +60,6 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
     useEffect(() => {
         setSelectedTaskIndex(0)
     }, [activeStageName])
-
-    const setVariableStepIndexInPlugin = (variable): VariableType => {
-        variable.refVariableStepIndex = 0
-        variable.refVariableName = ''
-        variable.variableType = RefVariableType.NEW
-        variable.variableStepIndexInPlugin = variable.variableStepIndex
-        delete variable.refVariableStage
-        delete variable.variableStepIndex
-        return variable
-    }
 
     function setPluginType(
         pluginType: PluginType,
