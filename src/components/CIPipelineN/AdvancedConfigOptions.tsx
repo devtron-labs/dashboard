@@ -71,17 +71,20 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
     // app/ci-pipeline/:appId/:ciPipelineId) if it already has one; else the global config as the starting
     // point to override - same precedence populateCurrentPlatformsData uses for targetPlatform below
     const currentSecrets: BuildSecretType[] =
-        formData.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.secrets ??
-        (allowOverride && parentState.selectedCIPipeline?.isDockerConfigOverridden
-            ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.secrets
-            : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.secrets) ??
-        []
+        (allowOverride
+            ? formData.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.secrets ??
+              (parentState.selectedCIPipeline?.isDockerConfigOverridden
+                  ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.secrets
+                  : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.secrets)
+            : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.secrets) ?? []
+            
     const currentSSH: BuildSecretType[] =
-        formData.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.ssh ??
-        (allowOverride && parentState.selectedCIPipeline?.isDockerConfigOverridden
-            ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.ssh
-            : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.ssh) ??
-        []
+        (allowOverride
+            ? formData.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.ssh ??
+              (parentState.selectedCIPipeline?.isDockerConfigOverridden
+                  ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.ssh
+                  : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.ssh)
+            : parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.ssh) ?? []
 
     useEffect(() => {
         if (parentState.ciConfig) {
@@ -211,17 +214,17 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
     }
 
     const handleBuildSecretsError = (hasError: boolean): void => {
-        setFormDataErrorObj({
-            ...formDataErrorObj,
+        setFormDataErrorObj((prev) => ({
+            ...prev,
             secretsError: { isValid: !hasError, message: 'Invalid build secrets' },
-        })
+        }))
     }
 
     const handleSSHError = (hasError: boolean): void => {
-        setFormDataErrorObj({
-            ...formDataErrorObj,
+        setFormDataErrorObj((prev) => ({
+            ...prev,
             sshError: { isValid: !hasError, message: 'Invalid SSH keys' },
-        })
+        }))
     }
 
     const toggleAdvancedOptions = (): void => {
