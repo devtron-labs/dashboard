@@ -121,6 +121,7 @@ const AppOrJobSelector = ({
         ).filter((env) => env.clusterName && env.clusterId)
         if (concreteEnvironments.length === 0) {
             setApplications([])
+            setIsLoadingArgoFluxApps(false)
             return undefined
         }
 

@@ -503,7 +503,7 @@ export const validateDirectPermissionForm = (
             // default, untouched Argo/Flux rows added to every form don't block saving.
             const isRowConfigured = isProjectlessAccessType(updatedPermission.accessType)
                 ? updatedPermission.environment.length > 0
-                : !!updatedPermission.team
+                : updatedPermission.environment.length > 0 || updatedPermission.entityName.length > 0
 
             if (isRowConfigured) {
                 if (updatedPermission.entityName.length === 0) {
