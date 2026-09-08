@@ -47,7 +47,7 @@ export default function VariablesList({
     )
 
     return (
-        <div className="w-100 flex-grow-1">
+        <div className="w-100 flex-grow-1 flexbox-col dc__overflow-hidden">
             <Table<VariableType, FiltersTypeEnum.NONE, {}>
                 id="table__scoped-variables-list"
                 columns={[

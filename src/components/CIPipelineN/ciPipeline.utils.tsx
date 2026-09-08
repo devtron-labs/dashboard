@@ -17,6 +17,7 @@ import {
     ConditionDetails,
     DetailedPluginVersionType,
     OptionType,
+    RefVariableType,
     SourceTypeMap,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -67,6 +68,28 @@ export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType 
         stageTypeSelectorValue = { label: StageTypeMap.PRE_CD, value: StageTypeEnums.PRE_CD }
     }
     return stageTypeSelectorValue
+}
+
+/**
+ * Plugin input/output variables coming straight from the plugin store carry a `variableStepIndex`
+ * (the index of the step, within the plugin's own script, the variable is tied to). Before such a
+ * variable can be attached to a pipeline task — whether the plugin is freshly added, or an existing
+ * task's plugin version is switched in-place — it needs to be renamed to `variableStepIndexInPlugin`,
+ * the field the step payload (and the backend) actually persists and reads back. Skipping this
+ * silently drops the value, breaking output variable propagation to downstream tasks.
+ */
+export const setVariableStepIndexInPlugin = (variable: VariableType & { variableStepIndex?: number }): VariableType => {
+    const updatedVariable: VariableType & { variableStepIndex?: number } = { ...variable }
+
+    updatedVariable.refVariableStepIndex = 0
+    updatedVariable.refVariableName = ''
+    updatedVariable.variableType = RefVariableType.NEW
+    updatedVariable.variableStepIndexInPlugin = updatedVariable.variableStepIndex
+
+    delete updatedVariable.refVariableStage
+    delete updatedVariable.variableStepIndex
+
+    return updatedVariable
 }
 
 export const getConditionDetailsAndVariablesFromPlugin = (variables: DetailedPluginVersionType['inputVariables']) => {
