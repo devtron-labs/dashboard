@@ -52,6 +52,7 @@
 | LOGIN_PAGE_IMAGE                                          |                                          | Login page image url                                                                                             |
 | FEATURE_FLUX_DEPLOYMENTS_ENABLE                           | false                                    | Enables flux cd deployment type for devtron apps and devtron charts                                              |
 | FEATURE_LINK_EXTERNAL_FLUX_ENABLE                         | false                                    | Enables external flux cd migration                                                                               |
+| FEATURE_APP_NAME_40_CHAR_ENABLE                           | false                                    | If enabled, allows app names up to 40 characters; otherwise the limit is 30                                      |
 | COMMAND_BAR_REFETCH_INTERVAL                              | 3600                                     | Time interval in seconds to refetch command bar data - Applications List                                         |
 | GRAFANA_ORG_ID                                            | 2                                        | ORG ID for Grafana                                                                                               |
 
