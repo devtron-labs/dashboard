@@ -72,7 +72,8 @@ const GenericAppList = ({
 
     const isArgoCDAppList = appType === InfrastructureManagementAppListType.ARGO_CD
     const isFluxCDAppList = appType === InfrastructureManagementAppListType.FLUX_CD
-    const hasAppTypeAccess = isSuperAdmin || (isArgoCDAppList ? hasArgoAppAccess : hasFluxAppAccess)
+    const hasAppTypeAccess =
+        isSuperAdmin || (isArgoCDAppList && hasArgoAppAccess) || (isFluxCDAppList && hasFluxAppAccess)
 
     const { searchKey, templateType, namespace, cluster } = filterConfig
 

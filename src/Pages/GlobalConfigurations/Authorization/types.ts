@@ -50,18 +50,20 @@ export interface UserAndGroupPermissionsWrapProps {
 
 type PermissionStatusAndTimeout = Pick<UserRoleGroup, 'status' | 'timeToLive'>
 
+export type PermissionTabAccessType =
+    | ACCESS_TYPE_MAP.DEVTRON_APPS
+    | ACCESS_TYPE_MAP.HELM_APPS
+    | ACCESS_TYPE_MAP.ARGO_APPS
+    | ACCESS_TYPE_MAP.FLUX_APPS
+    | ACCESS_TYPE_MAP.JOBS
+
 export interface APIRoleFilterDto {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: string
     entityName?: string
     environment?: string
     action: string
-    accessType?:
-        | ACCESS_TYPE_MAP.DEVTRON_APPS
-        | ACCESS_TYPE_MAP.HELM_APPS
-        | ACCESS_TYPE_MAP.ARGO_APPS
-        | ACCESS_TYPE_MAP.FLUX_APPS
-        | ACCESS_TYPE_MAP.JOBS
+    accessType?: PermissionTabAccessType
     /**
      * denotes if the user has deploymentApprover role
      */
@@ -290,12 +292,7 @@ interface RoleFilter {
 
 export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
     entity: EntityTypes.DIRECT | EntityTypes.JOB
-    accessType:
-        | ACCESS_TYPE_MAP.DEVTRON_APPS
-        | ACCESS_TYPE_MAP.HELM_APPS
-        | ACCESS_TYPE_MAP.ARGO_APPS
-        | ACCESS_TYPE_MAP.FLUX_APPS
-        | ACCESS_TYPE_MAP.JOBS
+    accessType: PermissionTabAccessType
     team: OptionType
     entityName: OptionType[]
     entityNameError?: string

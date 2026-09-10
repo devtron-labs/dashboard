@@ -29,19 +29,12 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { JobList } from '../../../../../../components/Jobs/Types'
-import { DirectPermissionsRoleFilter } from '../../../types'
+import { DirectPermissionsRoleFilter, PermissionTabAccessType } from '../../../types'
 
 type AppsList = Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
 type JobsList = Map<number, { loading: boolean; result: JobList['result']['jobContainers']; error: ServerError }>
 export type ProjectsListType = Record<ACCESS_TYPE_MAP, Teams[]>
 export type EnvironmentsListType = Record<ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.JOBS, EnvListMinDTO[]>
-
-type PermissionTabAccessType =
-    | ACCESS_TYPE_MAP.DEVTRON_APPS
-    | ACCESS_TYPE_MAP.HELM_APPS
-    | ACCESS_TYPE_MAP.ARGO_APPS
-    | ACCESS_TYPE_MAP.FLUX_APPS
-    | ACCESS_TYPE_MAP.JOBS
 
 export interface AppPermissionsDetailType {
     accessType: PermissionTabAccessType
