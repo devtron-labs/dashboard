@@ -58,6 +58,26 @@ export const emptyDirectPermissionHelmApps = {
     accessType: ACCESS_TYPE_MAP.HELM_APPS,
 }
 
+// Argo/Flux apps have no Devtron project concept (no Project column) and, unlike Helm, no
+// "Unassigned apps" bucket on the backend either - that bucket is Helm-specific. Rows carry an
+// empty team so the backend doesn't try to resolve/validate it against a project.
+const projectlessTeam = {
+    label: '',
+    value: '',
+}
+
+export const emptyDirectPermissionArgoApps = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.ARGO_APPS,
+    team: projectlessTeam,
+}
+
+export const emptyDirectPermissionFluxApps = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.FLUX_APPS,
+    team: projectlessTeam,
+}
+
 export const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {
     ...emptyDirectPermissionDevtronApps,
     accessType: ACCESS_TYPE_MAP.JOBS,

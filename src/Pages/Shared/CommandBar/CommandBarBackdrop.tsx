@@ -43,9 +43,12 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
     const [searchText, setSearchText] = useState('')
     const [selectedItemIndex, setSelectedItemIndex] = useState(0)
 
-    const { serverMode, isSuperAdmin } = useMainContext()
+    const { serverMode, isSuperAdmin, hasArgoAppAccess, hasFluxAppAccess } = useMainContext()
 
-    const navigationGroups = useMemo(() => getNavigationGroups(serverMode, isSuperAdmin), [serverMode, isSuperAdmin])
+    const navigationGroups = useMemo(
+        () => getNavigationGroups(serverMode, isSuperAdmin, hasArgoAppAccess, hasFluxAppAccess),
+        [serverMode, isSuperAdmin, hasArgoAppAccess, hasFluxAppAccess],
+    )
 
     const parseRecentActionsGroup = useCallback(
         ({ result }: ResponseType<Awaited<ReturnType<typeof getUserPreferences>>>) =>

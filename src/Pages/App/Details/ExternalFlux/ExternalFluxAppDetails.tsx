@@ -43,7 +43,8 @@ let initTimer = null
 
 const ExternalFluxAppDetails = () => {
     const { clusterId, appName, namespace, templateType } = useParams<ExternalFluxAppDetailParams>()
-    const { isSuperAdmin, setAIAgentContext } = useMainContext()
+    const { isSuperAdmin, hasFluxAppAccess, setAIAgentContext } = useMainContext()
+    const hasAccess = isSuperAdmin || hasFluxAppAccess
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
     const [initialLoading, setInitialLoading] = useState(true)
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(true)
@@ -132,7 +133,7 @@ const ExternalFluxAppDetails = () => {
     }
 
     useEffect(() => {
-        if (isSuperAdmin) {
+        if (hasAccess) {
             setInitialLoading(true)
             initializePageDetails()
         }
@@ -141,9 +142,9 @@ const ExternalFluxAppDetails = () => {
             IndexStore.clearAppDetails()
             clearTimeout(initTimer)
         }
-    }, [clusterId, appName, namespace, templateType, isSuperAdmin])
+    }, [clusterId, appName, namespace, templateType, hasAccess])
 
-    if (appDetailsError || !isSuperAdmin) {
+    if (appDetailsError || !hasAccess) {
         return (
             <ErrorScreenManager
                 code={appDetailsError?.code ?? ERROR_STATUS_CODE.PERMISSION_DENIED}

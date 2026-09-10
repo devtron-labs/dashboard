@@ -42,6 +42,7 @@ import EnvironmentSelector from './EnvironmentSelector'
 import JobRoleSelector from './JobRoleSelector'
 import RoleSelector from './RoleSelector'
 import { DirectPermissionRowProps, WorkflowListType } from './types'
+import { isClusterNamespaceAccessType, isProjectlessAccessType } from './utils'
 import WorkflowSelector from './WorkflowSelector'
 
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -93,8 +94,10 @@ const DirectPermission = ({
         })
     }
 
+    const isProjectless = isProjectlessAccessType(permission.accessType)
+
     const projectOptions: SelectPickerOptionType[] = [
-        ...(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
+        ...(isClusterNamespaceAccessType(permission.accessType)
             ? [
                   {
                       name: HELM_APP_UNASSIGNED_PROJECT,
@@ -117,16 +120,18 @@ const DirectPermission = ({
 
     return (
         <>
-            <SelectPicker
-                inputId="dropdown-for-project"
-                value={permission.team}
-                name={DirectPermissionFieldName.team}
-                placeholder="Select project"
-                options={projectOptions}
-                onChange={handleDirectPermissionChange}
-                size={ComponentSizeType.large}
-                formatOptionLabel={formatProjectOptionLabel}
-            />
+            {!isProjectless && (
+                <SelectPicker
+                    inputId="dropdown-for-project"
+                    value={permission.team}
+                    name={DirectPermissionFieldName.team}
+                    placeholder="Select project"
+                    options={projectOptions}
+                    onChange={handleDirectPermissionChange}
+                    size={ComponentSizeType.large}
+                    formatOptionLabel={formatProjectOptionLabel}
+                />
+            )}
 
             <div style={{ order: isAccessTypeJob ? 3 : 0 }}>
                 <EnvironmentSelector
