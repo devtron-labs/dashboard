@@ -176,6 +176,14 @@ export default function CIPipeline({
             message: '',
             isValid: true,
         },
+        secretsError: {
+            message: '',
+            isValid: true,
+        },
+        sshError: {
+            message: '',
+            isValid: true,
+        },
     })
 
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
@@ -419,7 +427,11 @@ export default function CIPipeline({
             }
 
             _formDataErrorObj[BuildStageVariable.Build].isValid =
-                _formDataErrorObj.name.isValid && valid && _formDataErrorObj.dockerArgsError.isValid
+                _formDataErrorObj.name.isValid &&
+                valid &&
+                _formDataErrorObj.dockerArgsError.isValid &&
+                _formDataErrorObj.secretsError.isValid &&
+                _formDataErrorObj.sshError.isValid
         } else {
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
@@ -639,7 +651,13 @@ export default function CIPipeline({
         ) {
             setApiInProgress(false)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
-            if (formData.name === '' || branchNameNotPresent || !formDataErrorObj.dockerArgsError.isValid) {
+            if (
+                formData.name === '' ||
+                branchNameNotPresent ||
+                !formDataErrorObj.dockerArgsError.isValid ||
+                !formDataErrorObj.secretsError.isValid ||
+                !formDataErrorObj.sshError.isValid
+            ) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: 'Please ensure all fields are valid',
