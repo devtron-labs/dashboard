@@ -16,7 +16,6 @@
 | ENABLE_BUILD_CONTEXT                                      | "true"                                   | Enable build context in Devtron UI                                                                               |
 | ENABLE_CI_JOB                                             | "true"                                   | Enable CI Job                                                                                                    |
 | ENABLE_CHART_SEARCH_IN_HELM_DEPLOY                        | "true"                                   | Enable chart search in Helm deploy                                                                               |
-| Argo CD                                                   |
 | ENABLE_SCOPED_VARIABLES                                   | "false"                                  | For enabling scoped variable from UI, also need to enable it in backend.                                         |
 | FORCE_SECURITY_SCANNING                                   | "false"                                  | Force security                                                                                                   |
 | scanning                                                  |                                          |
