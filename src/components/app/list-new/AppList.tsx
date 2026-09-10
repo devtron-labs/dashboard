@@ -92,12 +92,10 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
 
     // check for external argoCD app
-    const isExternalArgo =
-        window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === InfrastructureManagementAppListType.ARGO_CD
+    const isExternalArgo = params.appType === InfrastructureManagementAppListType.ARGO_CD
 
     // check for external fluxCD app
-    const isExternalFlux =
-        window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && params.appType === InfrastructureManagementAppListType.FLUX_CD
+    const isExternalFlux = params.appType === InfrastructureManagementAppListType.FLUX_CD
 
     // view other than devtron or helm app list
     const isGenericAppListView = isExternalArgo || isExternalFlux
@@ -372,7 +370,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                 'data-testid': 'helm-app-list-button',
             },
         },
-        ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && (isSuperAdmin || hasArgoAppAccess)
+        ...(isSuperAdmin || hasArgoAppAccess
             ? [
                   {
                       id: InfrastructureManagementAppListType.ARGO_CD,
@@ -388,7 +386,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                   },
               ]
             : []),
-        ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (isSuperAdmin || hasFluxAppAccess)
+        ...(isSuperAdmin || hasFluxAppAccess
             ? [
                   {
                       id: InfrastructureManagementAppListType.FLUX_CD,
