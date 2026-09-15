@@ -80,8 +80,19 @@ const AppPermissionDetail = ({
                                     index={idx}
                                     permission={permission}
                                     removeRow={removeDirectPermissionRow}
-                                    handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
-                                        handleDirectPermissionChange(idx, value, actionMeta, workflowList)
+                                    handleDirectPermissionChange={(
+                                        value,
+                                        actionMeta,
+                                        workflowList?,
+                                        applicationsList?,
+                                    ) =>
+                                        handleDirectPermissionChange(
+                                            idx,
+                                            value,
+                                            actionMeta,
+                                            workflowList,
+                                            applicationsList,
+                                        )
                                     }
                                     {...props}
                                 />

@@ -22,6 +22,7 @@ import {
     EntityTypes,
     getIsRequestAborted,
     OptionType,
+    ReactSelectInputAction,
     SelectPicker,
     SelectPickerOptionType,
     showError,
@@ -141,8 +142,25 @@ const AppOrJobSelector = ({
             options: { abortControllerRef: argoFluxAbortControllerRef },
         })
             .then((apps) => {
-                setApplications((apps ?? []).map((app) => ({ label: app.appName, value: app.appName })))
+                const mappedApps = (apps ?? []).map((app) => ({ label: app.appName, value: app.appName }))
+                setApplications(mappedApps)
                 setIsLoadingArgoFluxApps(false)
+
+                // A row loaded with "All applications" already selected (eg. editing a saved
+                // permission) has no way to know the concrete app list until it's fetched here -
+                // expand the selection now so every app's checkbox reflects the saved "all" state.
+                if (permission.entityName?.some((selected) => selected.value === SELECT_ALL_VALUE)) {
+                    handleDirectPermissionChange(
+                        permission.entityName,
+                        {
+                            action: ReactSelectInputAction.selectOption,
+                            option: { value: SELECT_ALL_VALUE },
+                            name: appOrJobSelectorName,
+                        },
+                        undefined,
+                        mappedApps,
+                    )
+                }
             })
             .catch((err) => {
                 if (!getIsRequestAborted(err)) {
@@ -169,7 +187,7 @@ const AppOrJobSelector = ({
             name={appOrJobSelectorName}
             placeholder={isAccessTypeJob ? 'Select Job' : 'Select applications'}
             options={appOrJobSelectorOptions}
-            onChange={handleDirectPermissionChange}
+            onChange={(value, actionMeta) => handleDirectPermissionChange(value, actionMeta, undefined, applications)}
             onBlur={() => {
                 if (permission.entity === EntityTypes.JOB && !jobsList.get(projectId)?.loading) {
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises

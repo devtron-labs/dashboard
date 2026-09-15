@@ -805,7 +805,7 @@ const AppPermissions = () => {
         }
     }
 
-    const _handleEntityNameChange = (index, selectedValue, actionMeta, tempPermissions) => {
+    const _handleEntityNameChange = (index, selectedValue, actionMeta, tempPermissions, applicationsList = []) => {
         const { action, option } = actionMeta
 
         const { value } = option || { value: '' }
@@ -814,26 +814,7 @@ const AppPermissions = () => {
         // since that would mean all future entities would be selected as well
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
-                if (tempPermissions[index].team.value !== HELM_APP_UNASSIGNED_PROJECT) {
-                    const projectId = getProjectIdForAccessType(
-                        tempPermissions[index].accessType,
-                        tempPermissions[index].team.value,
-                    )
-                    const isJobs = tempPermissions[index].entity === EntityTypes.JOB
-                    tempPermissions[index].entityName = [
-                        SELECT_ALL_OPTION,
-                        ...(projectId
-                            ? getListForAccessType(tempPermissions[index].accessType)
-                                  .get(projectId)
-                                  .result.map((app) => ({
-                                      label: isJobs ? app.jobName : app.name,
-                                      value: isJobs ? app.appName : app.name,
-                                  }))
-                            : []),
-                    ]
-                } else {
-                    tempPermissions[index].entityName = [SELECT_ALL_OPTION]
-                }
+                tempPermissions[index].entityName = [SELECT_ALL_OPTION, ...applicationsList]
                 tempPermissions[index].entityNameError = null
             } else {
                 tempPermissions[index].entityName = []
@@ -893,7 +874,7 @@ const AppPermissions = () => {
         }
     }
 
-    const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
+    const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?, applicationsList?) => {
         const { name } = actionMeta
         const tempPermissions = [...directPermission]
 
@@ -910,7 +891,7 @@ const AppPermissions = () => {
             }
             case DirectPermissionFieldName.apps:
             case DirectPermissionFieldName.jobs:
-                _handleEntityNameChange(index, selectedValue, actionMeta, tempPermissions)
+                _handleEntityNameChange(index, selectedValue, actionMeta, tempPermissions, applicationsList)
                 break
             case DirectPermissionFieldName.environment:
                 _handleEnvironmentChange(index, selectedValue, actionMeta, tempPermissions)
