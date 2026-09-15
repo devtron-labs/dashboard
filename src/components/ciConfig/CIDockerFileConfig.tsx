@@ -56,6 +56,13 @@ export default function CIDockerFileConfig({
     buildEnvArgs,
     setBuildEnvArgs,
     setArgsError,
+    appId,
+    secrets,
+    setSecrets,
+    ssh,
+    setSsh,
+    setSecretsError,
+    setSshError,
     handleOnChangeConfig,
     selectedTargetPlatforms,
     setSelectedTargetPlatforms,
@@ -436,6 +443,13 @@ export default function CIDockerFileConfig({
                         args={isBuildpackType ? buildEnvArgs : args}
                         setArgs={isBuildpackType ? setBuildEnvArgs : setArgs}
                         setArgsError={setArgsError}
+                        appId={appId}
+                        secrets={secrets}
+                        setSecrets={setSecrets}
+                        ssh={ssh}
+                        setSsh={setSsh}
+                        setSecretsError={setSecretsError}
+                        setSshError={setSshError}
                         isBuildpackType={isBuildpackType}
                         selectedTargetPlatforms={selectedTargetPlatforms}
                         setSelectedTargetPlatforms={setSelectedTargetPlatforms}
