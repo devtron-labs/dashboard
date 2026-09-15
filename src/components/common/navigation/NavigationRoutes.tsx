@@ -415,6 +415,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 featureAskDevtronExpert:
                     result.featureAskDevtronExpert ?? ENVIRONMENT_DATA_FALLBACK.featureAskDevtronExpert,
                 forceDockerfileScan: result.forceDockerfileScan ?? ENVIRONMENT_DATA_FALLBACK.forceDockerfileScan,
+                foregroundDeleteCdPipeline:
+                    result.foregroundDeleteCdPipeline ?? ENVIRONMENT_DATA_FALLBACK.foregroundDeleteCdPipeline,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -446,6 +448,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
                 featureAskDevtronExpert: environmentDataResponse.featureAskDevtronExpert,
                 forceDockerfileScan: environmentDataResponse.forceDockerfileScan,
+                foregroundDeleteCdPipeline: environmentDataResponse.foregroundDeleteCdPipeline,
             })
 
             setServerMode(serverModeResponse)
@@ -792,6 +795,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 showUpgradeToOSSPlusDialog,
                 setShowUpgradeToOSSPlusDialog,
                 forceDockerfileScan: environmentDataState.forceDockerfileScan,
+                foregroundDeleteCdPipeline: environmentDataState.foregroundDeleteCdPipeline,
             }}
         >
             <ConfirmationModalProvider>

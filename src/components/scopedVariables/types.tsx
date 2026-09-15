@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+import { ScopedVariablesFileViewType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useFileReader } from '../common'
 import { FileDataType, FileReaderStatusType } from '../common/hooks/types'
@@ -109,6 +109,11 @@ export interface SavedVariablesContentProps extends Required<Pick<DescriptorProp
     handleActivateEditView: () => void
     scopedVariablesYAML: ReturnType<typeof parseIntoYAMLString>
     variablesList: VariableType[]
+}
+
+export interface VariablesInUseErrorModalProps {
+    errors: ServerError[]
+    handleClose: () => void
 }
 
 export interface DescriptorTabProps {

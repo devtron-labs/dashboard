@@ -19,6 +19,7 @@ import {
     ConfirmationModalVariantType,
     DeploymentAppTypes,
     ForceDeleteConfirmationModal,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DELETE_ACTION } from '../../config'
@@ -37,6 +38,12 @@ const DeleteCDNode = ({
     deleteTitleName,
     isLoading,
 }: Readonly<DeleteCDNodeProps>) => {
+    const { foregroundDeleteCdPipeline } = useMainContext()
+
+    const deleteCDPipelineSubtitle = foregroundDeleteCdPipeline
+        ? 'Deleting this CD pipeline will also delete all Kubernetes resources created by it.'
+        : `Are you sure you want to delete this CD Pipeline from '${appName}' application?`
+
     const onClickDeleteCDNode = () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)
 
     const onClickHideNonCascadeDeletePopup = () => {
@@ -96,7 +103,7 @@ const DeleteCDNode = ({
         <ConfirmationModal
             variant={ConfirmationModalVariantType.delete}
             title={`Delete pipeline for '${deleteTitleName}' environment ?`}
-            subtitle={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
+            subtitle={deleteCDPipelineSubtitle}
             buttonConfig={{
                 secondaryButtonConfig: {
                     text: 'Cancel',
