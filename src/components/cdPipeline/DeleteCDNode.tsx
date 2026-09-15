@@ -40,9 +40,7 @@ const DeleteCDNode = ({
 }: Readonly<DeleteCDNodeProps>) => {
     const { foregroundDeleteCdPipeline } = useMainContext()
 
-    const deleteCDPipelineSubtitle = foregroundDeleteCdPipeline
-        ? 'Deleting this CD pipeline will also delete all Kubernetes resources created by it.'
-        : `Are you sure you want to delete this CD Pipeline from '${appName}' application?`
+    const deleteCDPipelineSubtitle = `${foregroundDeleteCdPipeline ? '' : 'Deleting this CD node will also delete all Kubernetes resources created by it. '}Are you sure you want to delete this CD Node from \`${appName}\` application?`
 
     const onClickDeleteCDNode = () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)
 
