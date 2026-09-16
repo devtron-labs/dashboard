@@ -320,7 +320,7 @@ export const PATTERNS = {
     CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
     // Matches a value that is entirely a scoped variable reference, e.g. @{{variable-name}}
-    SCOPED_VARIABLE: /^@{{\s*[a-zA-Z0-9-_]+\s*}}$/,
+    SCOPED_VARIABLE: /^@{{[a-zA-Z][a-zA-Z0-9_-]{0,62}[a-zA-Z0-9]}}$/,
 }
 
 export const repoType = {
