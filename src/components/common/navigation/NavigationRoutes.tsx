@@ -150,6 +150,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
+    const [hasArgoAppAccess, setHasArgoAppAccess] = useState(false)
+    const [hasFluxAppAccess, setHasFluxAppAccess] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
@@ -266,6 +268,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         ])
         const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
         setSuperAdmin(superAdmin)
+        setHasArgoAppAccess(!!userRole?.result?.hasArgoAppAccess)
+        setHasFluxAppAccess(!!userRole?.result?.hasFluxAppAccess)
         const appCount = appList?.result?.length || 0
         setAppListCount(appCount)
         await processLoginData(loginData, superAdmin, appCount)
@@ -752,6 +756,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 installedModuleMap,
                 currentServerInfo,
                 isSuperAdmin,
+                hasArgoAppAccess,
+                hasFluxAppAccess,
                 isAirgapped,
                 isManifestScanningEnabled,
                 featureGitOpsFlags: environmentDataState.featureGitOpsFlags,

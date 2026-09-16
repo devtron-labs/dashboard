@@ -22,11 +22,22 @@ import { DirectPermissionsRoleFilter } from '../../../types'
 
 export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 
-export const allApplicationsOption = ({ entity, team }: DirectPermissionsRoleFilter): SelectPickerOptionType => ({
-    label: entity === EntityTypes.JOB ? 'All Jobs' : 'All applications',
-    value: SELECT_ALL_VALUE,
-    description: `All existing and future ${entity === EntityTypes.JOB ? 'jobs' : 'applications'} in '${team?.label}'`,
-})
+export const allApplicationsOption = ({
+    entity,
+    team,
+    accessType,
+}: DirectPermissionsRoleFilter): SelectPickerOptionType => {
+    const entityLabel = entity === EntityTypes.JOB ? 'jobs' : 'applications'
+    const isArgoOrFluxApps = accessType === ACCESS_TYPE_MAP.ARGO_APPS || accessType === ACCESS_TYPE_MAP.FLUX_APPS
+
+    return {
+        label: entity === EntityTypes.JOB ? 'All Jobs' : 'All applications',
+        value: SELECT_ALL_VALUE,
+        description: isArgoOrFluxApps
+            ? `All existing and future ${entityLabel} in selected namespaces`
+            : `All existing and future ${entityLabel} in '${team?.label}'`,
+    }
+}
 
 export const SELECT_ALL_OPTION = {
     label: 'Select all',
@@ -56,6 +67,26 @@ export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
 export const emptyDirectPermissionHelmApps = {
     ...emptyDirectPermissionDevtronApps,
     accessType: ACCESS_TYPE_MAP.HELM_APPS,
+}
+
+// Argo/Flux apps have no Devtron project concept (no Project column) and, unlike Helm, no
+// "Unassigned apps" bucket on the backend either - that bucket is Helm-specific. Rows carry an
+// empty team so the backend doesn't try to resolve/validate it against a project.
+const projectlessTeam = {
+    label: '',
+    value: '',
+}
+
+export const emptyDirectPermissionArgoApps = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.ARGO_APPS,
+    team: projectlessTeam,
+}
+
+export const emptyDirectPermissionFluxApps = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.FLUX_APPS,
+    team: projectlessTeam,
 }
 
 export const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {
