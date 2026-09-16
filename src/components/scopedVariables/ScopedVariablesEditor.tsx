@@ -17,7 +17,8 @@
 import { useState } from 'react'
 import {
     ServerErrors,
-    ButtonWithLoader,
+    ServerError,
+    API_STATUS_CODES,
     CodeEditor,
     ToastManager,
     ToastVariantType,
@@ -29,6 +30,7 @@ import {
     MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
+import VariablesInUseErrorModal from './VariablesInUseErrorModal'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
@@ -52,6 +54,7 @@ export default function ScopedVariablesEditor({
     const [loadingSavedScopedVariables, setLoadingSavedScopedVariables] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
     const [infoError, setInfoError] = useState<string>('')
+    const [variableConflictErrors, setVariableConflictErrors] = useState<ServerError[] | null>(null)
 
     const handleParsing = (data: string): ScopedVariablesDataType => {
         let variablesObj: ScopedVariablesDataType
@@ -81,6 +84,7 @@ export default function ScopedVariablesEditor({
         }
         try {
             setIsSaving(true)
+            setVariableConflictErrors(null)
             const res = await postScopedVariables(variablesObj)
             if (+res?.code === 200) {
                 ToastManager.showToast({
@@ -96,8 +100,12 @@ export default function ScopedVariablesEditor({
                 })
             }
         } catch (e) {
-            if (e instanceof ServerErrors && Array.isArray(e.errors)) {
-                setInfoError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
+            if (e instanceof ServerErrors && Array.isArray(e.errors) && e.errors.length) {
+                if (+e.code === API_STATUS_CODES.CONFLICT) {
+                    setVariableConflictErrors(e.errors)
+                } else {
+                    setInfoError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
+                }
             }
             ToastManager.showToast({
                 variant: ToastVariantType.error,
@@ -156,8 +164,18 @@ export default function ScopedVariablesEditor({
         abortRead()
     }
 
+    const handleCloseVariableConflictErrorModal = () => {
+        setVariableConflictErrors(null)
+    }
+
     return (
         <div className="flex column dc__content-space h-100 bg__primary saved-variables-editor">
+            {variableConflictErrors && (
+                <VariablesInUseErrorModal
+                    errors={variableConflictErrors}
+                    handleClose={handleCloseVariableConflictErrorModal}
+                />
+            )}
             <Descriptor />
             <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch bg__tertiary flex-grow-1 dc__no-shrink">
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
