@@ -20,6 +20,7 @@ import {
     ComponentSizeType,
     DocLink,
     ErrorScreenManager,
+    FloatingVariablesSuggestions,
     Progressing,
     sortCallback,
     useQuery,
@@ -32,6 +33,7 @@ import { GitAccountDTO } from '@Services/service.types'
 
 import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
+import { GIT_REPO_FLOATING_WIDGET_BOUNDARY_GAP } from './constants'
 import { GitMaterialType, MaterialListProps } from './material.types'
 import MaterialForm from './MaterialForm'
 
@@ -219,6 +221,13 @@ const MaterialList = ({
                     handleSingleGitMaterialUpdate={handleSingleGitMaterialUpdate(mat.id)}
                 />
             ))}
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <FloatingVariablesSuggestions
+                    appId={appId}
+                    isTemplateView={!!isTemplateView}
+                    boundaryGap={GIT_REPO_FLOATING_WIDGET_BOUNDARY_GAP}
+                />
+            )}
         </div>
     )
 }
