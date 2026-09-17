@@ -176,3 +176,5 @@ export const INCLUDE_EXCLUDE_PLACEHOLDER =
 
 export const MATERIAL_EXCLUDE_TIPPY_TEXT =
     'Not available for build as this commit contains changes in excluded files or folders'
+
+export const GIT_REPO_FLOATING_WIDGET_BOUNDARY_GAP = { x: 16, y: 90 }

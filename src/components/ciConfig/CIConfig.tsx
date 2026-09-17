@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, FloatingVariablesSuggestions } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderIcon, sortObjectArrayAlphabetically } from '../common'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig } from '../../services/service'
@@ -23,6 +23,7 @@ import { ComponentStates } from '@Components/CIPipelineN/types'
 import { CIConfigProps } from './types'
 import './CIConfig.scss'
 import CIConfigForm from './CIConfigForm'
+import { BUILD_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP } from './ciConfigConstant'
 
 // FIXME: Here the error state is not gracefully handled, we are only showing toast and hiding corresponsing component.
 export default function CIConfig({
@@ -147,25 +148,34 @@ export default function CIConfig({
     }
 
     return (
-        <CIConfigForm
-            parentReloading={parentReloading}
-            dockerRegistries={dockerRegistries}
-            sourceConfig={sourceConfig}
-            ciConfig={ciConfig}
-            reload={reload}
-            appId={appId}
-            selectedCIPipeline={parentState?.selectedCIPipeline}
-            configOverrideView={configOverrideView}
-            allowOverride={allowOverride}
-            updateDockerConfigOverride={updateDockerConfigOverride}
-            isCDPipeline={isCDPipeline}
-            isCiPipeline={isCiPipeline}
-            parentState={parentState}
-            setParentState={setParentState}
-            loadingStateFromParent={loadingStateFromParent}
-            setLoadingStateFromParent={setLoadingStateFromParent}
-            isTemplateView={isTemplateView}
-            isCreateAppView={isCreateAppView}
-        />
+        <>
+            <CIConfigForm
+                parentReloading={parentReloading}
+                dockerRegistries={dockerRegistries}
+                sourceConfig={sourceConfig}
+                ciConfig={ciConfig}
+                reload={reload}
+                appId={appId}
+                selectedCIPipeline={parentState?.selectedCIPipeline}
+                configOverrideView={configOverrideView}
+                allowOverride={allowOverride}
+                updateDockerConfigOverride={updateDockerConfigOverride}
+                isCDPipeline={isCDPipeline}
+                isCiPipeline={isCiPipeline}
+                parentState={parentState}
+                setParentState={setParentState}
+                loadingStateFromParent={loadingStateFromParent}
+                setLoadingStateFromParent={setLoadingStateFromParent}
+                isTemplateView={isTemplateView}
+                isCreateAppView={isCreateAppView}
+            />
+            {!configOverrideView && window._env_.ENABLE_SCOPED_VARIABLES && (
+                <FloatingVariablesSuggestions
+                    appId={appId}
+                    isTemplateView={!!isTemplateView}
+                    boundaryGap={BUILD_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP}
+                />
+            )}
+        </>
     )
 }
