@@ -75,6 +75,8 @@ import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType 
 import '@Components/login/login.scss'
 import './ssoLogin.scss'
 
+const getDefaultSSOURL = (): string => `${window.location.origin}/orchestrator`
+
 const SSOLoginTab: FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => (
     <label className="dc__tertiary-tab__radio">
         <input
@@ -254,7 +256,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
         return {
             id: ssoConfig.id,
             name: ssoConfig.name,
-            url: ssoConfig.url || '',
+            url: ssoConfig.url || getDefaultSSOURL(),
             config: {
                 name: ssoConfig.config.name,
                 type: ssoConfig.config.type,
@@ -716,6 +718,9 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
                 ...this.state.ssoConfig,
                 url: value,
             },
+            isError: {
+                url: '',
+            },
         })
     }
 
@@ -743,7 +748,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
             <div className="flex left column dc__gap-24">
                 <div>
                     For <span className="fw-6">redirectURI or callbackURI</span> use: &nbsp;
-                    {`${window.location.origin}/orchestrator`}
+                    {getDefaultSSOURL()}
                     /api/dex/callback
                     <br />
                     Please ensure above URL is registered with the identity provider.
@@ -798,10 +803,10 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
                         <div className="">Click to use:</div>
                         <button
                             type="button"
-                            onClick={() => this.handleSSOURLLocation(`${window.location.origin}/orchestrator`)}
+                            onClick={() => this.handleSSOURLLocation(getDefaultSSOURL())}
                             className="login__btn cg-5"
                         >
-                            {window.location.origin}/orchestrator
+                            {getDefaultSSOURL()}
                         </button>
                     </div>
                 </div>
