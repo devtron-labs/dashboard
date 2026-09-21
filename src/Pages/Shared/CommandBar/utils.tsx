@@ -52,7 +52,11 @@ const getAppManagementNavItemsBreakdown = (serverMode: SERVER_MODE): CommandBarG
         : []),
 ]
 
-const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarGroupType['items'] => [
+const getInfraManagementNavItemsBreakdown = (
+    isSuperAdmin: boolean,
+    hasArgoAppAccess: boolean,
+    hasFluxAppAccess: boolean,
+): CommandBarGroupType['items'] => [
     {
         id: 'app-management-helm-app-list',
         title: 'Helm Applications',
@@ -61,7 +65,7 @@ const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarG
         href: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM,
         keywords: [],
     },
-    ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && isSuperAdmin
+    ...(isSuperAdmin || hasArgoAppAccess
         ? [
               {
                   id: 'app-management-argo-app-list',
@@ -73,7 +77,7 @@ const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarG
               } satisfies CommandBarGroupType['items'][number],
           ]
         : []),
-    ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && isSuperAdmin
+    ...(isSuperAdmin || hasFluxAppAccess
         ? [
               {
                   id: 'app-management-flux-app-list',
@@ -91,18 +95,25 @@ const getNavItemBreakdownItems = (
     rootId: NavigationItemID,
     serverMode: SERVER_MODE,
     isSuperAdmin: boolean,
+    hasArgoAppAccess: boolean,
+    hasFluxAppAccess: boolean,
 ): CommandBarGroupType['items'] => {
     switch (rootId) {
         case 'application-management-devtron-applications':
             return getAppManagementNavItemsBreakdown(serverMode)
         case 'infrastructure-management-applications':
-            return getInfraManagementNavItemsBreakdown(isSuperAdmin)
+            return getInfraManagementNavItemsBreakdown(isSuperAdmin, hasArgoAppAccess, hasFluxAppAccess)
         default:
             return []
     }
 }
 
-export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boolean): CommandBarGroupType[] =>
+export const getNavigationGroups = (
+    serverMode: SERVER_MODE,
+    isSuperAdmin: boolean,
+    hasArgoAppAccess: boolean,
+    hasFluxAppAccess: boolean,
+): CommandBarGroupType[] =>
     getNavigationList(serverMode).map<CommandBarGroupType>((group) => {
         const parsedItems = hasNavigationGroupItems(group)
             ? group.items.flatMap<CommandBarGroupType['items'][number]>(
@@ -119,7 +130,13 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
                           }))
                       }
 
-                      const breakdownItems = getNavItemBreakdownItems(id, serverMode, isSuperAdmin)
+                      const breakdownItems = getNavItemBreakdownItems(
+                          id,
+                          serverMode,
+                          isSuperAdmin,
+                          hasArgoAppAccess,
+                          hasFluxAppAccess,
+                      )
 
                       if (breakdownItems.length) {
                           return breakdownItems

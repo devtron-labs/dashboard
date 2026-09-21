@@ -127,12 +127,10 @@ export const InfraAppsRouter = () => (
         <Route path={INFRASTRUCTURE_MANAGEMENT_APP_ROUTES.LIST} element={<NewAppList />} />
         <Route path={`${INFRASTRUCTURE_MANAGEMENT_APP_ROUTES.EXTERNAL_HELM_APP}/*`} element={<ExternalApps />} />
         <Route path={`${INFRASTRUCTURE_MANAGEMENT_APP_ROUTES.EXTERNAL_ARGO_APP}/*`} element={<ExternalArgoApps />} />
-        {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
-            <Route
-                path={`${INFRASTRUCTURE_MANAGEMENT_APP_ROUTES.EXTERNAL_FLUX_APP}/*`}
-                element={<ExternalFluxAppDetailsRoute />}
-            />
-        )}
+        <Route
+            path={`${INFRASTRUCTURE_MANAGEMENT_APP_ROUTES.EXTERNAL_FLUX_APP}/*`}
+            element={<ExternalFluxAppDetailsRoute />}
+        />
         <Route path={`${INFRASTRUCTURE_MANAGEMENT_APP_ROUTES.DEVTRON_CHART}/*`} element={<DevtronChartRouter />} />
         <Route
             path="*"

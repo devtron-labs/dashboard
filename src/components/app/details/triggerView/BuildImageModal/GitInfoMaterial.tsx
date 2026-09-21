@@ -698,6 +698,7 @@ const GitInfoMaterial = ({
                         // Have to add key for appId since key value config would not be updated incase of app change
                         key={`runtime-parameters-${appId}`}
                         appId={+appId}
+                        pipelineId={+nodeId}
                         heading={getRuntimeParametersHeading()}
                         parameters={runtimeParams}
                         handleChange={handleRuntimeParamChange}

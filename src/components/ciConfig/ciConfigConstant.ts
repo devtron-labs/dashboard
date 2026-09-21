@@ -114,3 +114,5 @@ export const CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT = {
     TITLE: 'Repo to place Dockerfile',
     TITLE_INFO: 'Dockerfile will be placed at the root of the selected repo path',
 }
+
+export const BUILD_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP = { x: 16, y: 90 }

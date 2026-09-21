@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { isAWSCodeCommitURL, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { PATTERNS } from '../../config'
 import { createMaterial, updateMaterial } from './material.service'
 import { MaterialFormProps } from './material.types'
 import { MaterialView } from './MaterialView'
@@ -51,6 +52,9 @@ const MaterialForm = ({
     const isGitUrlValid = (url: string, selectedId: number): string | undefined => {
         if (!url.length) {
             return 'This is a required field'
+        }
+        if (PATTERNS.SCOPED_VARIABLE.test(url)) {
+            return undefined
         }
         if (isAWSCodeCommitURL(formMaterial.gitProvider?.url)) {
             if (isAWSCodeCommitURL(url)) {

@@ -33,6 +33,7 @@ const COMMON_ENV_FALLBACK: Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'>
     isResourceRecommendationEnabled: false,
     featureAskDevtronExpert: false,
     forceDockerfileScan: false,
+    foregroundDeleteCdPipeline: false,
 }
 
 export const ENVIRONMENT_DATA_FALLBACK: EnvironmentDataValuesDTO = {

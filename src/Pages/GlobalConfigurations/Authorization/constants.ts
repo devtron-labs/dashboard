@@ -59,5 +59,7 @@ export const ViewChartGroupPermission: APIRoleFilter = {
 export const DEFAULT_ACCESS_TYPE_TO_ERROR_MAP: AccessTypeToErrorMapType = {
     [ACCESS_TYPE_MAP.DEVTRON_APPS]: false,
     [ACCESS_TYPE_MAP.HELM_APPS]: false,
+    [ACCESS_TYPE_MAP.ARGO_APPS]: false,
+    [ACCESS_TYPE_MAP.FLUX_APPS]: false,
     [ACCESS_TYPE_MAP.JOBS]: false,
 } as const

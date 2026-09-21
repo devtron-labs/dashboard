@@ -15,12 +15,17 @@
  */
 
 import { useState } from 'react'
-import PluginIcon from '../../assets/icons/ic-plugin.svg?react'
+
+import { BuildSecretType, KeyValueTableProps } from '@devtron-labs/devtron-fe-common-lib'
+
 import Dropdown from '../../assets/icons/ic-chevron-down.svg?react'
-import { CIAdvancedConfigProps } from './types'
-import TargetPlatformSelector from './TargetPlatformSelector'
+import PluginIcon from '../../assets/icons/ic-plugin.svg?react'
 import DockerArgs from '../CIPipelineN/DockerArgs'
-import { KeyValueTableProps } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '../common'
+import TargetPlatformSelector from './TargetPlatformSelector'
+import { CIAdvancedConfigProps } from './types'
+
+const BuildSecrets = importComponentFromFELibrary('BuildSecrets', null, 'function')
 
 export default function CIAdvancedConfig({
     configOverrideView,
@@ -28,6 +33,13 @@ export default function CIAdvancedConfig({
     args,
     setArgs,
     setArgsError,
+    appId,
+    secrets,
+    setSecrets,
+    ssh,
+    setSsh,
+    setSecretsError,
+    setSshError,
     isBuildpackType,
     selectedTargetPlatforms,
     setSelectedTargetPlatforms,
@@ -50,20 +62,26 @@ export default function CIAdvancedConfig({
         setArgsError((prev) => ({ ...prev, [isBuildpackType ? 'buildEnvArgs' : 'args']: errorState }))
     }
 
-    const renderTargetPlatform = () => {
-        return (
-            <div className="pb-8">
-                <TargetPlatformSelector
-                    selectedTargetPlatforms={selectedTargetPlatforms}
-                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                    showCustomPlatformWarning={showCustomPlatformWarning}
-                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                    targetPlatformMap={targetPlatformMap}
-                    configOverrideView={false}
-                />
-            </div>
-        )
+    const handleBuildSecretsChange = (updatedSecrets: BuildSecretType[]): void => {
+        setSecrets(updatedSecrets)
     }
+
+    const handleSSHChange = (updatedSSH: BuildSecretType[]): void => {
+        setSsh(updatedSSH)
+    }
+
+    const renderTargetPlatform = () => (
+        <div className="pb-8">
+            <TargetPlatformSelector
+                selectedTargetPlatforms={selectedTargetPlatforms}
+                setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                showCustomPlatformWarning={showCustomPlatformWarning}
+                setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                targetPlatformMap={targetPlatformMap}
+                configOverrideView={false}
+            />
+        </div>
+    )
 
     if (configOverrideView && !isBuildpackType) {
         return null
@@ -110,6 +128,17 @@ export default function CIAdvancedConfig({
                         handleDockerArgsError={handleDockerArgsError}
                         readOnly={updateNotAllowed}
                     />
+                    {BuildSecrets && (
+                        <BuildSecrets
+                            appId={appId}
+                            secrets={secrets}
+                            ssh={ssh}
+                            onSecretsChange={handleBuildSecretsChange}
+                            onSSHChange={handleSSHChange}
+                            onSecretsError={setSecretsError}
+                            onSSHError={setSshError}
+                        />
+                    )}
                 </>
             )}
         </>

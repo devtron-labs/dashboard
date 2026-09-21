@@ -105,6 +105,15 @@
         }
     }
 
+    // Argo/Flux apps have no Devtron project concept, so the row drops the Project column
+    &__row-argo-flux-apps {
+        grid-template-columns: 2fr 1fr 1fr 24px;
+
+        &--with-status {
+            grid-template-columns: 1.5fr 1fr 1fr 185px 24px;
+        }
+    }
+
     &__row-jobs {
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 24px;
 

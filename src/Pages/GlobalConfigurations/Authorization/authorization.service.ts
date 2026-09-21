@@ -48,6 +48,7 @@ import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGro
 import { EnvironmentsListType, ProjectsListType } from './Shared/components/AppPermissions/types'
 import { getUserGroupsPayload } from './libUtils'
 import {
+    ArgoFluxAppOption,
     GetUserAccessAllWorkflowsParams,
     GetUserPermissionResourcesPayload,
     GetUserResourceOptionsProps,
@@ -279,6 +280,50 @@ export const getUserAccessEnvListForHelmApps = () =>
         payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.HELM_APPS },
     })
 
+export const getUserAccessEnvListForArgoApps = () =>
+    getUserResourceOptions<EnvironmentListHelmResult[]>({
+        kind: UserAccessResourceKind.ARGO_ENVS,
+        payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.ARGO_APPS },
+    })
+
+export const getUserAccessEnvListForFluxApps = () =>
+    getUserResourceOptions<EnvironmentListHelmResult[]>({
+        kind: UserAccessResourceKind.FLUX_ENVS,
+        payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.FLUX_APPS },
+    })
+
+export const getUserAccessAppListForArgoApps = ({
+    clusterIds,
+    environmentIdentifiers,
+    options,
+}: Pick<GetUserPermissionResourcesPayload, 'clusterIds' | 'environmentIdentifiers'> & { options?: APIOptions }) =>
+    getUserResourceOptions<ArgoFluxAppOption[]>({
+        kind: UserAccessResourceKind.ARGO_APP_OPTIONS,
+        payload: {
+            entity: EntityTypes.DIRECT,
+            accessType: ACCESS_TYPE_MAP.ARGO_APPS,
+            clusterIds,
+            environmentIdentifiers,
+        },
+        options,
+    })
+
+export const getUserAccessAppListForFluxApps = ({
+    clusterIds,
+    environmentIdentifiers,
+    options,
+}: Pick<GetUserPermissionResourcesPayload, 'clusterIds' | 'environmentIdentifiers'> & { options?: APIOptions }) =>
+    getUserResourceOptions<ArgoFluxAppOption[]>({
+        kind: UserAccessResourceKind.FLUX_APP_OPTIONS,
+        payload: {
+            entity: EntityTypes.DIRECT,
+            accessType: ACCESS_TYPE_MAP.FLUX_APPS,
+            clusterIds,
+            environmentIdentifiers,
+        },
+        options,
+    })
+
 export const getUserAccessJobList = ({ teamIds }: Pick<GetUserPermissionResourcesPayload, 'teamIds'>) =>
     getUserResourceOptions<JobList['result']['jobContainers']>({
         kind: UserAccessResourceKind.JOBS,
@@ -372,6 +417,9 @@ export const getUserAccessProjectList = async (serverMode: SERVER_MODE): Promise
     return {
         [ACCESS_TYPE_MAP.DEVTRON_APPS]: devtronProjects,
         [ACCESS_TYPE_MAP.HELM_APPS]: helmProjects,
+        // Argo/Flux apps are fully external (no Devtron project concept); rows use the "Unassigned apps" bucket
+        [ACCESS_TYPE_MAP.ARGO_APPS]: [],
+        [ACCESS_TYPE_MAP.FLUX_APPS]: [],
         [ACCESS_TYPE_MAP.JOBS]: jobProjects,
     }
 }

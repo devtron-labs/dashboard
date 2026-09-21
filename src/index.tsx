@@ -86,6 +86,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
                             error.type === '[403]' ||
                             error.type === '[504]' ||
                             error.type === '[503]' ||
+                            error.type === '[0]' ||
                             error.type === 'ChunkLoadError')) ||
                         (error.value &&
                             (error.value.includes('write data discarded, use flow control to avoid losing data') ||
@@ -141,7 +142,6 @@ if (!window || !window._env_) {
         GLOBAL_API_TIMEOUT: 60000,
         TRIGGER_API_TIMEOUT: 60000,
         SIDEBAR_DT_LOGO: '',
-        ENABLE_EXTERNAL_ARGO_CD: true,
         API_BATCH_SIZE: 20,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: true,
         FEATURE_INTERNET_CONNECTIVITY_ENABLE: true,
@@ -149,7 +149,6 @@ if (!window || !window._env_) {
         FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE: true,
         FEATURE_RESOURCE_WATCHER_ENABLE: true,
         ORGANIZATION_NAME: '',
-        FEATURE_EXTERNAL_FLUX_CD_ENABLE: true,
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: true,
         HIDE_NETWORK_STATUS_INTERFACE: true,
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,

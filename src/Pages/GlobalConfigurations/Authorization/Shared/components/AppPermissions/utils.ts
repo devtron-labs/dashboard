@@ -71,6 +71,18 @@ export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean, 
             isHidden: false,
         },
         {
+            accessType: ACCESS_TYPE_MAP.ARGO_APPS,
+            tabName: 'argo-apps',
+            label: 'Argo Apps',
+            isHidden: false,
+        },
+        {
+            accessType: ACCESS_TYPE_MAP.FLUX_APPS,
+            tabName: 'flux-apps',
+            label: 'Flux Apps',
+            isHidden: false,
+        },
+        {
             accessType: ACCESS_TYPE_MAP.JOBS,
             tabName: 'jobs',
             label: 'Jobs',
@@ -105,12 +117,41 @@ export const getAppPermissionDetailConfig = (serverMode: SERVER_MODE) =>
             shouldRender: true,
         },
         {
+            id: 'argo-apps',
+            url: 'argo-apps',
+            accessType: ACCESS_TYPE_MAP.ARGO_APPS,
+            shouldRender: true,
+        },
+        {
+            id: 'flux-apps',
+            url: 'flux-apps',
+            accessType: ACCESS_TYPE_MAP.FLUX_APPS,
+            shouldRender: true,
+        },
+        {
             id: 'jobs',
             url: 'jobs',
             accessType: ACCESS_TYPE_MAP.JOBS,
             shouldRender: serverMode !== SERVER_MODE.EA_ONLY,
         },
     ] as const
+
+/**
+ * Argo Apps and Flux Apps use the same dual-mode Environment/Cluster-Namespace selector and
+ * "Permission" column as Helm Apps, but (unlike Helm) have no Project column — see
+ * isProjectlessAccessType below.
+ */
+export const isClusterNamespaceAccessType = (accessType: ACCESS_TYPE_MAP) =>
+    accessType === ACCESS_TYPE_MAP.HELM_APPS ||
+    accessType === ACCESS_TYPE_MAP.ARGO_APPS ||
+    accessType === ACCESS_TYPE_MAP.FLUX_APPS
+
+/**
+ * Argo/Flux apps have no Devtron project concept, so their row omits the Project column entirely
+ * (unlike Helm Apps, which keeps it for the "Unassigned apps" bucket).
+ */
+export const isProjectlessAccessType = (accessType: ACCESS_TYPE_MAP) =>
+    accessType === ACCESS_TYPE_MAP.ARGO_APPS || accessType === ACCESS_TYPE_MAP.FLUX_APPS
 
 export const getPermissionDetailRowClass = (accessType: ACCESS_TYPE_MAP, showStatus: boolean) => {
     const modifierClass = showStatus ? '--with-status' : ''
@@ -120,6 +161,9 @@ export const getPermissionDetailRowClass = (accessType: ACCESS_TYPE_MAP, showSta
             return `app-permission-detail__row-devtron-apps${modifierClass}`
         case ACCESS_TYPE_MAP.HELM_APPS:
             return `app-permission-detail__row-helm-apps${modifierClass}`
+        case ACCESS_TYPE_MAP.ARGO_APPS:
+        case ACCESS_TYPE_MAP.FLUX_APPS:
+            return `app-permission-detail__row-argo-flux-apps${modifierClass}`
         case ACCESS_TYPE_MAP.JOBS:
             return `app-permission-detail__row-jobs${modifierClass}`
         default:
@@ -148,6 +192,7 @@ export const getEnvironmentClusterOptions = (envClustersList) =>
                 value: env.environmentIdentifier,
                 namespace: env.namespace,
                 clusterName: cluster.clusterName,
+                clusterId: cluster.clusterId,
             })) ?? {}),
         ],
         isVirtualEnvironment: cluster?.isVirtualCluster,

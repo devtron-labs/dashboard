@@ -103,6 +103,10 @@ export const SAVE_ERROR_TOAST_MESSAGE = 'Error while saving scoped variables'
 export const PARSE_ERROR_TOAST_MESSAGE = 'Error while parsing file'
 export const GET_SCOPED_VARIABLES_ERROR = 'Error while fetching scoped variables'
 
+export const VARIABLE_IN_USE_MODAL_TITLE = 'Cannot save variables'
+export const VARIABLE_IN_USE_MODAL_DESCRIPTION =
+    'One or more variables that this save would delete are still in use. Nothing was deleted.'
+
 export const NO_DESCRIPTION_MESSAGE = 'No description'
 export const SENSITIVE_VARIABLE_DESCRIPTION = 'Value is sensitive & will be hidden while using this variable'
 export const IN_SENSITIVE_VARIABLE_DESCRIPTION = 'Value is not sensitive & will be visible while using this variable'
