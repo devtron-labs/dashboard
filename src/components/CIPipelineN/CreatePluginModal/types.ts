@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react'
+
 import {
     CustomInputProps,
     EditImageFormFieldProps,
@@ -76,7 +78,7 @@ type CreatePluginSingleInputActionType =
     | CreatePluginActionType.UPDATE_DOCUMENTATION_LINK
     | CreatePluginActionType.UPDATE_DESCRIPTION
 
-type CreatePluginHandleChangeParamsType =
+export type CreatePluginHandleChangeParamsType =
     | {
           action: CreatePluginSingleInputActionType
           payload: string
@@ -163,6 +165,25 @@ export interface CreatePluginFormContentProps {
     pluginDetailsError: ServerErrors
     prefillFormOnPluginSelection: (clonedPluginForm: CreatePluginFormType) => Promise<CreatePluginFormType>
     selectedPluginVersions: string[]
+    /**
+     * Hides the New plugin / New version of existing plugin tabs
+     * @default false
+     */
+    hideTabs?: boolean
+    /**
+     * Disables the existing plugin selection in the new version tab
+     * @default false
+     */
+    isParentPluginLocked?: boolean
+    /**
+     * Hides the input variables required toggle list, used when variables are configured through the task editor
+     * @default false
+     */
+    hideInputVariables?: boolean
+    /**
+     * Rendered after the plugin detail fields
+     */
+    children?: ReactNode
 }
 
 type PluginTextFieldFieldType =
@@ -290,4 +311,25 @@ export interface HandleCreatePluginReturnType extends CreatePluginSuccessRespons
 export interface GetSelectPickerOptionsFromParentPluginListReturnType {
     options: SelectPickerOptionType[]
     selectedOption: SelectPickerOptionType
+}
+
+export interface GetPluginFormStateOnChangeParamsType {
+    pluginForm: CreatePluginFormType
+    pluginFormError: CreatePluginFormErrorType
+    params: Exclude<CreatePluginHandleChangeParamsType, { action: CreatePluginActionType.UPDATE_PARENT_PLUGIN }>
+    /**
+     * Input variables to reset the form with on tab change
+     */
+    defaultInputVariables: VariableType[]
+}
+
+export interface PluginFormStateType {
+    pluginForm: CreatePluginFormType
+    pluginFormError: CreatePluginFormErrorType
+}
+
+export interface ValidatePluginFormBeforeSubmitReturnType {
+    isValid: boolean
+    pluginFormError: CreatePluginFormErrorType
+    errorMessage?: string
 }

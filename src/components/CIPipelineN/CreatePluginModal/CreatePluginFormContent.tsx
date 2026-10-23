@@ -61,6 +61,10 @@ const CreatePluginFormContent = ({
     pluginDetailsError,
     prefillFormOnPluginSelection,
     selectedPluginVersions,
+    hideTabs = false,
+    isParentPluginLocked = false,
+    hideInputVariables = false,
+    children,
 }: CreatePluginFormContentProps) => {
     const arePluginDetailsLoadingOrAborted = arePluginDetailsLoading || getIsRequestAborted(pluginDetailsError)
 
@@ -95,7 +99,7 @@ const CreatePluginFormContent = ({
                     placeholder="Select plugin"
                     size={ComponentSizeType.large}
                     // Should we disable this or allow user to select the plugin since we already have abortController?
-                    isDisabled={isLoadingParentPluginList || arePluginDetailsLoadingOrAborted}
+                    isDisabled={isParentPluginLocked || isLoadingParentPluginList || arePluginDetailsLoadingOrAborted}
                     onKeyDown={stopPropagation}
                     onChange={handlePluginSelection}
                 />
@@ -217,14 +221,16 @@ const CreatePluginFormContent = ({
 
     return (
         <div className="flexbox-col flex-grow-1 dc__overflow-auto p-20 dc__gap-16">
-            <div className="dc__no-shrink">
-                <SegmentedControl
-                    segments={CREATE_PLUGIN_FORM_VIEW_TYPE_SEGMENTS}
-                    value={currentTab}
-                    onChange={handleSegmentedControlChange}
-                    name="create-plugin-control"
-                />
-            </div>
+            {!hideTabs && (
+                <div className="dc__no-shrink">
+                    <SegmentedControl
+                        segments={CREATE_PLUGIN_FORM_VIEW_TYPE_SEGMENTS}
+                        value={currentTab}
+                        onChange={handleSegmentedControlChange}
+                        name="create-plugin-control"
+                    />
+                </div>
+            )}
 
             {currentTab === CreatePluginFormViewType.NEW_PLUGIN && (
                 <EditImageFormField
@@ -346,7 +352,14 @@ const CreatePluginFormContent = ({
                     </div>
 
                     {/* Input variable container */}
-                    <CreatePluginInputVariableContainer inputVariables={inputVariables} handleChange={handleChange} />
+                    {!hideInputVariables && (
+                        <CreatePluginInputVariableContainer
+                            inputVariables={inputVariables}
+                            handleChange={handleChange}
+                        />
+                    )}
+
+                    {children}
                 </APIResponseHandler>
             )}
         </div>
