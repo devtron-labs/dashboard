@@ -14,38 +14,42 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement, PropsWithChildren } from 'react'
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom'
+import { isValidElement, lazy, PropsWithChildren, Suspense, useEffect, useState } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    useMainContext,
-    PageHeader,
-    SideNavigation,
-    getComponentSpecificThemeClass,
     AppThemeType,
-    SideNavigationProps,
-    DOCUMENTATION,
     BASE_ROUTES,
+    DOCUMENTATION,
+    getComponentSpecificThemeClass,
+    PageHeader,
+    Progressing,
+    showError,
+    SideNavigation,
+    SideNavigationProps,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ErrorBoundary, importComponentFromFELibrary } from '../common'
+
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
+
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg?react'
-import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
-import './globalConfigurations.scss'
 import {
-    ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
     MODULE_STATUS_RETRY_COUNT,
+    ModuleNameMap,
     SERVER_MODE,
 } from '../../config/constants'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { getAppCheckList, getHostURLConfiguration } from '../../services/service'
+import { ErrorBoundary, importComponentFromFELibrary } from '../common'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { BodyType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
-import { getShouldHidePageHeaderAndSidebar } from './utils'
 import { ListProps } from './types'
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 import { UserPermissionsTooltipContent } from './UserPermissionsTooltipContent'
+import { getShouldHidePageHeaderAndSidebar } from './utils'
+
+import './globalConfigurations.scss'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
@@ -54,6 +58,7 @@ const ChartRepo = lazy(() => import('@Components/chartRepo/ChartRepo'))
 const ExternalLinks = lazy(() => import('@Components/externalLinks/ExternalLinks'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 const ProjectList = lazy(() => import('@Components/project/ProjectList'))
+const PluginsRouter = lazy(() => import('@Pages/GlobalConfigurations/Plugins/PluginsRouter'))
 const NodeAutoscalerProfiles = importComponentFromFELibrary('NodeAutoscalerProfileList', null, 'function')
 
 const GLOBAL_CONFIG_USER_GROUP_SIDE_NAV_ITEM: SideNavigationProps['list'][number]['items'][number] =
@@ -255,20 +260,28 @@ const NavItem = ({ serverMode }) => {
             dataTestId: 'global-configurations-projects',
             href: BASE_ROUTES.GLOBAL_CONFIG.PROJECTS,
         },
-        ...(window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && !!NodeAutoscalerProfiles
-            ? [{
-                id: 'global-config-infra',
-                title: 'Infra',
-                dataTestId: 'global-configurations-infrastructure',
-                items: [
                   {
-                      id: 'global-configurations-node-autoscaler',
-                      title: 'Node Autoscaler',
-                      dataTestId: 'global-configurations-node-autoscaler',
-                      href: BASE_ROUTES.GLOBAL_CONFIG.NODE_AUTOSCALER.ROOT,
+                      id: 'global-configurations-plugins',
+                      title: 'Plugins',
+                      dataTestId: 'global-configurations-plugins',
+                      href: BASE_ROUTES.GLOBAL_CONFIG.PLUGINS,
+                  },
+        ...(window._env_.FEATURE_NODE_AUTOSCALER_ENABLE && !!NodeAutoscalerProfiles
+            ? [
+                  {
+                      id: 'global-config-infra',
+                      title: 'Infra',
+                      dataTestId: 'global-configurations-infrastructure',
+                      items: [
+                          {
+                              id: 'global-configurations-node-autoscaler',
+                              title: 'Node Autoscaler',
+                              dataTestId: 'global-configurations-node-autoscaler',
+                              href: BASE_ROUTES.GLOBAL_CONFIG.NODE_AUTOSCALER.ROOT,
+                          },
+                      ],
                   },
               ]
-            }]
             : []),
         {
             id: 'authorization',
@@ -394,38 +407,39 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
                       />,
                   ]
                 : []}
+                <Route
+                    key={BASE_ROUTES.GLOBAL_CONFIG.PLUGINS}
+                    path={`${BASE_ROUTES.GLOBAL_CONFIG.PLUGINS}/*`}
+                    element={<PluginsRouter />}
+                />
             <Route path="*" element={<Navigate to={defaultRoute()} />} />
         </Routes>
     )
 }
 
-const Logo = ({ src = '', style = {}, className = '', children = null }) => {
-    return (
-        <>
-            {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
-            {children}
-        </>
-    )
-}
+const Logo = ({ src = '', style = {}, className = '', children = null }) => (
+    <>
+        {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
+        {children}
+    </>
+)
 
-const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', category = '' }) => {
-    return (
-        <div className="flex column left">
-            <div className={`list__title ${className} flex left w-100`} style={style}>
-                <div className="dc__no-shrink dc__mxw-400 dc__truncate">
-                    <InteractiveCellText text={title} />
-                </div>
-                {tag && <div className="tag dc__no-shrink">{tag}</div>}
-                {category && (
-                    <div className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18 dc__mxw-150 dc__no-shrink dc__truncate dc__text-center">
-                        <InteractiveCellText text={category} fontSize={12} />
-                    </div>
-                )}
+const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', category = '' }) => (
+    <div className="flex column left">
+        <div className={`list__title ${className} flex left w-100`} style={style}>
+            <div className="dc__no-shrink dc__mxw-400 dc__truncate">
+                <InteractiveCellText text={title} />
             </div>
-            {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}
+            {tag && <div className="tag dc__no-shrink">{tag}</div>}
+            {category && (
+                <div className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18 dc__mxw-150 dc__no-shrink dc__truncate dc__text-center">
+                    <InteractiveCellText text={category} fontSize={12} />
+                </div>
+            )}
         </div>
-    )
-}
+        {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}
+    </div>
+)
 
 const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
     if (isValidElement(src)) {

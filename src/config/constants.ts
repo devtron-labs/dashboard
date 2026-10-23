@@ -279,6 +279,9 @@ export const Routes = {
     SECURITY_DEPLOYMENT_STATUS: 'overview/security/deployment-security-status',
     SECURITY_BLOCKED_DEPLOYMENTS_TREND: 'overview/security/blocked-deployments-trend',
     AUTHORISATION_GLOBAL_CONFIG: 'authorisation/global-config',
+
+    PLUGIN_GLOBAL_DETAIL_ROUTE: 'plugin/global/detail',
+    PLUGIN_GLOBAL_FILE_UPLOAD_ROUTE: 'plugin/global/file/upload'
 }
 
 export enum ViewType {
