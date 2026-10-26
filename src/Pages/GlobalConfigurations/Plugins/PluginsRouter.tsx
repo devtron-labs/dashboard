@@ -47,6 +47,8 @@ const PluginsRouter = () => {
             <PluginList />
 
             <Routes>
+                {/* List is rendered outside routes, index route avoids the redirect below which drops the list filters */}
+                <Route index element={null} />
                 <Route
                     path={PLUGIN_ROUTE_SEGMENTS.CREATE}
                     element={<PluginFormDrawer mode={PluginFormMode.CREATE} handleSuccess={handleSuccess} />}
