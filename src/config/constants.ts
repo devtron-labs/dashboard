@@ -320,7 +320,9 @@ export const PATTERNS = {
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
-    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
+    // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} {SHA} {sha} but cannot begin or end with (.) or (-)
+    CUSTOM_TAG:
+        /^(?![.-])((?:[a-zA-Z0-9_.-]|\{SHA\}|\{sha\})*\{[Xx]\}(?:[a-zA-Z0-9_.-]|\{SHA\}|\{sha\})*)(?<![.-])$/,
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
     // Matches a value that is entirely a scoped variable reference, e.g. @{{variable-name}}
     SCOPED_VARIABLE: /^@{{[a-zA-Z][a-zA-Z0-9_-]{0,62}[a-zA-Z0-9]}}$/,

@@ -96,11 +96,15 @@ export const RESERVED_DIRECTORY_PATH_MSG = `Path cannot start with '${RESERVED_O
 export const CustomErrorMessage = {
     CUSTOM_TAG_ERROR_MSG:
         'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
+    CUSTOM_TAG_SHA_ERROR_MSG:
+        'Allowed: Alphanumeric characters, including (_) (.) (-) and variable {SHA}, but cannot begin or end with (.) or (-).',
     CUSTOM_TAG_MANDATORY_X: 'Using variable {x} is mandatory',
     CUSTOM_TAG_LIMIT: 'Max 128 characters.',
     INVALID_IMAGE_PATTERN: 'Invalid image tag pattern',
     REQUIRED_IMAGE_PATTERN: 'Image tag pattern is required to generate container images',
     VARIABLE_X_ONLY_ONCE: 'Variable {x} can be used only once',
+    VARIABLE_SHA_ONLY_ONCE: 'Variable {SHA} can be used only once',
+    VARIABLE_SHA_NOT_SUPPORTED: 'Variable {SHA} can only be used in build pipelines',
     USE_ONLY_NON_NEGATIVE_INTERGER: 'Use only non-negative integer',
 }
 
