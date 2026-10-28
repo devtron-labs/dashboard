@@ -312,6 +312,13 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 isAvailableInEA: true,
             },
             {
+                title: 'Plugins',
+                dataTestId: 'click-on-plugins',
+                id: 'global-configuration-plugins',
+                icon: 'ic-code-wrapped',
+                href: ROUTER_URLS.GLOBAL_CONFIG_PLUGINS,
+            },
+            {
                 title: 'Authorization',
                 dataTestId: 'authorization',
                 id: 'global-configuration-authorization',

@@ -31,7 +31,8 @@ import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMes
 import Edit from '../../assets/icons/ic-pencil.svg?react'
 import AlertTriangle from '../../assets/icons/ic-alert-triangle.svg?react'
 import GeneratedImage from '../../assets/icons/ic-generated-image.svg?react'
-import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
+import { getCDStageTypeSelectorValue, customTagStageTypeOptions, getCustomTagPreview } from './ciPipeline.utils'
+import { CUSTOM_TAG_SHA_LENGTH, CUSTOM_TAG_SHA_PREVIEW_VALUE, CUSTOM_TAG_SHA_VARIABLE } from './Constants'
 import '../ciPipeline/ciPipeline.scss'
 
 function CustomImageTags({
@@ -46,6 +47,8 @@ function CustomImageTags({
 }: CustomImageTagsType) {
     const validationRules = new ValidationRules()
     const isCustomTagError = formDataErrorObj.customTag?.message.length > 0 && !formDataErrorObj.customTag?.isValid
+    // {SHA} resolves to the commit the image is built from, which only exists on a build pipeline
+    const isShaVariableSupported = !isCDBuild
     const [showCreateImageTagView, setShowCreateImageTagView] = useState<boolean>(false)
 
     const renderInputErrorMessage = (errorMessage: string) => {
@@ -65,7 +68,7 @@ function CustomImageTags({
         }
         setFormData(_form)
         const _formDataErrorObj = { ...formDataErrorObj }
-        _formDataErrorObj.customTag = validationRules.customTag(event.target.value)
+        _formDataErrorObj.customTag = validationRules.customTag(event.target.value, isShaVariableSupported)
         setFormDataErrorObj(_formDataErrorObj)
     }
 
@@ -122,6 +125,43 @@ function CustomImageTags({
         )
     }
 
+    const renderShaTippy = () => {
+        return (
+            <Tippy
+                content={
+                    <div>
+                        {CUSTOM_TAG_SHA_VARIABLE} is optional and can be placed anywhere in the pattern. It is the
+                        commit the image is built from, truncated to {CUSTOM_TAG_SHA_LENGTH} characters. For webhook
+                        sources, the target checkout name is used instead.
+                        <div className="mono mt-8">
+                            {`dev-${CUSTOM_TAG_SHA_VARIABLE}-{x}`}
+                            <span className="pl-4 pr-4">&rarr;</span>
+                            {`dev-${CUSTOM_TAG_SHA_PREVIEW_VALUE}-17`}
+                        </div>
+                    </div>
+                }
+                placement="top"
+                className="default-tt w-300"
+                arrow={false}
+            >
+                <span className="pl-4 dc__underline mr-4">{CUSTOM_TAG_SHA_VARIABLE}</span>
+            </Tippy>
+        )
+    }
+
+    const renderCreateTagPatternLabel = (): JSX.Element =>
+        isShaVariableSupported ? (
+            <span>
+                <span>Use mix of fixed pattern and variables</span>
+                {renderCounterXTippy(`{x}`)},{renderShaTippy()}
+            </span>
+        ) : (
+            <span>
+                <span>Use mix of fixed pattern and</span>
+                {renderCounterXTippy(`variable {x}`)}
+            </span>
+        )
+
     const handleCounterKeyPress = (event) => {
         if (event.key === '-' || event.key === '+') {
             event.preventDefault()
@@ -134,12 +174,7 @@ function CustomImageTags({
             <div className="white-card pl-12 pr-12 pt-8 pb-8 mt-12 ml-54">
                 <div className="fw-6 pb-8">Create tag pattern</div>
                 <Textarea
-                    label={
-                        <span>
-                            <span>Use mix of fixed pattern and</span>
-                            {renderCounterXTippy(`variable {x}`)}
-                        </span>
-                    }
+                    label={renderCreateTagPatternLabel()}
                     placeholder="Example: v1.2.{x}"
                     name="image_tag"
                     autoFocus
@@ -154,10 +189,7 @@ function CustomImageTags({
                         Tag Preview:
                         <div className="ml-4 bg__secondary mono flexbox dc__w-fit-content pl-4 pr-4 br-4 dc__gap-4">
                             <RegistryIcon registryType={RegistryType.DOCKER} />
-                            {formData.customTag?.tagPattern?.replace(
-                                '{x}',
-                                formData.customTag?.counterX?.toString() ?? '0',
-                            )}
+                            {getCustomTagPreview(formData.customTag?.tagPattern, formData.customTag?.counterX)}
                         </div>
                     </div>
                 )}
@@ -212,21 +244,10 @@ function CustomImageTags({
         )
     }
 
-    const getCustomTagCollapsedErrorText = (): string => {
-        let errorMessage = ''
-        if (
-            formDataErrorObj.customTag.message.find(
-                (errorMsg) =>
-                    errorMsg === CustomErrorMessage.CUSTOM_TAG_ERROR_MSG ||
-                    errorMsg === CustomErrorMessage.CUSTOM_TAG_MANDATORY_X,
-            )
-        ) {
-            errorMessage = CustomErrorMessage.INVALID_IMAGE_PATTERN
-        } else if (formDataErrorObj.customTag.message.find((errorMsg) => errorMsg === REQUIRED_FIELD_MSG)) {
-            errorMessage = CustomErrorMessage.REQUIRED_IMAGE_PATTERN
-        }
-        return errorMessage
-    }
+    const getCustomTagCollapsedErrorText = (): string =>
+        formDataErrorObj.customTag.message.includes(REQUIRED_FIELD_MSG)
+            ? CustomErrorMessage.REQUIRED_IMAGE_PATTERN
+            : CustomErrorMessage.INVALID_IMAGE_PATTERN
 
     const getGeneratedTagDescription = (): JSX.Element => {
         if (isCustomTagError) {
@@ -270,9 +291,7 @@ function CustomImageTags({
                         onChange={handleCustomTagToggle}
                     />
                 </div>
-                <Collapse expand={formData.enableCustomTag}>
-                    {renderCustomImageDetails()}
-                </Collapse>
+                <Collapse expand={formData.enableCustomTag}>{renderCustomImageDetails()}</Collapse>
                 <hr />
             </div>
         )

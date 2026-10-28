@@ -36,3 +36,22 @@ export enum TaskActionMenuOptionIdEnum {
 }
 
 export const BOUNDARY_GAP = { x: 16, y: 78 }
+
+/**
+ * Custom image tag variable that resolves, at build time, to the commit of the git material the
+ * Dockerfile is picked from. Only available on build (CI) pipelines.
+ */
+export const CUSTOM_TAG_SHA_VARIABLE = '{SHA}'
+
+/**
+ * Matches every spelling of the {SHA} variable accepted in a tag pattern, mirroring how {x} is
+ * accepted as {X} too. Global, so only use it with match/replace — never test/exec, which would
+ * carry lastIndex across calls.
+ */
+export const CUSTOM_TAG_SHA_VARIABLE_PATTERN = /\{SHA\}|\{sha\}/g
+
+/** Length {SHA} is truncated to in the generated image tag */
+export const CUSTOM_TAG_SHA_LENGTH = 8
+
+/** Stand-in commit shown in the tag preview; matches the dummy the backend validates with */
+export const CUSTOM_TAG_SHA_PREVIEW_VALUE = 'abcdef12'

@@ -28,7 +28,12 @@ import {
 } from '../../config/constantMessaging'
 import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
 import { validateConditionDataCell } from '@Components/CIPipelineN/ConditionDataTable/utils'
+import { CUSTOM_TAG_SHA_VARIABLE_PATTERN } from '@Components/CIPipelineN/Constants'
 import { ValidationRulesType } from './types'
+
+const countOccurrences = (string: string, variable: string) => {
+    return string.split(variable).length - 1
+}
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
@@ -140,12 +145,13 @@ export class ValidationRules {
         return { isValid: true, message: null }
     }
 
-    customTag = (value: string): { message: string[] | []; isValid: boolean } => {
+    /**
+     * @param allowShaVariable - whether the {SHA} variable is available for this pipeline. It resolves to the
+     * commit of the Dockerfile's git material, which only exists for build (CI) pipelines.
+     */
+    customTag = (value: string, allowShaVariable = false): { message: string[] | []; isValid: boolean } => {
         const _message = []
         const regExp = new RegExp(PATTERNS.CUSTOM_TAG)
-        function checkIfOne(string) {
-            return string.split('{x}').length === 2
-        }
 
         if (!value?.length) {
             return { isValid: false, message: [REQUIRED_FIELD_MSG] }
@@ -154,13 +160,27 @@ export class ValidationRules {
         if (value.length >= 128) {
             _message.push(CustomErrorMessage.CUSTOM_TAG_LIMIT)
         }
-        if (!(value.includes('{x}') || value.includes('{X}'))) {
+
+        const counterXCount = countOccurrences(value, '{x}') + countOccurrences(value, '{X}')
+        if (!counterXCount) {
             _message.push(CustomErrorMessage.CUSTOM_TAG_MANDATORY_X)
-        } else if (!checkIfOne(value)) {
+        } else if (counterXCount > 1) {
             _message.push(CustomErrorMessage.VARIABLE_X_ONLY_ONCE)
         }
+
+        const shaCount = (value.match(CUSTOM_TAG_SHA_VARIABLE_PATTERN) ?? []).length
+        if (shaCount && !allowShaVariable) {
+            _message.push(CustomErrorMessage.VARIABLE_SHA_NOT_SUPPORTED)
+        } else if (shaCount > 1) {
+            _message.push(CustomErrorMessage.VARIABLE_SHA_ONLY_ONCE)
+        }
+
         if (!regExp.test(value)) {
-            _message.push(CustomErrorMessage.CUSTOM_TAG_ERROR_MSG)
+            _message.push(
+                allowShaVariable
+                    ? CustomErrorMessage.CUSTOM_TAG_SHA_ERROR_MSG
+                    : CustomErrorMessage.CUSTOM_TAG_ERROR_MSG,
+            )
         }
 
         if (_message.length) {

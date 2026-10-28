@@ -279,6 +279,9 @@ export const Routes = {
     SECURITY_DEPLOYMENT_STATUS: 'overview/security/deployment-security-status',
     SECURITY_BLOCKED_DEPLOYMENTS_TREND: 'overview/security/blocked-deployments-trend',
     AUTHORISATION_GLOBAL_CONFIG: 'authorisation/global-config',
+
+    PLUGIN_GLOBAL_DETAIL_ROUTE: 'plugin/global/detail',
+    PLUGIN_GLOBAL_FILE_UPLOAD_ROUTE: 'plugin/global/file/upload'
 }
 
 export enum ViewType {
@@ -317,7 +320,9 @@ export const PATTERNS = {
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
-    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
+    // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} {SHA} {sha} but cannot begin or end with (.) or (-)
+    CUSTOM_TAG:
+        /^(?![.-])((?:[a-zA-Z0-9_.-]|\{SHA\}|\{sha\})*\{[Xx]\}(?:[a-zA-Z0-9_.-]|\{SHA\}|\{sha\})*)(?<![.-])$/,
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
     // Matches a value that is entirely a scoped variable reference, e.g. @{{variable-name}}
     SCOPED_VARIABLE: /^@{{[a-zA-Z][a-zA-Z0-9_-]{0,62}[a-zA-Z0-9]}}$/,
