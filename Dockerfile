@@ -20,7 +20,7 @@ RUN echo `git rev-parse --short=9 HEAD` > health.html && \
     echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short=9 HEAD)" >> .env && \
     yarn build
 
-FROM fholzer/nginx-brotli:v1.26.2
+FROM fholzer/nginx-brotli:v1.30.6
 
 # Install bash
 RUN apk add --no-cache bash shadow
