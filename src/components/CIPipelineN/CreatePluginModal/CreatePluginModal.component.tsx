@@ -39,10 +39,6 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
-    validateDescription,
-    validateDisplayName,
-    validateName,
-    validateSemanticVersioning,
     VariableType,
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -64,7 +60,7 @@ import {
     CreatePluginModalURLParamsType,
     HandleCreatePluginReturnType,
 } from './types'
-import { getDefaultPluginFormData, validateDocumentationLink, validateTags } from './utils'
+import { getDefaultPluginFormData, getPluginFormStateOnChange, validatePluginFormBeforeSubmit } from './utils'
 
 import './CreatePluginModal.scss'
 
@@ -202,71 +198,31 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         }
     }
 
-    const handleChange: CreatePluginHandleChangeType = async ({ action, payload }) => {
-        let clonedPluginForm = structuredClone(pluginForm)
-        let clonedPluginFormError = structuredClone(pluginFormError)
+    const handleChange: CreatePluginHandleChangeType = async (params) => {
+        if (params.action === CreatePluginActionType.UPDATE_PARENT_PLUGIN) {
+            const clonedPluginForm = { ...structuredClone(pluginForm), ...params.payload }
+            // Changing the plugin id and name so that in case of loading can show the correct plugin name
+            setPluginForm(clonedPluginForm)
 
-        switch (action) {
-            case CreatePluginActionType.UPDATE_CURRENT_TAB:
-                clonedPluginForm = {
-                    ...getDefaultPluginFormData(formInputVariables),
-                    currentTab: payload,
-                }
-                clonedPluginFormError = structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR)
-                setArePluginDetailsLoading(false)
-                setPluginDetailsError(null)
-                break
-            case CreatePluginActionType.UPDATE_PLUGIN_ICON:
-                clonedPluginForm.icon = payload
-                break
-            case CreatePluginActionType.UPDATE_NEW_PLUGIN_NAME:
-                clonedPluginForm.id = 0
-                clonedPluginForm.name = payload
-                clonedPluginFormError.name = validateDisplayName(payload).message
-                break
-            case CreatePluginActionType.UPDATE_PARENT_PLUGIN:
-                clonedPluginForm.id = payload.id
-                clonedPluginForm.name = payload.name
-
-                // Changing the plugin id and name so that in case of loading can show the correct plugin name
-                setPluginForm(clonedPluginForm)
-
-                clonedPluginForm = await prefillFormOnPluginSelection(clonedPluginForm)
-                clonedPluginFormError = structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR)
-                break
-            case CreatePluginActionType.UPDATE_PLUGIN_IDENTIFIER:
-                clonedPluginForm.pluginIdentifier = payload
-                clonedPluginFormError.pluginIdentifier = validateName(payload).message
-                break
-            case CreatePluginActionType.UPDATE_PLUGIN_VERSION:
-                clonedPluginForm.pluginVersion = payload
-                clonedPluginFormError.pluginVersion = validateSemanticVersioning(payload).message
-                break
-            case CreatePluginActionType.UPDATE_DOCUMENTATION_LINK:
-                clonedPluginForm.docLink = payload
-                clonedPluginFormError.docLink = validateDocumentationLink(payload).message
-                break
-            case CreatePluginActionType.UPDATE_DESCRIPTION:
-                clonedPluginForm.description = payload
-                clonedPluginFormError.description = validateDescription(payload).message
-                break
-            case CreatePluginActionType.UPDATE_TAGS:
-                clonedPluginForm.tags = payload.tags
-                clonedPluginFormError.tags = validateTags(payload.tags).message
-                break
-            case CreatePluginActionType.TOGGLE_INPUT_VARIABLE_ALLOW_EMPTY_VALUE:
-                clonedPluginForm.inputVariables[payload.index].allowEmptyValue =
-                    !clonedPluginForm.inputVariables[payload.index].allowEmptyValue
-                break
-            case CreatePluginActionType.TOGGLE_REPLACE_CUSTOM_TASK:
-                clonedPluginForm.shouldReplaceCustomTask = !clonedPluginForm.shouldReplaceCustomTask
-                break
-            default:
-                break
+            setPluginForm(await prefillFormOnPluginSelection(clonedPluginForm))
+            setPluginFormError(structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR))
+            return
         }
 
-        setPluginForm(clonedPluginForm)
-        setPluginFormError(clonedPluginFormError)
+        if (params.action === CreatePluginActionType.UPDATE_CURRENT_TAB) {
+            setArePluginDetailsLoading(false)
+            setPluginDetailsError(null)
+        }
+
+        const updatedPluginFormState = getPluginFormStateOnChange({
+            pluginForm,
+            pluginFormError,
+            params,
+            defaultInputVariables: formInputVariables,
+        })
+
+        setPluginForm(updatedPluginFormState.pluginForm)
+        setPluginFormError(updatedPluginFormState.pluginFormError)
     }
 
     const handleIconError: EditImageFormFieldProps['handleError'] = (errorMessage) => {
@@ -362,25 +318,17 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             action: 'Save as plugin',
         })
 
-        if (Object.values(pluginFormError).some((error) => !!error)) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please fix the errors before saving the plugin',
-            })
-            return
-        }
+        const {
+            isValid,
+            pluginFormError: updatedPluginFormError,
+            errorMessage,
+        } = validatePluginFormBeforeSubmit({ pluginForm, pluginFormError })
 
-        // Checking required fields
-        if (!pluginForm.name || !pluginForm.pluginIdentifier || !pluginForm.pluginVersion) {
-            setPluginFormError({
-                ...pluginFormError,
-                name: validateDisplayName(pluginForm.name).message,
-                pluginIdentifier: validateName(pluginForm.pluginIdentifier).message,
-                pluginVersion: validateSemanticVersioning(pluginForm.pluginVersion).message,
-            })
+        if (!isValid) {
+            setPluginFormError(updatedPluginFormError)
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: 'Please fill the required fields',
+                description: errorMessage,
             })
             return
         }

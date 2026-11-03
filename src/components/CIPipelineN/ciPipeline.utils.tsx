@@ -22,6 +22,8 @@ import {
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CUSTOM_TAG_SHA_PREVIEW_VALUE, CUSTOM_TAG_SHA_VARIABLE_PATTERN } from './Constants'
+
 export const CiPipelineSourceTypeBaseOptions = [
     {
         label: 'Branch Fixed',
@@ -59,6 +61,15 @@ export const customTagStageTypeOptions = [
         value: StageTypeEnums.POST_CD,
     },
 ]
+
+/**
+ * Resolves a custom image tag pattern for display: {x} becomes the counter's next value, and {SHA}
+ * a stand-in commit, since the real one is only known once the build runs.
+ */
+export const getCustomTagPreview = (tagPattern: string, counterX: string | number): string =>
+    (tagPattern ?? '')
+        .replace(/\{[Xx]\}/, counterX?.toString() ?? '0')
+        .replace(CUSTOM_TAG_SHA_VARIABLE_PATTERN, CUSTOM_TAG_SHA_PREVIEW_VALUE)
 
 export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType => {
     let stageTypeSelectorValue: OptionType

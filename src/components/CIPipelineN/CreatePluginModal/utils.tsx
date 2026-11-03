@@ -19,6 +19,10 @@ import {
     InlineStepDetailType,
     PluginImageContainer,
     SelectPickerOptionType,
+    validateDescription,
+    validateDisplayName,
+    validateName,
+    validateSemanticVersioning,
     validateURL,
     ValidationResponseType,
     VariableType,
@@ -27,17 +31,21 @@ import {
 import { getInputOutputConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
+import { CREATE_PLUGIN_DEFAULT_FORM, CREATE_PLUGIN_DEFAULT_FORM_ERROR, MAX_TAG_LENGTH } from './constants'
 import {
+    CreatePluginActionType,
     CreatePluginFormType,
     CreatePluginPayloadPipelineScriptDTO,
     CreatePluginPayloadPluginStepVariableItemType,
     CreatePluginPayloadType,
     CreatePluginVariableType,
     GetCreatePluginPayloadParamsType,
+    GetPluginFormStateOnChangeParamsType,
     GetSelectPickerOptionsFromParentPluginListReturnType,
     ParentPluginListItemType,
     PathPortMappingType,
+    PluginFormStateType,
+    ValidatePluginFormBeforeSubmitReturnType,
 } from './types'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -252,3 +260,96 @@ export const getSelectPickerOptionsFromParentPluginList = (
         },
         { options: [] as SelectPickerOptionType[], selectedOption: null as SelectPickerOptionType | null },
     ) || { options: [], selectedOption: null }
+
+/**
+ * Returns the updated plugin form and its errors for all the synchronous form actions
+ */
+export const getPluginFormStateOnChange = ({
+    pluginForm,
+    pluginFormError,
+    params: { action, payload },
+    defaultInputVariables,
+}: GetPluginFormStateOnChangeParamsType): PluginFormStateType => {
+    let clonedPluginForm = structuredClone(pluginForm)
+    let clonedPluginFormError = structuredClone(pluginFormError)
+
+    switch (action) {
+        case CreatePluginActionType.UPDATE_CURRENT_TAB:
+            clonedPluginForm = {
+                ...getDefaultPluginFormData(defaultInputVariables),
+                currentTab: payload,
+            }
+            clonedPluginFormError = structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR)
+            break
+        case CreatePluginActionType.UPDATE_PLUGIN_ICON:
+            clonedPluginForm.icon = payload
+            break
+        case CreatePluginActionType.UPDATE_NEW_PLUGIN_NAME:
+            clonedPluginForm.id = 0
+            clonedPluginForm.name = payload
+            clonedPluginFormError.name = validateDisplayName(payload).message
+            break
+        case CreatePluginActionType.UPDATE_PLUGIN_IDENTIFIER:
+            clonedPluginForm.pluginIdentifier = payload
+            clonedPluginFormError.pluginIdentifier = validateName(payload).message
+            break
+        case CreatePluginActionType.UPDATE_PLUGIN_VERSION:
+            clonedPluginForm.pluginVersion = payload
+            clonedPluginFormError.pluginVersion = validateSemanticVersioning(payload).message
+            break
+        case CreatePluginActionType.UPDATE_DOCUMENTATION_LINK:
+            clonedPluginForm.docLink = payload
+            clonedPluginFormError.docLink = validateDocumentationLink(payload).message
+            break
+        case CreatePluginActionType.UPDATE_DESCRIPTION:
+            clonedPluginForm.description = payload
+            clonedPluginFormError.description = validateDescription(payload).message
+            break
+        case CreatePluginActionType.UPDATE_TAGS:
+            clonedPluginForm.tags = payload.tags
+            clonedPluginFormError.tags = validateTags(payload.tags).message
+            break
+        case CreatePluginActionType.TOGGLE_INPUT_VARIABLE_ALLOW_EMPTY_VALUE:
+            clonedPluginForm.inputVariables[payload.index].allowEmptyValue =
+                !clonedPluginForm.inputVariables[payload.index].allowEmptyValue
+            break
+        case CreatePluginActionType.TOGGLE_REPLACE_CUSTOM_TASK:
+            clonedPluginForm.shouldReplaceCustomTask = !clonedPluginForm.shouldReplaceCustomTask
+            break
+        default:
+            break
+    }
+
+    return { pluginForm: clonedPluginForm, pluginFormError: clonedPluginFormError }
+}
+
+/**
+ * Validates the plugin form fields before submission
+ */
+export const validatePluginFormBeforeSubmit = ({
+    pluginForm,
+    pluginFormError,
+}: PluginFormStateType): ValidatePluginFormBeforeSubmitReturnType => {
+    if (Object.values(pluginFormError).some((error) => !!error)) {
+        return {
+            isValid: false,
+            pluginFormError,
+            errorMessage: 'Please fix the errors before saving the plugin',
+        }
+    }
+
+    if (!pluginForm.name || !pluginForm.pluginIdentifier || !pluginForm.pluginVersion) {
+        return {
+            isValid: false,
+            pluginFormError: {
+                ...pluginFormError,
+                name: validateDisplayName(pluginForm.name).message,
+                pluginIdentifier: validateName(pluginForm.pluginIdentifier).message,
+                pluginVersion: validateSemanticVersioning(pluginForm.pluginVersion).message,
+            },
+            errorMessage: 'Please fill the required fields',
+        }
+    }
+
+    return { isValid: true, pluginFormError }
+}
