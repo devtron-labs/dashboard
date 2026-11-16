@@ -16,7 +16,7 @@
 
 // ------------ Configuration Constants ------------
 
-import { FiltersTypeEnum, TableProps } from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, ROUTER_URLS, TableProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
     SESConfigurationTableRowType,
@@ -214,4 +214,36 @@ export const EVENT_ICONS = {
     [EVENTS.FAILURE]: 'ic-close-small',
     [EVENTS.CONFIG_APPROVAL]: 'ic-code',
     [EVENTS.DEPLOYMENT_APPROVAL]: 'ic-rocket-launch',
+}
+
+export const CI_CD_ADD_NOTIFICATION_BREADCRUMBS = [
+    {
+        name: 'CI/CD Notifications',
+        to: `${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/channels`,
+    },
+    {
+        name: 'Add Notification',
+        to: '',
+    },
+]
+
+// ------------ Notification Tab Constants ------------
+
+/**
+ * Sub-paths of the Notifications page. Relative, so they live here rather than
+ * in common-lib's BASE_ROUTES.
+ *
+ * Note `CI_CD` is `channels` for historical reasons — the path predates the tab
+ * being labelled "CI/CD Notifications" and is kept so existing links still work.
+ */
+export enum NotificationTabsTypes {
+    CI_CD = 'channels',
+    AUDIT_LOG = 'audit-log',
+    CONFIGURATIONS = 'configurations',
+}
+
+export const NotificationTabText = {
+    [NotificationTabsTypes.CI_CD]: 'CI/CD Notifications',
+    [NotificationTabsTypes.AUDIT_LOG]: 'Audit Log Notifications',
+    [NotificationTabsTypes.CONFIGURATIONS]: 'Configurations',
 }

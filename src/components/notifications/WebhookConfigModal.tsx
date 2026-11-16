@@ -163,6 +163,10 @@ export const WebhookConfigModal = ({
             <p className="lh-20 m-0">
                 Following data are available to be shared through Webhook. Use Payload to configure.
             </p>
+            <p className="lh-20 m-0 cn-7">
+                The <span className="fw-6">audit*</span> fields apply to audit log notifications and the rest to CI/CD
+                notifications. A payload can only use one set, so use a separate webhook configuration for each.
+            </p>
             {renderDataList()}
         </div>
     )
