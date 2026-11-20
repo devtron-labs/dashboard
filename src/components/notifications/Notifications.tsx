@@ -16,11 +16,7 @@
 
 import { Component } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
-import {
-    ErrorScreenNotAuthorized,
-    FeatureTitleWithInfo,
-    TabGroup,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -33,7 +29,6 @@ import { NotificationTabsTypes, NotificationTabText } from './constants'
 const AuditLogNotifications = importComponentFromFELibrary('AuditLogNotifications', null, 'function')
 
 export default class Notifications extends Component<NotificationsProps, NotificationsState> {
-
     constructor(props) {
         super(props)
         this.state = {
@@ -72,7 +67,7 @@ export default class Notifications extends Component<NotificationsProps, Notific
                                     'data-testid': 'notifications-link-button',
                                 },
                             },
-                            ...(AuditLogNotifications
+                            ...(window._env_.FEATURE_AUDIT_LOG_ENABLE && AuditLogNotifications
                                 ? [
                                       {
                                           id: 'audit-log-notifications-tab',
@@ -111,7 +106,7 @@ export default class Notifications extends Component<NotificationsProps, Notific
                                 />
                             }
                         />
-                        {AuditLogNotifications && (
+                        {window._env_.FEATURE_AUDIT_LOG_ENABLE && AuditLogNotifications && (
                             <Route path={NotificationTabsTypes.AUDIT_LOG} element={<AuditLogNotifications />} />
                         )}
                         <Route path={NotificationTabsTypes.CONFIGURATIONS} element={<ConfigurationTab />} />
