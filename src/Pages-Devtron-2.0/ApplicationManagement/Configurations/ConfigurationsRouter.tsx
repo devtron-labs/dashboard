@@ -15,6 +15,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import GitOpsConfiguration from '@Components/gitOps/GitOpsConfiguration'
 import { APPLICATION_MANAGEMENT_CONFIGURATIONS } from '@Components/Navigation'
 import { AddNotification } from '@Components/notifications/AddNotification'
@@ -29,6 +30,8 @@ const ScopedVariables = lazy(() => import('@Components/scopedVariables/ScopedVar
 const BuildInfra = lazy(() =>
     import('@Pages/GlobalConfigurations/BuildInfra').then((module) => ({ default: module.BuildInfra })),
 )
+
+const AuditLogNotificationForm = importComponentFromFELibrary('AuditLogNotificationForm', null, 'function')
 
 export const Configurations = () => {
     const location = useLocation()
@@ -91,6 +94,30 @@ export const Configurations = () => {
                             path={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS_ADD_NEW}
                             element={<AddNotification navigate={navigate} params={{}} location={location} />}
                         />
+                        {...AuditLogNotificationForm
+                            ? [
+                                  <Route
+                                      key={
+                                          BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS
+                                              .NOTIFICATIONS_AUDIT_LOG_ADD_NEW
+                                      }
+                                      path={
+                                          BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS
+                                              .NOTIFICATIONS_AUDIT_LOG_ADD_NEW
+                                      }
+                                      element={<AuditLogNotificationForm />}
+                                  />,
+                                  <Route
+                                      key={
+                                          BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS_AUDIT_LOG_EDIT
+                                      }
+                                      path={
+                                          BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS_AUDIT_LOG_EDIT
+                                      }
+                                      element={<AuditLogNotificationForm />}
+                                  />,
+                              ]
+                            : []}
                         <Route
                             key={BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS}
                             path={`${BASE_ROUTES.APPLICATION_MANAGEMENT.CONFIGURATIONS.NOTIFICATIONS}/*`}

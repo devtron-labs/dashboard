@@ -77,7 +77,7 @@ import {
 } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
-import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
+import { CI_CD_ADD_NOTIFICATION_BREADCRUMBS, EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
 
 const isEnterprise = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
@@ -822,8 +822,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                       )
                                                   }
                                               })
-                                            : 
-                                                  getNotificationEvents(isEnterprise).filter((event) => {
+                                            : getNotificationEvents(isEnterprise)
+                                                  .filter((event) => {
                                                       return (
                                                           row.type !== NotificationPipelineType.CI ||
                                                           (event !== EVENTS.CONFIG_APPROVAL &&
@@ -1068,24 +1068,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.getInitialData()
     }
 
-    renderBreadcrumbs = () => {
-        const breadcrumbs = [
-            {
-                name: 'Notifications',
-                to: `${ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}/channels`,
-            },
-            {
-                name: 'Add Notification',
-                to: '',
-            },
-        ]
-        return (
-            <BreadCrumb
-                path={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}
-                breadcrumbs={breadcrumbs}
-            />
-        )
-    }
+    renderBreadcrumbs = () => (
+        <BreadCrumb
+            path={ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.NOTIFICATIONS}
+            breadcrumbs={CI_CD_ADD_NOTIFICATION_BREADCRUMBS}
+        />
+    )
 
     render() {
         return (

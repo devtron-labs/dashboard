@@ -16,21 +16,19 @@
 
 import { Component } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
-import {
-    ErrorScreenNotAuthorized,
-    FeatureTitleWithInfo,
-    RouterV5Props,
-    TabGroup,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
-import { ErrorBoundary } from '../common'
+import { ErrorBoundary, importComponentFromFELibrary } from '../common'
 import { HEADER_TEXT } from '../../config'
 import './notifications.scss'
 import { NotificationsProps, NotificationsState } from './types'
 import { AddNotificationButton } from './AddNotificationButton'
-export default class Notifications extends Component<NotificationsProps, NotificationsState> {
+import { NotificationTabsTypes, NotificationTabText } from './constants'
 
+const AuditLogNotifications = importComponentFromFELibrary('AuditLogNotifications', null, 'function')
+
+export default class Notifications extends Component<NotificationsProps, NotificationsState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -62,19 +60,32 @@ export default class Notifications extends Component<NotificationsProps, Notific
                         tabs={[
                             {
                                 id: 'notifications-tab',
-                                label: 'Notifications',
+                                label: NotificationTabText[NotificationTabsTypes.CI_CD],
                                 tabType: 'navLink',
                                 props: {
-                                    to: 'channels',
+                                    to: NotificationTabsTypes.CI_CD,
                                     'data-testid': 'notifications-link-button',
                                 },
                             },
+                            ...(window._env_.FEATURE_AUDIT_LOG_ENABLE && AuditLogNotifications
+                                ? [
+                                      {
+                                          id: 'audit-log-notifications-tab',
+                                          label: NotificationTabText[NotificationTabsTypes.AUDIT_LOG],
+                                          tabType: 'navLink' as const,
+                                          props: {
+                                              to: NotificationTabsTypes.AUDIT_LOG,
+                                              'data-testid': 'audit-log-notifications-link-button',
+                                          },
+                                      },
+                                  ]
+                                : []),
                             {
                                 id: 'configurations-tab',
-                                label: 'Configurations',
+                                label: NotificationTabText[NotificationTabsTypes.CONFIGURATIONS],
                                 tabType: 'navLink',
                                 props: {
-                                    to: 'configurations',
+                                    to: NotificationTabsTypes.CONFIGURATIONS,
                                     'data-testid': 'configurations-link-button',
                                 },
                             },
@@ -84,7 +95,7 @@ export default class Notifications extends Component<NotificationsProps, Notific
                 <ErrorBoundary>
                     <Routes>
                         <Route
-                            path="channels"
+                            path={NotificationTabsTypes.CI_CD}
                             element={
                                 <NotificationTab
                                     location={this.props.location}
@@ -95,8 +106,11 @@ export default class Notifications extends Component<NotificationsProps, Notific
                                 />
                             }
                         />
-                        <Route path="configurations" element={<ConfigurationTab />} />
-                        <Route path="*" element={<Navigate to="channels" />} />
+                        {window._env_.FEATURE_AUDIT_LOG_ENABLE && AuditLogNotifications && (
+                            <Route path={NotificationTabsTypes.AUDIT_LOG} element={<AuditLogNotifications />} />
+                        )}
+                        <Route path={NotificationTabsTypes.CONFIGURATIONS} element={<ConfigurationTab />} />
+                        <Route path="*" element={<Navigate to={NotificationTabsTypes.CI_CD} />} />
                     </Routes>
                 </ErrorBoundary>
             </div>
